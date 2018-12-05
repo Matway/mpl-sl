@@ -25,11 +25,11 @@ HashTable: [
       copy newBucketSize:;
 
       newBucketSize @data.resize
-      b: 0;
+      b: 0 dynamic;
       [b data.dataSize <] [
         current: b @data.at;
-        i: 0;
-        j: 0;
+        i: 0 dynamic;
+        j: 0 dynamic;
         [i current.dataSize <] [
           h: i current.at.keyHash copy;
           newB: h newBucketSize 1 - 0n32 cast and 0i32 cast;
@@ -59,7 +59,7 @@ HashTable: [
       keyHash: @key hash dynamic;
       [
         result: {
-          success: FALSE;
+          success: FALSE dynamic;
           value: 0nx @valueType addressToReference;
         };
 
@@ -67,13 +67,13 @@ HashTable: [
           bucketIndex: keyHash data.dataSize 1 - 0n32 cast and 0 cast;
           curBucket: bucketIndex @data.at;
 
-          i: 0;
+          i: 0 dynamic;
           [
             i curBucket.dataSize < [
               node: i @curBucket.at;
               node.key key = [
                 {
-                  success: TRUE;
+                  success: TRUE dynamic;
                   value: @node.@value;
                 } @result set
                 FALSE
@@ -140,7 +140,9 @@ HashTable: [
       0 dynamic @dataSize set
     ] func;
 
-    INIT: [0 dynamic @dataSize set];
+    INIT: [
+      0 dynamic @dataSize set
+    ];
 
     ASSIGN: [
       other:;

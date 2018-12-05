@@ -23,65 +23,85 @@ getHeapUsedSize: [isCombined] [
   result
 ] pfunc;
 
-mplMalloc:  [malloc] func;
-mplRealloc: [realloc] func;
-mplFree: [free] func;
+mplNew: [
+  elementIsMoved: isMoved;
+  element:;
+  result: element storageSize mplMalloc @element addressToReference;
+  @result manuallyInitVariable
+  @element elementIsMoved moveIf @result set
+  @result
+] func;
 
-#memoryCounterMalloc: 0 dynamic;
-#memoryCounterFree: 0 dynamic;
-#memoryUsed: 0nx dynamic;
-#memoryXor: 0nx dynamic;
+mplDelete: [
+  element:;
+  @element manuallyDestroyVariable
+  @element storageAddress mplFree
+] func;
 
-#mplMalloc:  [
-#  copy size:;
-#  memoryCounterMalloc 1 + @memoryCounterMalloc set
+debugMemory: [FALSE] func;
+debugMemory: [DEBUG_MEMORY][TRUE] pfunc;
 
-#  result: size 8nx + malloc;
-#  size result Natx Ref cast set
+debugMemory [
+  memoryCounterMalloc: 0 dynamic;
+  memoryCounterFree: 0 dynamic;
+  memoryUsed: 0nx dynamic;
+  memoryXor: 0nx dynamic;
 
-#  memoryUsed size + @memoryUsed set
-#  memoryXor result xor @memoryXor set
-#  result 8nx +
-#] func;
+  mplMalloc:  [
+    copy size:;
+    memoryCounterMalloc 1 + @memoryCounterMalloc set
 
-#mplRealloc: [
-#  copy ptr:;
-#  copy size:;
+    result: size 8nx + malloc;
+    size result Natx addressToReference set
 
-#  oldSize: ptr 0nx = [
-#    0nx
-#  ] [
-#    ptr 8nx - @ptr set
-#    ptr Natx Ref cast copy
-#  ] if;
+    memoryUsed size + @memoryUsed set
+    memoryXor result xor @memoryXor set
+    result 8nx +
+  ] func;
 
-#  memoryXor ptr xor @memoryXor set
-#  ptr 0nx = [
-#    memoryCounterMalloc 1 + @memoryCounterMalloc set
-#  ] when
+  mplRealloc: [
+    copy ptr:;
+    copy size:;
 
-#  result: size 8nx + ptr realloc;
-#  size result Natx Ref cast set
+    oldSize: ptr 0nx = [
+      0nx
+    ] [
+      ptr 8nx - @ptr set
+      ptr Natx addressToReference copy
+    ] if;
 
-#  memoryUsed oldSize - size + @memoryUsed set
-#  memoryXor result xor @memoryXor set
-#  result 8nx +
-#] func;
+    memoryXor ptr xor @memoryXor set
+    ptr 0nx = [
+      memoryCounterMalloc 1 + @memoryCounterMalloc set
+    ] when
 
-#mplFree: [
-#  copy ptr:;
-#  oldSize: ptr 0nx = [
-#    0nx
-#  ] [
-#    ptr 8nx - @ptr set
-#    ptr Natx Ref cast copy
-#  ] if;
+    result: size 8nx + ptr realloc;
+    size result Natx addressToReference set
 
-#  ptr 0nx = not [
-#    memoryCounterFree 1 + @memoryCounterFree set
-#  ] when
+    memoryUsed oldSize - size + @memoryUsed set
+    memoryXor result xor @memoryXor set
+    result 8nx +
+  ] func;
 
-#  memoryUsed oldSize - @memoryUsed set
-#  memoryXor ptr xor @memoryXor set
-#  ptr free
-#] func;
+  mplFree: [
+    copy ptr:;
+    oldSize: ptr 0nx = [
+      0nx
+    ] [
+      ptr 8nx - @ptr set
+      ptr Natx addressToReference copy
+    ] if;
+
+    ptr 0nx = not [
+      memoryCounterFree 1 + @memoryCounterFree set
+    ] when
+
+    memoryUsed oldSize - @memoryUsed set
+    memoryXor ptr xor @memoryXor set
+    ptr free
+  ] func;
+] [
+  mplMalloc:  [malloc] func;
+  mplRealloc: [realloc] func;
+  mplFree: [free] func;
+] uif

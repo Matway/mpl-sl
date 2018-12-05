@@ -12,12 +12,8 @@ Owner: [{
   ] func;
 
   init: [
-    elementIsMoved: isMoved;
-    element:;
     [assigned not] "Can init only empty pointers!" assert
-    elementType storageSize mplMalloc @elementType addressToReference !memory
-    memory manuallyInitVariable
-    @element elementIsMoved moveIf @memory set
+    mplNew !memory
   ] func;
 
   get: [
@@ -27,8 +23,7 @@ Owner: [{
 
   clear: [
     assigned [
-      memory manuallyDestroyVariable
-      memory storageAddress mplFree
+      @memory mplDelete
       0nx @elementType addressToReference !memory
     ] when
   ] func;
