@@ -685,13 +685,11 @@ catJSONNodeWithPaddingImpl: [
   ] if
 ] func;
 
-
 {
   json: JSON Cref;
   padding: Int32;
   result: String Ref;
 } () {convention: "cdecl";} "catJSONNodeWithPadding" importFunction
-
 
 {
   json: JSON Cref;
