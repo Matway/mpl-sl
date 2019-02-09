@@ -2,11 +2,11 @@
 "control" useModule
 
 FARPROC: [{
-} Intx {} codeRef] func;
+} Intx {convention: "stdcall";} codeRef] func;
 
 LPTHREAD_START_ROUTINE: [{
   lpThreadParameter: Natx;
-} Nat32 {} codeRef] func;
+} Nat32 {convention: "stdcall";} codeRef] func;
 
 HINSTANCE: [{
   virtual INSTANCE: {};
@@ -47,18 +47,18 @@ SECURITY_ATTRIBUTES: [{
 {
   hFile: Natx;
   lpOverlapped: OVERLAPPED Ref;
-} Int32 {} "CancelIoEx" importFunction
+} Int32 {convention: "stdcall";} "CancelIoEx" importFunction
 
 {
   hObject: Natx;
-} Int32 {} "CloseHandle" importFunction
+} Int32 {convention: "stdcall";} "CloseHandle" importFunction
 
 {
   FileHandle: Natx;
   ExistingCompletionPort: Natx;
   CompletionKey: Natx;
   NumberOfConcurrentThreads: Nat32;
-} Natx {} "CreateIoCompletionPort" importFunction
+} Natx {convention: "stdcall";} "CreateIoCompletionPort" importFunction
 
 {
   lpThreadAttributes: SECURITY_ATTRIBUTES Ref;
@@ -67,35 +67,35 @@ SECURITY_ATTRIBUTES: [{
   lpParameter: Natx;
   dwCreationFlags: Nat32;
   lpThreadId: Nat32 Ref;
-} Natx {} "CreateThread" importFunction
+} Natx {convention: "stdcall";} "CreateThread" importFunction
 
 {
   lpCriticalSection: CRITICAL_SECTION Ref;
-} {} {} "EnterCriticalSection" importFunction
+} {} {convention: "stdcall";} "EnterCriticalSection" importFunction
 
 {
   hThread: Natx;
   lpExitCode: Nat32 Ref;
-} Int32 {} "GetExitCodeThread" importFunction
+} Int32 {convention: "stdcall";} "GetExitCodeThread" importFunction
 
 {
-} Nat32 {} "GetLastError" importFunction
+} Nat32 {convention: "stdcall";} "GetLastError" importFunction
 
 {
   lpModuleName: Natx;
-} HMODULE {} "GetModuleHandleW" importFunction
+} HMODULE {convention: "stdcall";} "GetModuleHandleW" importFunction
 
 {
   hFile: Natx;
   lpOverlapped: OVERLAPPED Ref;
   lpNumberOfBytesTransferred: Nat32 Ref;
   bWait: Int32;
-} Int32 {} "GetOverlappedResult" importFunction
+} Int32 {convention: "stdcall";} "GetOverlappedResult" importFunction
 
 {
   hModule: HMODULE;
   lpProcName: Natx;
-} FARPROC {} "GetProcAddress" importFunction
+} FARPROC {convention: "stdcall";} "GetProcAddress" importFunction
 
 {
   CompletionPort: Natx;
@@ -103,7 +103,7 @@ SECURITY_ATTRIBUTES: [{
   lpCompletionKey: Natx Ref;
   lpOverlapped: (OVERLAPPED Ref) Ref;
   dwMilliseconds: Nat32;
-} Int32 {} "GetQueuedCompletionStatus" importFunction
+} Int32 {convention: "stdcall";} "GetQueuedCompletionStatus" importFunction
 
 {
   CompletionPort: Natx;
@@ -112,19 +112,19 @@ SECURITY_ATTRIBUTES: [{
   ulNumEntriesRemoved: Nat32 Ref;
   dwMilliseconds: Nat32;
   fAlertable: Int32;
-} Int32 {} "GetQueuedCompletionStatusEx" importFunction
+} Int32 {convention: "stdcall";} "GetQueuedCompletionStatusEx" importFunction
 
 {
-} Nat32 {} "GetTickCount64" importFunction
+} Nat32 {convention: "stdcall";} "GetTickCount64" importFunction
 
 {
   lpCriticalSection: CRITICAL_SECTION Ref;
   dwSpinCount: Nat32;
-} Int32 {} "InitializeCriticalSectionAndSpinCount" importFunction
+} Int32 {convention: "stdcall";} "InitializeCriticalSectionAndSpinCount" importFunction
 
 {
   lpCriticalSection: CRITICAL_SECTION Ref;
-} {} {} "LeaveCriticalSection" importFunction
+} {} {convention: "stdcall";} "LeaveCriticalSection" importFunction
 
 {
   CodePage: Nat32;
@@ -133,28 +133,28 @@ SECURITY_ATTRIBUTES: [{
   cbMultiByte: Int32;
   lpWideCharStr: Natx;
   cchWideChar: Int32;
-} Int32 {} "MultiByteToWideChar" importFunction
+} Int32 {convention: "stdcall";} "MultiByteToWideChar" importFunction
 
 {
   CompletionPort: Natx;
   dwNumberOfBytesTransferred: Nat32;
   dwCompletionKey: Natx;
   lpOverlapped: OVERLAPPED Ref;
-} Int32 {} "PostQueuedCompletionStatus" importFunction
+} Int32 {convention: "stdcall";} "PostQueuedCompletionStatus" importFunction
 
 {
   lpPerformanceCount: Int64 Ref;
-} Int32 {} "QueryPerformanceCounter" importFunction
+} Int32 {convention: "stdcall";} "QueryPerformanceCounter" importFunction
 
 {
   lpFrequency: Int64 Ref;
-} Int32 {} "QueryPerformanceFrequency" importFunction
+} Int32 {convention: "stdcall";} "QueryPerformanceFrequency" importFunction
 
 {
   dwMilliseconds: Nat32;
-} {} {} "Sleep" importFunction
+} {} {convention: "stdcall";} "Sleep" importFunction
 
 {
   hHandle: Natx;
   dwMilliseconds: Nat32;
-} Nat32 {} "WaitForSingleObject" importFunction
+} Nat32 {convention: "stdcall";} "WaitForSingleObject" importFunction

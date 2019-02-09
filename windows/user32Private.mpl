@@ -6,7 +6,7 @@ WNDPROC: [{
   uMsg: Nat32;
   wParam: Natx;
   lParam: Intx;
-} Intx {} codeRef] func;
+} Intx {convention: "stdcall";} codeRef] func;
 
 HCURSOR: [HICON] func;
 
@@ -70,7 +70,7 @@ WNDCLASSW: [{
 {
   hWnd: HWND;
   lpPoint: POINT Ref;
-} Int32 {} "ClientToScreen" importFunction
+} Int32 {convention: "stdcall";} "ClientToScreen" importFunction
 
 {
   dwExStyle: Nat32;
@@ -85,36 +85,36 @@ WNDCLASSW: [{
   hMenu: HMENU;
   hInstance: kernel32.HINSTANCE;
   lpParam: Natx;
-} HWND {} "CreateWindowExW" importFunction
+} HWND {convention: "stdcall";} "CreateWindowExW" importFunction
 
 {
   hWnd: HWND;
   Msg: Nat32;
   wParam: Natx;
   lParam: Intx;
-} Intx {} "DefWindowProcW" importFunction
+} Intx {convention: "stdcall";} "DefWindowProcW" importFunction
 
 {
   hWnd: HWND;
-} Int32 {} "DestroyWindow" importFunction
+} Int32 {convention: "stdcall";} "DestroyWindow" importFunction
 
 {
   lpMsg: MSG Cref;
-} Intx {} "DispatchMessageW" importFunction
+} Intx {convention: "stdcall";} "DispatchMessageW" importFunction
 
 {
   hWnd: HWND;
-} HDC {} "GetDC" importFunction
+} HDC {convention: "stdcall";} "GetDC" importFunction
 
 {
   hWnd: HWND;
   nIndex: Int32;
-} Intx {} "GetWindowLongPtrW" importFunction
+} Intx {convention: "stdcall";} "GetWindowLongPtrW" importFunction
 
 {
   hInstance: kernel32.HINSTANCE;
   lpCursorName: Natx;
-} HCURSOR {} "LoadCursorW" importFunction
+} HCURSOR {convention: "stdcall";} "LoadCursorW" importFunction
 
 {
   lpMsg: MSG Ref;
@@ -122,35 +122,35 @@ WNDCLASSW: [{
   wMsgFilterMin: Nat32;
   wMsgFilterMax: Nat32;
   wRemoveMsg: Nat32;
-} Int32 {} "PeekMessageW" importFunction
+} Int32 {convention: "stdcall";} "PeekMessageW" importFunction
 
 {
   lpWndClass: WNDCLASSW Cref;
-} Nat16 {} "RegisterClassW" importFunction
+} Nat16 {convention: "stdcall";} "RegisterClassW" importFunction
 
 {
-} Int32 {} "ReleaseCapture" importFunction
+} Int32 {convention: "stdcall";} "ReleaseCapture" importFunction
 
 {
   hWnd: HWND;
-} HWND {} "SetCapture" importFunction
+} HWND {convention: "stdcall";} "SetCapture" importFunction
 
 {
   X: Int32;
   Y: Int32;
-} Int32 {} "SetCursorPos" importFunction
+} Int32 {convention: "stdcall";} "SetCursorPos" importFunction
 
 {
   hWnd: HWND;
   nIndex: Int32;
   dwNewLong: Intx;
-} Intx {} "SetWindowLongPtrW" importFunction
+} Intx {convention: "stdcall";} "SetWindowLongPtrW" importFunction
 
 {
   bShow: Int32;
-} Int32 {} "ShowCursor" importFunction
+} Int32 {convention: "stdcall";} "ShowCursor" importFunction
 
 {
   hWnd: HWND;
   nCmdShow: Int32;
-} Int32 {} "ShowWindow" importFunction
+} Int32 {convention: "stdcall";} "ShowWindow" importFunction

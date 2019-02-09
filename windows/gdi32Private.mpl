@@ -33,14 +33,14 @@ PIXELFORMATDESCRIPTOR: [{
 {
   hdc: user32.HDC;
   ppfd: PIXELFORMATDESCRIPTOR Cref;
-} Int32 {} "ChoosePixelFormat" importFunction
+} Int32 {convention: "stdcall";} "ChoosePixelFormat" importFunction
 
 {
   hdc: user32.HDC;
   format: Int32;
   ppfd: PIXELFORMATDESCRIPTOR Cref;
-} Int32 {} "SetPixelFormat" importFunction
+} Int32 {convention: "stdcall";} "SetPixelFormat" importFunction
 
 {
   Arg1: user32.HDC;
-} Int32 {} "SwapBuffers" importFunction
+} Int32 {convention: "stdcall";} "SwapBuffers" importFunction

@@ -3,7 +3,7 @@
 
 {
   pvReserved: Natx;
-} Int32 {} "CoInitialize" importFunction
+} Int32 {convention: "stdcall";} "CoInitialize" importFunction
 
 {
-} {} {} "CoUninitialize" importFunction
+} {} {convention: "stdcall";} "CoUninitialize" importFunction
