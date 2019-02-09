@@ -7,12 +7,19 @@ Matrix: [rowCount:; Vector rowCount Vector] func;
 
 
 {arg: Real32;} Real32 {} "acosf" importFunction
-{arg: Real64;} Real64 {} "acos" importFunction
+{arg: Real64;} Real64 {} "acosl" importFunction
 acos: [Real32 same] [acosf] pfunc;
+acos: [Real64 same] [acosl] pfunc;
 
 {arg: Real32;} Real32 {} "tanf" importFunction
-{arg: Real64;} Real64 {} "tan" importFunction
+{arg: Real64;} Real64 {} "tanl" importFunction
 tan: [Real32 same] [tanf] pfunc;
+tan: [Real64 same] [tanl] pfunc;
+
+{argy: Real32; argx: Real32;} Real32 {} "atan2f" importFunction
+{argy: Real64; argx: Real64;} Real64 {} "atan2l" importFunction
+atan2: [Real32 same] [atan2f] pfunc;
+atan2: [Real64 same] [atan2l] pfunc;
 
 vector?: [v:; FALSE] func;
 vector?: [v:; v 0 fieldName textSize 0nx =] [v:; TRUE] pfunc;
