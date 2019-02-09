@@ -243,7 +243,8 @@ multiply: [
   v1 vector? v2 vector? and
   v1 fieldCount v2 fieldCount = and
 ] [
-  v1:v2:;; (v1 fieldCount [i v1 @ i v2 @ *] times)
+  v1:v2:;;
+  (v1 fieldCount [i v1 @ i v2 @ *] times)
 ] pfunc;
 
 divide: [
