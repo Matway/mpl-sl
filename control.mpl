@@ -27,6 +27,7 @@ Cref: [v:; 0nx v addressToReference] func; # for signatures
 AsRef: [{data:;}] func; # for Ref Array
 
 {format: Text;} () {variadic: TRUE; convention: cdecl;} "printf" importFunction # need for assert
+{result: 0;} () {convention: cdecl;} "exit" importFunction
 
 pfunc: [{
   CALL:;
@@ -67,7 +68,6 @@ times: [
   ] when
 ] func;
 
-{result: 0;} () {convention: cdecl;} "exit" importFunction
 
 failProc: [
   storageAddress printAddr
