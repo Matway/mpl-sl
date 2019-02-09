@@ -16,6 +16,11 @@ Owner: [{
     mplNew !memory
   ] func;
 
+  initDerived: [
+    [assigned not] "Can init only empty pointers!" assert
+    mplNew storageAddress @elementType addressToReference !memory
+  ] func;
+
   get: [
     [assigned] "Pointer is null!" assert
     @memory
@@ -48,6 +53,17 @@ owner: [
 
   result: @element Owner;
   @element elementIsMoved moveIf @result.init
+
+  @result
+] func;
+
+ownerDerived: [
+  base:;
+  elementIsMoved: isMoved;
+  element:;
+
+  result: @base Owner;
+  @element elementIsMoved moveIf @result.initDerived
 
   @result
 ] func;
