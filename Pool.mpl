@@ -177,8 +177,8 @@ Pool: [
 
     INIT: [
       0nx dynamic @data set
-      0 dynamic @count set
-      -1 dynamic @firstFree set
+      0   dynamic @dataSize set
+      -1  dynamic @firstFree set
     ];
 
     DIE: [
