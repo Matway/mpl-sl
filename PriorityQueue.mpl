@@ -22,7 +22,7 @@ PriorityQueue: [{
     [
       i 0 > [
         p: i parent;
-        i data.at p data.at < [
+        p data.at i data.at < [
           i p swap
           p @i set
           TRUE
@@ -45,7 +45,7 @@ PriorityQueue: [{
       r: i rchild;
       l data.getSize < [
         r data.getSize < [
-          c: l data.at r data.at < [l copy] [r copy] if;
+          c: r data.at l data.at < [l copy] [r copy] if;
           i c swap
           c @i set
           TRUE
