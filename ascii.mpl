@@ -2,8 +2,9 @@
 "control" includeModule
 
 ascii: {
-  null:        [  0n32 dynamic] func;
+  null:       [  0n32 dynamic] func;
 
+  bell:       [  7n32 dynamic] func;
   backSpace:  [  8n32 dynamic] func;
   tab:        [  9n32 dynamic] func;
   lf:         [ 10n32 dynamic] func;
@@ -13,17 +14,35 @@ ascii: {
   exclamation:[ 33n32 dynamic] func;
   quote:      [ 34n32 dynamic] func;
   grid:       [ 35n32 dynamic] func;
+  dollar:     [ 36n32 dynamic] func;
+  percent:    [ 37n32 dynamic] func;
+  ampersand:  [ 38n32 dynamic] func;
+  apostrophe: [ 39n32 dynamic] func;
   openRBr:    [ 40n32 dynamic] func;
   closeRBr:   [ 41n32 dynamic] func;
+  asterisk:   [ 42n32 dynamic] func;
   plus:       [ 43n32 dynamic] func;
   comma:      [ 44n32 dynamic] func;
   minus:      [ 45n32 dynamic] func;
   dot:        [ 46n32 dynamic] func;
   slash:      [ 47n32 dynamic] func;
   zero:       [ 48n32 dynamic] func;
+  one:        [ 49n32 dynamic] func;
+  two:        [ 50n32 dynamic] func;
+  three:      [ 51n32 dynamic] func;
+  four:       [ 52n32 dynamic] func;
+  five:       [ 53n32 dynamic] func;
+  six:        [ 54n32 dynamic] func;
+  seven:      [ 55n32 dynamic] func;
+  eight:      [ 56n32 dynamic] func;
+  nine:       [ 57n32 dynamic] func;
   colon:      [ 58n32 dynamic] func;
   semicolon:  [ 59n32 dynamic] func;
-  dog:        [ 64n32 dynamic] func;
+  less:       [ 60n32 dynamic] func;
+  equals:     [ 61n32 dynamic] func;
+  greater:    [ 62n32 dynamic] func;
+  question:   [ 63n32 dynamic] func;
+  at:         [ 64n32 dynamic] func;
 
   aCodeBig:   [ 65n32 dynamic] func;
   bCodeBig:   [ 66n32 dynamic] func;
@@ -57,7 +76,7 @@ ascii: {
   closeSBr:   [ 93n32 dynamic] func;
   pow:        [ 94n32 dynamic] func;
   underline:  [ 95n32 dynamic] func;
-  apostrophe: [ 96n32 dynamic] func;
+  backquote:  [ 96n32 dynamic] func;
 
   aCode:      [ 97n32 dynamic] func;
   bCode:      [ 98n32 dynamic] func;
