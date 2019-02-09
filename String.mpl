@@ -394,8 +394,8 @@ String: [{
           ten: 10 nc;
           nlog10: number log10 floor 0 cast;
 
-          maxDigits: 7 dynamic;
-          maxOrder: 9 dynamic;
+          maxDigits: 6 dynamic;
+          maxOrder: 8 dynamic;
 
           number 0.0r32 same [
             5 dynamic @maxDigits set
