@@ -1,13 +1,13 @@
 "memory" module
 "control" includeModule
 
-{size: Natx;} Natx            {convention: "cdecl";} "malloc"  importFunction
-{ptr: Natx; size: Natx;} Natx {convention: "cdecl";} "realloc" importFunction
-{ptr: Natx;} ()               {convention: "cdecl";} "free"    importFunction
+{size: Natx;} Natx            {convention: cdecl;} "malloc"  importFunction
+{ptr: Natx; size: Natx;} Natx {convention: cdecl;} "realloc" importFunction
+{ptr: Natx;} ()               {convention: cdecl;} "free"    importFunction
 
-{dst: Natx; src: Natx; num: Natx;} Natx          {convention: "cdecl";} "memcpy"  importFunction
-{dst: Natx; src: Natx; num: Natx;} Natx          {convention: "cdecl";} "memmove" importFunction
-{memptr1: Natx; memptr2: Natx; num: Natx;} Int32 {convention: "cdecl";} "memcmp"  importFunction
+{dst: Natx; src: Natx; num: Natx;} Natx          {convention: cdecl;} "memcpy"  importFunction
+{dst: Natx; src: Natx; num: Natx;} Natx          {convention: cdecl;} "memmove" importFunction
+{memptr1: Natx; memptr2: Natx; num: Natx;} Int32 {convention: cdecl;} "memcmp"  importFunction
 
 getHeapUsedSize: [arg:; 0nx] func;
 getHeapUsedSize: [isCombined] [

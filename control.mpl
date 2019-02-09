@@ -1,4 +1,5 @@
 "control" module
+"conventions" includeModule
 
 func: {
   virtual CALL: [{
@@ -25,7 +26,7 @@ Ref: [v:; 0nx @v addressToReference] func; # for signatures
 Cref: [v:; 0nx v addressToReference] func; # for signatures
 AsRef: [{data:;}] func; # for Ref Array
 
-{format: Text;} () {variadic: TRUE; convention: "cdecl";} "printf" importFunction # need for assert
+{format: Text;} () {variadic: TRUE; convention: cdecl;} "printf" importFunction # need for assert
 
 pfunc: [{
   CALL:;
@@ -66,7 +67,7 @@ times: [
   ] when
 ] func;
 
-{result: 0;} () {convention: "cdecl";} "exit" importFunction
+{result: 0;} () {convention: cdecl;} "exit" importFunction
 
 failProc: [
   storageAddress printAddr

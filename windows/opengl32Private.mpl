@@ -3,13 +3,13 @@
 
 {
   Arg1: user32.HDC;
-} user32.HGLRC {convention: "stdcall";} "wglCreateContext" importFunction
+} user32.HGLRC {convention: stdcall;} "wglCreateContext" importFunction
 
 {
   Arg1: user32.HGLRC;
-} Int32 {convention: "stdcall";} "wglDeleteContext" importFunction
+} Int32 {convention: stdcall;} "wglDeleteContext" importFunction
 
 {
   arg1: user32.HDC;
   arg2: user32.HGLRC;
-} Int32 {convention: "stdcall";} "wglMakeCurrent" importFunction
+} Int32 {convention: stdcall;} "wglMakeCurrent" importFunction

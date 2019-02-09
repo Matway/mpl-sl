@@ -39,9 +39,9 @@ JSON: [{
 
 addrAsJSONImpl: [@JSONImplRef addressToReference] func;
 
-{dst: 0nx;          } () {convention: "cdecl";} "JSONDestroy" importFunction
-{dst: 0nx; src: 0nx;} () {convention: "cdecl";} "JSONSet"     importFunction
-{dst: 0nx;          } () {convention: "cdecl";} "JSONInit"    importFunction
+{dst: 0nx;          } () {convention: cdecl;} "JSONDestroy" importFunction
+{dst: 0nx; src: 0nx;} () {convention: cdecl;} "JSONSet"     importFunction
+{dst: 0nx;          } () {convention: cdecl;} "JSONInit"    importFunction
 
 JSONImplArray: [JSON Array] func;
 JSONImplObject: [String JSON HashTable] func;
@@ -66,17 +66,17 @@ JSONImpl: [
 
 schema JSONImplRef: JSONImpl;
 
-{dst: 0nx;          } () {convention: "cdecl";} [
+{dst: 0nx;          } () {convention: cdecl;} [
   addrAsJSONImpl manuallyInitVariable
 ] "JSONInit" exportFunction
 
-{dst: 0nx; src: 0nx;} () {convention: "cdecl";} [
+{dst: 0nx; src: 0nx;} () {convention: cdecl;} [
   dst: addrAsJSONImpl;
   src: addrAsJSONImpl;
   src @dst set
 ] "JSONSet" exportFunction
 
-{dst: 0nx;          } () {convention: "cdecl";} [
+{dst: 0nx;          } () {convention: cdecl;} [
   addrAsJSONImpl manuallyDestroyVariable
 ] "JSONDestroy" exportFunction
 
@@ -519,14 +519,14 @@ parseJSONNodeImpl: [
   splittedText: StringView Array Cref;
   parserResultInfo: JSONParserResult Ref;
   json: JSON Ref;
-} () {convention: "cdecl";} "parseJSONNode" importFunction
+} () {convention: cdecl;} "parseJSONNode" importFunction
 
 {
   position: JSONParserPosition Ref;
   splittedText: StringView Array Cref;
   parserResultInfo: JSONParserResult Ref;
   json: JSON Ref;
-} () {convention: "cdecl";} [
+} () {convention: cdecl;} [
   position:;
   splittedText:;
   parserResultInfo:;
@@ -689,13 +689,13 @@ catJSONNodeWithPaddingImpl: [
   json: JSON Cref;
   padding: Int32;
   result: String Ref;
-} () {convention: "cdecl";} "catJSONNodeWithPadding" importFunction
+} () {convention: cdecl;} "catJSONNodeWithPadding" importFunction
 
 {
   json: JSON Cref;
   padding: Int32;
   result: String Ref;
-} () {convention: "cdecl";} [
+} () {convention: cdecl;} [
   json:;
   padding:;
   result:;

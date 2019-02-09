@@ -6,18 +6,18 @@ Vector: [array] func;
 Matrix: [rowCount:; Vector rowCount Vector] func;
 
 
-{arg: Real32;} Real32 {convention: "cdecl";} "acosf" importFunction
-{arg: Real64;} Real64 {convention: "cdecl";} "acosl" importFunction
+{arg: Real32;} Real32 {convention: cdecl;} "acosf" importFunction
+{arg: Real64;} Real64 {convention: cdecl;} "acosl" importFunction
 acos: [Real32 same] [acosf] pfunc;
 acos: [Real64 same] [acosl] pfunc;
 
-{arg: Real32;} Real32 {convention: "cdecl";} "tanf" importFunction
-{arg: Real64;} Real64 {convention: "cdecl";} "tanl" importFunction
+{arg: Real32;} Real32 {convention: cdecl;} "tanf" importFunction
+{arg: Real64;} Real64 {convention: cdecl;} "tanl" importFunction
 tan: [Real32 same] [tanf] pfunc;
 tan: [Real64 same] [tanl] pfunc;
 
-{argy: Real32; argx: Real32;} Real32 {convention: "cdecl";} "atan2f" importFunction
-{argy: Real64; argx: Real64;} Real64 {convention: "cdecl";} "atan2l" importFunction
+{argy: Real32; argx: Real32;} Real32 {convention: cdecl;} "atan2f" importFunction
+{argy: Real64; argx: Real64;} Real64 {convention: cdecl;} "atan2l" importFunction
 atan2: [Real32 same] [atan2f] pfunc;
 atan2: [Real64 same] [atan2l] pfunc;
 

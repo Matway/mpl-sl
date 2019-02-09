@@ -1,7 +1,7 @@
 "String" module
 "Array" includeModule
 
-{arg: 0nx;} 0nx {convention: "cdecl";} "strlen" importFunction
+{arg: 0nx;} 0nx {convention: cdecl;} "strlen" importFunction
 
 getCodePointAndSize: [
   copy endSize:;
