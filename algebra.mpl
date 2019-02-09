@@ -33,6 +33,11 @@ getColCount: [matrix?] [m:; 0 m @ fieldCount] pfunc;
 
 getRowCount: [matrix?] [fieldCount] pfunc;
 
+cosSin: [
+  angle:;
+  (angle cos angle sin)
+] func;
+
 -: [
   v1:v2:;;
   v1 vector?
@@ -105,6 +110,14 @@ getRowCount: [matrix?] [fieldCount] pfunc;
 ] [
   value:vector:;;
   (vector fieldCount [i vector @ value *] times)
+] pfunc;
+
+*: [
+  v1:v2:;;
+  v1 vector?
+  v2 vector? and
+] [
+  0 .CAN_NOT_MUL_TWO_VECTORS_USE_DOT_OR_CROSS_OR_HADAMAR
 ] pfunc;
 
 *: [
@@ -209,9 +222,21 @@ getRowCount: [matrix?] [fieldCount] pfunc;
 
 toColumn: [vector?] [v:;(v fieldCount [(i v @ copy)] times)] pfunc;
 
-multiply: [v1:v2:;; v1 vector? v2 vector? and] [v1:v2:;; (v1 fieldCount [i v1 @ i v2 @ *] times)] pfunc;
+multiply: [
+  v1:v2:;;
+  v1 vector? v2 vector? and
+  v1 fieldCount v2 fieldCount = and
+] [
+  v1:v2:;; (v1 fieldCount [i v1 @ i v2 @ *] times)
+] pfunc;
 
-divide: [v1:v2:;; v1 vector? v2 vector? and] [v1:v2:;; (v1 fieldCount [i v1 @ i v2 @ /] times)] pfunc;
+divide: [
+  v1:v2:;;
+  v1 vector? v2 vector? and
+  v1 fieldCount v2 fieldCount = and
+] [
+  v1:v2:;; (v1 fieldCount [i v1 @ i v2 @ /] times)
+] pfunc;
 
 dot: [
   v0:v1:;;
