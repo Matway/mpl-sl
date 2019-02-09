@@ -40,6 +40,15 @@ getColCount: [matrix?] [m:; 0 m @ fieldCount] pfunc;
 
 getRowCount: [matrix?] [fieldCount] pfunc;
 
+angle: [
+  v:;
+  v vector?
+  v fieldCount 2 = and
+] [
+  v:;
+  0 v @ 1 v @ atan2
+] pfunc;
+
 cosSin: [
   angle:;
   (angle cos angle sin)
@@ -270,6 +279,10 @@ cross: [
   )
 ] pfunc;
 
+squaredLength: [vector?] [
+  v:; v v dot
+] pfunc;
+
 length: [vector?] [
   v:; v v dot sqrt
 ] pfunc;
@@ -314,6 +327,18 @@ lerp: [
   v1 f *
   +
 ] func;
+
+rotationMatrix: [
+  Real32 same
+] [
+  angle: copy;
+  c: angle cos;
+  s: angle sin;
+  (
+    (c copy s copy)
+    (s neg  c copy)
+  )
+] pfunc;
 
 det: [
   m:;
