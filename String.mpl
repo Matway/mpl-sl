@@ -348,7 +348,7 @@ String: [{
     shifted 16n64 < not [
       [
         rounded 16n64 * @rounded set
-        rounded 16n64 * shifted > not
+        rounded shifted 16n64 / > not
       ] loop
     ] when
 
