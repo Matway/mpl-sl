@@ -272,6 +272,11 @@ makeArray: [
 fieldCount: ["ARRAY" has] [.getSize] pfunc;
 fieldCount: ["ARRAY_RANGE" has] [.getSize] pfunc;
 
+each: [b:; fieldCount 0 =] [
+  eachInArrayBody:;
+  eachInArrayList:;
+] pfunc;
+
 each: [b:; 0 fieldName textSize 0nx =] [
   eachInArrayBody:;
   eachInArrayList:;

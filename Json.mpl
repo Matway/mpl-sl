@@ -144,7 +144,7 @@ JSONParserResult: [{
   json: JSON;
 }] func;
 
-fillPositionChars: [
+jsonInternalFillPositionChars: [
   pos:;
   chars:;
 
@@ -162,7 +162,7 @@ parseStringToJSON: [
   splittedString: makeStringView.split;
   splittedString.success [
     position: JSONParserPosition;
-    splittedString.chars @position fillPositionChars
+    splittedString.chars @position jsonInternalFillPositionChars
 
     @mainResult.@json @mainResult splittedString.chars @position parseJSONNode
 
@@ -197,7 +197,7 @@ parseJSONNodeImpl: [
       pos.offset 1 + @pos.@offset set
       pos.column 1 + @pos.@column set
 
-      chars @pos fillPositionChars
+      chars @pos jsonInternalFillPositionChars
     ] when
   ] func;
 
