@@ -207,3 +207,5 @@ sequenceImpl: [
 sequence: [
   1 static sequenceImpl
 ] func;
+
+unwrap: [list:; list fieldCount [i @list @] times] func;
