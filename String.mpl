@@ -580,7 +580,7 @@ stringness: [
   arg1.dataSize arg2.dataSize = [
     result: TRUE dynamic;
     i: 0 dynamic;
-    [i arg1.dataSize < [result copy] &&] [
+    [result copy [i arg1.dataSize <] &&] [
       addr1: arg1.dataBegin storageAddress i Natx cast + Nat8 addressToReference;
       addr2: arg2.dataBegin storageAddress i Natx cast + Nat8 addressToReference;
       addr1 addr2 = @result set
