@@ -8,13 +8,6 @@ LPTHREAD_START_ROUTINE: [{
   lpThreadParameter: Natx;
 } Nat32 {convention: stdcall;} codeRef] func;
 
-HINSTANCE: [{
-  virtual INSTANCE: {};
-  unused: Int32;
-} Cref] func;
-
-HMODULE: [HINSTANCE] func;
-
 CRITICAL_SECTION: [{
   DebugInfo: Natx;
   LockCount: Int32;
@@ -22,6 +15,18 @@ CRITICAL_SECTION: [{
   OwningThread: Natx;
   LockSemaphore: Natx;
   SpinCount: Natx;
+}] func;
+
+HINSTANCE: [{
+  virtual INSTANCE: {};
+  unused: Int32;
+} Cref] func;
+
+HMODULE: [HINSTANCE] func;
+
+LARGE_INTEGER: [{
+  LowPart: Nat32;
+  HighPart: Int32;
 }] func;
 
 OVERLAPPED: [{
@@ -54,6 +59,21 @@ SECURITY_ATTRIBUTES: [{
 } Int32 {convention: stdcall;} "CloseHandle" importFunction
 
 {
+  lpPathName: Natx;
+  lpSecurityAttributes: SECURITY_ATTRIBUTES Ref;
+} Int32 {convention: stdcall;} "CreateDirectoryW" importFunction
+
+{
+  lpFileName: Natx;
+  dwDesiredAccess: Nat32;
+  dwShareMode: Nat32;
+  lpSecurityAttributes: SECURITY_ATTRIBUTES Ref;
+  dwCreationDisposition: Nat32;
+  dwFlagsAndAttributes: Nat32;
+  hTemplateFile: Natx;
+} Natx {convention: stdcall;} "CreateFileW" importFunction
+
+{
   FileHandle: Natx;
   ExistingCompletionPort: Natx;
   CompletionKey: Natx;
@@ -70,6 +90,10 @@ SECURITY_ATTRIBUTES: [{
 } Natx {convention: stdcall;} "CreateThread" importFunction
 
 {
+  lpFileName: Natx;
+} Int32 {convention: stdcall;} "DeleteFileW" importFunction
+
+{
   lpCriticalSection: CRITICAL_SECTION Ref;
 } {} {convention: stdcall;} "EnterCriticalSection" importFunction
 
@@ -77,6 +101,15 @@ SECURITY_ATTRIBUTES: [{
   hThread: Natx;
   lpExitCode: Nat32 Ref;
 } Int32 {convention: stdcall;} "GetExitCodeThread" importFunction
+
+{
+  lpFileName: Natx;
+} Nat32 {convention: stdcall;} "GetFileAttributesW" importFunction
+
+{
+  hFile: Natx;
+  lpFileSize: LARGE_INTEGER Ref;
+} Int32 {convention: stdcall;} "GetFileSizeEx" importFunction
 
 {
 } Nat32 {convention: stdcall;} "GetLastError" importFunction
@@ -151,6 +184,14 @@ SECURITY_ATTRIBUTES: [{
 } Int32 {convention: stdcall;} "QueryPerformanceFrequency" importFunction
 
 {
+  hFile: Natx;
+  lpBuffer: Natx;
+  nNumberOfBytesToRead: Nat32;
+  lpNumberOfBytesRead: Nat32 Ref;
+  lpOverlapped: OVERLAPPED Ref;
+} Int32 {convention: stdcall;} "ReadFile" importFunction
+
+{
   dwMilliseconds: Nat32;
 } {} {convention: stdcall;} "Sleep" importFunction
 
@@ -158,3 +199,11 @@ SECURITY_ATTRIBUTES: [{
   hHandle: Natx;
   dwMilliseconds: Nat32;
 } Nat32 {convention: stdcall;} "WaitForSingleObject" importFunction
+
+{
+  hFile: Natx;
+  lpBuffer: Natx;
+  nNumberOfBytesToWrite: Nat32;
+  lpNumberOfBytesWritten: Nat32 Ref;
+  lpOverlapped: OVERLAPPED Ref;
+} Int32 {convention: stdcall;} "WriteFile" importFunction

@@ -32,4 +32,5 @@ user32: {
   SetWindowLongPtrW: @SetWindowLongPtrW;
   ShowCursor: @ShowCursor;
   ShowWindow: @ShowWindow;
+  TranslateMessage: @TranslateMessage;
 };

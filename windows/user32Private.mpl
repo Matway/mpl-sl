@@ -154,3 +154,7 @@ WNDCLASSW: [{
   hWnd: HWND;
   nCmdShow: Int32;
 } Int32 {convention: stdcall;} "ShowWindow" importFunction
+
+{
+  lpMsg: MSG Cref;
+} Int32 {convention: stdcall;} "TranslateMessage" importFunction
