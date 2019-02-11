@@ -138,7 +138,7 @@ Variant: [{
 }
 result:;
 @result manuallyInitVariable
-result
+@result
 ] func;
 
 getHeapUsedSize: ["VARIANT" has] [

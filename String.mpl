@@ -477,7 +477,7 @@ String: [{
             @arg TRUE same [
               @arg catCondNZ
             ] [
-              @arg
+              @arg printStack
               0 .CANNOT_CAT_THIS_TYPE
             ] if
           ] if
