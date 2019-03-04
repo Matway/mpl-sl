@@ -101,7 +101,7 @@ debugMemory [
     ptr free
   ] func;
 ] [
-  mplMalloc:  [malloc] func;
+  mplMalloc: [malloc] func;
   mplRealloc: [realloc] func;
   mplFree: [free] func;
 ] uif

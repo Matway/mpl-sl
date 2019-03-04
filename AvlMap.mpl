@@ -387,7 +387,7 @@ each: [b:; "AVL_MAP" has] [
 
     eachNodeAddr 0nx = not [
       eachNode: eachNodeAddr @eachInTreeTree.asNode;
-      eachNode.left  eachImpl
+      eachNode.left eachImpl
       {key: eachNode.key; value: @eachNode.@value;} @eachInTreeBody call
       eachNode.right eachImpl
     ] when

@@ -144,7 +144,7 @@ Pool: [
           ] times
 
           newTailSize tailSize - [
-            0n8  tailSize i + newValidAt set
+            0n8 tailSize i + newValidAt set
           ] times
 
           #set nextFree entries

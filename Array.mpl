@@ -100,7 +100,7 @@ makeSubRange: [
   [0 rangeBeginIndex > not] "Invalid subrange, 0>begin!" assert
   [rangeBeginIndex rangeEndIndex > not] "Invalid subrange, begin>end!" assert
   [rangeEndIndex arg.dataSize > not] "Invalid subrange, end>size!" assert
-  rangeEndIndex rangeBeginIndex -  arg.getBufferBegin arg.elementSize rangeBeginIndex Natx cast * + @arg.@elementType addressToReference makeArrayRangeRaw
+  rangeEndIndex rangeBeginIndex - arg.getBufferBegin arg.elementSize rangeBeginIndex Natx cast * + @arg.@elementType addressToReference makeArrayRangeRaw
 ] func;
 
 Array: [
@@ -139,8 +139,8 @@ Array: [
     setReserve: [
       copy newReserve:;
       [newReserve dataReserve < not] "New reserve is less than old reserve!" assert
-      newReserve Natx cast elementSize *   getBufferBegin   mplRealloc
-      @elementType addressToReference   !dataBegin
+      newReserve Natx cast elementSize * getBufferBegin mplRealloc
+      @elementType addressToReference !dataBegin
       newReserve @dataReserve set
     ] func;
 
