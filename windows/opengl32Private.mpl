@@ -10,6 +10,10 @@
 } Int32 {convention: stdcall;} "wglDeleteContext" importFunction
 
 {
+  procedureName: Text;
+} Natx {convention: stdcall;} "wglGetProcAddress" importFunction
+
+{
   arg1: user32.HDC;
   arg2: user32.HGLRC;
 } Int32 {convention: stdcall;} "wglMakeCurrent" importFunction

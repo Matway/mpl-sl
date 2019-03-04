@@ -106,10 +106,17 @@ WNDCLASSW: [{
   hWnd: HWND;
 } HDC {convention: stdcall;} "GetDC" importFunction
 
-{
-  hWnd: HWND;
-  nIndex: Int32;
-} Intx {convention: stdcall;} "GetWindowLongPtrW" importFunction
+Natx storageSize 8nx = [
+  {
+    hWnd: HWND;
+    nIndex: Int32;
+  } Intx {convention: stdcall;} "GetWindowLongPtrW" importFunction
+] [
+  {
+    hWnd: HWND;
+    nIndex: Int32;
+  } Intx {convention: stdcall;} "GetWindowLongW" importFunction
+] uif
 
 {
   hInstance: kernel32.HINSTANCE;
@@ -140,11 +147,19 @@ WNDCLASSW: [{
   Y: Int32;
 } Int32 {convention: stdcall;} "SetCursorPos" importFunction
 
-{
-  hWnd: HWND;
-  nIndex: Int32;
-  dwNewLong: Intx;
-} Intx {convention: stdcall;} "SetWindowLongPtrW" importFunction
+Natx storageSize 8nx = [
+  {
+    hWnd: HWND;
+    nIndex: Int32;
+    dwNewLong: Intx;
+  } Intx {convention: stdcall;} "SetWindowLongPtrW" importFunction
+] [
+  {
+    hWnd: HWND;
+    nIndex: Int32;
+    dwNewLong: Intx;
+  } Intx {convention: stdcall;} "SetWindowLongW" importFunction
+] uif
 
 {
   bShow: Int32;
