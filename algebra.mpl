@@ -5,21 +5,46 @@ PI: [3.14159265358979323r32] func;
 Vector: [array] func;
 Matrix: [rowCount:; Vector rowCount Vector] func;
 
+Natx storageSize 8nx = [
+  {arg: Real32;} Real32 {convention: cdecl;} "acosf" importFunction
+  {arg: Real64;} Real64 {convention: cdecl;} "acosl" importFunction
+  acos: [Real32 same] [acosf] pfunc;
+  acos: [Real64 same] [acosl] pfunc;
 
-{arg: Real32;} Real32 {convention: cdecl;} "acosf" importFunction
-{arg: Real64;} Real64 {convention: cdecl;} "acosl" importFunction
-acos: [Real32 same] [acosf] pfunc;
-acos: [Real64 same] [acosl] pfunc;
+  {arg: Real32;} Real32 {convention: cdecl;} "tanf" importFunction
+  {arg: Real64;} Real64 {convention: cdecl;} "tanl" importFunction
+  tan: [Real32 same] [tanf] pfunc;
+  tan: [Real64 same] [tanl] pfunc;
 
-{arg: Real32;} Real32 {convention: cdecl;} "tanf" importFunction
-{arg: Real64;} Real64 {convention: cdecl;} "tanl" importFunction
-tan: [Real32 same] [tanf] pfunc;
-tan: [Real64 same] [tanl] pfunc;
+  {argy: Real32; argx: Real32;} Real32 {convention: cdecl;} "atan2f" importFunction
+  {argy: Real64; argx: Real64;} Real64 {convention: cdecl;} "atan2l" importFunction
+  atan2: [Real32 same] [atan2f] pfunc;
+  atan2: [Real64 same] [atan2l] pfunc;
+] [
+  {arg: Real64;} Real64 {convention: cdecl;} "acos" importFunction
+  acosFunc: @acos;
+  acos: [Real32 same] [Real64 cast acosFunc Real32 cast] pfunc;
+  acos: [Real64 same] [acosFunc] pfunc;
 
-{argy: Real32; argx: Real32;} Real32 {convention: cdecl;} "atan2f" importFunction
-{argy: Real64; argx: Real64;} Real64 {convention: cdecl;} "atan2l" importFunction
-atan2: [Real32 same] [atan2f] pfunc;
-atan2: [Real64 same] [atan2l] pfunc;
+  {arg: Real64;} Real64 {convention: cdecl;} "tan" importFunction
+  tanFunc: @tan;
+  tan: [Real32 same] [Real64 cast tanFunc Real32 cast] pfunc;
+  tan: [Real64 same] [tanFunc] pfunc;
+
+  {argy: Real64; argx: Real64;} Real64 {convention: cdecl;} "atan2" importFunction
+  atan2Func: @atan2;
+  atan2: [
+    x:y:;;
+    x Real32 same
+    y Real32 same and
+  ] [
+    y: copy;
+    x: copy;
+    x Real64 cast y Real64 cast atan2Func Real32 cast
+  ] pfunc;
+
+  atan2: [Real64 same] [atan2Func] pfunc;
+] uif
 
 vector?: [v:; FALSE] func;
 vector?: [v:; v 0 fieldName textSize 0nx =] [v:; TRUE] pfunc;
