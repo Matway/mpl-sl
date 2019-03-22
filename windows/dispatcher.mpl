@@ -46,6 +46,26 @@ dispatcher: {
     ] if
   ] func;
 
+  tryDispatch: [
+    entry: kernel32.OVERLAPPED_ENTRY;
+    actual: Nat32;
+    1 0n32 @actual 1n32 @entry completionPort kernel32.GetQueuedCompletionStatusEx 1 = ~ [
+      error: kernel32.GetLastError;
+      error kernel32.WAIT_TIMEOUT = not [
+        ("FATAL: GetQueuedCompletionStatusEx failed, result=" error LF) assembleString print 1 exit
+      ] when
+    ] [
+      [actual 1n32 =] "unexpected actual entry count" assert
+      entry.lpCompletionKey 0nx = [
+        [entry.dwNumberOfBytesTransferred entry.lpOverlapped.InternalHigh Nat32 cast =] "unexpected transferred size" assert
+        context: entry.lpOverlapped storageAddress Context addressToReference;
+        entry.dwNumberOfBytesTransferred entry.lpOverlapped.Internal Nat32 cast context.context context.onEvent
+      ] [
+        entry.lpOverlapped storageAddress entry.lpCompletionKey {context: Natx;} {} {} codeRef addressToReference call
+      ] if
+    ] if
+  ] func;
+
   post: [
     context: callback:;;
     [@callback isNil ~] "dispatcher.post: invalid callback" assert
