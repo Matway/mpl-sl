@@ -38,6 +38,13 @@ delete: [
   @element storageAddress mplFree
 ] func;
 
+deleteWith: [
+  destructor:;
+  element:;
+  @element @destructor call
+  @element storageAddress mplFree
+] func;
+
 debugMemory: [FALSE] func;
 debugMemory: [DEBUG_MEMORY][TRUE] pfunc;
 

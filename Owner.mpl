@@ -1,8 +1,9 @@
 "Owner" module
 "control" includeModule
 
-Owner: [{
+OwnerWithDestructor: [{
   virtual OWNER: ();
+  destructor:;
   schema elementType:;
   memory: 0nx @elementType addressToReference;
 
@@ -28,7 +29,7 @@ Owner: [{
 
   clear: [
     assigned [
-      @memory delete
+      @memory @destructor deleteWith
       0nx @elementType addressToReference !memory
     ] when
   ] func;
@@ -41,11 +42,12 @@ Owner: [{
 
   DIE: [
     assigned [
-      memory manuallyDestroyVariable
-      memory storageAddress mplFree
+      @memory @destructor deleteWith
     ] when
   ];
 }] func;
+
+Owner: [[manuallyDestroyVariable] OwnerWithDestructor] func;
 
 owner: [
   elementIsMoved: isMoved;
@@ -58,11 +60,12 @@ owner: [
 ] func;
 
 ownerDerived: [
+  destructor:;
   base:;
   elementIsMoved: isMoved;
   element:;
 
-  result: @base Owner;
+  result: @base @destructor OwnerWithDestructor;
   @element elementIsMoved moveIf @result.initDerived
 
   @result
