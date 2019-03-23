@@ -239,7 +239,10 @@ xmlInternal: {
         skipWhiteSpaces
         "<" skipString
       ] when
-    ] when
+    ] [
+      skipWhiteSpaces
+      "<" skipString
+    ] if
 
     [
       position.currentCodepoint ascii.exclamation = [
