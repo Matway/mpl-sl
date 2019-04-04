@@ -186,7 +186,7 @@ for: [
   @forInit ucall
   [
     @forCond ucall [
-      @forBody ucall
+      @forBody call
       @forIterate ucall
       TRUE
     ] [
