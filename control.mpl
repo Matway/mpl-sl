@@ -7,6 +7,11 @@ func: {
   }];
 };
 
+failProc: [
+  storageAddress printAddr
+  2 exit
+] func;
+
 Cond:   [v: FALSE  dynamic; @v] func;
 Int8:   [v: 0i8    dynamic; @v] func;
 Int16:  [v: 0i16   dynamic; @v] func;
@@ -66,11 +71,6 @@ times: [
       i timesCount <
     ] loop
   ] when
-] func;
-
-failProc: [
-  storageAddress printAddr
-  2 exit
 ] func;
 
 assert: [
