@@ -266,7 +266,7 @@ String: [{
   ] func;
 
   makeZ: [
-    0n8 @chars.pushBack #end zero
+    chars.getSize 0 > [0n8 @chars.pushBack] when #end zero
   ] func;
 
   catAsciiSymbolCodeNZ: [
