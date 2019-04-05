@@ -11,10 +11,20 @@ Natx storageSize 8nx = [
   acos: [Real32 same] [acosf] pfunc;
   acos: [Real64 same] [acosl] pfunc;
 
+  {arg: Real32;} Real32 {convention: cdecl;} "asinf" importFunction
+  {arg: Real64;} Real64 {convention: cdecl;} "asinl" importFunction
+  asin: [Real32 same] [asinf] pfunc;
+  asin: [Real64 same] [asinl] pfunc;
+
   {arg: Real32;} Real32 {convention: cdecl;} "tanf" importFunction
   {arg: Real64;} Real64 {convention: cdecl;} "tanl" importFunction
   tan: [Real32 same] [tanf] pfunc;
   tan: [Real64 same] [tanl] pfunc;
+
+  {arg: Real32;} Real32 {convention: cdecl;} "atanf" importFunction
+  {arg: Real64;} Real64 {convention: cdecl;} "atanl" importFunction
+  atan: [Real32 same] [atanf] pfunc;
+  atan: [Real64 same] [atanl] pfunc;
 
   {argy: Real32; argx: Real32;} Real32 {convention: cdecl;} "atan2f" importFunction
   {argy: Real64; argx: Real64;} Real64 {convention: cdecl;} "atan2l" importFunction
@@ -26,10 +36,20 @@ Natx storageSize 8nx = [
   acos: [Real32 same] [Real64 cast acosFunc Real32 cast] pfunc;
   acos: [Real64 same] [acosFunc] pfunc;
 
+  {arg: Real64;} Real64 {convention: cdecl;} "asin" importFunction
+  asinFunc: @asin;
+  asin: [Real32 same] [Real64 cast asinFunc Real32 cast] pfunc;
+  asin: [Real64 same] [asinFunc] pfunc;
+
   {arg: Real64;} Real64 {convention: cdecl;} "tan" importFunction
   tanFunc: @tan;
   tan: [Real32 same] [Real64 cast tanFunc Real32 cast] pfunc;
   tan: [Real64 same] [tanFunc] pfunc;
+
+  {arg: Real64;} Real64 {convention: cdecl;} "atan" importFunction
+  atanFunc: @atan;
+  atan: [Real32 same] [Real64 cast atanFunc Real32 cast] pfunc;
+  atan: [Real64 same] [atanFunc] pfunc;
 
   {argy: Real64; argx: Real64;} Real64 {convention: cdecl;} "atan2" importFunction
   atan2Func: @atan2;
