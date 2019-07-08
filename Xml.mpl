@@ -9,7 +9,7 @@ XMLParserResult: [{
   finished: TRUE dynamic;
   errorInfo: XMLParserErrorInfo;
   xml: XMLDocument;
-}] func;
+}];
 
 XMLParserPosition: [{
   column: Int32;
@@ -17,27 +17,27 @@ XMLParserPosition: [{
   offset: Int32;
   currentSymbol: StringView;
   currentCodepoint: Nat32;
-}] func;
+}];
 
 XMLParserErrorInfo: [{
   message: String;
   position: XMLParserPosition;
-}] func;
+}];
 
 XMLDocument: [{
   root: XMLElement;
-}] func;
+}];
 
-XMLVALUE_ELEMENT: [0] func;
+XMLVALUE_ELEMENT: [0];
 
-XMLVALUE_CHARDATA: [1] func;
+XMLVALUE_CHARDATA: [1];
 
-XMLValue: [(XMLElement String) Variant] func;
+XMLValue: [(XMLElement String) Variant];
 
 XMLAttribute: [{
   name: String;
   value: String;
-}] func;
+}];
 
 XMLElement: [
   result: {
@@ -46,7 +46,7 @@ XMLElement: [
 
     getChildren: [
       childrenStorage storageAddress XMLValue Array addressToReference
-    ] func;
+    ];
 
     childrenStorage: XMLValueHelper Array;
   };
@@ -54,9 +54,9 @@ XMLElement: [
   result storageSize XMLElementHelper storageSize = not [0 .STORAGE_SIZE_FAIL] when
   result alignment   XMLElementHelper alignment   = not [0 .ALIGNMENT_FAIL] when
   @result
-] func;
+];
 
-XMLValueHelper: [(XMLElementHelper String) Variant] func;
+XMLValueHelper: [(XMLElementHelper String) Variant];
 
 XMLElementHelper: [{
   ArrayHelper ".padding" def
@@ -66,13 +66,13 @@ XMLElementHelper: [{
   INIT:   [               @closure storageAddress XMLElementInit];
   ASSIGN: [storageAddress @closure storageAddress XMLElementSet];
   DIE:    [               @closure storageAddress XMLElementDestroy];
-}] func;
+}];
 
 ArrayHelper: [{
   dataBegin: Natx;
   dataSize: Int32;
   dataReserve: Int32;
-}] func;
+}];
 
 {dst: 0nx;          } () {convention: cdecl;} "XMLElementDestroy" importFunction
 {dst: 0nx; src: 0nx;} () {convention: cdecl;} "XMLElementSet"     importFunction
@@ -80,7 +80,7 @@ ArrayHelper: [{
 
 schema XMLElementRef: XMLElement;
 
-asXMLElement: [@XMLElementRef addressToReference] func;
+asXMLElement: [@XMLElementRef addressToReference];
 
 {dst: 0nx;          } () {convention: cdecl;} [
   asXMLElement manuallyInitVariable
@@ -117,7 +117,7 @@ parseStringToXML: [
   ] if
 
   @mainResult
-] func;
+];
 
 saveXMLToString: [
   xml:;
@@ -125,13 +125,13 @@ saveXMLToString: [
 
   @result 0 dynamic xml.root xmlInternal.printElementToString
   @result
-] func;
+];
 
 xmlInternal: {
   printElementToString: [
     recursive
     string:depth:xml:;;;
-    catPad: [depth 2 * [" " @string.cat] times] func;
+    catPad: [depth 2 * [" " @string.cat] times];
     catPad ("<" xml.name) @string.catMany
     xml.attributes [
       attrib: .value;
@@ -166,7 +166,7 @@ xmlInternal: {
 
       ("</" xml.name ">") @string.catMany
     ] if
-  ] func;
+  ];
 
   makeXMLParserPosition: [
     column: copy;
@@ -180,7 +180,7 @@ xmlInternal: {
     offset @position.@offset set
     currentSymbol move @position.@currentSymbol set
     currentCodepoint @position.@currentCodepoint set
-  ] func;
+  ];
 
   fillPositionChars: [
     pos:;
@@ -195,7 +195,7 @@ xmlInternal: {
       StringView @position.@currentSymbol set
       ascii.null @position.@currentCodepoint set
     ] if
-  ] func;
+  ];
 
   iterate: [
     mainResult.success [
@@ -209,7 +209,7 @@ xmlInternal: {
 
       chars @position fillPositionChars
     ] when
-  ] func;
+  ];
 
   lexicalError: [
     mainResult.success [
@@ -219,7 +219,7 @@ xmlInternal: {
     ] [
       m:;
     ] if
-  ] func;
+  ];
 
   parseDocument: [
     document: XMLDocument;
@@ -227,7 +227,7 @@ xmlInternal: {
     parseElementFromOpenTag @document.@root set
     parseDocumentEnd
     @document
-  ] func;
+  ];
 
   parseProlog: [
     elementFound: FALSE;
@@ -264,7 +264,7 @@ xmlInternal: {
 
       elementFound ~ mainResult.success and
     ] loop
-  ] func;
+  ];
 
   parseXMLDecl: [
     mainResult.success [
@@ -294,7 +294,7 @@ xmlInternal: {
       skipWhiteSpaces
       "?>" skipString
     ] when
-  ] func;
+  ];
 
   parseVersionDecl: [
     "version" skipString
@@ -312,7 +312,7 @@ xmlInternal: {
       ]
       ["expected \" or '" lexicalError]
     ) case
-  ] func;
+  ];
 
   parseVerisonNum: [
     validRanges: (
@@ -334,7 +334,7 @@ xmlInternal: {
       iterateChecked
       position.currentCodepoint @validRanges isInRanges mainResult.success and
     ] loop
-  ] func;
+  ];
 
   parseEncodingDecl: [
     "encoding" skipString
@@ -352,7 +352,7 @@ xmlInternal: {
       ]
       ["expected \" or '" lexicalError]
     ) case
-  ] func;
+  ];
 
   parseEncName: [
     validRangesFirst: (
@@ -378,7 +378,7 @@ xmlInternal: {
         [validRangesRemaining isInRanges]
       ) anyOf mainResult.success and
     ] loop
-  ] func;
+  ];
 
   parseSDDecl: [
     "standalone" skipString
@@ -403,7 +403,7 @@ xmlInternal: {
       ]
       ["expected \" or '" lexicalError]
     ) case
-  ] func;
+  ];
 
   parseElement: [
     result: XMLValue;
@@ -414,13 +414,13 @@ xmlInternal: {
     ] when
 
     @result
-  ] func;
+  ];
 
   parseEq: [
     skipWhiteSpaces
     "=" skipString
     skipWhiteSpaces
-  ] func;
+  ];
 
   parseDocumentEnd: [
     stringEndFound: FALSE;
@@ -447,7 +447,7 @@ xmlInternal: {
     stringEndFound ~ [
       "expected whitespace or comment or eof" lexicalError
     ] when
-  ] func;
+  ];
 
   parseElementFromOpenTag: [
     recursive
@@ -466,7 +466,7 @@ xmlInternal: {
     ] when
 
     @result
-  ] func;
+  ];
 
   parseElementContentAndClosingTag: [
     parentTag:;
@@ -524,7 +524,7 @@ xmlInternal: {
     ] when
 
     @result
-  ] func;
+  ];
 
   parseComment: [
     tagEnded: FALSE;
@@ -546,7 +546,7 @@ xmlInternal: {
 
       mainResult.success tagEnded ~ and
     ] loop
-  ] func;
+  ];
 
   parseCharData: [
     result: String;
@@ -602,14 +602,14 @@ xmlInternal: {
     ] when
 
     @result
-  ] func;
+  ];
 
   parseClosingTag: [
     parentName:;
     ("/" parentName) assembleString skipString
     skipWhiteSpaces
     ">" skipString
-  ] func;
+  ];
 
   parseName: [
     result: String;
@@ -636,7 +636,7 @@ xmlInternal: {
     ] when
 
     result
-  ] func;
+  ];
 
   parseAttributes: [
     result: XMLAttribute Array;
@@ -664,7 +664,7 @@ xmlInternal: {
     ] when
 
     @result
-  ] func;
+  ];
 
   parseAttribute: [
     result: XMLAttribute;
@@ -676,7 +676,7 @@ xmlInternal: {
     ] when
 
     @result
-  ] func;
+  ];
 
   parseAttValue: [
     result: String;
@@ -716,7 +716,7 @@ xmlInternal: {
     ] when
 
     @result
-  ] func;
+  ];
 
   skipString: [
     string:;
@@ -736,7 +736,7 @@ xmlInternal: {
         i stringChars.getSize < mainResult.success and
       ] loop
     ] when
-  ] func;
+  ];
 
   iterateChecked: [
     position.currentCodepoint ascii.null = [
@@ -748,13 +748,13 @@ xmlInternal: {
     [position.currentCodepoint isChar ~] && [
       "invalid character" lexicalError
     ] when
-  ] func;
+  ];
 
   skipWhiteSpaces: [
     [position.currentCodepoint isWhiteSpace mainResult.success and] [
       iterateChecked
     ] while
-  ] func;
+  ];
 
   skipWhiteSpacesRequired: [
     position.currentCodepoint isWhiteSpace ~ [
@@ -764,9 +764,9 @@ xmlInternal: {
     [position.currentCodepoint isWhiteSpace mainResult.success and] [
       iterateChecked
     ] while
-  ] func;
+  ];
 
-  isChar: [CharRanges isInRanges] func;
+  isChar: [CharRanges isInRanges];
 
   isNameChar: [
     (
@@ -779,24 +779,24 @@ xmlInternal: {
       @isCombiningChar
       @isExtender
     ) anyOf
-  ] func;
+  ];
 
   isLetter: [
     (
       @isBaseChar
       @isIdeographic
     ) anyOf
-  ] func;
+  ];
 
-  isCombiningChar: [CombiningCharRanges isInRanges] func;
+  isCombiningChar: [CombiningCharRanges isInRanges];
 
-  isBaseChar: [BaseCharRanges isInRanges] func;
+  isBaseChar: [BaseCharRanges isInRanges];
 
-  isDigit: [DigitRanges isInRanges] func;
+  isDigit: [DigitRanges isInRanges];
 
-  isExtender: [ExtenderRanges isInRanges] func;
+  isExtender: [ExtenderRanges isInRanges];
 
-  isIdeographic: [IdeographicRanges isInRanges] func;
+  isIdeographic: [IdeographicRanges isInRanges];
 
   isWhiteSpace: [
     (
@@ -805,7 +805,7 @@ xmlInternal: {
       [ascii.cr    =]
       [ascii.space =]
     ) anyOf
-  ] func;
+  ];
 
   isInRanges: [
     ranges:;
@@ -822,7 +822,7 @@ xmlInternal: {
     ] times
 
     result
-  ] func;
+  ];
 
   anyOf: [
     x:predicates:;;
@@ -832,7 +832,7 @@ xmlInternal: {
     ] times
 
     @result
-  ] func;
+  ];
 
   CharRanges: ((0x9n32 0x9n32) (0xAn32 0xAn32) (0xDn32 0xDn32) (0x20n32 0xD7FFn32) (0xE000n32 0xFFFDn32) (0x10000n32 0x10FFFFn32));
   BaseCharRanges: ((0x0041n32 0x005An32) (0x0061n32 0x007An32) (0x00C0n32 0x00D6n32) (0x00D8n32 0x00F6n32) (0x00F8n32 0x00FFn32) (0x0100n32 0x0131n32) (0x0134n32 0x013En32) (0x0141n32 0x0148n32) (0x014An32 0x017En32) (0x0180n32 0x01C3n32) (0x01CDn32 0x01F0n32) (0x01F4n32 0x01F5n32) (0x01FAn32 0x0217n32) (0x0250n32 0x02A8n32) (0x02BBn32 0x02C1n32) (0x0386n32 0x0386n32) (0x0388n32 0x038An32) (0x038Cn32 0x038Cn32) (0x038En32 0x03A1n32) (0x03A3n32 0x03CEn32) (0x03D0n32 0x03D6n32) (0x03DAn32 0x03DAn32) (0x03DCn32 0x03DCn32) (0x03DEn32 0x03DEn32) (0x03E0n32 0x03E0n32) (0x03E2n32 0x03F3n32) (0x0401n32 0x040Cn32) (0x040En32 0x044Fn32) (0x0451n32 0x045Cn32) (0x045En32 0x0481n32) (0x0490n32 0x04C4n32) (0x04C7n32 0x04C8n32) (0x04CBn32 0x04CCn32) (0x04D0n32 0x04EBn32) (0x04EEn32 0x04F5n32) (0x04F8n32 0x04F9n32) (0x0531n32 0x0556n32) (0x0559n32 0x0559n32) (0x0561n32 0x0586n32) (0x05D0n32 0x05EAn32) (0x05F0n32 0x05F2n32) (0x0621n32 0x063An32) (0x0641n32 0x064An32) (0x0671n32 0x06B7n32) (0x06BAn32 0x06BEn32) (0x06C0n32 0x06CEn32) (0x06D0n32 0x06D3n32) (0x06D5n32 0x06D5n32) (0x06E5n32 0x06E6n32) (0x0905n32 0x0939n32) (0x093Dn32 0x093Dn32) (0x0958n32 0x0961n32) (0x0985n32 0x098Cn32) (0x098Fn32 0x0990n32) (0x0993n32 0x09A8n32) (0x09AAn32 0x09B0n32) (0x09B2n32 0x09B2n32) (0x09B6n32 0x09B9n32) (0x09DCn32 0x09DDn32) (0x09DFn32 0x09E1n32) (0x09F0n32 0x09F1n32) (0x0A05n32 0x0A0An32) (0x0A0Fn32 0x0A10n32) (0x0A13n32 0x0A28n32) (0x0A2An32 0x0A30n32) (0x0A32n32 0x0A33n32) (0x0A35n32 0x0A36n32) (0x0A38n32 0x0A39n32) (0x0A59n32 0x0A5Cn32) (0x0A5En32 0x0A5En32) (0x0A72n32 0x0A74n32) (0x0A85n32 0x0A8Bn32) (0x0A8Dn32 0x0A8Dn32) (0x0A8Fn32 0x0A91n32) (0x0A93n32 0x0AA8n32) (0x0AAAn32 0x0AB0n32) (0x0AB2n32 0x0AB3n32) (0x0AB5n32 0x0AB9n32) (0x0ABDn32 0x0ABDn32) (0x0AE0n32 0x0AE0n32) (0x0B05n32 0x0B0Cn32) (0x0B0Fn32 0x0B10n32) (0x0B13n32 0x0B28n32) (0x0B2An32 0x0B30n32) (0x0B32n32 0x0B33n32) (0x0B36n32 0x0B39n32) (0x0B3Dn32 0x0B3Dn32) (0x0B5Cn32 0x0B5Dn32) (0x0B5Fn32 0x0B61n32) (0x0B85n32 0x0B8An32) (0x0B8En32 0x0B90n32) (0x0B92n32 0x0B95n32) (0x0B99n32 0x0B9An32) (0x0B9Cn32 0x0B9Cn32) (0x0B9En32 0x0B9Fn32) (0x0BA3n32 0x0BA4n32) (0x0BA8n32 0x0BAAn32) (0x0BAEn32 0x0BB5n32) (0x0BB7n32 0x0BB9n32) (0x0C05n32 0x0C0Cn32) (0x0C0En32 0x0C10n32) (0x0C12n32 0x0C28n32) (0x0C2An32 0x0C33n32) (0x0C35n32 0x0C39n32) (0x0C60n32 0x0C61n32) (0x0C85n32 0x0C8Cn32) (0x0C8En32 0x0C90n32) (0x0C92n32 0x0CA8n32) (0x0CAAn32 0x0CB3n32) (0x0CB5n32 0x0CB9n32) (0x0CDEn32 0x0CDEn32) (0x0CE0n32 0x0CE1n32) (0x0D05n32 0x0D0Cn32) (0x0D0En32 0x0D10n32) (0x0D12n32 0x0D28n32) (0x0D2An32 0x0D39n32) (0x0D60n32 0x0D61n32) (0x0E01n32 0x0E2En32) (0x0E30n32 0x0E30n32) (0x0E32n32 0x0E33n32) (0x0E40n32 0x0E45n32) (0x0E81n32 0x0E82n32) (0x0E84n32 0x0E84n32) (0x0E87n32 0x0E88n32) (0x0E8An32 0x0E8An32) (0x0E8Dn32 0x0E8Dn32) (0x0E94n32 0x0E97n32) (0x0E99n32 0x0E9Fn32) (0x0EA1n32 0x0EA3n32) (0x0EA5n32 0x0EA5n32) (0x0EA7n32 0x0EA7n32) (0x0EAAn32 0x0EABn32) (0x0EADn32 0x0EAEn32) (0x0EB0n32 0x0EB0n32) (0x0EB2n32 0x0EB3n32) (0x0EBDn32 0x0EBDn32) (0x0EC0n32 0x0EC4n32) (0x0F40n32 0x0F47n32) (0x0F49n32 0x0F69n32) (0x10A0n32 0x10C5n32) (0x10D0n32 0x10F6n32) (0x1100n32 0x1100n32) (0x1102n32 0x1103n32) (0x1105n32 0x1107n32) (0x1109n32 0x1109n32) (0x110Bn32 0x110Cn32) (0x110En32 0x1112n32) (0x113Cn32 0x113Cn32) (0x113En32 0x113En32) (0x1140n32 0x1140n32) (0x114Cn32 0x114Cn32) (0x114En32 0x114En32) (0x1150n32 0x1150n32) (0x1154n32 0x1155n32) (0x1159n32 0x1159n32) (0x115Fn32 0x1161n32) (0x1163n32 0x1163n32) (0x1165n32 0x1165n32) (0x1167n32 0x1167n32) (0x1169n32 0x1169n32) (0x116Dn32 0x116En32) (0x1172n32 0x1173n32) (0x1175n32 0x1175n32) (0x119En32 0x119En32) (0x11A8n32 0x11A8n32) (0x11ABn32 0x11ABn32) (0x11AEn32 0x11AFn32) (0x11B7n32 0x11B8n32) (0x11BAn32 0x11BAn32) (0x11BCn32 0x11C2n32) (0x11EBn32 0x11EBn32) (0x11F0n32 0x11F0n32) (0x11F9n32 0x11F9n32) (0x1E00n32 0x1E9Bn32) (0x1EA0n32 0x1EF9n32) (0x1F00n32 0x1F15n32) (0x1F18n32 0x1F1Dn32) (0x1F20n32 0x1F45n32) (0x1F48n32 0x1F4Dn32) (0x1F50n32 0x1F57n32) (0x1F59n32 0x1F59n32) (0x1F5Bn32 0x1F5Bn32) (0x1F5Dn32 0x1F5Dn32) (0x1F5Fn32 0x1F7Dn32) (0x1F80n32 0x1FB4n32) (0x1FB6n32 0x1FBCn32) (0x1FBEn32 0x1FBEn32) (0x1FC2n32 0x1FC4n32) (0x1FC6n32 0x1FCCn32) (0x1FD0n32 0x1FD3n32) (0x1FD6n32 0x1FDBn32) (0x1FE0n32 0x1FECn32) (0x1FF2n32 0x1FF4n32) (0x1FF6n32 0x1FFCn32) (0x2126n32 0x2126n32) (0x212An32 0x212Bn32) (0x212En32 0x212En32) (0x2180n32 0x2182n32) (0x3041n32 0x3094n32) (0x30A1n32 0x30FAn32) (0x3105n32 0x312Cn32) (0xAC00n32 0xD7A3n32));

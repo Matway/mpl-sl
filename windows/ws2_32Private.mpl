@@ -6,15 +6,15 @@ WSAOVERLAPPED_COMPLETION_ROUTINERef: [{
   cbTransferred: Nat32;
   lpOverlapped: kernel32.OVERLAPPED Ref;
   dwFlags: Nat32;
-} {} {convention: stdcall;} codeRef] func;
+} {} {convention: stdcall;} codeRef];
 
 WSABUF: [{
   len: Nat32;
   buf: Natx;
-}] func;
+}];
 
-WSADESCRIPTION_LEN: [256] func;
-WSASYS_STATUS_LEN: [128] func;
+WSADESCRIPTION_LEN: [256];
+WSASYS_STATUS_LEN: [128];
 
 WSADATA: [{
   wVersion: Nat16;
@@ -32,7 +32,7 @@ WSADATA: [{
     iMaxUdpDg: Nat16;
     lpVendorInfo: Nat8 Ref;
   ] uif
-}] func;
+}];
 
 addrinfo: [{
   ai_flags: Int32;
@@ -43,22 +43,22 @@ addrinfo: [{
   ai_canonname: Natx;
   ai_addr: Natx;
   ai_next: Natx;
-}] func;
+}];
 
 fd_set: [{
   fd_count: Nat32;
   fd_array: Natx 64 array;
-}] func;
+}];
 
 sockaddr: [{
   sa_family: Nat16;
   sa_data: Nat8 14 array;
-}] func;
+}];
 
 timeval: [{
   tv_sec: Int32;
   tv_usec: Int32;
-}] func;
+}];
 
 {
 } Int32 {convention: stdcall;} "WSACleanup" importFunction

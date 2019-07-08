@@ -13,18 +13,18 @@ pose: [
     position: position0 copy;
     orientation: orientation0 copy;
 
-    getMatrix: [orientation matrix] func;
-    translate: [position + !position] func;
+    getMatrix: [orientation matrix];
+    translate: [position + !position];
   }
-] func;
+];
 
 Pose: [
   Real32 3 Vector Real32 Quaternion pose
-] func;
+];
 
 identityPose: [
   (0.0r32 0.0r32 0.0r32) Real32 identityQuaternion pose
-] func;
+];
 
 *: [
   p0:p1:;;

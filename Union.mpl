@@ -42,7 +42,7 @@ Union: [{
       ] if
     ] loop
     result
-  ] call;
+  ];
 
   memory: [
     maxAlignment 1 static = [0n8 dynamic] [
@@ -61,5 +61,5 @@ Union: [{
   get: [
     index: copy;
     @memory storageAddress index @typeList @ addressToReference
-  ] func;
-}] func;
+  ];
+}];

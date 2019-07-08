@@ -13,7 +13,7 @@ lockGuard: [
   @guard.@object.lock
 
   guard
-] func;
+];
 
 unlockGuard: [
   guard: {
@@ -27,4 +27,4 @@ unlockGuard: [
   @guard.@object.unlock
 
   guard
-] func;
+];

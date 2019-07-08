@@ -17,11 +17,11 @@ AVLMap: [
       balance: 0 dynamic;
       left: 0nx dynamic;
       right: 0nx dynamic;
-    }] func;
+    }];
 
     schema nodeType: key newVarOfTheSameType value newVarOfTheSameType makeNode;
 
-    asNode: [@nodeType addressToReference] func;
+    asNode: [@nodeType addressToReference];
 
     root: 0nx dynamic;
 
@@ -54,7 +54,7 @@ AVLMap: [
 
         result
       ] call
-    ] func;
+    ];
 
     fixRotateLeft: [
       addr:;
@@ -86,7 +86,7 @@ AVLMap: [
         addr @r.@left set
         tmp @addr set
       ] if
-    ] func;
+    ];
 
     fixRotateRight: [
       addr:;
@@ -118,7 +118,7 @@ AVLMap: [
         addr @l.@right set
         tmp @addr set
       ] if
-    ] func;
+    ];
 
     swapNodes: [
       addr2:;
@@ -126,7 +126,7 @@ AVLMap: [
       addr1 addr2 = not [
         node1: addr1 asNode;
         node2: addr2 asNode;
-        iswap: [i1:; i2:; tmp: i1 copy; i2 @i1 set tmp @i2 set] func;
+        iswap: [i1:; i2:; tmp: i1 copy; i2 @i1 set tmp @i2 set];
         @node1.@balance @node2.@balance iswap
 
         node1.left addr2 = [
@@ -154,7 +154,7 @@ AVLMap: [
       ] [
         @addr1
       ] if
-    ] func;
+    ];
 
     insert: [
       valueIsMoved: isMoved;
@@ -216,7 +216,7 @@ AVLMap: [
           ] if
         ] when
       ] call
-    ] func;
+    ];
 
     erase: [
       key:;
@@ -304,7 +304,7 @@ AVLMap: [
         droppedRef mplFree
         droppedChild @droppedRef set
       ] call
-    ] func;
+    ];
 
     debugPrint: [
       "Debug print" print LF print
@@ -321,10 +321,10 @@ AVLMap: [
           ("(" node.balance ") " node.key ": " node.value LF) printList
           node.right depth 1 + debugPrintImpl
         ] when
-      ] func;
+      ];
 
       root 0 dynamic debugPrintImpl
-    ] func;
+    ];
 
     clear: [
       clearImpl: [
@@ -337,11 +337,11 @@ AVLMap: [
           node.right clearImpl
           nodeAddr mplFree
         ] when
-      ] func;
+      ];
 
       root clearImpl
       0nx dynamic @root set
-    ] func;
+    ];
 
     INIT: [0nx dynamic @root set];
 
@@ -368,7 +368,7 @@ AVLMap: [
           node.balance         @resultNode.@balance set
           result
         ] if
-      ] func;
+      ];
 
       other.root cloneImpl @root set
     ];
@@ -376,7 +376,7 @@ AVLMap: [
     DIE: [
       clear
     ];
-  }] func;
+  }];
 
 each: [b:; "AVL_MAP" has] [
   eachInTreeBody:;
@@ -391,7 +391,7 @@ each: [b:; "AVL_MAP" has] [
       {key: eachNode.key; value: @eachNode.@value;} @eachInTreeBody call
       eachNode.right eachImpl
     ] when
-  ] func;
+  ];
 
   eachInTreeTree.root eachImpl
 ] pfunc;

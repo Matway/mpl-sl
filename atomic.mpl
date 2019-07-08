@@ -4,7 +4,7 @@
 refCast: [
   ref: schema:;;
   ref storageAddress @ref isConst [schema] [@schema] uif addressToReference
-] func;
+];
 
 ACQUIRE: {MEMORY_ORDER: {}; virtual ORDER: "acquire";};
 RELEASE: {MEMORY_ORDER: {}; virtual ORDER: "release";};
@@ -46,7 +46,7 @@ RELEASE: {MEMORY_ORDER: {}; virtual ORDER: "release";};
 {ref: Nat32 Ref; value: Nat32;} Nat32 {convention: cdecl;} "atomicXorN32Release" importFunction
 {ref: Nat64 Ref; value: Nat64;} Nat64 {convention: cdecl;} "atomicXorN64Release" importFunction
 
-atomicExchange: [0 .Invalid_parameters] func;
+atomicExchange: [0 .Invalid_parameters];
 atomicExchange: [value: ref: order:;;; value Int8  same ref Int8  same and order ACQUIRE same and] [drop value: ref:;; value Nat8  cast @ref Nat8  refCast atomicExchangeN8Acquire ] pfunc;
 atomicExchange: [value: ref: order:;;; value Int16 same ref Int16 same and order ACQUIRE same and] [drop value: ref:;; value Nat16 cast @ref Nat16 refCast atomicExchangeN16Acquire] pfunc;
 atomicExchange: [value: ref: order:;;; value Int32 same ref Int32 same and order ACQUIRE same and] [drop value: ref:;; value Nat32 cast @ref Nat32 refCast atomicExchangeN32Acquire] pfunc;
@@ -64,7 +64,7 @@ atomicExchange: [value: ref: order:;;; value Nat16 same ref Nat16 same and order
 atomicExchange: [value: ref: order:;;; value Nat32 same ref Nat32 same and order RELEASE same and] [drop atomicExchangeN32Release] pfunc;
 atomicExchange: [value: ref: order:;;; value Nat64 same ref Nat64 same and order RELEASE same and] [drop atomicExchangeN64Release] pfunc;
 
-atomicLoad: [0 .Invalid_parameters] func;
+atomicLoad: [0 .Invalid_parameters];
 atomicLoad: [ref: order:;; ref Int8  same order ACQUIRE same and] [drop Nat8  refCast atomicLoadN8Acquire ] pfunc;
 atomicLoad: [ref: order:;; ref Int16 same order ACQUIRE same and] [drop Nat16 refCast atomicLoadN16Acquire] pfunc;
 atomicLoad: [ref: order:;; ref Int32 same order ACQUIRE same and] [drop Nat32 refCast atomicLoadN32Acquire] pfunc;
@@ -74,7 +74,7 @@ atomicLoad: [ref: order:;; ref Nat16 same order ACQUIRE same and] [drop atomicLo
 atomicLoad: [ref: order:;; ref Nat32 same order ACQUIRE same and] [drop atomicLoadN32Acquire] pfunc;
 atomicLoad: [ref: order:;; ref Nat64 same order ACQUIRE same and] [drop atomicLoadN64Acquire] pfunc;
 
-atomicOr: [0 .Invalid_parameters] func;
+atomicOr: [0 .Invalid_parameters];
 atomicOr: [value: ref: order:;;; value Int8  same ref Int8  same and order ACQUIRE same and] [drop value: ref:;; value Nat8  cast @ref Nat8  refCast atomicOrN8Acquire ] pfunc;
 atomicOr: [value: ref: order:;;; value Int16 same ref Int16 same and order ACQUIRE same and] [drop value: ref:;; value Nat16 cast @ref Nat16 refCast atomicOrN16Acquire] pfunc;
 atomicOr: [value: ref: order:;;; value Int32 same ref Int32 same and order ACQUIRE same and] [drop value: ref:;; value Nat32 cast @ref Nat32 refCast atomicOrN32Acquire] pfunc;
@@ -92,7 +92,7 @@ atomicOr: [value: ref: order:;;; value Nat16 same ref Nat16 same and order RELEA
 atomicOr: [value: ref: order:;;; value Nat32 same ref Nat32 same and order RELEASE same and] [drop atomicOrN32Release] pfunc;
 atomicOr: [value: ref: order:;;; value Nat64 same ref Nat64 same and order RELEASE same and] [drop atomicOrN64Release] pfunc;
 
-atomicStore: [0 .Invalid_parameters] func;
+atomicStore: [0 .Invalid_parameters];
 atomicStore: [value: ref: order:;;; value Int8  same ref Int8  same and order RELEASE same and] [drop value: ref:;; value Nat8  cast @ref Nat8  refCast atomicStoreN8Release ] pfunc;
 atomicStore: [value: ref: order:;;; value Int16 same ref Int16 same and order RELEASE same and] [drop value: ref:;; value Nat16 cast @ref Nat16 refCast atomicStoreN16Release] pfunc;
 atomicStore: [value: ref: order:;;; value Int32 same ref Int32 same and order RELEASE same and] [drop value: ref:;; value Nat32 cast @ref Nat32 refCast atomicStoreN32Release] pfunc;
@@ -102,7 +102,7 @@ atomicStore: [value: ref: order:;;; value Nat16 same ref Nat16 same and order RE
 atomicStore: [value: ref: order:;;; value Nat32 same ref Nat32 same and order RELEASE same and] [drop atomicStoreN32Release] pfunc;
 atomicStore: [value: ref: order:;;; value Nat64 same ref Nat64 same and order RELEASE same and] [drop atomicStoreN64Release] pfunc;
 
-atomicXor: [0 .Invalid_parameters] func;
+atomicXor: [0 .Invalid_parameters];
 atomicXor: [value: ref: order:;;; value Int8  same ref Int8  same and order ACQUIRE same and] [drop value: ref:;; value Nat8  cast @ref Nat8  refCast atomicXorN8Acquire ] pfunc;
 atomicXor: [value: ref: order:;;; value Int16 same ref Int16 same and order ACQUIRE same and] [drop value: ref:;; value Nat16 cast @ref Nat16 refCast atomicXorN16Acquire] pfunc;
 atomicXor: [value: ref: order:;;; value Int32 same ref Int32 same and order ACQUIRE same and] [drop value: ref:;; value Nat32 cast @ref Nat32 refCast atomicXorN32Acquire] pfunc;

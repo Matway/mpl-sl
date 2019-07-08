@@ -4,13 +4,13 @@
 "String"    includeModule
 "Variant"   includeModule
 
-JSONNull:   [0 static] func;
-JSONInt:    [1 static] func;
-JSONReal:   [2 static] func;
-JSONCond:   [3 static] func;
-JSONString: [4 static] func;
-JSONArray:  [5 static] func;
-JSONObject: [6 static] func;
+JSONNull:   [0 static];
+JSONInt:    [1 static];
+JSONReal:   [2 static];
+JSONCond:   [3 static];
+JSONString: [4 static];
+JSONArray:  [5 static];
+JSONObject: [6 static];
 
 JSON: [{
   mem0: 0n64 dynamic;
@@ -20,31 +20,31 @@ JSON: [{
 
   impl: [
     @self storageAddress addrAsJSONImpl
-  ] func;
+  ];
 
-  getTag:    [impl.@data.getTag] func;
-  setTag:    [impl.@data.setTag] func;
+  getTag:    [impl.@data.getTag];
+  setTag:    [impl.@data.setTag];
 
-  getInt:    [JSONInt    impl.@data.get] func;
-  getReal:   [JSONReal   impl.@data.get] func;
-  getCond:   [JSONCond   impl.@data.get] func;
-  getString: [JSONString impl.@data.get] func;
-  getArray:  [JSONArray  impl.@data.get] func;
-  getObject: [JSONObject impl.@data.get] func;
+  getInt:    [JSONInt    impl.@data.get];
+  getReal:   [JSONReal   impl.@data.get];
+  getCond:   [JSONCond   impl.@data.get];
+  getString: [JSONString impl.@data.get];
+  getArray:  [JSONArray  impl.@data.get];
+  getObject: [JSONObject impl.@data.get];
 
   INIT:   [               @closure storageAddress JSONInit];
   ASSIGN: [storageAddress @closure storageAddress JSONSet];
   DIE:    [               @closure storageAddress JSONDestroy];
-}] func;
+}];
 
-addrAsJSONImpl: [@JSONImplRef addressToReference] func;
+addrAsJSONImpl: [@JSONImplRef addressToReference];
 
 {dst: 0nx;          } () {convention: cdecl;} "JSONDestroy" importFunction
 {dst: 0nx; src: 0nx;} () {convention: cdecl;} "JSONSet"     importFunction
 {dst: 0nx;          } () {convention: cdecl;} "JSONInit"    importFunction
 
-JSONImplArray: [JSON Array] func;
-JSONImplObject: [String JSON HashTable] func;
+JSONImplArray: [JSON Array];
+JSONImplObject: [String JSON HashTable];
 
 JSONImpl: [
   {
@@ -62,7 +62,7 @@ JSONImpl: [
   result storageSize JSON storageSize = not [0 .STORAGE_SIZE_FAIL] when
   result alignment   JSON alignment   = not [0 .ALIGNMENT_FAIL] when
   @result
-] func;
+];
 
 schema JSONImplRef: JSONImpl;
 
@@ -85,42 +85,42 @@ intAsJSON: [
   JSONInt @result.setTag
   @result.getInt set
   @result
-] func;
+];
 
 realAsJSON: [
   result: JSON;
   JSONReal @result.setTag
   @result.getReal set
   @result
-] func;
+];
 
 condAsJSON: [
   result: JSON;
   JSONCond @result.setTag
   @result.getCond set
   @result
-] func;
+];
 
 stringAsJSON: [
   result: JSON;
   JSONString @result.setTag
   @result.getString set
   @result
-] func;
+];
 
 arrayAsJSON: [
   result: JSON;
   JSONArray @result.setTag
   @result.getArray set
   @result
-] func;
+];
 
 objectAsJSON: [
   result: JSON;
   JSONObject @result.setTag
   @result.getObject set
   @result
-] func;
+];
 
 makeJSONParserPosition: [{
   column: copy;
@@ -128,21 +128,21 @@ makeJSONParserPosition: [{
   offset: copy;
   currentSymbol: copy;
   currentCode: copy;
-}] func;
+}];
 
-JSONParserPosition: [0n32 dynamic StringView 0 dynamic 1 dynamic 1 dynamic makeJSONParserPosition] func;
+JSONParserPosition: [0n32 dynamic StringView 0 dynamic 1 dynamic 1 dynamic makeJSONParserPosition];
 
 JSONParserErrorInfo: [{
   message: String;
   position: JSONParserPosition;
-}] func;
+}];
 
 JSONParserResult: [{
   success: TRUE dynamic;
   finished: TRUE dynamic;
   errorInfo: JSONParserErrorInfo;
   json: JSON;
-}] func;
+}];
 
 jsonInternalFillPositionChars: [
   pos:;
@@ -155,7 +155,7 @@ jsonInternalFillPositionChars: [
     StringView @pos.@currentSymbol set
     ascii.null @pos.@currentCode set
   ] if
-] func;
+];
 
 parseStringToJSON: [
   mainResult: JSONParserResult;
@@ -179,7 +179,7 @@ parseStringToJSON: [
   ] if
 
   @mainResult
-] func;
+];
 
 parseJSONNodeImpl: [
   pos:;
@@ -199,7 +199,7 @@ parseJSONNodeImpl: [
 
       chars @pos jsonInternalFillPositionChars
     ] when
-  ] func;
+  ];
 
   iterateToNextChar: [
     mainResult.success [
@@ -208,7 +208,7 @@ parseJSONNodeImpl: [
         pos.currentCode ascii.null = not [pos.currentCode ascii.space > not] &&
       ] loop
     ] when
-  ] func;
+  ];
 
   iterateToNextCharAfterIterate: [
     mainResult.success [
@@ -216,7 +216,7 @@ parseJSONNodeImpl: [
         pos.currentCode ascii.null = not [pos.currentCode ascii.space > not] && [iterate TRUE] &&
       ] loop
     ] when
-  ] func;
+  ];
 
   lexicalError: [
     mainResult.success [
@@ -226,10 +226,10 @@ parseJSONNodeImpl: [
     ] [
       m:;
     ] if
-  ] func;
+  ];
 
 
-  isDigit: [copy code:; code ascii.zero < not code ascii.zero 10n32 + < and] func;
+  isDigit: [copy code:; code ascii.zero < not code ascii.zero 10n32 + < and];
 
   parseString: [
     pos.currentCode ascii.quote = [
@@ -307,11 +307,11 @@ parseJSONNodeImpl: [
       "quote expected" lexicalError
       String
     ] if
-  ] func;
+  ];
 
   parseStringJSON: [
     parseString stringAsJSON
-  ] func;
+  ];
 
   parseNumberJSON: [
     n0: {vi:0i64 dynamic; vf: 0.0r64 dynamic; c:0 dynamic; m:FALSE dynamic;};
@@ -373,7 +373,7 @@ parseJSONNodeImpl: [
     ] if
 
     iterateToNextCharAfterIterate
-  ] func;
+  ];
 
   parseCondJSON: [
     pos.currentCode ascii.tCode = [
@@ -399,7 +399,7 @@ parseJSONNodeImpl: [
       iterateToNextChar
       FALSE condAsJSON
     ] if
-  ] func;
+  ];
 
   parseNull: [
     pos.currentCode ascii.nCode = not ["failed to read \"null\"" lexicalError] when
@@ -411,7 +411,7 @@ parseJSONNodeImpl: [
     pos.currentCode ascii.lCode = not ["failed to read \"null\"" lexicalError] when
     iterateToNextChar
     JSON
-  ] func;
+  ];
 
   parseObjectJSON: [
     result: String JSON HashTable;
@@ -451,7 +451,7 @@ parseJSONNodeImpl: [
     ] loop
     iterateToNextChar
     @result move objectAsJSON
-  ] func;
+  ];
 
   parseArrayJSON: [
     result: JSON Array;
@@ -480,7 +480,7 @@ parseJSONNodeImpl: [
     ] loop
     iterateToNextChar
     @result move arrayAsJSON
-  ] func;
+  ];
 
   iterateToNextCharAfterIterate
 
@@ -512,7 +512,7 @@ parseJSONNodeImpl: [
   ] if
 
   @result set
-] func;
+];
 
 {
   position: JSONParserPosition Ref;
@@ -546,7 +546,7 @@ saveJSONToString: [
   @result 0 @json catJSONNodeWithPadding
 
   @result
-] func;
+];
 
 catJSONNodeWithPaddingImpl: [
   json:;
@@ -557,7 +557,7 @@ catJSONNodeWithPaddingImpl: [
     copy nested:;
     LF @result.cat
     nested [padding 2 +] [padding copy] if [" " @result.cat] times
-  ] func;
+  ];
 
   catString: [
     splitted: makeStringView.split;
@@ -616,7 +616,7 @@ catJSONNodeWithPaddingImpl: [
       ] if
     ] each
     "\"" @result.cat
-  ] func;
+  ];
 
   catArrayJSON: [
     "[" @result.cat
@@ -632,7 +632,7 @@ catJSONNodeWithPaddingImpl: [
     ] each
     FALSE catPad
     "]" @result.cat
-  ] func;
+  ];
 
   catObjectJSON: [
     "{" @result.cat
@@ -648,11 +648,11 @@ catJSONNodeWithPaddingImpl: [
     ] each
     FALSE catPad
     "}" @result.cat
-  ] func;
+  ];
 
   catStringJSON: [
     json.getString catString
-  ] func;
+  ];
 
   json.getTag JSONNull = [
     "null" @result.cat
@@ -683,7 +683,7 @@ catJSONNodeWithPaddingImpl: [
       ] if
     ] if
   ] if
-] func;
+];
 
 {
   json: JSON Cref;

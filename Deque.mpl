@@ -10,21 +10,21 @@ Deque: [{
   head: @elementType Array;
   tail: @elementType Array;
 
-  getSize: [head.getSize tail.getSize +] func;
+  getSize: [head.getSize tail.getSize +];
 
-  pushBack: [@tail.pushBack] func;
+  pushBack: [@tail.pushBack];
 
-  pushFront: [@head.pushBack] func;
+  pushFront: [@head.pushBack];
 
   popBack: [
     tail fieldCount 0 = [@head @tail swapBuffers] when
     @tail.popBack
-  ] func;
+  ];
 
   popFront: [
     head fieldCount 0 = [@tail @head swapBuffers] when
     @head.popBack
-  ] func;
+  ];
 
   back: [
     tail fieldCount 0 = [
@@ -32,7 +32,7 @@ Deque: [{
     ] [
       @tail.last
     ] if
-  ] func;
+  ];
 
   front: [
     head fieldCount 0 = [
@@ -40,7 +40,7 @@ Deque: [{
     ] [
       @head.last
     ] if
-  ] func;
+  ];
 
   at: [
     copy index:;
@@ -49,7 +49,7 @@ Deque: [{
     ] [
       index head.getSize - @tail.at
     ] if
-  ] func;
+  ];
 
   swapBuffers: [
     from:to:;;
@@ -70,18 +70,18 @@ Deque: [{
     ] times
 
     from.getSize swapCount - @from.shrink
-  ] func;
+  ];
 
   clear: [
     @head.clear
     @tail.clear
-  ] func;
+  ];
 
   release: [
     @head.release
     @tail.release
-  ] func;
-}] func;
+  ];
+}];
 
 @: ["DEQUE" has] [.at] pfunc;
 !: ["DEQUE" has] [.at set] pfunc;

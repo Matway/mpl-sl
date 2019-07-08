@@ -14,12 +14,12 @@ HashTable: [
       key: key newVarOfTheSameType;
       keyHash: 0n32 dynamic;
       value: value newVarOfTheSameType;
-    }] func;
+    }];
 
     data: Node Array Array;
     dataSize: 0 dynamic;
 
-    getSize: [dataSize copy] func;
+    getSize: [dataSize copy];
 
     rebuild: [
       copy newBucketSize:;
@@ -52,7 +52,7 @@ HashTable: [
 
         b 1 + @b set
       ] while
-    ] func;
+    ];
 
     find: [
       key:;
@@ -86,7 +86,7 @@ HashTable: [
 
         @result
       ] call
-    ] func;
+    ];
 
     insertUnsafe: [ # make find before please
       valueIsMoved: isMoved;
@@ -114,7 +114,7 @@ HashTable: [
 
         dataSize 1 + @dataSize set
       ] call
-    ] func;
+    ];
 
     insert: [
       DEBUG [
@@ -128,17 +128,17 @@ HashTable: [
       ] [
         insertUnsafe
       ] if
-    ] func;
+    ];
 
     clear: [
       @data.clear
       0 dynamic @dataSize set
-    ] func;
+    ];
 
     release: [
       @data.release
       0 dynamic @dataSize set
-    ] func;
+    ];
 
     INIT: [
       0 dynamic @dataSize set
@@ -153,7 +153,7 @@ HashTable: [
     DIE: [
       #default
     ];
-  }] func;
+  }];
 
 each: [b:; "HASH_TABLE" has] [
   eachInTableBody:;

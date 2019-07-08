@@ -6,39 +6,39 @@ WNDPROC: [{
   uMsg: Nat32;
   wParam: Natx;
   lParam: Intx;
-} Intx {convention: stdcall;} codeRef] func;
+} Intx {convention: stdcall;} codeRef];
 
-HCURSOR: [HICON] func;
+HCURSOR: [HICON];
 
 HBRUSH: [{
   virtual BRUSH: {};
   unused: Int32;
-} Cref] func;
+} Cref];
 
 HDC: [{
   virtual DC: {};
   unused: Int32;
-} Cref] func;
+} Cref];
 
 HGLRC: [{
   virtual GLRC: {};
   unused: Int32;
-} Cref] func;
+} Cref];
 
 HICON: [{
   virtual ICON: {};
   unused: Int32;
-} Cref] func;
+} Cref];
 
 HMENU: [{
   virtual MENU: {};
   unused: Int32;
-} Cref] func;
+} Cref];
 
 HWND: [{
   virtual WND: {};
   unused: Int32;
-} Cref] func;
+} Cref];
 
 MSG: [{
   hwnd: HWND;
@@ -47,12 +47,12 @@ MSG: [{
   lParam: Intx;
   time: Nat32;
   pt: POINT;
-}] func;
+}];
 
 POINT: [{
   x: Int32;
   y: Int32;
-}] func;
+}];
 
 WNDCLASSW: [{
   style: Nat32;
@@ -65,7 +65,7 @@ WNDCLASSW: [{
   hbrBackground: HBRUSH;
   lpszMenuName: Natx;
   lpszClassName: Natx;
-}] func;
+}];
 
 {
   hWnd: HWND;

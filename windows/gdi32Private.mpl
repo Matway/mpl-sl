@@ -28,7 +28,7 @@ PIXELFORMATDESCRIPTOR: [{
   dwLayerMask: Nat32;
   dwVisibleMask: Nat32;
   dwDamageMask: Nat32;
-}] func;
+}];
 
 {
   hdc: user32.HDC;

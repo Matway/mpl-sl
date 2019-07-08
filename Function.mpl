@@ -41,11 +41,11 @@ Function: [{
     destroy
     0nx @function addressToReference !function
     [drop] !deleter
-  ] func;
+  ];
 
   destroy: [
     contextData storageAddress deleter
-  ] func;
+  ];
 
   CALL: [
     contextData storageAddress function
@@ -59,7 +59,7 @@ Function: [{
   DIE: [
     destroy
   ];
-}] func;
+}];
 
 makeFunction: [
   code:;
@@ -69,4 +69,4 @@ makeFunction: [
   function: @signature Function;
   @context contextIsMoved moveIf @code @function.assign
   @function
-] func;
+];

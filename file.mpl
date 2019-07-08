@@ -10,9 +10,9 @@
 {file: 0nx; offset: 0; origin: 0;} 0                          {convention: cdecl;} "fseek" importFunction
 {file: 0nx;} 0nx                                              {convention: cdecl;} "ftell" importFunction
 
-SEEK_SET: [0i32] func;
-SEEK_CUR: [1i32] func;
-SEEK_END: [2i32] func;
+SEEK_SET: [0i32];
+SEEK_CUR: [1i32];
+SEEK_END: [2i32];
 
 loadString: [
   fileName: toString;
@@ -35,7 +35,7 @@ loadString: [
   @result.@success set
 
   result
-] func;
+];
 
 saveString: [
   stringView: makeStringView;
@@ -50,7 +50,7 @@ saveString: [
     f fflush 0 = and
     f fclose 0 = and
   ] &&
-] func;
+];
 
 appendString: [
   stringView: makeStringView;
@@ -65,4 +65,4 @@ appendString: [
     f fflush 0 = and
     f fclose 0 = and
   ] &&
-] func;
+];

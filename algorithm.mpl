@@ -15,7 +15,7 @@ lowerBound: [
   ] while
 
   low
-] func;
+];
 
 upperBound: [
   value: range:;;
@@ -31,10 +31,10 @@ upperBound: [
   ] while
 
   low
-] func;
+];
 
 binarySearch: [
   value: range:;;
   low: value range lowerBound;
   low range fieldCount = ~ [value low range @ <] &&
-] func;
+];

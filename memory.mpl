@@ -10,7 +10,7 @@
 {memptr1: Natx; memptr2: Natx; num: Natx;} Int32 {convention: cdecl;} "memcmp"  importFunction
 {dst: Natx; value: Int32; num: Natx;} Natx       {convention: cdecl;} "memset"  importFunction
 
-getHeapUsedSize: [arg:; 0nx] func;
+getHeapUsedSize: [arg:; 0nx];
 getHeapUsedSize: [isCombined] [
   arg:;
   i: 0;
@@ -31,22 +31,22 @@ new: [
   @result manuallyInitVariable
   @element elementIsMoved moveIf @result set
   @result
-] func;
+];
 
 delete: [
   element:;
   @element manuallyDestroyVariable
   @element storageAddress mplFree
-] func;
+];
 
 deleteWith: [
   destructor:;
   element:;
   @element @destructor call
   @element storageAddress mplFree
-] func;
+];
 
-debugMemory: [FALSE] func;
+debugMemory: [FALSE];
 debugMemory: [DEBUG_MEMORY][TRUE] pfunc;
 
 debugMemory [
@@ -65,7 +65,7 @@ debugMemory [
     memoryUsed size + @memoryUsed set
     memoryXor result xor @memoryXor set
     result 8nx +
-  ] func;
+  ];
 
   mplRealloc: [
     copy ptr:;
@@ -89,7 +89,7 @@ debugMemory [
     memoryUsed oldSize - size + @memoryUsed set
     memoryXor result xor @memoryXor set
     result 8nx +
-  ] func;
+  ];
 
   mplFree: [
     copy ptr:;
@@ -107,9 +107,9 @@ debugMemory [
     memoryUsed oldSize - @memoryUsed set
     memoryXor ptr xor @memoryXor set
     ptr free
-  ] func;
+  ];
 ] [
-  mplMalloc: [malloc] func;
-  mplRealloc: [realloc] func;
-  mplFree: [free] func;
+  mplMalloc: [malloc];
+  mplRealloc: [realloc];
+  mplFree: [free];
 ] uif

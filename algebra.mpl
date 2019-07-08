@@ -1,9 +1,9 @@
 "algebra" module
 "control" useModule
 
-PI: [3.14159265358979323r32] func;
-Vector: [array] func;
-Matrix: [rowCount:; Vector rowCount Vector] func;
+PI: [3.14159265358979323r32];
+Vector: [array];
+Matrix: [rowCount:; Vector rowCount Vector];
 
 Natx storageSize 8nx = [
   {arg: Real32;} Real32 {convention: cdecl;} "acosf" importFunction
@@ -66,10 +66,10 @@ Natx storageSize 8nx = [
   atan2: [Real64 same] [atan2Func] pfunc;
 ] uif
 
-vector?: [v:; FALSE] func;
+vector?: [v:; FALSE];
 vector?: [v:; v 0 fieldName textSize 0nx =] [v:; TRUE] pfunc;
 
-matrix?: [m:; FALSE] func;
+matrix?: [m:; FALSE];
 matrix?: [
   m:;
   colCount: 0 @m @ fieldCount;
@@ -97,7 +97,7 @@ angle: [
 cosSin: [
   angle:;
   (angle cos angle sin)
-] func;
+];
 
 -: [
   v1:v2:;;
@@ -372,7 +372,7 @@ lerp: [
   v0 1 f cast f - *
   v1 f *
   +
-] func;
+];
 
 rotationMatrix: [
   Real32 same

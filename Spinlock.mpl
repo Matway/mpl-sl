@@ -27,9 +27,9 @@ Spinlock: [{
         ] if
       ] loop
     ] when
-  ] func;
+  ];
 
   unlock: [
     0n8 @state RELEASE atomicStore
-  ] func;
-}] func;
+  ];
+}];

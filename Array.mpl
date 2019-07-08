@@ -12,18 +12,18 @@ makeArrayRangeRaw: [{
 
   getBufferBegin: [
     dataBegin storageAddress
-  ] func;
+  ];
 
   at: [
     copy index:;
     index 0i32 same not [0 .ONLY_I32_ALLOWED] when
     [index 0 < not [index dataSize <] &&] "Index is out of range!" assert
     getBufferBegin index Natx cast elementSize * + @elementType addressToReference
-  ] func;
+  ];
 
   getSize: [
     dataSize copy
-  ] func;
+  ];
 
   heapSortWithComparator: [
     comparator:;
@@ -35,7 +35,7 @@ makeArrayRangeRaw: [{
       tmp: @i1ref move copy;
       @i2ref move @i1ref set
       @tmp move @i2ref set
-    ] func;
+    ];
 
     pushDown: [
       copy index:;
@@ -51,7 +51,7 @@ makeArrayRangeRaw: [{
           max @index set TRUE
         ] &&
       ] loop
-    ] func;
+    ];
 
     heapSize: dataSize copy;
     i: dataSize 1 + 2 /;
@@ -67,23 +67,23 @@ makeArrayRangeRaw: [{
       heapSize 1 - @heapSize set
       0 dynamic pushDown
     ] while
-  ] func;
+  ];
 
   heapSort: [
     [<] heapSortWithComparator
-  ] func;
-}] func;
+  ];
+}];
 
 ArrayRange: [
   element:;
   0 0nx @element addressToReference makeArrayRangeRaw
-] func;
+];
 
 makeArrayRange: [
   list:;
   schema listSchema: 0 dynamic @list @;
   list fieldCount 0 dynamic list @ storageAddress @listSchema addressToReference makeArrayRangeRaw
-] func;
+];
 
 makeArrayRange: ["ARRAY_RANGE" has] [
   copy
@@ -101,7 +101,7 @@ makeSubRange: [
   [rangeBeginIndex rangeEndIndex > not] "Invalid subrange, begin>end!" assert
   [rangeEndIndex arg.dataSize > not] "Invalid subrange, end>size!" assert
   rangeEndIndex rangeBeginIndex - arg.getBufferBegin arg.elementSize rangeBeginIndex Natx cast * + @arg.@elementType addressToReference makeArrayRangeRaw
-] func;
+];
 
 Array: [
   {
@@ -116,7 +116,7 @@ Array: [
 
     getBufferBegin: [
       dataBegin storageAddress
-    ] func;
+    ];
 
     at: [
       copy index:;
@@ -124,17 +124,17 @@ Array: [
       [index 0 < not [index dataSize <] &&] "Index is out of range!" assert
 
       getBufferBegin index Natx cast elementSize * + @elementType addressToReference
-    ] func;
+    ];
 
-    getSize: [dataSize copy] func;
+    getSize: [dataSize copy];
 
     getArrayRange: [
       dataSize @dataBegin storageAddress @elementType addressToReference makeArrayRangeRaw
-    ] func;
+    ];
 
     getNextReserve: [
       dataReserve dataReserve 4 / + 4 +
-    ] func;
+    ];
 
     setReserve: [
       copy newReserve:;
@@ -142,13 +142,13 @@ Array: [
       newReserve Natx cast elementSize * getBufferBegin mplRealloc
       @elementType addressToReference !dataBegin
       newReserve @dataReserve set
-    ] func;
+    ];
 
     addReserve: [
       dataSize dataReserve = [
         getNextReserve setReserve
       ] when
-    ] func;
+    ];
 
     pushBack: [
       elementIsMoved: isMoved;
@@ -158,7 +158,7 @@ Array: [
       newElement: dataSize 1 - at;
       @newElement manuallyInitVariable
       @element elementIsMoved moveIf @newElement set
-    ] func;
+    ];
 
     shrink: [
       copy newSize: dynamic;
@@ -170,16 +170,16 @@ Array: [
         i at manuallyDestroyVariable
       ] while
       newSize @dataSize set
-    ] func;
+    ];
 
     popBack: [
       [dataSize 0 >] "Pop from empty array!" assert
       dataSize 1 - shrink
-    ] func;
+    ];
 
     last: [
       dataSize 1 - at
-    ] func;
+    ];
 
     enlarge: [
       copy newSize: dynamic;
@@ -197,7 +197,7 @@ Array: [
         i at manuallyInitVariable
         i 1 + @i set
       ] while
-    ] func;
+    ];
 
     resize: [
       copy newSize: dynamic;
@@ -209,11 +209,11 @@ Array: [
           newSize enlarge
         ] if
       ] if
-    ] func;
+    ];
 
     clear: [
       0 dynamic shrink
-    ] func;
+    ];
 
     release: [
       clear
@@ -222,7 +222,7 @@ Array: [
       0nx @elementType addressToReference !dataBegin
       0 dynamic @dataSize set
       0 dynamic @dataReserve set
-    ] func;
+    ];
 
     INIT: [
       0nx @elementType addressToReference !dataBegin
@@ -246,7 +246,7 @@ Array: [
       addr: getBufferBegin;
       addr 0nx = not [addr mplFree] when
     ];
-  }] func;
+  }];
 
 makeArray: [
   listIsMoved: isMoved;
@@ -263,7 +263,7 @@ makeArray: [
   ] loop
 
   @result
-] func;
+];
 
 @: ["ARRAY" has] [.at] pfunc;
 @: ["ARRAY_RANGE" has] [.at] pfunc;

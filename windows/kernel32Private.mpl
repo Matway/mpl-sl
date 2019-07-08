@@ -2,11 +2,11 @@
 "control" useModule
 
 FARPROC: [{
-} Intx {convention: stdcall;} codeRef] func;
+} Intx {convention: stdcall;} codeRef];
 
 LPTHREAD_START_ROUTINE: [{
   lpThreadParameter: Natx;
-} Nat32 {convention: stdcall;} codeRef] func;
+} Nat32 {convention: stdcall;} codeRef];
 
 CRITICAL_SECTION: [{
   DebugInfo: Natx;
@@ -15,39 +15,39 @@ CRITICAL_SECTION: [{
   OwningThread: Natx;
   LockSemaphore: Natx;
   SpinCount: Natx;
-}] func;
+}];
 
 HINSTANCE: [{
   virtual INSTANCE: {};
   unused: Int32;
-} Cref] func;
+} Cref];
 
-HMODULE: [HINSTANCE] func;
+HMODULE: [HINSTANCE];
 
 LARGE_INTEGER: [{
   LowPart: Nat32;
   HighPart: Int32;
-}] func;
+}];
 
 OVERLAPPED: [{
   Internal: Natx;
   InternalHigh: Natx;
   DUMMYUNIONNAME: Nat64;
   hEvent: Natx;
-}] func;
+}];
 
 OVERLAPPED_ENTRY: [{
   lpCompletionKey: Natx;
   lpOverlapped: OVERLAPPED Ref;
   Internal: Natx;
   dwNumberOfBytesTransferred: Nat32;
-}] func;
+}];
 
 SECURITY_ATTRIBUTES: [{
   nLength: Nat32;
   lpSecurityDescriptor: Natx;
   bInheritHandle: Int32;
-}] func;
+}];
 
 {
   hFile: Natx;
