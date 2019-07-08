@@ -51,3 +51,18 @@ saveString: [
     f fclose 0 = and
   ] &&
 ] func;
+
+appendString: [
+  stringView: makeStringView;
+  fileName: toString;
+
+  size: stringView textSize;
+
+  f: "ab" storageAddress fileName stringMemory fopen;
+  f 0nx = not
+  [
+    size 0nx = [f size 1nx stringView stringMemory fwrite size =] ||
+    f fflush 0 = and
+    f fclose 0 = and
+  ] &&
+] func;
