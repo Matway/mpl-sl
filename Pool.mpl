@@ -78,11 +78,11 @@ Pool: [
     ] func;
 
     clear: [
-      dataSize [
-        i valid [
-          i erase
-        ] when
-      ] times
+      i: firstValid;
+      [i getSize <] [
+        i erase
+        i nextValid !i
+      ] while
     ] func;
 
     firstValid: [
