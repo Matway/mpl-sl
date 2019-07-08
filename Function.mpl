@@ -29,10 +29,10 @@ Function: [{
       context: contextData storageAddress @contextType addressToReference;
       @context manuallyInitVariable
       @context0 move @context set
-      [@contextType addressToReference code call] !function
+      [@contextType addressToReference @code call] !function
       [@contextType addressToReference manuallyDestroyVariable] !deleter
     ] [
-      [drop @contextType code call] !function
+      [drop @contextType @code call] !function
       [drop] !deleter
     ] if
   ] pfunc;

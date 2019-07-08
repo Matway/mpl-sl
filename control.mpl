@@ -87,7 +87,7 @@ assert: [
 unconst: [copy a:; @a] func;
 
 &&: [[FALSE] if] func;
-||: [lazyOrIfFalse:; [TRUE] lazyOrIfFalse if] func;
+||: [lazyOrIfFalse:; [TRUE] @lazyOrIfFalse if] func;
 
 iterate: [
   x:;
