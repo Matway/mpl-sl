@@ -190,3 +190,14 @@ Pool: [
 
 @: ["POOL" has] [.at] pfunc;
 !: ["POOL" has] [.at set] pfunc;
+
+each: [b:; "POOL" has] [
+  eachInPoolBody:;
+  eachInPoolPool:;
+  eachInPoolIndex: eachInPoolPool.firstValid;
+  [eachInPoolIndex eachInPoolPool.getSize <] [
+    eachInPoolElement: eachInPoolIndex @eachInPoolPool.at;
+    {index: eachInPoolIndex copy; value: @eachInPoolElement;} @eachInPoolBody call
+    eachInPoolIndex eachInPoolPool.nextValid !eachInPoolIndex
+  ] while
+] pfunc;
