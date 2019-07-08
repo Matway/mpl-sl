@@ -8,6 +8,7 @@
 {dst: Natx; src: Natx; num: Natx;} Natx          {convention: cdecl;} "memcpy"  importFunction
 {dst: Natx; src: Natx; num: Natx;} Natx          {convention: cdecl;} "memmove" importFunction
 {memptr1: Natx; memptr2: Natx; num: Natx;} Int32 {convention: cdecl;} "memcmp"  importFunction
+{dst: Natx; value: Int32; num: Natx;} Natx       {convention: cdecl;} "memset"  importFunction
 
 getHeapUsedSize: [arg:; 0nx] func;
 getHeapUsedSize: [isCombined] [
