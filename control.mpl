@@ -1,6 +1,28 @@
 "control" module
 "conventions" includeModule
 
+isCodeRef: {
+  CALL: [TRUE];
+};
+
+isCodeRef: {
+  PRE: [copy TRUE];
+  CALL: [FALSE];
+};
+
+isCodeRef: {
+  PRE: [fieldCount TRUE];
+  CALL: [FALSE];
+};
+
+pfunc: [{
+  CALL: isCodeRef [] [copy] uif;
+  PRE:;
+}];
+
+isCopyable: [drop FALSE];
+isCopyable: [x:; @x storageSize 0nx > [@x Ref] [@x copy] uif copy TRUE] [drop TRUE] pfunc;
+
 failProc: [
   storageAddress printAddr
   2 exit
@@ -27,11 +49,6 @@ AsRef: [{data:;}]; # for Ref Array
 
 {format: Text;} () {variadic: TRUE; convention: cdecl;} "printf" importFunction # need for assert
 {result: 0;} () {convention: cdecl;} "exit" importFunction
-
-pfunc: [{
-  CALL:;
-  PRE:;
-}];
 
 drop: [v:;];
 
@@ -162,12 +179,16 @@ caseImpl: [
 case: [0 static caseImpl];
 
 bind: [{
-  bindValue: bindBody:;;
+  bindBody: isCodeRef [] [copy] uif;
+  bindValue: isCodeRef [] [copy] uif;
+
   CALL: [@bindValue @bindBody call];
 }];
 
 compose: [{
-  composeBody0: composeBody1:;;
+  composeBody1: isCodeRef [] [copy] uif;
+  composeBody0: isCodeRef [] [copy] uif;
+
   CALL: [@composeBody0 call @composeBody1 call];
 }];
 
