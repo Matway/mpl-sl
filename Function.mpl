@@ -19,14 +19,14 @@ ASSIGN_FUNC: [2nx];
 INIT_FUNC: [3nx];
 
 Function: [{
-  virtual CONTEXT_SIZE: 32;
-  contextData: Nat8 CONTEXT_SIZE array;
+  CONTEXT_SIZE: [32 static];
   schema CALL_FUNC_SCHEMA: addContextToSignature;
   schema DIE_FUNC_SCHEMA: {this: Natx;} {} {} codeRef;
   schema ASSIGN_FUNC_SCHEMA: {this: Natx; other: Natx;} {} {} codeRef;
   schema INIT_FUNC_SCHEMA: {this: Natx;} {} {} codeRef;
 
-  vtable: {number: Natx;} Natx {} codeRef;
+  contextData: Nat8 CONTEXT_SIZE array;
+  vtable: {functionIndex: Natx;} Natx {} codeRef;
 
   assign: [
     context0IsMoved: isMoved;
