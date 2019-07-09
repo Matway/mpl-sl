@@ -5,11 +5,11 @@
 
 addContextToSignature: [
   signature:;
-  args: 0 @signature @;
-  options: 2 @signature @;
+  args: 0 static @signature @;
+  options: 2 static @signature @;
 
-  (Natx) 0 "context" @args move insertField
-  1 @signature unwrapField
+  (Natx) 0 static "context" @args move insertField
+  1 static @signature unwrapField
   options codeRef
 ];
 
