@@ -29,12 +29,12 @@ insertField: [
     loopIndex @object fieldCount < [
       loopIndex @object unwrapField @object loopIndex fieldName def
       loopIndex 1 + !loopIndex
-      uloopBody ucall
+      @uloopBody ucall
     ] [
     ] uif
   ];
 
-  {uloopBody ucall}
+  {@uloopBody ucall}
 ];
 
 removeField: [
@@ -50,10 +50,10 @@ removeField: [
       ] [] uif
 
       loopIndex 1 + !loopIndex
-      uloopBody ucall
+      @uloopBody ucall
     ] [
     ] uif
   ];
 
-  {uloopBody ucall}
+  {@uloopBody ucall}
 ];
