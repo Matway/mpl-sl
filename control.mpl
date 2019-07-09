@@ -1,24 +1,13 @@
 "control" module
 "conventions" includeModule
 
-isCodeRef: {
-  CALL: [TRUE];
-};
-
-isCodeRef: {
-  PRE: [copy TRUE];
-  CALL: [FALSE];
-};
-
-isCodeRef: {
-  PRE: [fieldCount TRUE];
-  CALL: [FALSE];
-};
-
 pfunc: [{
-  CALL: isCodeRef [] [copy] uif;
-  PRE:;
+  virtual CALL:;
+  virtual PRE:;
 }];
+
+isCodeRef: [TRUE static];
+isCodeRef: [storageSize TRUE static] [FALSE static] pfunc;
 
 isCopyable: [drop FALSE];
 isCopyable: [x:; @x storageSize 0nx > [@x Ref] [@x copy] uif copy TRUE] [drop TRUE] pfunc;
