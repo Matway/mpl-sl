@@ -9,7 +9,7 @@ addContextToSignature: [
   options: 2 @signature @;
 
   (Natx) 0 "context" @args move insertField
-  1 @signature fieldIsRef [1 @signature @] [1 @signature @ newVarOfTheSameType] uif
+  1 @signature unwrapField
   options codeRef
 ];
 
