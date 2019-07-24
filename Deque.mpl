@@ -1,12 +1,13 @@
 "Deque" module
 
-"control" useModule
+"control" includeModule
+"Array" includeModule
 
 Deque: [{
   # front: head tail :back
   virtual CONTAINER: ();
   virtual DEQUE: ();
-  elementType: copy; # not virtual because of bug in mplc 181102
+  schema elementType:;
   head: @elementType Array;
   tail: @elementType Array;
 
@@ -56,7 +57,7 @@ Deque: [{
 
     swapCount: from.getSize 1 + 2 /;
 
-    [to.getSize 0 =] "Destination must me empty!" assert
+    [to.getSize 0 =] "Destination must be empty!" assert
     swapCount @to.resize
 
     swapCount [
