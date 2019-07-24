@@ -213,3 +213,16 @@ sequence: [
 ];
 
 unwrap: [list:; list fieldCount [i @list @] times];
+
+enum: [
+  enum_names:enum_type:;;
+  enum_index: 0;
+  enum_uloop: [
+    enum_index enum_names fieldCount < [
+      enum_index enum_type cast enum_index enum_names @ virtual def
+      enum_index 1 + !enum_index
+      @enum_uloop ucall
+    ] [] uif
+  ];
+  {@enum_uloop ucall}
+];
