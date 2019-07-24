@@ -86,3 +86,8 @@ Deque: [{
 @: ["DEQUE" has] [.at] pfunc;
 !: ["DEQUE" has] [.at set] pfunc;
 fieldCount: ["DEQUE" has] [.getSize] pfunc;
+each: [drop "DEQUE" has] [
+  deque:body:;;
+  @deque.@head @body each
+  @deque.@tail @body each
+] pfunc;
