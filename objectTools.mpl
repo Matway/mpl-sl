@@ -15,45 +15,45 @@ unwrapField: [
 ];
 
 insertField: [
-  objectIsMoved: isMoved;
-  object:;
-  name:;
-  index:;
-  wrappedValue:;
-  loopIndex: 0;
-  uloopBody: [
-    index loopIndex = [
-      0 @wrappedValue unwrapField name def
+  insertField_objectIsMoved: isMoved;
+  insertField_object:;
+  insertField_name:;
+  insertField_index:;
+  insertField_wrappedValue:;
+  insertField_loopIndex: 0 static;
+  insertField_uloopBody: [
+    insertField_index insertField_loopIndex = [
+      0 static @insertField_wrappedValue unwrapField insertField_name def
     ] [] uif
 
-    loopIndex @object fieldCount < [
-      loopIndex @object unwrapField @object loopIndex fieldName def
-      loopIndex 1 + !loopIndex
-      @uloopBody ucall
+    insertField_loopIndex @insertField_object fieldCount < [
+      insertField_loopIndex @insertField_object unwrapField @insertField_object insertField_loopIndex fieldName def
+      insertField_loopIndex 1 static + !insertField_loopIndex
+      @insertField_uloopBody ucall
     ] [
     ] uif
   ];
 
-  {@uloopBody ucall}
+  {@insertField_uloopBody ucall}
 ];
 
 removeField: [
-  objectIsMoved: isMoved;
-  object:;
-  index:;
+  removeField_objectIsMoved: isMoved;
+  removeField_object:;
+  removeField_index:;
 
-  loopIndex: 0;
-  uloopBody: [
-    loopIndex @object fieldCount < [
-      index loopIndex = ~ [
-        loopIndex @object unwrapField @object loopIndex fieldName def
+  removeField_loopIndex: 0;
+  removeField_uloopBody: [
+    removeField_loopIndex @removeField_object fieldCount < [
+      removeField_index removeField_loopIndex = ~ [
+        removeField_loopIndex @removeField_object unwrapField @removeField_object removeField_loopIndex fieldName def
       ] [] uif
 
-      loopIndex 1 + !loopIndex
-      @uloopBody ucall
+      removeField_loopIndex 1 + !removeField_loopIndex
+      @removeField_uloopBody ucall
     ] [
     ] uif
   ];
 
-  {@uloopBody ucall}
+  {@removeField_uloopBody ucall}
 ];
