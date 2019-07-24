@@ -16,7 +16,11 @@ identityQuaternion: [
   (0 entry cast 0 entry cast 0 entry cast 1 entry cast) quaternion
 ];
 
+fieldCount: ["QUATERNION" has] [.@entries fieldCount] pfunc;
+
 @: ["QUATERNION" has] [.@entries @] pfunc;
+
+!: ["QUATERNION" has] [.@entries !] pfunc;
 
 +: [q0:q1:;; q0 "QUATERNION" has q1 "QUATERNION" has and] [
   q0:q1:;;
