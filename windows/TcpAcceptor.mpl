@@ -1,9 +1,8 @@
 "TcpAcceptor" module
+"Function" includeModule
 "TcpConnection" includeModule
 
 TcpAcceptor: [{
-  OnAccept: [{context: Natx; result: String Ref; connection: TcpConnection Ref;} {} {} codeRef];
-
   INIT: [
     0n8 !states
   ];
@@ -77,11 +76,11 @@ TcpAcceptor: [{
   # Initiate connection acceptance
   # input:
   #   context (Natx) - context value to be passed to onAccept callback
-  #   onAccept (OnAccept) - callback to be called when accepted, failed or canceled
+  #   onAccept (String Ref TcpConnection Ref -- ) - callback to be called when accepted, failed or canceled
   # output:
   #   result (String) - empty on success, error message on failure
   accept: [
-    context0: onAccept0:;;
+    onAccept0:;
     old: IN_ACCEPT LISTENING or @states ACQUIRE atomicExchange;
     [old LISTENING =] "TcpAcceptor.accept: invalid state" assert
     winsock2.IPPROTO_TCP winsock2.SOCK_STREAM winsock2.AF_INET winsock2.socket !connection connection winsock2.INVALID_SOCKET = [("socket failed, result=" winsock2.WSAGetLastError) assembleString] [
@@ -90,8 +89,7 @@ TcpAcceptor: [{
         [
           drop
           self storageAddress @dispatcherContext.!context
-          @onAccept0 !onAccept
-          context0 copy !context
+          @onAccept0 @onAccept.assign
           LISTENING ACCEPTING or @states RELEASE atomicStore
           # If 'cancel' will be called at this point, it is possible that it will not happen in time co cancel the operation.
           # It is a caller responsibility to synchronize 'cancel' call with the exit from 'accept'.
@@ -143,7 +141,7 @@ TcpAcceptor: [{
   connection: Natx;
   addresses: Nat8 winsock2.sockaddr_in storageSize Nat32 cast Int32 cast 16 + 2 * array;
   dispatcherContext: dispatcher.Context;
-  onAccept: OnAccept;
+  onAccept: ({result: String Ref; connection: TcpConnection Ref;} {} {}) Function;
   context: Natx;
 
   onAcceptEvent: [
@@ -174,7 +172,7 @@ TcpAcceptor: [{
     ] if
 
     IN_ON_ACCEPT_EVENT ACCEPTING or @states RELEASE atomicXor drop
-    @tcpConnection @result context copy onAccept
+    @tcpConnection @result onAccept
   ];
 
   onAcceptEventWrapper: [TcpAcceptor addressToReference .onAcceptEvent];

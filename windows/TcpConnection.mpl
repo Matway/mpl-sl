@@ -1,13 +1,12 @@
 "TcpConnection" module
 "atomic" includeModule
 "dispatcher" includeModule
+"Function" includeModule
 "ws2_32" includeModule
 
-TcpConnection: [{
-  OnConnect: [{context: Natx; result: String Ref;             } {} {} codeRef];
-  OnRead:    [{context: Natx; result: String Ref; size: Int32;} {} {} codeRef];
-  OnWrite:   [{context: Natx; result: String Ref;             } {} {} codeRef];
+writeEventCount: 0 dynamic;
 
+TcpConnection: [{
   INIT: [
     0n32 !states
   ];
@@ -40,12 +39,11 @@ TcpConnection: [{
   # input:
   #   address (Nat32) - destination IPv4 address
   #   port (Nat16) - destination port
-  #   context (Natx) - context value to be passed to onConnect callback
-  #   onConnect (OnConnect) - callback to be called when connected, failed or canceled
+  #   onConnect (String Ref -- ) - callback to be called when connected, failed or canceled
   # output:
   #   result (String) - empty on success, error message on failure
   connect: [
-    address: port: context0: onConnect0:;;;;
+    address: port: onConnect0:;;;
     old: IN_CONNECT @states ACQUIRE atomicExchange;
     [old 0n32 =] "TcpConnection.connect: invalid state" assert
     winsock2.IPPROTO_TCP winsock2.SOCK_STREAM winsock2.AF_INET winsock2.socket !connection connection winsock2.INVALID_SOCKET = [("socket failed, result=" winsock2.WSAGetLastError) assembleString] [
@@ -78,8 +76,7 @@ TcpConnection: [{
           0nx @writeDispatcherContext.@overlapped.!hEvent
           @onConnectEventWrapper @writeDispatcherContext.!onEvent
           self storageAddress @writeDispatcherContext.!context
-          @onConnect0 !onWrite
-          context0 copy !writeContext
+          @onConnect0 @onWrite.assign
           CONNECTING @states RELEASE atomicStore
           # If 'cancelConnect' will be called at this point, it is possible that it will not happen in time co cancel the operation.
           # It is a caller responsibility to synchronize 'cancelConnect' call with the exit from 'connect'.
@@ -143,19 +140,17 @@ TcpConnection: [{
   # input:
   #   data (Natx) - address of the buffer to read data into
   #   size (Int32) - size of the buffer
-  #   context (Natx) - context value to be passed to onRead callback
-  #   onRead (OnRead) - callback to be called when read completed, failed or canceled
+  #   onRead (String Ref Int32 -- ) - callback to be called when read completed, failed or canceled
   # output:
   #   result (String) - empty on success, error message on failure
   read: [
-    data: size: context0: onRead0:;;;;
+    data: size: onRead0:;;;
     old: IN_READ @states ACQUIRE atomicXor READ_MASK and;
     [old CONNECTED =] "TcpConnection.read: invalid state" assert
     buf: {len: size Nat32 cast; buf: data copy;};
     flags: 0n32;
     self storageAddress @readDispatcherContext.!context
-    @onRead0 !onRead
-    context0 copy !readContext
+    @onRead0 @onRead.assign
     IN_READ READING or @states RELEASE atomicXor drop
     # If 'cancelRead' will be called at this point, it is possible that it will not happen in time co cancel the operation.
     # It is a caller responsibility to synchronize 'cancelRead' call with the exit from 'read'.
@@ -190,18 +185,16 @@ TcpConnection: [{
   # input:
   #   data (Natx) - address of the buffer to write
   #   size (Int32) - size of the buffer
-  #   context (Natx) - context value to be passed to onWrite callback
-  #   onWrite (OnWrite) - callback to be called when write completed, failed or canceled
+  #   onWrite (String Ref -- ) - callback to be called when write completed, failed or canceled
   # output:
   #   result (String) - empty on success, error message on failure
   write: [
-    data: size: context0: onWrite0:;;;;
+    data: size: onWrite0:;;;
     old: IN_WRITE @states ACQUIRE atomicXor WRITE_MASK and;
     [old CONNECTED =] "TcpConnection.write: invalid state" assert
     buf: {len: size Nat32 cast; buf: data copy;};
     self storageAddress @writeDispatcherContext.!context
-    @onWrite0 !onWrite
-    context0 copy !writeContext
+    @onWrite0 @onWrite.assign
     IN_WRITE WRITING or @states RELEASE atomicXor drop
     # If 'cancelWrite' will be called at this point, it is possible that it will not happen in time co cancel the operation.
     # It is a caller responsibility to synchronize 'cancelWrite' call with the exit from 'write'.
@@ -256,11 +249,9 @@ TcpConnection: [{
   states: 0n32;
   connection: Natx;
   readDispatcherContext: dispatcher.Context;
-  onRead: OnRead;
-  readContext: Natx;
+  onRead: ({result: String Ref; numberOfTransferredBytes: Int32;} {} {}) Function;
   writeDispatcherContext: dispatcher.Context;
-  onWrite: OnWrite;
-  writeContext: Natx;
+  onWrite: ({result: String Ref;} {} {}) Function;
 
   onConnectEvent: [
     numberOfBytesTransferred: error: copy;;
@@ -290,7 +281,7 @@ TcpConnection: [{
       ] if
 
       @states RELEASE atomicXor drop
-      @result writeContext copy onWrite
+      @result copy onWrite
     ] if
   ];
 
@@ -308,7 +299,7 @@ TcpConnection: [{
     ] when
 
     IN_ON_READ_EVENT READING or @states RELEASE atomicXor drop
-    numberOfBytesTransferred Int32 cast @result readContext copy onRead
+    numberOfBytesTransferred Int32 cast @result onRead
   ];
 
   onWriteEvent: [
@@ -325,7 +316,7 @@ TcpConnection: [{
     ] when
 
     IN_ON_WRITE_EVENT WRITING or @states RELEASE atomicXor drop
-    @result writeContext copy onWrite
+    @result onWrite
   ];
 
   onConnectEventWrapper: [TcpConnection addressToReference .onConnectEvent];
