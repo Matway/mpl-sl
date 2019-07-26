@@ -1,5 +1,6 @@
 "Owner" module
 "control" includeModule
+"memory" includeModule
 
 OwnerWithDestructor: [{
   virtual OWNER: ();
