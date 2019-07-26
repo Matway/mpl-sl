@@ -14,6 +14,11 @@ unwrapField: [
   index @object fieldIsRef [index @object @] [index @object @ objectIsMoved moveIf copy] uif
 ];
 
+unwrapFields: [
+  object:;
+  @object fieldCount [i @object unwrapField] times
+];
+
 insertField: [
   insertField_objectIsMoved: isMoved;
   insertField_object:;
