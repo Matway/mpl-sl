@@ -349,7 +349,7 @@ trans: [
   v matrix? not and
 ] [
   v:;
-  (v fieldCount [(i v @)] times)
+  (v fieldCount [(i v @ copy)] times)
 ] pfunc;
 
 trans: [matrix?] [
