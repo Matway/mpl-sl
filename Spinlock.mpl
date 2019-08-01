@@ -16,7 +16,7 @@ Spinlock: [{
     1n8 @state ACQUIRE atomicExchange 1n8 = [
       counter: 1;
       [
-        counter 200000 = [
+        counter 2000000 = [
           "spinlocked for a long time" failProc
         ] when
 
