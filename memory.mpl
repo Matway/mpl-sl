@@ -23,7 +23,7 @@ getHeapUsedSize: [isCombined] [
   result
 ] pfunc;
 
-mplNew: [
+new: [
   elementIsMoved: isMoved;
   element:;
   result: element storageSize mplMalloc @element addressToReference;
@@ -32,7 +32,7 @@ mplNew: [
   @result
 ] func;
 
-mplDelete: [
+delete: [
   element:;
   @element manuallyDestroyVariable
   @element storageAddress mplFree

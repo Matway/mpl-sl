@@ -13,12 +13,12 @@ Owner: [{
 
   init: [
     [assigned not] "Can init only empty pointers!" assert
-    mplNew !memory
+    new !memory
   ] func;
 
   initDerived: [
     [assigned not] "Can init only empty pointers!" assert
-    mplNew storageAddress @elementType addressToReference !memory
+    new storageAddress @elementType addressToReference !memory
   ] func;
 
   get: [
@@ -28,7 +28,7 @@ Owner: [{
 
   clear: [
     assigned [
-      @memory mplDelete
+      @memory delete
       0nx @elementType addressToReference !memory
     ] when
   ] func;
