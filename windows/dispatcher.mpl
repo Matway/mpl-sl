@@ -4,14 +4,14 @@
 "ws2_32" useModule
 
 dispatcher: {
-  OnCallback: [{context: Natx;} {} {} codeRef] func;
-  OnEventRef: [{context: Natx; numberOfBytesTransferred: Nat32; error: Nat32;} {} {} codeRef] func;
+  OnCallback: [{context: Natx;} {} {} codeRef];
+  OnEventRef: [{context: Natx; numberOfBytesTransferred: Nat32; error: Nat32;} {} {} codeRef];
 
   Context: [{
     overlapped: kernel32.OVERLAPPED;
     onEvent: OnEventRef;
     context: Natx;
-  }] func;
+  }];
 
   DIE: [
     winsock2.WSACleanup 0 = ~ [("LEAK: WSACleanup failed, result=" winsock2.WSAGetLastError LF) assembleString print] when
@@ -26,7 +26,7 @@ dispatcher: {
     wsaData: winsock2.WSADATA; result: @wsaData 0x0202n16 winsock2.WSAStartup; result 0 = ~ [
       ("FATAL: WSAStartup failed, result=" result LF) assembleString print 1 exit
     ] when
-  ] func;
+  ];
 
   dispatch: [
     entry: kernel32.OVERLAPPED_ENTRY;
@@ -44,7 +44,27 @@ dispatcher: {
         entry.lpOverlapped storageAddress entry.lpCompletionKey {context: Natx;} {} {} codeRef addressToReference call
       ] if
     ] if
-  ] func;
+  ];
+
+  tryDispatch: [
+    entry: kernel32.OVERLAPPED_ENTRY;
+    actual: Nat32;
+    1 0n32 @actual 1n32 @entry completionPort kernel32.GetQueuedCompletionStatusEx 1 = ~ [
+      error: kernel32.GetLastError;
+      error kernel32.WAIT_TIMEOUT = not [
+        ("FATAL: GetQueuedCompletionStatusEx failed, result=" error LF) assembleString print 1 exit
+      ] when
+    ] [
+      [actual 1n32 =] "unexpected actual entry count" assert
+      entry.lpCompletionKey 0nx = [
+        [entry.dwNumberOfBytesTransferred entry.lpOverlapped.InternalHigh Nat32 cast =] "unexpected transferred size" assert
+        context: entry.lpOverlapped storageAddress Context addressToReference;
+        entry.dwNumberOfBytesTransferred entry.lpOverlapped.Internal Nat32 cast context.context context.onEvent
+      ] [
+        entry.lpOverlapped storageAddress entry.lpCompletionKey {context: Natx;} {} {} codeRef addressToReference call
+      ] if
+    ] if
+  ];
 
   post: [
     context: callback:;;
@@ -52,13 +72,13 @@ dispatcher: {
     context kernel32.OVERLAPPED addressToReference @callback storageAddress 0n32 completionPort kernel32.PostQueuedCompletionStatus 1 = ~ [
       ("FATAL: PostQueuedCompletionStatus failed, result=" kernel32.GetLastError LF) assembleString print 1 exit
     ] when
-  ] func;
+  ];
 
   wakeOne: [
     nop: OnCallback;
     [drop] !nop
     0nx @nop post
-  ] func;
+  ];
 
   completionPort: Natx;
 };

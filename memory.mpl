@@ -1,15 +1,16 @@
 "memory" module
 "control" includeModule
 
-{size: Natx;} Natx {}            "malloc"  importFunction
-{ptr: Natx; size: Natx;} Natx {} "realloc" importFunction
-{ptr: Natx;} () {}               "free"    importFunction
+{size: Natx;} Natx            {convention: cdecl;} "malloc"  importFunction
+{ptr: Natx; size: Natx;} Natx {convention: cdecl;} "realloc" importFunction
+{ptr: Natx;} ()               {convention: cdecl;} "free"    importFunction
 
-{dst: Natx; src: Natx; num: Natx;} Natx {} "memcpy" importFunction
-{dst: Natx; src: Natx; num: Natx;} Natx {} "memmove" importFunction
-{memptr1: Natx; memptr2: Natx; num: Natx;} Int32 {} "memcmp" importFunction
+{dst: Natx; src: Natx; num: Natx;} Natx          {convention: cdecl;} "memcpy"  importFunction
+{dst: Natx; src: Natx; num: Natx;} Natx          {convention: cdecl;} "memmove" importFunction
+{memptr1: Natx; memptr2: Natx; num: Natx;} Int32 {convention: cdecl;} "memcmp"  importFunction
+{dst: Natx; value: Int32; num: Natx;} Natx       {convention: cdecl;} "memset"  importFunction
 
-getHeapUsedSize: [arg:; 0nx] func;
+getHeapUsedSize: [arg:; 0nx];
 getHeapUsedSize: [isCombined] [
   arg:;
   i: 0;
@@ -23,22 +24,29 @@ getHeapUsedSize: [isCombined] [
   result
 ] pfunc;
 
-mplNew: [
+new: [
   elementIsMoved: isMoved;
   element:;
   result: element storageSize mplMalloc @element addressToReference;
   @result manuallyInitVariable
   @element elementIsMoved moveIf @result set
   @result
-] func;
+];
 
-mplDelete: [
+delete: [
   element:;
   @element manuallyDestroyVariable
   @element storageAddress mplFree
-] func;
+];
 
-debugMemory: [FALSE] func;
+deleteWith: [
+  destructor:;
+  element:;
+  @element @destructor call
+  @element storageAddress mplFree
+];
+
+debugMemory: [FALSE];
 debugMemory: [DEBUG_MEMORY][TRUE] pfunc;
 
 debugMemory [
@@ -57,7 +65,7 @@ debugMemory [
     memoryUsed size + @memoryUsed set
     memoryXor result xor @memoryXor set
     result 8nx +
-  ] func;
+  ];
 
   mplRealloc: [
     copy ptr:;
@@ -81,7 +89,7 @@ debugMemory [
     memoryUsed oldSize - size + @memoryUsed set
     memoryXor result xor @memoryXor set
     result 8nx +
-  ] func;
+  ];
 
   mplFree: [
     copy ptr:;
@@ -99,9 +107,9 @@ debugMemory [
     memoryUsed oldSize - @memoryUsed set
     memoryXor ptr xor @memoryXor set
     ptr free
-  ] func;
+  ];
 ] [
-  mplMalloc:  [malloc] func;
-  mplRealloc: [realloc] func;
-  mplFree: [free] func;
+  mplMalloc: [malloc];
+  mplRealloc: [realloc];
+  mplFree: [free];
 ] uif

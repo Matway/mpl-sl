@@ -22,14 +22,15 @@ user32: {
   DestroyWindow: @DestroyWindow;
   DispatchMessageW: @DispatchMessageW;
   GetDC: @GetDC;
-  GetWindowLongPtrW: @GetWindowLongPtrW;
+  GetWindowLongPtrW: Natx storageSize 8nx = [@GetWindowLongPtrW] [@GetWindowLongW] if;
   LoadCursorW: @LoadCursorW;
   PeekMessageW: @PeekMessageW;
   RegisterClassW: @RegisterClassW;
   ReleaseCapture: @ReleaseCapture;
   SetCapture: @SetCapture;
   SetCursorPos: @SetCursorPos;
-  SetWindowLongPtrW: @SetWindowLongPtrW;
+  SetWindowLongPtrW: Natx storageSize 8nx = [@SetWindowLongPtrW] [@SetWindowLongW] if;
   ShowCursor: @ShowCursor;
   ShowWindow: @ShowWindow;
+  TranslateMessage: @TranslateMessage;
 };

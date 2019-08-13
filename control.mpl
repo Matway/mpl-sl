@@ -1,45 +1,52 @@
 "control" module
-
-func: {
-  virtual CALL: [{
-    virtual CALL:;
-  }];
-};
-
-Cond:   [v: FALSE  dynamic; @v] func;
-Int8:   [v: 0i8    dynamic; @v] func;
-Int16:  [v: 0i16   dynamic; @v] func;
-Int32:  [v: 0i32   dynamic; @v] func;
-Int64:  [v: 0i64   dynamic; @v] func;
-Intx:   [v: 0ix    dynamic; @v] func;
-Nat8:   [v: 0n8    dynamic; @v] func;
-Nat16:  [v: 0n16   dynamic; @v] func;
-Nat32:  [v: 0n32   dynamic; @v] func;
-Nat64:  [v: 0n64   dynamic; @v] func;
-Natx:   [v: 0nx    dynamic; @v] func;
-Real32: [v: 0.0r32 dynamic; @v] func;
-Real64: [v: 0.0r64 dynamic; @v] func;
-Text:   [v: ""     dynamic; @v] func;
-
-Ref: [v:; 0nx @v addressToReference] func; # for signatures
-Cref: [v:; 0nx v addressToReference] func; # for signatures
-AsRef: [{data:;}] func; # for Ref Array
-
-{format: Text;} () {variadic: TRUE;} "printf" importFunction # need for assert
+"conventions" includeModule
 
 pfunc: [{
-  CALL:;
-  PRE:;
-}] func;
+  virtual CALL:;
+  virtual PRE:;
+}];
 
-drop: [v:;] func;
+isCodeRef: [TRUE static];
+isCodeRef: [storageSize TRUE static] [FALSE static] pfunc;
 
-when: [[] if] func;
+isCopyable: [drop FALSE];
+isCopyable: [x:; @x storageSize 0nx > [@x Ref] [@x copy] uif copy TRUE] [drop TRUE] pfunc;
+
+failProc: [
+  storageAddress printAddr
+  2 exit
+];
+
+Cond:   [v: FALSE  dynamic; @v];
+Int8:   [v: 0i8    dynamic; @v];
+Int16:  [v: 0i16   dynamic; @v];
+Int32:  [v: 0i32   dynamic; @v];
+Int64:  [v: 0i64   dynamic; @v];
+Intx:   [v: 0ix    dynamic; @v];
+Nat8:   [v: 0n8    dynamic; @v];
+Nat16:  [v: 0n16   dynamic; @v];
+Nat32:  [v: 0n32   dynamic; @v];
+Nat64:  [v: 0n64   dynamic; @v];
+Natx:   [v: 0nx    dynamic; @v];
+Real32: [v: 0.0r32 dynamic; @v];
+Real64: [v: 0.0r64 dynamic; @v];
+Text:   [v: ""     dynamic; @v];
+
+Ref: [v:; 0nx @v addressToReference]; # for signatures
+Cref: [v:; 0nx v addressToReference]; # for signatures
+AsRef: [{data:;}]; # for Ref Array
+
+{format: Text;} () {variadic: TRUE; convention: cdecl;} "printf" importFunction # need for assert
+{result: 0;} () {convention: cdecl;} "exit" importFunction
+
+drop: [v:;];
+
+when: [[] if];
 
 printAddr: [
   copy addr:;
   addr 0nx = not [(addr copy) "%s" printf] when
-] func;
+];
 
 while: [
   whileBody:;
@@ -51,7 +58,7 @@ while: [
       TRUE
     ] &&
   ] loop
-] func;
+];
 
 times: [
   timesBody:; 0 cast timesCount:;
@@ -64,14 +71,7 @@ times: [
       i timesCount <
     ] loop
   ] when
-] func;
-
-{result: 0;} () {} "exit" importFunction
-
-failProc: [
-  storageAddress printAddr
-  2 exit
-] func;
+];
 
 assert: [
   DEBUG [
@@ -82,34 +82,34 @@ assert: [
   ] [
     copy message:; condition:;
   ] if
-] func;
+];
 
-unconst: [copy a:; @a] func;
+unconst: [copy a:; @a];
 
-&&: [[FALSE] if] func;
-||: [lazyOrIfFalse:; [TRUE] lazyOrIfFalse if] func;
+&&: [[FALSE] if];
+||: [lazyOrIfFalse:; [TRUE] @lazyOrIfFalse if];
 
 iterate: [
   x:;
   x 1 + @x set
   x >
-] func;
+];
 
 riterate: [
   x:;
   x <
   x 1 - @x set
-] func;
+];
 
 max: [
   a:b:;;
   a b > [a][b] if
-] func;
+];
 
 min: [
   a:b:;;
   a b < [a][b] if
-] func;
+];
 
 # usage:
 #
@@ -119,7 +119,7 @@ min: [
 #   ["unknown"]
 # ) cond
 
-isNil: [storageAddress 0nx =] func;
+isNil: [storageAddress 0nx =];
 
 condImpl: [
   condIndex:;
@@ -135,9 +135,9 @@ condImpl: [
       @condControlVar condFunctionList condIndex 2 + condImpl
     ] if
   ] if
-] func;
+];
 
-cond: [0 static condImpl] func;
+cond: [0 static condImpl];
 
 # usage:
 #
@@ -163,19 +163,23 @@ caseImpl: [
       caseControlVar caseFunctionList caseIndex 2 + caseImpl
     ] if
   ] if
-] func;
+];
 
-case: [0 static caseImpl] func;
+case: [0 static caseImpl];
 
 bind: [{
-  bindValue: bindBody:;;
+  bindBody: isCodeRef [] [copy] uif;
+  bindValue: isCodeRef [] [copy] uif;
+
   CALL: [@bindValue @bindBody call];
-}] func;
+}];
 
 compose: [{
-  composeBody0: composeBody1:;;
+  composeBody1: isCodeRef [] [copy] uif;
+  composeBody0: isCodeRef [] [copy] uif;
+
   CALL: [@composeBody0 call @composeBody1 call];
-}] func;
+}];
 
 for: [
   forBody:;
@@ -186,14 +190,14 @@ for: [
   @forInit ucall
   [
     @forCond ucall [
-      @forBody ucall
+      @forBody call
       @forIterate ucall
       TRUE
     ] [
       FALSE
     ] if
   ] loop
-] func;
+];
 
 sequenceImpl: [
   copy sequenceIndex:;
@@ -202,8 +206,23 @@ sequenceImpl: [
     sequenceIndex sequenceList @ ucall
     sequenceList sequenceIndex 1 + sequenceImpl
   ] when
-] func;
+];
 
 sequence: [
   1 static sequenceImpl
-] func;
+];
+
+unwrap: [list:; list fieldCount [i @list @] times];
+
+enum: [
+  enum_names:enum_type:;;
+  enum_index: 0;
+  enum_uloop: [
+    enum_index enum_names fieldCount < [
+      enum_index enum_type cast enum_index enum_names @ virtual def
+      enum_index 1 + !enum_index
+      @enum_uloop ucall
+    ] [] uif
+  ];
+  {@enum_uloop ucall}
+];

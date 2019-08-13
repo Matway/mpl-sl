@@ -1,34 +1,41 @@
 "Owner" module
 "control" includeModule
+"memory" includeModule
 
-Owner: [{
+OwnerWithDestructor: [{
   virtual OWNER: ();
+  destructor:;
   schema elementType:;
   memory: 0nx @elementType addressToReference;
 
   assigned: [
     addr: memory storageAddress;
     addr 0nx = not
-  ] func;
+  ];
 
   init: [
     [assigned not] "Can init only empty pointers!" assert
-    mplNew !memory
-  ] func;
+    new !memory
+  ];
+
+  initDerived: [
+    [assigned not] "Can init only empty pointers!" assert
+    new storageAddress @elementType addressToReference !memory
+  ];
 
   get: [
     [assigned] "Pointer is null!" assert
     @memory
-  ] func;
+  ];
 
   clear: [
     assigned [
-      @memory mplDelete
+      @memory @destructor deleteWith
       0nx @elementType addressToReference !memory
     ] when
-  ] func;
+  ];
 
-  release: [clear] func;
+  release: [clear];
 
   INIT: [
     0nx @elementType addressToReference !memory
@@ -36,11 +43,12 @@ Owner: [{
 
   DIE: [
     assigned [
-      memory manuallyDestroyVariable
-      memory storageAddress mplFree
+      @memory @destructor deleteWith
     ] when
   ];
-}] func;
+}];
+
+Owner: [[manuallyDestroyVariable] OwnerWithDestructor];
 
 owner: [
   elementIsMoved: isMoved;
@@ -50,7 +58,19 @@ owner: [
   @element elementIsMoved moveIf @result.init
 
   @result
-] func;
+];
+
+ownerDerived: [
+  destructor:;
+  base:;
+  elementIsMoved: isMoved;
+  element:;
+
+  result: @base @destructor OwnerWithDestructor;
+  @element elementIsMoved moveIf @result.initDerived
+
+  @result
+];
 
 getHeapUsedSize: ["OWNER" has] [
   arg:;

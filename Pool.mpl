@@ -17,23 +17,23 @@ Pool: [
 
     getAddressByIndex: [
       Natx cast entrySize * data +
-    ] func;
+    ];
 
     getTailAddressByIndex: [
       Natx cast dataSize Natx cast entrySize * data + +
-    ] func;
+    ];
 
     elementAt: [
       getAddressByIndex @elementSchema addressToReference
-    ] func;
+    ];
 
     nextFreeAt: [
       getAddressByIndex Int32 addressToReference
-    ] func;
+    ];
 
     validAt: [
       getTailAddressByIndex Nat8 addressToReference
-    ] func;
+    ];
 
     valid: [
       copy index:;
@@ -43,7 +43,7 @@ Pool: [
       offset: index Nat32 cast 7n32 and Nat8 cast;
       bitBlock: position validAt;
       bitBlock 1n8 offset lshift and 0n8 = not
-    ] func;
+    ];
 
     getNextIndex: [
       firstFree 0 < [
@@ -51,17 +51,17 @@ Pool: [
       ] [
         firstFree copy
       ] if
-    ] func;
+    ];
 
     at: [
       copy index:;
       [index valid] "Element is invalid!" assert
       index elementAt
-    ] func;
+    ];
 
     getSize: [
       dataSize copy
-    ] func;
+    ];
 
     erase: [
       copy index:;
@@ -75,15 +75,15 @@ Pool: [
       bitBlock 1n8 offset lshift xor @bitBlock set
 
       index @firstFree set
-    ] func;
+    ];
 
     clear: [
-      dataSize [
-        i valid [
-          i erase
-        ] when
-      ] times
-    ] func;
+      i: firstValid;
+      [i getSize <] [
+        i erase
+        i nextValid !i
+      ] while
+    ];
 
     firstValid: [
       i: 0;
@@ -92,7 +92,7 @@ Pool: [
       ] loop
 
       i
-    ] func;
+    ];
 
     nextValid: [
       i: 1 +;
@@ -101,7 +101,7 @@ Pool: [
       ] loop
 
       i
-    ] func;
+    ];
 
     insert: [
       elementIsMoved: isMoved;
@@ -123,7 +123,7 @@ Pool: [
           1 @firstFree set
           0n8 0 validAt set
         ] [
-          upTo8: [Nat32 cast 7n32 + 7n32 ~ and Int32 cast] func;
+          upTo8: [Nat32 cast 7n32 + 7n32 ~ and Int32 cast];
           newDataSize: dataSize dataSize 4 / + upTo8;
           tailSize: dataSize 3n32 rshift;
           newTailSize: newDataSize 3n32 rshift;
@@ -132,11 +132,11 @@ Pool: [
 
           getNewTailAddressByIndex: [
             Natx cast newDataSize Natx cast entrySize * data + +
-          ] func;
+          ];
 
           newValidAt: [
             getNewTailAddressByIndex Nat8 addressToReference
-          ] func;
+          ];
 
           #set valid
           tailSize [
@@ -144,7 +144,7 @@ Pool: [
           ] times
 
           newTailSize tailSize - [
-            0n8  tailSize i + newValidAt set
+            0n8 tailSize i + newValidAt set
           ] times
 
           #set nextFree entries
@@ -173,12 +173,12 @@ Pool: [
       bitBlock 1n8 offset lshift or @bitBlock set
 
       index
-    ] func;
+    ];
 
     INIT: [
       0nx dynamic @data set
-      0 dynamic @count set
-      -1 dynamic @firstFree set
+      0   dynamic @dataSize set
+      -1  dynamic @firstFree set
     ];
 
     DIE: [
@@ -186,7 +186,18 @@ Pool: [
       data mplFree
     ];
   }
-] func;
+];
 
 @: ["POOL" has] [.at] pfunc;
 !: ["POOL" has] [.at set] pfunc;
+
+each: [b:; "POOL" has] [
+  eachInPoolBody:;
+  eachInPoolPool:;
+  eachInPoolIndex: eachInPoolPool.firstValid;
+  [eachInPoolIndex eachInPoolPool.getSize <] [
+    eachInPoolElement: eachInPoolIndex @eachInPoolPool.at;
+    {index: eachInPoolIndex copy; value: @eachInPoolElement;} @eachInPoolBody call
+    eachInPoolIndex eachInPoolPool.nextValid !eachInPoolIndex
+  ] while
+] pfunc;

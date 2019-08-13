@@ -1,30 +1,31 @@
 "Deque" module
 
-"control" useModule
+"control" includeModule
+"Array" includeModule
 
 Deque: [{
   # front: head tail :back
   virtual CONTAINER: ();
   virtual DEQUE: ();
-  elementType: copy; # not virtual because of bug in mplc 181102
+  schema elementType:;
   head: @elementType Array;
   tail: @elementType Array;
 
-  getSize: [head.getSize tail.getSize +] func;
+  getSize: [head.getSize tail.getSize +];
 
-  pushBack: [@tail.pushBack] func;
+  pushBack: [@tail.pushBack];
 
-  pushFront: [@head.pushBack] func;
+  pushFront: [@head.pushBack];
 
   popBack: [
     tail fieldCount 0 = [@head @tail swapBuffers] when
     @tail.popBack
-  ] func;
+  ];
 
   popFront: [
     head fieldCount 0 = [@tail @head swapBuffers] when
     @head.popBack
-  ] func;
+  ];
 
   back: [
     tail fieldCount 0 = [
@@ -32,7 +33,7 @@ Deque: [{
     ] [
       @tail.last
     ] if
-  ] func;
+  ];
 
   front: [
     head fieldCount 0 = [
@@ -40,7 +41,7 @@ Deque: [{
     ] [
       @head.last
     ] if
-  ] func;
+  ];
 
   at: [
     copy index:;
@@ -49,14 +50,14 @@ Deque: [{
     ] [
       index head.getSize - @tail.at
     ] if
-  ] func;
+  ];
 
   swapBuffers: [
     from:to:;;
 
     swapCount: from.getSize 1 + 2 /;
 
-    [to.getSize 0 =] "Destination must me empty!" assert
+    [to.getSize 0 =] "Destination must be empty!" assert
     swapCount @to.resize
 
     swapCount [
@@ -70,19 +71,24 @@ Deque: [{
     ] times
 
     from.getSize swapCount - @from.shrink
-  ] func;
+  ];
 
   clear: [
     @head.clear
     @tail.clear
-  ] func;
+  ];
 
   release: [
     @head.release
     @tail.release
-  ] func;
-}] func;
+  ];
+}];
 
 @: ["DEQUE" has] [.at] pfunc;
 !: ["DEQUE" has] [.at set] pfunc;
 fieldCount: ["DEQUE" has] [.getSize] pfunc;
+each: [drop "DEQUE" has] [
+  deque:body:;;
+  @deque.@head @body each
+  @deque.@tail @body each
+] pfunc;

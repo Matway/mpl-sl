@@ -1,23 +1,75 @@
 "algebra" module
 "control" useModule
 
-PI: [3.14159265358979323r32] func;
-Vector: [array] func;
-Matrix: [rowCount:; Vector rowCount Vector] func;
+PI: [3.14159265358979323r32];
+Vector: [array];
+Matrix: [rowCount:; Vector rowCount Vector];
 
+Natx storageSize 8nx = [
+  {arg: Real32;} Real32 {convention: cdecl;} "acosf" importFunction
+  {arg: Real64;} Real64 {convention: cdecl;} "acosl" importFunction
+  acos: [Real32 same] [acosf] pfunc;
+  acos: [Real64 same] [acosl] pfunc;
 
-{arg: Real32;} Real32 {} "acosf" importFunction
-{arg: Real64;} Real64 {} "acos" importFunction
-acos: [Real32 same] [acosf] pfunc;
+  {arg: Real32;} Real32 {convention: cdecl;} "asinf" importFunction
+  {arg: Real64;} Real64 {convention: cdecl;} "asinl" importFunction
+  asin: [Real32 same] [asinf] pfunc;
+  asin: [Real64 same] [asinl] pfunc;
 
-{arg: Real32;} Real32 {} "tanf" importFunction
-{arg: Real64;} Real64 {} "tan" importFunction
-tan: [Real32 same] [tanf] pfunc;
+  {arg: Real32;} Real32 {convention: cdecl;} "tanf" importFunction
+  {arg: Real64;} Real64 {convention: cdecl;} "tanl" importFunction
+  tan: [Real32 same] [tanf] pfunc;
+  tan: [Real64 same] [tanl] pfunc;
 
-vector?: [v:; FALSE] func;
+  {arg: Real32;} Real32 {convention: cdecl;} "atanf" importFunction
+  {arg: Real64;} Real64 {convention: cdecl;} "atanl" importFunction
+  atan: [Real32 same] [atanf] pfunc;
+  atan: [Real64 same] [atanl] pfunc;
+
+  {argy: Real32; argx: Real32;} Real32 {convention: cdecl;} "atan2f" importFunction
+  {argy: Real64; argx: Real64;} Real64 {convention: cdecl;} "atan2l" importFunction
+  atan2: [Real32 same] [atan2f] pfunc;
+  atan2: [Real64 same] [atan2l] pfunc;
+] [
+  {arg: Real64;} Real64 {convention: cdecl;} "acos" importFunction
+  acosFunc: @acos;
+  acos: [Real32 same] [Real64 cast acosFunc Real32 cast] pfunc;
+  acos: [Real64 same] [acosFunc] pfunc;
+
+  {arg: Real64;} Real64 {convention: cdecl;} "asin" importFunction
+  asinFunc: @asin;
+  asin: [Real32 same] [Real64 cast asinFunc Real32 cast] pfunc;
+  asin: [Real64 same] [asinFunc] pfunc;
+
+  {arg: Real64;} Real64 {convention: cdecl;} "tan" importFunction
+  tanFunc: @tan;
+  tan: [Real32 same] [Real64 cast tanFunc Real32 cast] pfunc;
+  tan: [Real64 same] [tanFunc] pfunc;
+
+  {arg: Real64;} Real64 {convention: cdecl;} "atan" importFunction
+  atanFunc: @atan;
+  atan: [Real32 same] [Real64 cast atanFunc Real32 cast] pfunc;
+  atan: [Real64 same] [atanFunc] pfunc;
+
+  {argy: Real64; argx: Real64;} Real64 {convention: cdecl;} "atan2" importFunction
+  atan2Func: @atan2;
+  atan2: [
+    x:y:;;
+    x Real32 same
+    y Real32 same and
+  ] [
+    y: copy;
+    x: copy;
+    x Real64 cast y Real64 cast atan2Func Real32 cast
+  ] pfunc;
+
+  atan2: [Real64 same] [atan2Func] pfunc;
+] uif
+
+vector?: [v:; FALSE];
 vector?: [v:; v 0 fieldName textSize 0nx =] [v:; TRUE] pfunc;
 
-matrix?: [m:; FALSE] func;
+matrix?: [m:; FALSE];
 matrix?: [
   m:;
   colCount: 0 @m @ fieldCount;
@@ -32,6 +84,20 @@ matrix?: [
 getColCount: [matrix?] [m:; 0 m @ fieldCount] pfunc;
 
 getRowCount: [matrix?] [fieldCount] pfunc;
+
+angle: [
+  v:;
+  v vector?
+  v fieldCount 2 = and
+] [
+  v:;
+  0 v @ 1 v @ atan2
+] pfunc;
+
+cosSin: [
+  angle:;
+  (angle cos angle sin)
+];
 
 -: [
   v1:v2:;;
@@ -105,6 +171,14 @@ getRowCount: [matrix?] [fieldCount] pfunc;
 ] [
   value:vector:;;
   (vector fieldCount [i vector @ value *] times)
+] pfunc;
+
+*: [
+  v1:v2:;;
+  v1 vector?
+  v2 vector? and
+] [
+  0 .CAN_NOT_MUL_TWO_VECTORS_USE_DOT_OR_CROSS_OR_HADAMAR
 ] pfunc;
 
 *: [
@@ -209,9 +283,22 @@ getRowCount: [matrix?] [fieldCount] pfunc;
 
 toColumn: [vector?] [v:;(v fieldCount [(i v @ copy)] times)] pfunc;
 
-multiply: [v1:v2:;; v1 vector? v2 vector? and] [v1:v2:;; (v1 fieldCount [i v1 @ i v2 @ *] times)] pfunc;
+multiply: [
+  v1:v2:;;
+  v1 vector? v2 vector? and
+  v1 fieldCount v2 fieldCount = and
+] [
+  v1:v2:;;
+  (v1 fieldCount [i v1 @ i v2 @ *] times)
+] pfunc;
 
-divide: [v1:v2:;; v1 vector? v2 vector? and] [v1:v2:;; (v1 fieldCount [i v1 @ i v2 @ /] times)] pfunc;
+divide: [
+  v1:v2:;;
+  v1 vector? v2 vector? and
+  v1 fieldCount v2 fieldCount = and
+] [
+  v1:v2:;; (v1 fieldCount [i v1 @ i v2 @ /] times)
+] pfunc;
 
 dot: [
   v0:v1:;;
@@ -238,6 +325,10 @@ cross: [
   )
 ] pfunc;
 
+squaredLength: [vector?] [
+  v:; v v dot
+] pfunc;
+
 length: [vector?] [
   v:; v v dot sqrt
 ] pfunc;
@@ -258,7 +349,7 @@ trans: [
   v matrix? not and
 ] [
   v:;
-  (v fieldCount [(i v @)] times)
+  (v fieldCount [(i v @ copy)] times)
 ] pfunc;
 
 trans: [matrix?] [
@@ -281,7 +372,19 @@ lerp: [
   v0 1 f cast f - *
   v1 f *
   +
-] func;
+];
+
+rotationMatrix: [
+  Real32 same
+] [
+  angle: copy;
+  c: angle cos;
+  s: angle sin;
+  (
+    (c copy s copy)
+    (s neg  c copy)
+  )
+] pfunc;
 
 det: [
   m:;

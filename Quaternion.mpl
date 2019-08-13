@@ -4,19 +4,23 @@
 Quaternion: [{
   QUATERNION: ();
   entries: 4 array;
-}] func;
+}];
 
 quaternion: [{
   QUATERNION: ();
   entries: copy;
-}] func;
+}];
 
 identityQuaternion: [
   entry:;
   (0 entry cast 0 entry cast 0 entry cast 1 entry cast) quaternion
-] func;
+];
+
+fieldCount: ["QUATERNION" has] [.@entries fieldCount] pfunc;
 
 @: ["QUATERNION" has] [.@entries @] pfunc;
+
+!: ["QUATERNION" has] [.@entries !] pfunc;
 
 +: [q0:q1:;; q0 "QUATERNION" has q1 "QUATERNION" has and] [
   q0:q1:;;
@@ -77,18 +81,18 @@ unitCheckedWithThresold: [
     one: 1 thresold cast;
     q one squaredLength sqrt / *
   ] if
-] func;
+];
 
 unitChecked: [
   q:;
   q 1.0e-6 0 q @ cast unitCheckedWithThresold
-] func;
+];
 
 nlerp: [
   q0: q1: f:; copy;;
   q0 q1 dot 0 0 q0 @ cast < [q1.entries neg @q1.!entries] when
   q0 q1 f lerp unitChecked
-] func;
+];
 
 conj: ["QUATERNION" has] [
   q:;
@@ -124,12 +128,12 @@ slerpWithEpsilon: [
     q0 k0 * q2 k2 * + !q2
   ] when
   q2
-] func;
+];
 
 slerp: [
   o:;
   o 1.0e-6 o cast slerpWithEpsilon
-] func;
+];
 
 vector: ["QUATERNION" has] [
   .entries copy
@@ -168,4 +172,4 @@ axisAngleQuaternion: [
     2 axisAngle @ ahs *
     ah cos
   ) quaternion
-] func;
+];

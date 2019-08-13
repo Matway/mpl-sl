@@ -11,32 +11,32 @@ PriorityQueue: [{
     tmp: @i1ref move copy;
     @i2ref move @i1ref set
     @tmp move @i2ref set
-  ] func;
+  ];
 
-  parent: [1 - 2 /] func;
-  lchild: [2 * 1 +] func;
-  rchild: [2 * 2 +] func;
+  parent: [1 - 2 /];
+  lchild: [2 * 1 +];
+  rchild: [2 * 2 +];
 
   lift: [
     copy i:;
     [
       i 0 > [
         p: i parent;
-        i data.at p data.at < [
+        p data.at i data.at < [
           i p swap
           p @i set
           TRUE
         ] &&
       ] &&
     ] loop
-  ] func;
+  ];
 
   push: [
     @data.pushBack
     data.getSize 1 - lift
-  ] func;
+  ];
 
-  top: [0 @data.at] func;
+  top: [0 @data.at];
 
   pop: [
     i: 0 dynamic;
@@ -45,7 +45,7 @@ PriorityQueue: [{
       r: i rchild;
       l data.getSize < [
         r data.getSize < [
-          c: l data.at r data.at < [l copy] [r copy] if;
+          c: r data.at l data.at < [l copy] [r copy] if;
           i c swap
           c @i set
           TRUE
@@ -63,8 +63,8 @@ PriorityQueue: [{
     ] loop
 
     @data.popBack
-  ] func;
+  ];
 
-  getSize: [data.getSize] func;
-  empty: [data.getSize 0 =] func;
-}] func;
+  getSize: [data.getSize];
+  empty: [data.getSize 0 =];
+}];

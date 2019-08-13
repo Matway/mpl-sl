@@ -74,7 +74,7 @@ Variant: [{
         FALSE static
       ] if
     ] loop
-  ] func;
+  ];
 
   rawDestroy: [
     i: 0 static;
@@ -89,9 +89,9 @@ Variant: [{
         FALSE static
       ] if
     ] loop
-  ] func;
+  ];
 
-  getTag: [typeTag copy] func;
+  getTag: [typeTag copy];
 
   setTag: [
     index: copy dynamic;
@@ -100,13 +100,13 @@ Variant: [{
       index @typeTag set
       rawInit
     ] when
-  ] func;
+  ];
 
   get: [
     index: copy;
     [index typeTag =] "Wrong tag in Tagged Union!" assert
     @memory storageAddress index @typeList @ addressToReference
-  ] func;
+  ];
 
   INIT: [
     0 @typeTag set
@@ -138,8 +138,8 @@ Variant: [{
 }
 result:;
 @result manuallyInitVariable
-result
-] func;
+@result
+];
 
 getHeapUsedSize: ["VARIANT" has] [
   arg:;

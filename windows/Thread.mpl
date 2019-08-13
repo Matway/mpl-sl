@@ -7,14 +7,14 @@ Thread: [{
 
   DIE: [handle 0nx = ~ [join drop] when];
 
-  isRunning: [handle 0nx = ~] func;
+  isRunning: [handle 0nx = ~];
 
   init: [
     context: function:;;
     Nat32 Ref 0n32 context @function 4096nx kernel32.SECURITY_ATTRIBUTES Ref kernel32.CreateThread !handle handle 0nx = [
       ("CreateThread failed, result=" kernel32.GetLastError LF) assembleString print 1 exit # there is no good way to handle this, report and abort
     ] when
-  ] func;
+  ];
 
   join: [
     [handle 0nx = ~] "attempted to join a not running Thread" assert
@@ -33,13 +33,13 @@ Thread: [{
 
     0nx !handle
     code
-  ] func;
+  ];
 
   handle: 0nx;
-}] func;
+}];
 
 thread: [
   thread: Thread;
   @thread.init
   @thread
-] func;
+];

@@ -2,17 +2,17 @@
 "control" includeModule
 "String" includeModule
 
-{filename: 0nx; mode: 0nx;} 0nx {} "fopen" importFunction
-{buffer: 0nx; sizeOfElement: 0nx; count: 0nx; file: 0nx;} 0nx {} "fread" importFunction
-{buffer: 0nx; sizeOfElement: 0nx; count: 0nx; file: 0nx;} 0nx {} "fwrite" importFunction
-{file: 0nx;} 0 {} "fflush" importFunction
-{file: 0nx;} 0 {} "fclose" importFunction
-{file: 0nx; offset: 0; origin: 0;} 0 {} "fseek" importFunction
-{file: 0nx;} 0nx {} "ftell" importFunction
+{filename: 0nx; mode: 0nx;} 0nx                               {convention: cdecl;} "fopen" importFunction
+{buffer: 0nx; sizeOfElement: 0nx; count: 0nx; file: 0nx;} 0nx {convention: cdecl;} "fread" importFunction
+{buffer: 0nx; sizeOfElement: 0nx; count: 0nx; file: 0nx;} 0nx {convention: cdecl;} "fwrite" importFunction
+{file: 0nx;} 0                                                {convention: cdecl;} "fflush" importFunction
+{file: 0nx;} 0                                                {convention: cdecl;} "fclose" importFunction
+{file: 0nx; offset: 0; origin: 0;} 0                          {convention: cdecl;} "fseek" importFunction
+{file: 0nx;} 0nx                                              {convention: cdecl;} "ftell" importFunction
 
-SEEK_SET: [0i32] func;
-SEEK_CUR: [1i32] func;
-SEEK_END: [2i32] func;
+SEEK_SET: [0i32];
+SEEK_CUR: [1i32];
+SEEK_END: [2i32];
 
 loadString: [
   fileName: toString;
@@ -35,7 +35,7 @@ loadString: [
   @result.@success set
 
   result
-] func;
+];
 
 saveString: [
   stringView: makeStringView;
@@ -50,4 +50,19 @@ saveString: [
     f fflush 0 = and
     f fclose 0 = and
   ] &&
-] func;
+];
+
+appendString: [
+  stringView: makeStringView;
+  fileName: toString;
+
+  size: stringView textSize;
+
+  f: "ab" storageAddress fileName stringMemory fopen;
+  f 0nx = not
+  [
+    size 0nx = [f size 1nx stringView stringMemory fwrite size =] ||
+    f fflush 0 = and
+    f fclose 0 = and
+  ] &&
+];

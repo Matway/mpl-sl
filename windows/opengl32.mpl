@@ -6,5 +6,6 @@ opengl32: {
   # OpenGL32.Lib should be included for these functions
   wglCreateContext: @wglCreateContext;
   wglDeleteContext: @wglDeleteContext;
+  wglGetProcAddress: @wglGetProcAddress;
   wglMakeCurrent: @wglMakeCurrent;
 };

@@ -1,9 +1,8 @@
 "TcpAcceptor" module
+"Function" includeModule
 "TcpConnection" includeModule
 
 TcpAcceptor: [{
-  OnAccept: [{context: Natx; result: String Ref; connection: TcpConnection Ref;} {} {} codeRef] func;
-
   INIT: [
     0n8 !states
   ];
@@ -60,7 +59,7 @@ TcpAcceptor: [{
 
       result
     ] if
-  ] func;
+  ];
 
   # Stop listening
   # input:
@@ -72,16 +71,16 @@ TcpAcceptor: [{
     [old LISTENING =] "TcpAcceptor.stopListening: invalid state" assert
     listener winsock2.closesocket 0 = ~ [("LEAK: closesocket failed, result=" winsock2.WSAGetLastError LF) assembleString print] when
     0n8 @states RELEASE atomicStore
-  ] func;
+  ];
 
   # Initiate connection acceptance
   # input:
   #   context (Natx) - context value to be passed to onAccept callback
-  #   onAccept (OnAccept) - callback to be called when accepted, failed or canceled
+  #   onAccept (String Ref TcpConnection Ref -- ) - callback to be called when accepted, failed or canceled
   # output:
   #   result (String) - empty on success, error message on failure
   accept: [
-    context0: onAccept0:;;
+    onAccept0:;
     old: IN_ACCEPT LISTENING or @states ACQUIRE atomicExchange;
     [old LISTENING =] "TcpAcceptor.accept: invalid state" assert
     winsock2.IPPROTO_TCP winsock2.SOCK_STREAM winsock2.AF_INET winsock2.socket !connection connection winsock2.INVALID_SOCKET = [("socket failed, result=" winsock2.WSAGetLastError) assembleString] [
@@ -90,8 +89,7 @@ TcpAcceptor: [{
         [
           drop
           self storageAddress @dispatcherContext.!context
-          @onAccept0 !onAccept
-          context0 copy !context
+          @onAccept0 @onAccept.assign
           LISTENING ACCEPTING or @states RELEASE atomicStore
           # If 'cancel' will be called at this point, it is possible that it will not happen in time co cancel the operation.
           # It is a caller responsibility to synchronize 'cancel' call with the exit from 'accept'.
@@ -108,7 +106,7 @@ TcpAcceptor: [{
 
       result
     ] if
-  ] func;
+  ];
 
   # Try to cancel acceptance
   # input:
@@ -127,23 +125,23 @@ TcpAcceptor: [{
     ] if
 
     IN_CANCEL @states RELEASE atomicXor drop
-  ] func;
+  ];
 
-  IN_DIE:             [0x01n8] func;
-  IN_START_LISTENING: [0x02n8] func;
-  IN_STOP_LISTENING:  [0x04n8] func;
-  IN_ACCEPT:          [0x08n8] func;
-  IN_CANCEL:          [0x10n8] func;
-  IN_ON_ACCEPT_EVENT: [0x20n8] func;
-  LISTENING:          [0x40n8] func;
-  ACCEPTING:          [0x80n8] func;
+  IN_DIE:             [0x01n8];
+  IN_START_LISTENING: [0x02n8];
+  IN_STOP_LISTENING:  [0x04n8];
+  IN_ACCEPT:          [0x08n8];
+  IN_CANCEL:          [0x10n8];
+  IN_ON_ACCEPT_EVENT: [0x20n8];
+  LISTENING:          [0x40n8];
+  ACCEPTING:          [0x80n8];
 
   states: 0n8;
   listener: Natx;
   connection: Natx;
   addresses: Nat8 winsock2.sockaddr_in storageSize Nat32 cast Int32 cast 16 + 2 * array;
   dispatcherContext: dispatcher.Context;
-  onAccept: OnAccept;
+  onAccept: ({result: String Ref; connection: TcpConnection Ref;} {} {}) Function;
   context: Natx;
 
   onAcceptEvent: [
@@ -174,10 +172,10 @@ TcpAcceptor: [{
     ] if
 
     IN_ON_ACCEPT_EVENT ACCEPTING or @states RELEASE atomicXor drop
-    @tcpConnection @result context copy onAccept
-  ] func;
+    @tcpConnection @result onAccept
+  ];
 
   onAcceptEventWrapper: [TcpAcceptor addressToReference .onAcceptEvent];
-}] func;
+}];
 
 AcceptEx: winsock2.FN_ACCEPTEXRef;

@@ -2,18 +2,11 @@
 "control" useModule
 
 FARPROC: [{
-} Intx {} codeRef] func;
+} Intx {convention: stdcall;} codeRef];
 
 LPTHREAD_START_ROUTINE: [{
   lpThreadParameter: Natx;
-} Nat32 {} codeRef] func;
-
-HINSTANCE: [{
-  virtual INSTANCE: {};
-  unused: Int32;
-} Cref] func;
-
-HMODULE: [HINSTANCE] func;
+} Nat32 {convention: stdcall;} codeRef];
 
 CRITICAL_SECTION: [{
   DebugInfo: Natx;
@@ -22,43 +15,70 @@ CRITICAL_SECTION: [{
   OwningThread: Natx;
   LockSemaphore: Natx;
   SpinCount: Natx;
-}] func;
+}];
+
+HINSTANCE: [{
+  virtual INSTANCE: {};
+  unused: Int32;
+} Cref];
+
+HMODULE: [HINSTANCE];
+
+LARGE_INTEGER: [{
+  LowPart: Nat32;
+  HighPart: Int32;
+}];
 
 OVERLAPPED: [{
   Internal: Natx;
   InternalHigh: Natx;
   DUMMYUNIONNAME: Nat64;
   hEvent: Natx;
-}] func;
+}];
 
 OVERLAPPED_ENTRY: [{
   lpCompletionKey: Natx;
   lpOverlapped: OVERLAPPED Ref;
   Internal: Natx;
   dwNumberOfBytesTransferred: Nat32;
-}] func;
+}];
 
 SECURITY_ATTRIBUTES: [{
   nLength: Nat32;
   lpSecurityDescriptor: Natx;
   bInheritHandle: Int32;
-}] func;
+}];
 
 {
   hFile: Natx;
   lpOverlapped: OVERLAPPED Ref;
-} Int32 {} "CancelIoEx" importFunction
+} Int32 {convention: stdcall;} "CancelIoEx" importFunction
 
 {
   hObject: Natx;
-} Int32 {} "CloseHandle" importFunction
+} Int32 {convention: stdcall;} "CloseHandle" importFunction
+
+{
+  lpPathName: Natx;
+  lpSecurityAttributes: SECURITY_ATTRIBUTES Ref;
+} Int32 {convention: stdcall;} "CreateDirectoryW" importFunction
+
+{
+  lpFileName: Natx;
+  dwDesiredAccess: Nat32;
+  dwShareMode: Nat32;
+  lpSecurityAttributes: SECURITY_ATTRIBUTES Ref;
+  dwCreationDisposition: Nat32;
+  dwFlagsAndAttributes: Nat32;
+  hTemplateFile: Natx;
+} Natx {convention: stdcall;} "CreateFileW" importFunction
 
 {
   FileHandle: Natx;
   ExistingCompletionPort: Natx;
   CompletionKey: Natx;
   NumberOfConcurrentThreads: Nat32;
-} Natx {} "CreateIoCompletionPort" importFunction
+} Natx {convention: stdcall;} "CreateIoCompletionPort" importFunction
 
 {
   lpThreadAttributes: SECURITY_ATTRIBUTES Ref;
@@ -67,35 +87,48 @@ SECURITY_ATTRIBUTES: [{
   lpParameter: Natx;
   dwCreationFlags: Nat32;
   lpThreadId: Nat32 Ref;
-} Natx {} "CreateThread" importFunction
+} Natx {convention: stdcall;} "CreateThread" importFunction
+
+{
+  lpFileName: Natx;
+} Int32 {convention: stdcall;} "DeleteFileW" importFunction
 
 {
   lpCriticalSection: CRITICAL_SECTION Ref;
-} {} {} "EnterCriticalSection" importFunction
+} {} {convention: stdcall;} "EnterCriticalSection" importFunction
 
 {
   hThread: Natx;
   lpExitCode: Nat32 Ref;
-} Int32 {} "GetExitCodeThread" importFunction
+} Int32 {convention: stdcall;} "GetExitCodeThread" importFunction
 
 {
-} Nat32 {} "GetLastError" importFunction
+  lpFileName: Natx;
+} Nat32 {convention: stdcall;} "GetFileAttributesW" importFunction
+
+{
+  hFile: Natx;
+  lpFileSize: LARGE_INTEGER Ref;
+} Int32 {convention: stdcall;} "GetFileSizeEx" importFunction
+
+{
+} Nat32 {convention: stdcall;} "GetLastError" importFunction
 
 {
   lpModuleName: Natx;
-} HMODULE {} "GetModuleHandleW" importFunction
+} HMODULE {convention: stdcall;} "GetModuleHandleW" importFunction
 
 {
   hFile: Natx;
   lpOverlapped: OVERLAPPED Ref;
   lpNumberOfBytesTransferred: Nat32 Ref;
   bWait: Int32;
-} Int32 {} "GetOverlappedResult" importFunction
+} Int32 {convention: stdcall;} "GetOverlappedResult" importFunction
 
 {
   hModule: HMODULE;
   lpProcName: Natx;
-} FARPROC {} "GetProcAddress" importFunction
+} FARPROC {convention: stdcall;} "GetProcAddress" importFunction
 
 {
   CompletionPort: Natx;
@@ -103,7 +136,7 @@ SECURITY_ATTRIBUTES: [{
   lpCompletionKey: Natx Ref;
   lpOverlapped: (OVERLAPPED Ref) Ref;
   dwMilliseconds: Nat32;
-} Int32 {} "GetQueuedCompletionStatus" importFunction
+} Int32 {convention: stdcall;} "GetQueuedCompletionStatus" importFunction
 
 {
   CompletionPort: Natx;
@@ -112,19 +145,19 @@ SECURITY_ATTRIBUTES: [{
   ulNumEntriesRemoved: Nat32 Ref;
   dwMilliseconds: Nat32;
   fAlertable: Int32;
-} Int32 {} "GetQueuedCompletionStatusEx" importFunction
+} Int32 {convention: stdcall;} "GetQueuedCompletionStatusEx" importFunction
 
 {
-} Nat32 {} "GetTickCount64" importFunction
+} Nat32 {convention: stdcall;} "GetTickCount64" importFunction
 
 {
   lpCriticalSection: CRITICAL_SECTION Ref;
   dwSpinCount: Nat32;
-} Int32 {} "InitializeCriticalSectionAndSpinCount" importFunction
+} Int32 {convention: stdcall;} "InitializeCriticalSectionAndSpinCount" importFunction
 
 {
   lpCriticalSection: CRITICAL_SECTION Ref;
-} {} {} "LeaveCriticalSection" importFunction
+} {} {convention: stdcall;} "LeaveCriticalSection" importFunction
 
 {
   CodePage: Nat32;
@@ -133,28 +166,44 @@ SECURITY_ATTRIBUTES: [{
   cbMultiByte: Int32;
   lpWideCharStr: Natx;
   cchWideChar: Int32;
-} Int32 {} "MultiByteToWideChar" importFunction
+} Int32 {convention: stdcall;} "MultiByteToWideChar" importFunction
 
 {
   CompletionPort: Natx;
   dwNumberOfBytesTransferred: Nat32;
   dwCompletionKey: Natx;
   lpOverlapped: OVERLAPPED Ref;
-} Int32 {} "PostQueuedCompletionStatus" importFunction
+} Int32 {convention: stdcall;} "PostQueuedCompletionStatus" importFunction
 
 {
   lpPerformanceCount: Int64 Ref;
-} Int32 {} "QueryPerformanceCounter" importFunction
+} Int32 {convention: stdcall;} "QueryPerformanceCounter" importFunction
 
 {
   lpFrequency: Int64 Ref;
-} Int32 {} "QueryPerformanceFrequency" importFunction
+} Int32 {convention: stdcall;} "QueryPerformanceFrequency" importFunction
+
+{
+  hFile: Natx;
+  lpBuffer: Natx;
+  nNumberOfBytesToRead: Nat32;
+  lpNumberOfBytesRead: Nat32 Ref;
+  lpOverlapped: OVERLAPPED Ref;
+} Int32 {convention: stdcall;} "ReadFile" importFunction
 
 {
   dwMilliseconds: Nat32;
-} {} {} "Sleep" importFunction
+} {} {convention: stdcall;} "Sleep" importFunction
 
 {
   hHandle: Natx;
   dwMilliseconds: Nat32;
-} Nat32 {} "WaitForSingleObject" importFunction
+} Nat32 {convention: stdcall;} "WaitForSingleObject" importFunction
+
+{
+  hFile: Natx;
+  lpBuffer: Natx;
+  nNumberOfBytesToWrite: Nat32;
+  lpNumberOfBytesWritten: Nat32 Ref;
+  lpOverlapped: OVERLAPPED Ref;
+} Int32 {convention: stdcall;} "WriteFile" importFunction

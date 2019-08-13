@@ -1,13 +1,12 @@
 "TcpConnection" module
 "atomic" includeModule
 "dispatcher" includeModule
+"Function" includeModule
 "ws2_32" includeModule
 
-TcpConnection: [{
-  OnConnect: [{context: Natx; result: String Ref;             } {} {} codeRef] func;
-  OnRead:    [{context: Natx; result: String Ref; size: Int32;} {} {} codeRef] func;
-  OnWrite:   [{context: Natx; result: String Ref;             } {} {} codeRef] func;
+writeEventCount: 0 dynamic;
 
+TcpConnection: [{
   INIT: [
     0n32 !states
   ];
@@ -22,7 +21,7 @@ TcpConnection: [{
     [old 0n32 = [old CONNECTED =] ||] "TcpConnection.isConnected: invalid state" assert
     old CONNECTED =
     IN_IS_CONNECTED @states ACQUIRE atomicXor drop
-  ] func;
+  ];
 
   setConnection: [
     connection0:;
@@ -34,18 +33,17 @@ TcpConnection: [{
     0nx @writeDispatcherContext.@overlapped.!hEvent
     @onWriteEventWrapper @writeDispatcherContext.!onEvent
     CONNECTED @states RELEASE atomicStore
-  ] func;
+  ];
 
   # Initiate connection
   # input:
   #   address (Nat32) - destination IPv4 address
   #   port (Nat16) - destination port
-  #   context (Natx) - context value to be passed to onConnect callback
-  #   onConnect (OnConnect) - callback to be called when connected, failed or canceled
+  #   onConnect (String Ref -- ) - callback to be called when connected, failed or canceled
   # output:
   #   result (String) - empty on success, error message on failure
   connect: [
-    address: port: context0: onConnect0:;;;;
+    address: port: onConnect0:;;;
     old: IN_CONNECT @states ACQUIRE atomicExchange;
     [old 0n32 =] "TcpConnection.connect: invalid state" assert
     winsock2.IPPROTO_TCP winsock2.SOCK_STREAM winsock2.AF_INET winsock2.socket !connection connection winsock2.INVALID_SOCKET = [("socket failed, result=" winsock2.WSAGetLastError) assembleString] [
@@ -78,8 +76,7 @@ TcpConnection: [{
           0nx @writeDispatcherContext.@overlapped.!hEvent
           @onConnectEventWrapper @writeDispatcherContext.!onEvent
           self storageAddress @writeDispatcherContext.!context
-          @onConnect0 !onWrite
-          context0 copy !writeContext
+          @onConnect0 @onWrite.assign
           CONNECTING @states RELEASE atomicStore
           # If 'cancelConnect' will be called at this point, it is possible that it will not happen in time co cancel the operation.
           # It is a caller responsibility to synchronize 'cancelConnect' call with the exit from 'connect'.
@@ -96,7 +93,7 @@ TcpConnection: [{
 
       result
     ] if
-  ] func;
+  ];
 
   # Try to cancel connection
   # input:
@@ -125,7 +122,7 @@ TcpConnection: [{
         ] when
       ] when
     ] if
-  ] func;
+  ];
 
   # Disconnect connection
   # input:
@@ -137,25 +134,23 @@ TcpConnection: [{
     [old CONNECTED =] "TcpConnection.disconnect: invalid state" assert
     connection winsock2.closesocket 0 = ~ [("LEAK: closesocket failed, result=" winsock2.WSAGetLastError LF) assembleString print] when
     0n32 @states RELEASE atomicStore
-  ] func;
+  ];
 
   # Initiate read
   # input:
   #   data (Natx) - address of the buffer to read data into
   #   size (Int32) - size of the buffer
-  #   context (Natx) - context value to be passed to onRead callback
-  #   onRead (OnRead) - callback to be called when read completed, failed or canceled
+  #   onRead (String Ref Int32 -- ) - callback to be called when read completed, failed or canceled
   # output:
   #   result (String) - empty on success, error message on failure
   read: [
-    data: size: context0: onRead0:;;;;
+    data: size: onRead0:;;;
     old: IN_READ @states ACQUIRE atomicXor READ_MASK and;
     [old CONNECTED =] "TcpConnection.read: invalid state" assert
     buf: {len: size Nat32 cast; buf: data copy;};
     flags: 0n32;
     self storageAddress @readDispatcherContext.!context
-    @onRead0 !onRead
-    context0 copy !readContext
+    @onRead0 @onRead.assign
     IN_READ READING or @states RELEASE atomicXor drop
     # If 'cancelRead' will be called at this point, it is possible that it will not happen in time co cancel the operation.
     # It is a caller responsibility to synchronize 'cancelRead' call with the exit from 'read'.
@@ -165,7 +160,7 @@ TcpConnection: [{
         READING @states RELEASE atomicXor drop
       ] ["" toString] if
     ] ["" toString] if
-  ] func;
+  ];
 
   # Try to cancel read
   # input:
@@ -184,24 +179,22 @@ TcpConnection: [{
     ] if
 
     IN_CANCEL_READ @states RELEASE atomicXor drop
-  ] func;
+  ];
 
   # Initiate write
   # input:
   #   data (Natx) - address of the buffer to write
   #   size (Int32) - size of the buffer
-  #   context (Natx) - context value to be passed to onWrite callback
-  #   onWrite (OnWrite) - callback to be called when write completed, failed or canceled
+  #   onWrite (String Ref -- ) - callback to be called when write completed, failed or canceled
   # output:
   #   result (String) - empty on success, error message on failure
   write: [
-    data: size: context0: onWrite0:;;;;
+    data: size: onWrite0:;;;
     old: IN_WRITE @states ACQUIRE atomicXor WRITE_MASK and;
     [old CONNECTED =] "TcpConnection.write: invalid state" assert
     buf: {len: size Nat32 cast; buf: data copy;};
     self storageAddress @writeDispatcherContext.!context
-    @onWrite0 !onWrite
-    context0 copy !writeContext
+    @onWrite0 @onWrite.assign
     IN_WRITE WRITING or @states RELEASE atomicXor drop
     # If 'cancelWrite' will be called at this point, it is possible that it will not happen in time co cancel the operation.
     # It is a caller responsibility to synchronize 'cancelWrite' call with the exit from 'write'.
@@ -211,7 +204,7 @@ TcpConnection: [{
         WRITING @states RELEASE atomicXor drop
       ] ["" toString] if
     ] ["" toString] if
-  ] func;
+  ];
 
   # Try to cancel write
   # input:
@@ -230,37 +223,35 @@ TcpConnection: [{
     ] if
 
     IN_CANCEL_WRITE @states RELEASE atomicXor drop
-  ] func;
+  ];
 
-  IN_DIE:              [0x00000001n32] func;
-  IN_IS_CONNECTED:     [0x00000002n32] func;
-  IN_SET:              [0x00000004n32] func;
-  IN_CONNECT:          [0x00000008n32] func;
-  IN_CANCEL_CONNECT:   [0x00000010n32] func;
-  IN_DISCONNECT:       [0x00000020n32] func;
-  IN_READ:             [0x00000040n32] func;
-  IN_CANCEL_READ:      [0x00000080n32] func;
-  IN_WRITE:            [0x00000100n32] func;
-  IN_CANCEL_WRITE:     [0x00000200n32] func;
-  IN_ON_CONNECT_EVENT: [0x00000400n32] func;
-  IN_ON_READ_EVENT:    [0x00000800n32] func;
-  IN_ON_WRITE_EVENT:   [0x00001000n32] func;
-  CONNECTING:          [0x00002000n32] func;
-  CONNECTED:           [0x00004000n32] func;
-  READING:             [0x00008000n32] func;
-  WRITING:             [0x00010000n32] func;
-  COMMON_MASK:         [IN_DIE IN_IS_CONNECTED or IN_SET or IN_CONNECT or IN_CANCEL_CONNECT or IN_DISCONNECT or IN_ON_CONNECT_EVENT or CONNECTING or CONNECTED or] func;
-  READ_MASK:           [COMMON_MASK IN_READ or IN_CANCEL_READ or READING or] func;
-  WRITE_MASK:          [COMMON_MASK IN_WRITE or IN_CANCEL_WRITE or WRITING or] func;
+  IN_DIE:              [0x00000001n32];
+  IN_IS_CONNECTED:     [0x00000002n32];
+  IN_SET:              [0x00000004n32];
+  IN_CONNECT:          [0x00000008n32];
+  IN_CANCEL_CONNECT:   [0x00000010n32];
+  IN_DISCONNECT:       [0x00000020n32];
+  IN_READ:             [0x00000040n32];
+  IN_CANCEL_READ:      [0x00000080n32];
+  IN_WRITE:            [0x00000100n32];
+  IN_CANCEL_WRITE:     [0x00000200n32];
+  IN_ON_CONNECT_EVENT: [0x00000400n32];
+  IN_ON_READ_EVENT:    [0x00000800n32];
+  IN_ON_WRITE_EVENT:   [0x00001000n32];
+  CONNECTING:          [0x00002000n32];
+  CONNECTED:           [0x00004000n32];
+  READING:             [0x00008000n32];
+  WRITING:             [0x00010000n32];
+  COMMON_MASK:         [IN_DIE IN_IS_CONNECTED or IN_SET or IN_CONNECT or IN_CANCEL_CONNECT or IN_DISCONNECT or IN_ON_CONNECT_EVENT or CONNECTING or CONNECTED or];
+  READ_MASK:           [COMMON_MASK IN_READ or IN_CANCEL_READ or READING or];
+  WRITE_MASK:          [COMMON_MASK IN_WRITE or IN_CANCEL_WRITE or WRITING or];
 
   states: 0n32;
   connection: Natx;
   readDispatcherContext: dispatcher.Context;
-  onRead: OnRead;
-  readContext: Natx;
+  onRead: ({result: String Ref; numberOfTransferredBytes: Int32;} {} {}) Function;
   writeDispatcherContext: dispatcher.Context;
-  onWrite: OnWrite;
-  writeContext: Natx;
+  onWrite: ({result: String Ref;} {} {}) Function;
 
   onConnectEvent: [
     numberOfBytesTransferred: error: copy;;
@@ -290,9 +281,9 @@ TcpConnection: [{
       ] if
 
       @states RELEASE atomicXor drop
-      @result writeContext copy onWrite
+      @result copy onWrite
     ] if
-  ] func;
+  ];
 
   onReadEvent: [
     numberOfBytesTransferred: error: copy;;
@@ -308,8 +299,8 @@ TcpConnection: [{
     ] when
 
     IN_ON_READ_EVENT READING or @states RELEASE atomicXor drop
-    numberOfBytesTransferred Int32 cast @result readContext copy onRead
-  ] func;
+    numberOfBytesTransferred Int32 cast @result onRead
+  ];
 
   onWriteEvent: [
     numberOfBytesTransferred: error: copy;;
@@ -325,12 +316,12 @@ TcpConnection: [{
     ] when
 
     IN_ON_WRITE_EVENT WRITING or @states RELEASE atomicXor drop
-    @result writeContext copy onWrite
-  ] func;
+    @result onWrite
+  ];
 
   onConnectEventWrapper: [TcpConnection addressToReference .onConnectEvent];
   onReadEventWrapper:    [TcpConnection addressToReference .onReadEvent   ];
   onWriteEventWrapper:   [TcpConnection addressToReference .onWriteEvent  ];
-}] func;
+}];
 
 ConnectEx: winsock2.FN_CONNECTEXRef;

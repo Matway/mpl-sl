@@ -1,7 +1,7 @@
 "String" module
 "Array" includeModule
 
-{arg: 0nx;} 0nx {} "strlen" importFunction
+{arg: 0nx;} 0nx {convention: cdecl;} "strlen" importFunction
 
 getCodePointAndSize: [
   copy endSize:;
@@ -66,7 +66,7 @@ getCodePointAndSize: [
       ] if
     ] if
   ] if
-] func;
+];
 
 getCodePointSize: [
   copy endSize:;
@@ -105,7 +105,7 @@ getCodePointSize: [
       ] if
     ] if
   ] if
-] func;
+];
 
 previousCodePointSize: [
   copy begSize:;
@@ -136,7 +136,7 @@ previousCodePointSize: [
       ] if
     ] if
   ] if
-] func;
+];
 
 fromCodePoint: [
   copy codePoint:;
@@ -169,7 +169,7 @@ fromCodePoint: [
   ] [
     0
   ] if
-] func;
+];
 
 intPow: [
   copy up:;
@@ -202,7 +202,7 @@ intPow: [
     ] loop
     acc
   ] if
-] func;
+];
 
 makeStringViewRaw: [{
   virtual STRING_VIEW: ();
@@ -211,7 +211,7 @@ makeStringViewRaw: [{
 
   getTextSize: [
     dataSize copy
-  ] func;
+  ];
 
   split: [
     result: {
@@ -234,10 +234,10 @@ makeStringViewRaw: [{
       ] if
     ] while
     @result
-  ] func;
-}] func;
+  ];
+}];
 
-StringView: [0 Nat8 Ref makeStringViewRaw] func;
+StringView: [0 Nat8 Ref makeStringViewRaw];
 
 String: [{
   virtual STRING: ();
@@ -249,9 +249,9 @@ String: [{
     ] [
       chars.getSize 1 -
     ] if
-  ] func;
+  ];
 
-  getStringMemory: [chars.getBufferBegin] func;
+  getStringMemory: [chars.getBufferBegin];
 
   getStringView: [
     chars.getSize 0 = [
@@ -259,21 +259,21 @@ String: [{
     ] [
       chars.getSize 1 - 0 chars.at storageAddress Nat8 addressToReference makeStringViewRaw
     ] if
-  ] func;
+  ];
 
   makeNZ: [
     chars.getSize 0 > [@chars.popBack] when #end zero
-  ] func;
+  ];
 
   makeZ: [
-    0n8 @chars.pushBack #end zero
-  ] func;
+    chars.getSize 0 > [0n8 @chars.pushBack] when #end zero
+  ];
 
   catAsciiSymbolCodeNZ: [
     copy codePoint:;
     [codePoint 128n32 <] "Is not ascii symbol code!" assert
     codePoint 0n8 cast @chars.pushBack #end zero
-  ] func;
+  ];
 
   catSymbolCodeNZ: [
     copy codePoint:;
@@ -285,7 +285,7 @@ String: [{
       i buf @ @chars.pushBack
       i 1 + @i set
     ] while
-  ] func;
+  ];
 
   catStringNZ: [
     stringView: makeStringView;
@@ -301,7 +301,7 @@ String: [{
       ] loop
 
     ] when
-  ] func;
+  ];
 
   catIntNZ: [
     copy number:;
@@ -311,11 +311,11 @@ String: [{
     ] [
       number Nat64 cast catUintNZ
     ] if
-  ] func;
+  ];
 
   catUintNZ: [
     copy number:;
-    nc: [number cast] func;
+    nc: [number cast];
 
     shifted: number 0n64 cast;
     rounded: 1n64 dynamic;
@@ -336,11 +336,11 @@ String: [{
 
       rounded 0n64 >
     ] loop
-  ] func;
+  ];
 
   catHexNZ: [
     copy number:;
-    nc: [number cast] func;
+    nc: [number cast];
 
     shifted: number 0n64 cast;
     rounded: 1n64 dynamic;
@@ -348,7 +348,7 @@ String: [{
     shifted 16n64 < not [
       [
         rounded 16n64 * @rounded set
-        rounded 16n64 * shifted > not
+        rounded shifted 16n64 / > not
       ] loop
     ] when
 
@@ -366,12 +366,12 @@ String: [{
 
       rounded 0n64 >
     ] loop
-  ] func;
+  ];
 
   catFloatNZ: [
     copy number:;
 
-    nc: [number cast] func;
+    nc: [number cast];
 
     number 0 nc = [
       "0" catStringNZ
@@ -394,8 +394,8 @@ String: [{
           ten: 10 nc;
           nlog10: number log10 floor 0 cast;
 
-          maxDigits: 7 dynamic;
-          maxOrder: 9 dynamic;
+          maxDigits: 6 dynamic;
+          maxOrder: 8 dynamic;
 
           number 0.0r32 same [
             5 dynamic @maxDigits set
@@ -417,7 +417,7 @@ String: [{
           rp 0 < [0 @rp set] when
           rounded: ten rp digits + intPow 0n32 cast;
           shifted: number ten digits shift - intPow * 0.5 nc + 0n32 cast;
-          digitToCodePoint: [48n32 +] func;
+          digitToCodePoint: [48n32 +];
 
           shifted rounded / 9n32 > [
             rounded 10n32 * @rounded set
@@ -450,7 +450,7 @@ String: [{
         ] if
       ] if
     ] if
-  ] func;
+  ];
 
   catCondNZ: [
     [
@@ -458,7 +458,7 @@ String: [{
     ] [
       "FALSE" catStringNZ
     ] if
-  ] func;
+  ];
 
   catNZ: [
     arg:;
@@ -477,23 +477,23 @@ String: [{
             @arg TRUE same [
               @arg catCondNZ
             ] [
-              @arg
+              @arg printStack
               0 .CANNOT_CAT_THIS_TYPE
             ] if
           ] if
         ] if
       ] if
     ] if
-  ] func;
+  ];
 
-  catAsciiSymbolCode: [makeNZ catAsciiSymbolCodeNZ makeZ] func;
-  catSymbolCode:      [makeNZ catSymbolCodeNZ      makeZ] func;
-  catString:          [makeNZ catStringNZ          makeZ] func;
-  catInt:             [makeNZ catIntNZ             makeZ] func;
-  catUint:            [makeNZ catUintNZ            makeZ] func;
-  catHex:             [makeNZ catHexNZ             makeZ] func;
-  catFloat:           [makeNZ catFloatNZ           makeZ] func;
-  cat:                [makeNZ catNZ                makeZ] func;
+  catAsciiSymbolCode: [makeNZ catAsciiSymbolCodeNZ makeZ];
+  catSymbolCode:      [makeNZ catSymbolCodeNZ      makeZ];
+  catString:          [makeNZ catStringNZ          makeZ];
+  catInt:             [makeNZ catIntNZ             makeZ];
+  catUint:            [makeNZ catUintNZ            makeZ];
+  catHex:             [makeNZ catHexNZ             makeZ];
+  catFloat:           [makeNZ catFloatNZ           makeZ];
+  cat:                [makeNZ catNZ                makeZ];
 
   catMany: [
     list:;
@@ -509,17 +509,17 @@ String: [{
       i 1 + @i set
     ] while
     makeZ
-  ] func;
-}] func;
+  ];
+}];
 
 Hex: [{
   virtual HEX: ();
-}] func;
+}];
 
 textSize: ["STRING_VIEW" has] [.getTextSize Natx cast] pfunc;
 textSize: ["STRING" has] [.getTextSize Natx cast] pfunc;
 
-makeStringView: [0 .CANNOT_MAKE_STRING_VIEW] func;
+makeStringView: [0 .CANNOT_MAKE_STRING_VIEW];
 
 makeStringView: ["" same] [
   copy arg:;
@@ -537,9 +537,9 @@ makeStringView: ["STRING" has] [
 makeStringViewByAddress: [
   copy arg:;
   arg strlen Int32 cast arg Nat8 addressToReference makeStringViewRaw
-] func;
+];
 
-stringMemory: [0 .CANNOT_GET_STRING_MEMORY] func;
+stringMemory: [0 .CANNOT_GET_STRING_MEMORY];
 stringMemory: ["" same] [storageAddress] pfunc;
 stringMemory: ["STRING_VIEW" has] [.dataBegin storageAddress] pfunc;
 stringMemory: ["STRING" has] [.getStringMemory] pfunc;
@@ -549,26 +549,26 @@ toString: [
   result: String;
   @arg @result.cat
   @result
-] func;
+];
 
 codepointToString: [
   arg:;
   result: String;
   arg @result.catSymbolCode
   @result
-] func;
+];
 
 assembleString: [
   list:;
   result: String;
   list @result.catMany
   @result
-] func;
+];
 
 stringness: [
   arg:;
   arg "" same [1][arg "STRING_VIEW" has [2][arg "STRING" has [2][0] if ] if] if
-] func;
+];
 
 =: [
   p1: stringness;
@@ -580,7 +580,7 @@ stringness: [
   arg1.dataSize arg2.dataSize = [
     result: TRUE dynamic;
     i: 0 dynamic;
-    [i arg1.dataSize < [result copy] &&] [
+    [result copy [i arg1.dataSize <] &&] [
       addr1: arg1.dataBegin storageAddress i Natx cast + Nat8 addressToReference;
       addr2: arg2.dataBegin storageAddress i Natx cast + Nat8 addressToReference;
       addr1 addr2 = @result set
@@ -592,7 +592,7 @@ stringness: [
 
 print: [
   toString stringMemory printAddr
-] func;
+];
 
 print: ["" same] [
   stringMemory printAddr
@@ -608,11 +608,11 @@ addLog: [
   ] [
     list:;
   ] if
-] func;
+];
 
 printList: [
   assembleString print
-] func;
+];
 
 hash: [makeStringView TRUE] [
   stringView: makeStringView;
