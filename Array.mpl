@@ -7,11 +7,11 @@ makeArrayRangeRaw: [{
   dataBegin:;
   dataSize: copy dynamic;
   schema elementType: @dataBegin;
-  virtual elementSize: dataBegin storageSize;
-  dataBegin storageAddress @elementType addressToReference !dataBegin #dynamize
+  virtual elementSize: @dataBegin storageSize;
+  @dataBegin storageAddress @elementType addressToReference !dataBegin #dynamize
 
   getBufferBegin: [
-    dataBegin storageAddress
+    @dataBegin storageAddress
   ];
 
   at: [
@@ -115,7 +115,7 @@ Array: [
     virtual elementSize: elementType storageSize;
 
     getBufferBegin: [
-      dataBegin storageAddress
+      @dataBegin storageAddress
     ];
 
     at: [
