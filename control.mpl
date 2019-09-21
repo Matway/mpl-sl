@@ -10,7 +10,7 @@ isCodeRef: [TRUE static];
 isCodeRef: [storageSize TRUE static] [FALSE static] pfunc;
 
 isCopyable: [drop FALSE];
-isCopyable: [x:; @x storageSize 0nx > [@x Ref] [@x copy] uif copy TRUE] [drop TRUE] pfunc;
+isCopyable: [x:; @x storageSize 0nx > [@x Ref] [@x] uif copy TRUE] [drop TRUE] pfunc;
 
 failProc: [
   storageAddress printAddr
