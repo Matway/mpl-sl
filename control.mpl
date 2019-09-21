@@ -75,12 +75,12 @@ times: [
 
 assert: [
   DEBUG [
-    copy message:;
+    message:;
     call not [
       message failProc
     ] when
   ] [
-    copy message:; condition:;
+    message:; condition:;
   ] if
 ];
 
