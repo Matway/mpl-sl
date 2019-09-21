@@ -391,6 +391,8 @@ xmlInternal: {
           ascii.nCode ["no" skipString]
           ["expected y or n" lexicalError]
         ) case
+
+        "'" skipString
       ]
       ascii.quote [
         iterateChecked
