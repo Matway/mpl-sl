@@ -183,7 +183,9 @@ Pool: [
 
     DIE: [
       clear
-      data mplFree
+      data 0nx = not [
+        data mplFree
+      ] when
     ];
   }
 ];
