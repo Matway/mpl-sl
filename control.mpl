@@ -10,10 +10,23 @@ isCodeRef: [TRUE static];
 isCodeRef: [storageSize TRUE static] [FALSE static] pfunc;
 
 isCopyable: [drop FALSE];
-isCopyable: [x:; @x storageSize 0nx > [@x Ref] [@x copy] uif copy TRUE] [drop TRUE] pfunc;
+isCopyable: [x:; @x storageSize 0nx > [@x Ref] [@x] uif copy TRUE] [drop TRUE] pfunc;
 
 failProc: [
   storageAddress printAddr
+
+  trace: getCallTrace;
+  [
+    trace.first trace.last is [
+      FALSE
+    ] [
+      () LF printf
+      (trace.last.name trace.last.line copy trace.last.column copy) "in %s at %i:%i" printf
+      trace.last.prev trace.last addressToReference @trace.!last
+      TRUE
+    ] if
+  ] loop
+
   2 exit
 ];
 
@@ -75,12 +88,12 @@ times: [
 
 assert: [
   DEBUG [
-    copy message:;
+    message:;
     call not [
       message failProc
     ] when
   ] [
-    copy message:; condition:;
+    message:; condition:;
   ] if
 ];
 
