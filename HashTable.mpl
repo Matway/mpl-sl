@@ -88,6 +88,33 @@ HashTable: [
       ] call
     ];
 
+    erase: [
+      key:;
+      keyHash: @key hash dynamic;
+      [
+        dataSize 0 = not [
+          bucketIndex: keyHash data.dataSize 1 - 0n32 cast and 0 cast;
+          curBucket: bucketIndex @data.at;
+
+          i: 0 dynamic;
+          [
+            i curBucket.dataSize < [
+              node: i @curBucket.at;
+              node.key key = [
+                i @curBucket.erase
+                FALSE
+              ] [
+                i 1 + @i set TRUE
+              ] if
+            ] [
+              [FALSE] "Erasing unexisting element!" assert
+              FALSE
+            ] if
+          ] loop
+        ] when
+      ] call
+    ];
+
     insertUnsafe: [ # make find before please
       valueIsMoved: isMoved;
       value:;
