@@ -55,7 +55,7 @@ Pool: [
 
     at: [
       copy index:;
-      [index valid] "Element is invalid!" assert
+      [index valid] "Pool::at: element is invalid!" assert
       index elementAt
     ];
 
@@ -65,7 +65,7 @@ Pool: [
 
     erase: [
       copy index:;
-      [index valid] "Element is invalid!" assert
+      [index valid] "Pool::erase: element is invalid!" assert
       index getAddressByIndex @elementSchema addressToReference manuallyDestroyVariable
       firstFree index nextFreeAt set
 
