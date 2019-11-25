@@ -103,150 +103,151 @@ makeSubRange: [
   rangeEndIndex rangeBeginIndex - arg.getBufferBegin arg.elementSize rangeBeginIndex Natx cast * + @arg.@elementType addressToReference makeArrayRangeRaw
 ];
 
-Array: [
-  {
-    virtual CONTAINER: ();
-    virtual ARRAY: ();
-    virtual SCHEMA_NAME: "ARRAY";
-    schema elementType:;
-    dataBegin: 0nx @elementType addressToReference;
-    dataSize: 0 dynamic;
-    dataReserve: 0 dynamic;
-    virtual elementSize: elementType storageSize;
+Array: [{
+  virtual CONTAINER: ();
+  virtual ARRAY: ();
+  virtual SCHEMA_NAME: "ARRAY";
+  schema elementType:;
+  dataBegin: 0nx @elementType addressToReference;
+  dataSize: 0 dynamic;
+  dataReserve: 0 dynamic;
+  virtual elementSize: elementType storageSize;
 
-    getBufferBegin: [
-      @dataBegin storageAddress
-    ];
+  getBufferBegin: [
+    @dataBegin storageAddress
+  ];
 
-    at: [
-      copy index:;
-      index 0i32 same not [0 .ONLY_I32_ALLOWED] when
-      [index 0 < not [index dataSize <] &&] "Index is out of range!" assert
+  at: [
+    copy index:;
+    index 0i32 same not [0 .ONLY_I32_ALLOWED] when
+    [index 0 < not [index dataSize <] &&] "Index is out of range!" assert
+    getBufferBegin index Natx cast elementSize * + @elementType addressToReference
+  ];
 
-      getBufferBegin index Natx cast elementSize * + @elementType addressToReference
-    ];
 
-    getSize: [dataSize copy];
 
-    getArrayRange: [
-      dataSize @dataBegin storageAddress @elementType addressToReference makeArrayRangeRaw
-    ];
 
-    getNextReserve: [
-      dataReserve dataReserve 4 / + 4 +
-    ];
+  getSize: [dataSize copy];
 
-    setReserve: [
-      copy newReserve:;
-      [newReserve dataReserve < not] "New reserve is less than old reserve!" assert
-      newReserve Natx cast elementSize * getBufferBegin mplRealloc
-      @elementType addressToReference !dataBegin
-      newReserve @dataReserve set
-    ];
+  getArrayRange: [
+    dataSize @dataBegin storageAddress @elementType addressToReference makeArrayRangeRaw
+  ];
 
-    addReserve: [
-      dataSize dataReserve = [
-        getNextReserve setReserve
-      ] when
-    ];
+  getNextReserve: [
+    dataReserve dataReserve 4 / + 4 +
+  ];
 
-    pushBack: [
-      elementIsMoved: isMoved;
-      element:;
-      addReserve
-      dataSize 1 + @dataSize set
-      newElement: dataSize 1 - at;
-      @newElement manuallyInitVariable
-      @element elementIsMoved moveIf @newElement set
-    ];
+  setReserve: [
+    copy newReserve:;
+    [newReserve dataReserve < not] "New reserve is less than old reserve!" assert
+    newReserve Natx cast elementSize * getBufferBegin mplRealloc
+    @elementType addressToReference !dataBegin
+    newReserve @dataReserve set
+  ];
 
-    shrink: [
-      copy newSize: dynamic;
+  addReserve: [
+    dataSize dataReserve = [
+      getNextReserve setReserve
+    ] when
+  ];
+
+  pushBack: [
+    elementIsMoved: isMoved;
+    element:;
+    addReserve
+    dataSize 1 + @dataSize set
+    newElement: dataSize 1 - at;
+    @newElement manuallyInitVariable
+    @element elementIsMoved moveIf @newElement set
+  ];
+
+  shrink: [
+    copy newSize: dynamic;
       [newSize dataSize > not] "Shrinked size is bigger than the old size!" assert
 
-      i: dataSize copy;
-      [i newSize >] [
-        i 1 - @i set
-        i at manuallyDestroyVariable
-      ] while
-      newSize @dataSize set
-    ];
+    i: dataSize copy;
+    [i newSize >] [
+      i 1 - @i set
+      i at manuallyDestroyVariable
+    ] while
+    newSize @dataSize set
+  ];
 
-    popBack: [
-      [dataSize 0 >] "Pop from empty array!" assert
-      dataSize 1 - shrink
-    ];
+  popBack: [
+    [dataSize 0 >] "Pop from empty array!" assert
+    dataSize 1 - shrink
+  ];
 
-    last: [
-      dataSize 1 - at
-    ];
+  last: [
+    dataSize 1 - at
+  ];
 
-    enlarge: [
-      copy newSize: dynamic;
-      [newSize dataSize < not] "Enlarged size is less than old size!" assert
+  enlarge: [
+    copy newSize: dynamic;
+    [newSize dataSize < not] "Enlarged size is less than old size!" assert
 
-      dataReserve newSize < [
-        newReserve: getNextReserve;
-        newReserve newSize < [newSize @newReserve set] when
-        newReserve setReserve
-      ] when
+    dataReserve newSize < [
+      newReserve: getNextReserve;
+      newReserve newSize < [newSize @newReserve set] when
+      newReserve setReserve
+    ] when
 
-      i: dataSize copy;
-      newSize @dataSize set
-      [i dataSize <] [
-        i at manuallyInitVariable
-        i 1 + @i set
-      ] while
-    ];
+    i: dataSize copy;
+    newSize @dataSize set
+    [i dataSize <] [
+      i at manuallyInitVariable
+      i 1 + @i set
+    ] while
+  ];
 
-    resize: [
-      copy newSize: dynamic;
-      newSize dataSize = [
+  resize: [
+    copy newSize: dynamic;
+    newSize dataSize = [
+    ] [
+      newSize dataSize < [
+        newSize shrink
       ] [
-        newSize dataSize < [
-          newSize shrink
-        ] [
-          newSize enlarge
-        ] if
+        newSize enlarge
       ] if
-    ];
+    ] if
+  ];
 
-    clear: [
-      0 dynamic shrink
-    ];
+  clear: [
+    0 dynamic shrink
+  ];
 
-    release: [
-      clear
-      addr: getBufferBegin;
-      addr 0nx = not [addr mplFree] when
-      0nx @elementType addressToReference !dataBegin
-      0 dynamic @dataSize set
-      0 dynamic @dataReserve set
-    ];
+  release: [
+    clear
+    addr: getBufferBegin;
+    addr 0nx = not [addr mplFree] when
+    0nx @elementType addressToReference !dataBegin
+    0 dynamic @dataSize set
+    0 dynamic @dataReserve set
+  ];
 
-    INIT: [
-      0nx @elementType addressToReference !dataBegin
-      0 dynamic @dataSize set
-      0 dynamic @dataReserve set
-    ];
+  INIT: [
+    0nx @elementType addressToReference !dataBegin
+    0 dynamic @dataSize set
+    0 dynamic @dataReserve set
+  ];
 
-    ASSIGN: [
-      other:;
-      other.dataSize resize
+  ASSIGN: [
+    other:;
+    other.dataSize resize
 
-      i: 0 dynamic;
-      [i dataSize <] [
-        i other.at i at set
-        i 1 + @i set
-      ] while
-    ];
+    i: 0 dynamic;
+    [i dataSize <] [
+      i other.at i at set
+      i 1 + @i set
+    ] while
+  ];
 
-    DIE: [
-      clear
-      addr: getBufferBegin;
-      addr 0nx = not [addr mplFree] when
-    ];
-  }];
+  DIE: [
+    clear
+    addr: getBufferBegin;
+    addr 0nx = not [addr mplFree] when
+  ];
+}];
 
 makeArray: [
   listIsMoved: isMoved;
