@@ -522,7 +522,7 @@ textSize: ["STRING" has] [.getTextSize Natx cast] pfunc;
 makeStringView: [0 .CANNOT_MAKE_STRING_VIEW];
 
 makeStringView: ["" same] [
-  copy arg:;
+  arg:;
   arg textSize Int32 cast dynamic arg storageAddress Nat8 addressToReference makeStringViewRaw
 ] pfunc;
 
