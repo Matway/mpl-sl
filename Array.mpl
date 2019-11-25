@@ -162,7 +162,7 @@ Array: [
 
     shrink: [
       copy newSize: dynamic;
-      [newSize dataSize > not] "Shrinked size is bigged than old size!" assert
+      [newSize dataSize > not] "Shrinked size is bigger than the old size!" assert
 
       i: dataSize copy;
       [i newSize >] [
