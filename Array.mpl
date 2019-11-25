@@ -124,8 +124,17 @@ Array: [{
     getBufferBegin index Natx cast elementSize * + @elementType addressToReference
   ];
 
+  erase: [
+    copy index:;
+    index 0i32 same not [0 .ONLY_I32_ALLOWED] when
+    [index 0 < not [index dataSize <] &&] "Index is out of range!" assert
 
+    index getSize 1 - < [
+      last move index at set
+    ] when
 
+    popBack
+  ];
 
   getSize: [dataSize copy];
 
