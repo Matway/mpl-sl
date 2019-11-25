@@ -14,6 +14,19 @@ isCopyable: [x:; @x storageSize 0nx > [@x Ref] [@x] uif copy TRUE] [drop TRUE] p
 
 failProc: [
   storageAddress printAddr
+
+  trace: getCallTrace;
+  [
+    trace.first trace.last is [
+      FALSE
+    ] [
+      () LF printf
+      (trace.last.name trace.last.line copy trace.last.column copy) "in %s at %i:%i" printf
+      trace.last.prev trace.last addressToReference @trace.!last
+      TRUE
+    ] if
+  ] loop
+
   2 exit
 ];
 
