@@ -10,7 +10,6 @@
 {memptr1: Natx; memptr2: Natx; num: Natx;} Int32 {convention: cdecl;} "memcmp"  importFunction
 {dst: Natx; value: Int32; num: Natx;} Natx       {convention: cdecl;} "memset"  importFunction
 
-
 IntrusiveListNode: [{
   nextAddress: 0nx;
 }];
@@ -18,7 +17,12 @@ IntrusiveListNode: [{
 SL_MEMORY_MAX_CACHED_SIZE: [0x40000nx];
 SL_MEMORY_MAX_CACHED_SIZE: [SL_MEMORY_MAX_CACHED_SIZE_OPTION TRUE] [SL_MEMORY_MAX_CACHED_SIZE_OPTION] pfunc;
 
-localStorage: 0nx SL_MEMORY_MAX_CACHED_SIZE 1nx + Int32 cast array;
+localStorage: SL_MEMORY_MAX_CACHED_SIZE 1nx + Natx storageSize * malloc;
+localStorage 0nx = ["memory.mpl, error while initializing allocator: malloc returned 0" failProc] when
+
+SL_MEMORY_MAX_CACHED_SIZE 1nx + Natx storageSize * 0 localStorage memset drop
+
+atLocalStorage: [Natx storageSize * localStorage + Natx addressToReference];
 
 {size: Natx;} Natx {} [
   copy size:;
@@ -27,11 +31,11 @@ localStorage: 0nx SL_MEMORY_MAX_CACHED_SIZE 1nx + Int32 cast array;
   ] [
     size Natx storageSize max copy !size
     node: IntrusiveListNode Ref;
-    size SL_MEMORY_MAX_CACHED_SIZE > [size Int32 cast localStorage @ 0nx =] || [
+    size SL_MEMORY_MAX_CACHED_SIZE > [size atLocalStorage 0nx =] || [
       size malloc IntrusiveListNode addressToReference !node
     ] [
-      size Int32 cast @localStorage @ IntrusiveListNode addressToReference !node
-      @node.nextAddress size Int32 cast @localStorage @ set
+      size atLocalStorage IntrusiveListNode addressToReference !node
+      @node.nextAddress size atLocalStorage set
     ] if
 
     node storageAddress
@@ -47,8 +51,8 @@ localStorage: 0nx SL_MEMORY_MAX_CACHED_SIZE 1nx + Int32 cast array;
     ] [
       size copy Natx storageSize max copy !size
       node: ptr IntrusiveListNode addressToReference;
-      size Int32 cast localStorage @ @node.@nextAddress set
-      @node storageAddress size Int32 cast @localStorage @ set
+      size atLocalStorage @node.@nextAddress set
+      @node storageAddress size atLocalStorage set
     ] if
   ] when
 ] "fastDeallocate" exportFunction
@@ -71,9 +75,9 @@ localStorage: 0nx SL_MEMORY_MAX_CACHED_SIZE 1nx + Int32 cast array;
       num: newSize oldSize min copy;
       num ptr dest memcpy drop
       node: ptr IntrusiveListNode addressToReference;
-      oldSizeIndex: oldSize Natx storageSize max Int32 cast;
-      oldSizeIndex @localStorage @ @node.@nextAddress set
-      @node storageAddress oldSizeIndex @localStorage @ set
+      oldSizeIndex: oldSize Natx storageSize max;
+      oldSizeIndex atLocalStorage @node.@nextAddress set
+      @node storageAddress oldSizeIndex atLocalStorage set
     ] when
 
     dest
