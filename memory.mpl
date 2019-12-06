@@ -74,7 +74,7 @@ localStorage: 0nx SL_MEMORY_MAX_CACHED_SIZE 1nx + Int32 cast array;
       oldSizeIndex: oldSize Natx storageSize max Int32 cast;
       oldSizeIndex @localStorage @ @node.@nextAddress set
       @node storageAddress oldSizeIndex @localStorage @ set
-    ] if
+    ] when
 
     dest
   ] if
