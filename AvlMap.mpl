@@ -301,7 +301,7 @@ AVLMap: [
         droppedChild: droppedNode.left 0nx = [droppedNode.right copy][droppedNode.left copy] if;
 
         droppedRef asNode manuallyDestroyVariable
-        droppedRef mplFree
+        nodeType storageSize droppedRef mplFree
         droppedChild @droppedRef set
       ] call
     ];
@@ -335,7 +335,7 @@ AVLMap: [
           node: nodeAddr asNode;
           node.left clearImpl
           node.right clearImpl
-          nodeAddr mplFree
+          nodeType storageSize nodeAddr mplFree
         ] when
       ];
 

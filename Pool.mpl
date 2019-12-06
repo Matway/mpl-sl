@@ -14,6 +14,7 @@ Pool: [
     data: 0nx dynamic;
     dataSize: 0 dynamic;
     firstFree: -1 dynamic;
+    exactAllocatedMemSize: 0nx dynamic;
 
     getAddressByIndex: [
       Natx cast entrySize * data +
@@ -112,7 +113,8 @@ Pool: [
       firstFree 0 < [
         dataSize @index set
         dataSize 0 = [
-          entrySize 8nx * 1nx + mplMalloc @data set
+          entrySize 8nx * 1nx + @exactAllocatedMemSize set
+          exactAllocatedMemSize mplMalloc @data set
           7 [
             i 2 +
             i 1 + nextFreeAt set
@@ -128,7 +130,9 @@ Pool: [
           tailSize: dataSize 3n32 rshift;
           newTailSize: newDataSize 3n32 rshift;
 
-          entrySize newDataSize Natx cast * newTailSize Natx cast + data mplRealloc @data set
+          newExactAllocatedMemSize: entrySize newDataSize Natx cast * newTailSize Natx cast +;
+          newExactAllocatedMemSize exactAllocatedMemSize data mplRealloc @data set
+          newExactAllocatedMemSize @exactAllocatedMemSize set
 
           getNewTailAddressByIndex: [
             Natx cast newDataSize Natx cast entrySize * data + +
@@ -184,7 +188,7 @@ Pool: [
     DIE: [
       clear
       data 0nx = not [
-        data mplFree
+        exactAllocatedMemSize data mplFree
       ] when
     ];
   }
