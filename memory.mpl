@@ -13,8 +13,6 @@
 
 IntrusiveListNode: [{
   nextAddress: 0nx;
-  getNext: [nextAddress @self addressToReference];
-  setNext: [storageAddress !nextAddress];
 }];
 
 SL_MEMORY_MAX_CACHED_SIZE: [0x40000nx];
@@ -44,10 +42,10 @@ localStorage: 0nx SL_MEMORY_MAX_CACHED_SIZE 1nx + Int32 cast array;
   copy ptr:;
   copy size:;
   ptr 0nx = ~ [
-    size copy Natx storageSize max copy !size
     size SL_MEMORY_MAX_CACHED_SIZE > [
       ptr free
     ] [
+      size copy Natx storageSize max copy !size
       node: ptr IntrusiveListNode addressToReference;
       size Int32 cast localStorage @ @node.@nextAddress set
       @node storageAddress size Int32 cast @localStorage @ set
@@ -69,17 +67,16 @@ localStorage: 0nx SL_MEMORY_MAX_CACHED_SIZE 1nx + Int32 cast array;
     ] if
   ] [
     dest: newSize fastAllocate;
-    ptr 0nx = [oldSize 0nx =] || [
-      dest copy
-    ] [
+    ptr 0nx = [oldSize 0nx =] || ~ [
       num: newSize oldSize min copy;
       num ptr dest memcpy drop
       node: ptr IntrusiveListNode addressToReference;
       oldSizeIndex: oldSize Natx storageSize max Int32 cast;
       oldSizeIndex @localStorage @ @node.@nextAddress set
       @node storageAddress oldSizeIndex @localStorage @ set
-      dest storageAddress
     ] if
+
+    dest
   ] if
 ] "fastReallocate" exportFunction
 
