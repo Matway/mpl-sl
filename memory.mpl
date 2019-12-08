@@ -14,8 +14,11 @@ IntrusiveListNode: [{
   nextAddress: 0nx;
 }];
 
-SL_MEMORY_MAX_CACHED_SIZE: [0x40000nx];
-SL_MEMORY_MAX_CACHED_SIZE: [SL_MEMORY_MAX_CACHED_SIZE_OPTION TRUE] [SL_MEMORY_MAX_CACHED_SIZE_OPTION] pfunc;
+haveSLMemoryMaxCachedSize: [FALSE];
+haveSLMemoryMaxCachedSize: [SL_MEMORY_MAX_CACHED_SIZE TRUE] [TRUE] pfunc;
+haveSLMemoryMaxCachedSize ~ [
+  SL_MEMORY_MAX_CACHED_SIZE: [0x40000nx];
+] [] uif
 
 localStorage: SL_MEMORY_MAX_CACHED_SIZE 1nx + Natx storageSize * malloc;
 localStorage 0nx = ["memory.mpl, error while initializing allocator: malloc returned 0" failProc] when
