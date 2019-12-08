@@ -10,6 +10,83 @@
 {memptr1: Natx; memptr2: Natx; num: Natx;} Int32 {convention: cdecl;} "memcmp"  importFunction
 {dst: Natx; value: Int32; num: Natx;} Natx       {convention: cdecl;} "memset"  importFunction
 
+IntrusiveListNode: [{
+  nextAddress: 0nx;
+}];
+
+haveSLMemoryMaxCachedSize: [FALSE];
+haveSLMemoryMaxCachedSize: [SL_MEMORY_MAX_CACHED_SIZE TRUE] [TRUE] pfunc;
+haveSLMemoryMaxCachedSize ~ [
+  SL_MEMORY_MAX_CACHED_SIZE: [0x40000nx];
+] [] uif
+
+localStorage: SL_MEMORY_MAX_CACHED_SIZE 1nx + Natx storageSize * malloc;
+localStorage 0nx = ["memory.mpl, error while initializing allocator: malloc returned 0" failProc] when
+
+SL_MEMORY_MAX_CACHED_SIZE 1nx + Natx storageSize * 0 localStorage memset drop
+
+atLocalStorage: [Natx storageSize * localStorage + Natx addressToReference];
+
+{size: Natx;} Natx {} [
+  copy size:;
+  size 0nx = [
+    0nx
+  ] [
+    size Natx storageSize max copy !size
+    node: IntrusiveListNode Ref;
+    size SL_MEMORY_MAX_CACHED_SIZE > [size atLocalStorage 0nx =] || [
+      size malloc IntrusiveListNode addressToReference !node
+    ] [
+      size atLocalStorage IntrusiveListNode addressToReference !node
+      @node.nextAddress size atLocalStorage set
+    ] if
+
+    node storageAddress
+  ] if
+] "fastAllocate" exportFunction
+
+{ptr: Natx; size: Natx;} {} {} [
+  copy ptr:;
+  copy size:;
+  ptr 0nx = ~ [
+    size SL_MEMORY_MAX_CACHED_SIZE > [
+      ptr free
+    ] [
+      size copy Natx storageSize max copy !size
+      node: ptr IntrusiveListNode addressToReference;
+      size atLocalStorage @node.@nextAddress set
+      @node storageAddress size atLocalStorage set
+    ] if
+  ] when
+] "fastDeallocate" exportFunction
+
+{ptr: Natx; oldSize: Natx; newSize: Natx;} Natx {} [
+  copy ptr:;
+  copy oldSize:;
+  copy newSize:;
+
+  oldSize SL_MEMORY_MAX_CACHED_SIZE > [
+    newSize 0nx = ~ [
+      newSize ptr realloc
+    ] [
+      ptr free
+      0nx
+    ] if
+  ] [
+    dest: newSize fastAllocate;
+    ptr 0nx = [oldSize 0nx =] || ~ [
+      num: newSize oldSize min copy;
+      num ptr dest memcpy drop
+      node: ptr IntrusiveListNode addressToReference;
+      oldSizeIndex: oldSize Natx storageSize max;
+      oldSizeIndex atLocalStorage @node.@nextAddress set
+      @node storageAddress oldSizeIndex atLocalStorage set
+    ] when
+
+    dest
+  ] if
+] "fastReallocate" exportFunction
+
 getHeapUsedSize: [arg:; 0nx];
 getHeapUsedSize: [isCombined] [
   arg:;
@@ -36,14 +113,13 @@ new: [
 delete: [
   element:;
   @element manuallyDestroyVariable
-  @element storageAddress mplFree
+  @element storageSize @element storageAddress mplFree
 ];
 
 deleteWith: [
   destructor:;
   element:;
-  @element @destructor call
-  @element storageAddress mplFree
+  @element @destructor call @element storageAddress mplFree
 ];
 
 debugMemory: [FALSE];
@@ -69,6 +145,7 @@ debugMemory [
 
   mplRealloc: [
     copy ptr:;
+    drop
     copy size:;
 
     oldSize: ptr 0nx = [
@@ -93,6 +170,7 @@ debugMemory [
 
   mplFree: [
     copy ptr:;
+    drop
     oldSize: ptr 0nx = [
       0nx
     ] [
@@ -109,7 +187,7 @@ debugMemory [
     ptr free
   ];
 ] [
-  mplMalloc: [malloc];
-  mplRealloc: [realloc];
-  mplFree: [free];
+  mplMalloc: [fastAllocate];
+  mplRealloc: [fastReallocate];
+  mplFree: [fastDeallocate];
 ] uif

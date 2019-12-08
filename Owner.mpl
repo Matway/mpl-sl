@@ -48,7 +48,13 @@ OwnerWithDestructor: [{
   ];
 }];
 
-Owner: [[manuallyDestroyVariable] OwnerWithDestructor];
+Owner: [
+  [
+    x:;
+    @x manuallyDestroyVariable
+    @x storageSize
+  ] OwnerWithDestructor
+];
 
 owner: [
   elementIsMoved: isMoved;

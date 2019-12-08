@@ -149,7 +149,7 @@ Array: [{
   setReserve: [
     copy newReserve:;
     [newReserve dataReserve < not] "New reserve is less than old reserve!" assert
-    newReserve Natx cast elementSize * getBufferBegin mplRealloc
+    newReserve Natx cast elementSize * dataReserve Natx cast elementSize * getBufferBegin mplRealloc
     @elementType addressToReference !dataBegin
     newReserve @dataReserve set
   ];
@@ -228,7 +228,8 @@ Array: [{
   release: [
     clear
     addr: getBufferBegin;
-    addr 0nx = not [addr mplFree] when
+    size: dataReserve Natx cast elementSize *;
+    addr 0nx = not [size addr mplFree] when
     0nx @elementType addressToReference !dataBegin
     0 dynamic @dataSize set
     0 dynamic @dataReserve set
@@ -254,7 +255,8 @@ Array: [{
   DIE: [
     clear
     addr: getBufferBegin;
-    addr 0nx = not [addr mplFree] when
+    size: dataReserve Natx cast elementSize *;
+    addr 0nx = not [size addr mplFree] when
   ];
 }];
 
