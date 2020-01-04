@@ -111,6 +111,8 @@ HashTable: [
               FALSE
             ] if
           ] loop
+
+          dataSize 1 - @dataSize set
         ] when
       ] call
     ];
