@@ -58,7 +58,7 @@ saveFile: [
   () (
     [
       drop
-      "rb" stringMemory name stringMemory @file fopen_s !error error 0 = ~
+      "wb" stringMemory name stringMemory @file fopen_s !error error 0 = ~
     ] [("fopen failed, " error getErrnoText) assembleString]
     [
       drop
