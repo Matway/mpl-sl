@@ -296,8 +296,7 @@ each: [b:; 0 fieldName textSize 0nx =] [
   eachInArrayIndex: 0 static;
   [
     eachInArrayIndex eachInArrayList fieldCount < [
-      eachInArrayElement: eachInArrayIndex @eachInArrayList @;
-      {index: eachInArrayIndex copy; value: @eachInArrayElement;} @eachInArrayBody call
+      eachInArrayIndex @eachInArrayList @ @eachInArrayBody call
       eachInArrayIndex 1 + @eachInArrayIndex set
       TRUE static
     ] [
@@ -312,8 +311,7 @@ each: [b:; a:; a "ARRAY" has a "ARRAY_RANGE" has or] [
 
   eachInArrayIndex: 0 dynamic;
   [eachInArrayIndex eachInArrayArray.dataSize <] [
-    eachInArrayElement: eachInArrayIndex @eachInArrayArray.at;
-    {index: eachInArrayIndex copy; value: @eachInArrayElement;} @eachInArrayBody call
+    eachInArrayIndex @eachInArrayArray.at @eachInArrayBody call
     eachInArrayIndex 1 + @eachInArrayIndex set
   ] while
 ] pfunc;

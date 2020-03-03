@@ -134,7 +134,7 @@ xmlInternal: {
     catPad: [depth 2 * [" " @string.cat] times];
     catPad ("<" xml.name) @string.catMany
     xml.attributes [
-      attrib: .value;
+      attrib:;
       (" " attrib.name "=\"" attrib.value "\"") @string.catMany
     ] each
 
@@ -144,7 +144,7 @@ xmlInternal: {
       ">" @string.cat
       hasNondataChild: FALSE;
       xml.getChildren [
-        child: .value;
+        child:;
         child.getTag (
           XMLVALUE_CHARDATA [
             data: XMLVALUE_CHARDATA child.get;
@@ -649,7 +649,7 @@ xmlInternal: {
         [position.currentSymbol ">" = ~] && [
           attribute: parseAttribute;
           alreadyUsed: FALSE;
-          result [.value.name attribute.name = alreadyUsed or !alreadyUsed] each
+          result [.name attribute.name = alreadyUsed or !alreadyUsed] each
           alreadyUsed [
             ("Duplicated attribute " attribute.name) assembleString lexicalError
             FALSE

@@ -564,7 +564,7 @@ catJSONNodeWithPaddingImpl: [
     "\"" @result.cat
     [splitted.success copy] "Wrong encoding in JSON string!" assert
     splitted.chars [
-      symbol: .value copy;
+      symbol: copy;
       code: symbol stringMemory Nat8 addressToReference Nat32 cast;
       code ascii.quote = [
         "\\\"" @result.cat
@@ -622,13 +622,13 @@ catJSONNodeWithPaddingImpl: [
     "[" @result.cat
     first: TRUE;
     json.getArray [
-      pair:;
+      item:;
       first not ["," @result.cat] [FALSE @first set] if
       TRUE catPad
 
       @result
       padding 2 +
-      pair.value catJSONNodeWithPadding
+      item catJSONNodeWithPadding
     ] each
     FALSE catPad
     "]" @result.cat
