@@ -144,7 +144,7 @@ debugMemory [
 
   mplRealloc: [
     copy ptr:;
-    drop
+    copy objectSize:;
     copy size:;
 
     oldSize: ptr 0nx = [
@@ -169,7 +169,7 @@ debugMemory [
 
   mplFree: [
     copy ptr:;
-    drop
+    copy objectSize:;
     oldSize: ptr 0nx = [
       0nx
     ] [
