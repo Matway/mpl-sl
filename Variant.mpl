@@ -1,4 +1,3 @@
-"Variant" module
 "control" includeModule
 
 Variant: [{

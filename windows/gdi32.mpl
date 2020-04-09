@@ -1,4 +1,3 @@
-"gdi32" module
 "control" includeModule
 "gdi32Private" useModule
 

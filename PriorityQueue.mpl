@@ -1,4 +1,3 @@
-"PriorityQueue" module
 "Array" includeModule
 
 PriorityQueue: [{

@@ -1,4 +1,3 @@
-"user32Private" module
 "kernel32" useModule
 
 WNDPROC: [{

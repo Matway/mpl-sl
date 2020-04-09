@@ -1,4 +1,3 @@
-"Union" module
 "control" includeModule
 
 Union: [{

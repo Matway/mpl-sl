@@ -1,4 +1,3 @@
-"kernel32Private" module
 "control" useModule
 
 FARPROC: [{

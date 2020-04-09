@@ -1,4 +1,3 @@
-"algorithm" module
 "control" useModule
 
 lowerBound: [

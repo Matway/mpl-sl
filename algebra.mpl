@@ -1,4 +1,3 @@
-"algebra" module
 "control" useModule
 
 PI: [3.14159265358979323r32];

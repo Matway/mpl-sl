@@ -1,4 +1,3 @@
-"Owner" module
 "control" includeModule
 "memory" includeModule
 
@@ -87,14 +86,4 @@ getHeapUsedSize: ["OWNER" has] [
   ] [
     0nx
   ] if
-] pfunc;
-
-set: [
-  owner0: owner1:;;
-  owner0.get .base owner1.get same
-] [
-  owner0: owner1:;;
-  @owner1.clear
-  owner0.memory storageAddress @owner1.@elementType addressToReference @owner1.!memory
-  0nx @owner0.@elementType addressToReference @owner0.!memory
 ] pfunc;

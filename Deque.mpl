@@ -1,5 +1,3 @@
-"Deque" module
-
 "control" includeModule
 "Array" includeModule
 

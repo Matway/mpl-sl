@@ -1,4 +1,3 @@
-"Spinlock" module
 "atomic" includeModule
 
 Spinlock: [{

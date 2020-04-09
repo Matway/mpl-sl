@@ -1,4 +1,3 @@
-"HashTable" module
 "Array" includeModule
 
 HashTable: [

@@ -1,4 +1,3 @@
-"Array" module
 "memory" includeModule
 
 makeArrayRangeRaw: [{

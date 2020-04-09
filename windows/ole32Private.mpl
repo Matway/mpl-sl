@@ -1,4 +1,3 @@
-"ole32Private" module
 "control" useModule
 
 {

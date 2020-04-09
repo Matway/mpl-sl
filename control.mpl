@@ -1,4 +1,3 @@
-"control" module
 "conventions" includeModule
 
 pfunc: [{

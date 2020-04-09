@@ -1,4 +1,3 @@
-"TcpAcceptor" module
 "Function" includeModule
 "TcpConnection" includeModule
 

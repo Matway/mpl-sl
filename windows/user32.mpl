@@ -1,4 +1,3 @@
-"user32" module
 "control" includeModule
 "user32Private" useModule
 

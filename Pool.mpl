@@ -1,5 +1,3 @@
-"Pool" module
-
 "control" includeModule
 "memory" includeModule
 "Union" includeModule

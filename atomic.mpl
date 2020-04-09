@@ -1,4 +1,3 @@
-"atomic" module
 "control" includeModule
 
 refCast: [

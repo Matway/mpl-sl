@@ -1,4 +1,3 @@
-"Thread" module
 "String" includeModule
 "kernel32" includeModule
 

@@ -1,4 +1,3 @@
-"RandomLCG" module
 "control" includeModule
 
 RandomLCG: [{

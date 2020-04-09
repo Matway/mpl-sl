@@ -1,4 +1,3 @@
-"AvlMap" module
 "memory" includeModule
 "control" includeModule
 

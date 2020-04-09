@@ -1,4 +1,3 @@
-"dispatcher" module
 "String" includeModule
 "kernel32" includeModule
 "ws2_32" useModule

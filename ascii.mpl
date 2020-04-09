@@ -1,4 +1,3 @@
-"ascii" module
 "control" includeModule
 
 ascii: {

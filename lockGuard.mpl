@@ -1,4 +1,3 @@
-"lockGuard" module
 "control" useModule
 
 lockGuard: [

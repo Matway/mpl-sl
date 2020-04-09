@@ -1,5 +1,3 @@
-"Function" module
-
 "control" includeModule
 "objectTools" includeModule
 

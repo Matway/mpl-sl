@@ -1,5 +1,3 @@
-"Pose" module
-
 "control" includeModule
 "algebra" includeModule
 "Quaternion" includeModule

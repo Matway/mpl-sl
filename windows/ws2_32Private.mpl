@@ -1,4 +1,3 @@
-"ws2_32Private" module
 "kernel32" useModule
 
 WSAOVERLAPPED_COMPLETION_ROUTINERef: [{

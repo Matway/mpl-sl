@@ -1,4 +1,3 @@
-"ws2_32" module
 "kernel32" includeModule
 "ws2_32Private" useModule
 

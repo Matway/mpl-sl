@@ -1,4 +1,3 @@
-"opengl32Private" module
 "user32" useModule
 
 {

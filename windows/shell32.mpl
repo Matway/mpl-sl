@@ -1,4 +1,3 @@
-"shell32" module
 "control" useModule
 "shell32Private" useModule
 

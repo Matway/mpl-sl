@@ -1,4 +1,3 @@
-"TcpConnection" module
 "atomic" includeModule
 "dispatcher" includeModule
 "Function" includeModule

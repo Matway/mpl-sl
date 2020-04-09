@@ -1,4 +1,3 @@
-"kernel32" module
 "control" includeModule
 "kernel32Private" useModule
 

@@ -1,4 +1,3 @@
-"runningTime" module
 "Spinlock" useModule
 "atomic" includeModule
 "kernel32" includeModule

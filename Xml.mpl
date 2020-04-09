@@ -1,4 +1,3 @@
-"Xml" module
 "ascii"     includeModule
 "HashTable" includeModule
 "String"    includeModule

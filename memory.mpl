@@ -1,4 +1,3 @@
-"memory" module
 "control" includeModule
 
 {size: Natx;} Natx            {convention: cdecl;} "malloc"  importFunction

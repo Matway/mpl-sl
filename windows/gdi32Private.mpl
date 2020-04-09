@@ -1,4 +1,3 @@
-"gdi32Private" module
 "user32" useModule
 
 PIXELFORMATDESCRIPTOR: [{

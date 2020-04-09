@@ -1,4 +1,3 @@
-"opengl32" module
 "control" includeModule
 "opengl32Private" useModule
 

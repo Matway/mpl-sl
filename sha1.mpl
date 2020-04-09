@@ -1,5 +1,3 @@
-"sha1" module
-
 "control" includeModule
 "Array" includeModule
 

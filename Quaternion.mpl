@@ -1,4 +1,3 @@
-"Quaternion" module
 "control" useModule
 
 Quaternion: [{
