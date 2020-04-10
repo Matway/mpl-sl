@@ -125,65 +125,53 @@ debugMemory: [FALSE];
 debugMemory: [DEBUG_MEMORY][TRUE] pfunc;
 
 debugMemory [
-  memoryCounterMalloc: 0 dynamic;
-  memoryCounterFree: 0 dynamic;
-  memoryUsed: 0nx dynamic;
-  memoryXor: 0nx dynamic;
+  memoryCurrentAllocationCount: 0n64;
+  memoryTotalAllocationCount: 0n64;
+  memoryCurrentAllocationSize: 0n64;
+  memoryTotalAllocationSize: 0n64;
+  memoryMaxAllocationSize: 0n64;
+  memoryChecksum: 0nx;
 
-  mplMalloc:  [
-    copy size:;
-    memoryCounterMalloc 1 + @memoryCounterMalloc set
-
-    result: size 8nx + malloc;
-    size result Natx addressToReference set
-
-    memoryUsed size + @memoryUsed set
-    memoryXor result xor @memoryXor set
-    result 8nx +
+  mplMalloc: [
+    size:;
+    result: size fastAllocate;
+    memoryCurrentAllocationCount 1n64 + !memoryCurrentAllocationCount
+    memoryTotalAllocationCount 1n64 + !memoryTotalAllocationCount
+    memoryCurrentAllocationSize size Nat64 cast + !memoryCurrentAllocationSize
+    memoryTotalAllocationSize size Nat64 cast + !memoryTotalAllocationSize
+    memoryMaxAllocationSize memoryCurrentAllocationSize max copy !memoryMaxAllocationSize
+    memoryChecksum result xor !memoryChecksum
+    result
   ];
 
   mplRealloc: [
-    copy ptr:;
-    copy objectSize:;
-    copy size:;
-
-    oldSize: ptr 0nx = [
-      0nx
+    newSize: oldSize: data:;;;
+    data 0nx = [
+      newSize mplMalloc
     ] [
-      ptr 8nx - @ptr set
-      ptr Natx addressToReference copy
-    ] if;
+      result: newSize oldSize data fastReallocate;
+      memoryCurrentAllocationSize newSize Nat64 cast + oldSize Nat64 cast - !memoryCurrentAllocationSize
+      result data = [
+        memoryMaxAllocationSize memoryCurrentAllocationSize max copy !memoryMaxAllocationSize
+      ] [
+        memoryTotalAllocationCount 1n64 + !memoryTotalAllocationCount
+        memoryTotalAllocationSize newSize Nat64 cast + !memoryTotalAllocationSize
+        memoryMaxAllocationSize memoryCurrentAllocationSize oldSize Nat64 cast + max copy !memoryMaxAllocationSize
+        memoryChecksum result xor data xor !memoryChecksum
+      ] if
 
-    memoryXor ptr xor @memoryXor set
-    ptr 0nx = [
-      memoryCounterMalloc 1 + @memoryCounterMalloc set
-    ] when
-
-    result: size 8nx + ptr realloc;
-    size result Natx addressToReference set
-
-    memoryUsed oldSize - size + @memoryUsed set
-    memoryXor result xor @memoryXor set
-    result 8nx +
+      result
+    ] if
   ];
 
   mplFree: [
-    copy ptr:;
-    copy objectSize:;
-    oldSize: ptr 0nx = [
-      0nx
-    ] [
-      ptr 8nx - @ptr set
-      ptr Natx addressToReference copy
-    ] if;
-
-    ptr 0nx = not [
-      memoryCounterFree 1 + @memoryCounterFree set
+    size: data:;;
+    data 0nx = ~ [
+      size data fastDeallocate
+      memoryCurrentAllocationCount 1n64 - !memoryCurrentAllocationCount
+      memoryCurrentAllocationSize size Nat64 cast - !memoryCurrentAllocationSize
+      memoryChecksum data xor !memoryChecksum
     ] when
-
-    memoryUsed oldSize - @memoryUsed set
-    memoryXor ptr xor @memoryXor set
-    ptr free
   ];
 ] [
   mplMalloc: [fastAllocate];
