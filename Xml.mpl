@@ -722,7 +722,7 @@ xmlInternal: {
   skipString: [
     string:;
     mainResult.success [
-      stringSplitResult: string makeStringView.split;
+      stringSplitResult: string splitString;
       [stringSplitResult.success] "string must be valid utf-8 sequence" assert
       stringChars: stringSplitResult.chars;
       [stringChars fieldCount 0 >] "string must not be empty" assert

@@ -158,7 +158,7 @@ jsonInternalFillPositionChars: [
 
 parseStringToJSON: [
   mainResult: JSONParserResult;
-  splittedString: makeStringView.split;
+  splittedString: splitString;
   splittedString.success [
     position: JSONParserPosition;
     splittedString.chars @position jsonInternalFillPositionChars
@@ -559,7 +559,7 @@ catJSONNodeWithPaddingImpl: [
   ];
 
   catString: [
-    splitted: makeStringView.split;
+    splitted: splitString;
     "\"" @result.cat
     [splitted.success copy] "Wrong encoding in JSON string!" assert
     splitted.chars [
@@ -592,7 +592,7 @@ catJSONNodeWithPaddingImpl: [
                       code ascii.space < not code ascii.tilda > not and [
                         symbol @result.cat
                       ] [
-                        codePoint:size: symbol stringMemory symbol.dataSize getCodePointAndSize;;
+                        codePoint: size: symbol.data symbol.size getCodePointAndSize;;
                         [size 0 >] "Wrong encoding in splitted array!" assert
                         [codePoint 0x10000n32 <] "Rare codepoint JSON string!" assert
                         "\\u" @result.cat
