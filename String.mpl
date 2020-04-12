@@ -203,40 +203,56 @@ intPow: [
   ] if
 ];
 
-makeStringViewRaw: [{
-  virtual STRING_VIEW: ();
-  dataBegin: storageAddress Nat8 addressToReference; #dynamize
-  dataSize: copy dynamic;
-
-  getTextSize: [
-    dataSize copy
-  ];
-
-  split: [
-    result: {
-      success: TRUE dynamic;
-      errorOffset: -1 dynamic;
-      chars: StringView Array;
-    };
-
-    buffer: dataBegin storageAddress;
-    endSize: dataSize copy;
-    [endSize 0 > [result.success copy] &&] [
-      nextSize: buffer endSize getCodePointSize;
-      nextSize 0 = [
-        buffer dataBegin storageAddress - Int32 cast @result.@errorOffset set
-        FALSE @result.@success set
-      ] [
-        nextSize buffer Nat8 addressToReference makeStringViewRaw @result.@chars.pushBack
-        buffer nextSize Natx cast + @buffer set
-        endSize nextSize - @endSize set
-      ] if
-    ] while
-    @result
-  ];
+StringView: [{
+  data: 0nx;
+  size: 0;
 }];
 
-StringView: [0 Nat8 Ref makeStringViewRaw];
+makeStringView: [StringView same] [
+  copy
+] pfunc;
+
+makeStringView: [Text same] [
+  text:;
+  text storageAddress text textSize Int32 cast makeStringView2
+] pfunc;
+
+makeStringView2: [
+  data: size:;;
+  view: StringView;
+  data copy @view.!data
+  size copy @view.!size
+  @view
+];
+
+splitString: [
+  string: makeStringView;
+  result: {
+    success: TRUE;
+    errorOffset: -1;
+    chars: StringView Array;
+  };
+
+  data: string.data copy;
+  size: string.size copy;
+  [
+    size 0 = [FALSE] [
+      codepointSize: data size getCodePointSize;
+      codepointSize 0 = [
+        FALSE @result.!success
+        data string.data - Int32 cast @result.!errorOffset
+        FALSE
+      ] [
+        data codepointSize makeStringView2 @result.@chars.pushBack
+        data codepointSize Natx cast + !data
+        size codepointSize - !size
+        TRUE
+      ] if
+    ] if
+  ] loop
+
+  @result
+];
 
 String: [{
   virtual STRING: ();
@@ -256,7 +272,7 @@ String: [{
     chars.getSize 0 = [
       StringView
     ] [
-      chars.getSize 1 - 0 chars.at storageAddress Nat8 addressToReference makeStringViewRaw
+      chars.getBufferBegin chars.dataSize 1 - makeStringView2
     ] if
   ];
 
@@ -287,18 +303,11 @@ String: [{
   ];
 
   catStringNZ: [
-    stringView: makeStringView;
-
-    stringView.dataSize 0 > [
-      i: 0 dynamic;
-      [
-        i stringView.dataSize < [
-          char: stringView.dataBegin storageAddress i Natx cast + Nat8 addressToReference;
-          char @chars.pushBack
-          i 1 + @i set TRUE
-        ] &&
-      ] loop
-
+    string: makeStringView;
+    string.size 0 = ~ [
+      index: chars.getSize;
+      index string.size + @chars.enlarge
+      string.size Natx cast string.data chars.getBufferBegin index Natx cast + memcpy drop
     ] when
   ];
 
@@ -461,7 +470,7 @@ String: [{
 
   catNZ: [
     arg:;
-    @arg "" same [@arg "STRING_VIEW" has] || [@arg "STRING" has] || [
+    @arg "" same [@arg StringView same] || [@arg "STRING" has] || [
       @arg catStringNZ
     ] [
       @arg 0.0r64 same [@arg 0.0r32 same] || [
@@ -515,32 +524,20 @@ Hex: [{
   virtual HEX: ();
 }];
 
-textSize: ["STRING_VIEW" has] [.getTextSize Natx cast] pfunc;
+textSize: [StringView same] [.size Natx cast] pfunc;
 textSize: ["STRING" has] [.getTextSize Natx cast] pfunc;
-
-makeStringView: [0 .CANNOT_MAKE_STRING_VIEW];
-
-makeStringView: ["" same] [
-  arg:;
-  arg textSize Int32 cast dynamic arg storageAddress Nat8 addressToReference makeStringViewRaw
-] pfunc;
-
-makeStringView: ["STRING_VIEW" has] [
-  copy
-] pfunc;
 
 makeStringView: ["STRING" has] [
   .getStringView
 ] pfunc;
 
 makeStringViewByAddress: [
-  copy arg:;
-  arg strlen Int32 cast arg Nat8 addressToReference makeStringViewRaw
+  address:;
+  address address strlen Int32 cast makeStringView2
 ];
 
-stringMemory: [0 .CANNOT_GET_STRING_MEMORY];
 stringMemory: ["" same] [storageAddress] pfunc;
-stringMemory: ["STRING_VIEW" has] [.dataBegin storageAddress] pfunc;
+stringMemory: [StringView same] [.data copy] pfunc;
 stringMemory: ["STRING" has] [.getStringMemory] pfunc;
 
 toString: [
@@ -566,7 +563,7 @@ assembleString: [
 
 stringness: [
   arg:;
-  arg "" same [1][arg "STRING_VIEW" has [2][arg "STRING" has [2][0] if ] if] if
+  arg "" same [1][arg StringView same [2][arg "STRING" has [2][0] if ] if] if
 ];
 
 =: [
@@ -576,15 +573,16 @@ stringness: [
 ] [
   arg1: makeStringView;
   arg2: makeStringView;
-  arg1.dataSize arg2.dataSize = [
-    result: TRUE dynamic;
+  arg1.size arg2.size = [
+    result: TRUE;
     i: 0 dynamic;
-    [result copy [i arg1.dataSize <] &&] [
-      addr1: arg1.dataBegin storageAddress i Natx cast + Nat8 addressToReference;
-      addr2: arg2.dataBegin storageAddress i Natx cast + Nat8 addressToReference;
+    [result copy [i arg1.size <] &&] [
+      addr1: arg1.data i Natx cast + Nat8 addressToReference;
+      addr2: arg2.data i Natx cast + Nat8 addressToReference;
       addr1 addr2 = @result set
       i 1 + @i set
     ] while
+
     result copy
   ] &&
 ] pfunc;
@@ -614,14 +612,14 @@ printList: [
 ];
 
 hash: [makeStringView TRUE] [
-  stringView: makeStringView;
+  string: makeStringView;
   result: 33n32;
 
   i: 0;
-  [i stringView.dataSize <] [
-    curByte: stringView.dataBegin storageAddress i Natx cast + Nat8 addressToReference r:; @r Nat32 cast;
-    result 47n32 * curByte + @result set
-    i 1 + @i set
+  [i string.size = ~] [
+    byte: string.data i Natx cast + Nat8 addressToReference Nat32 cast;
+    result 47n32 * byte + !result
+    i 1 + !i
   ] while
 
   result
