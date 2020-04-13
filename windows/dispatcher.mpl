@@ -50,7 +50,7 @@ dispatcher: {
     actual: Nat32;
     1 0n32 @actual 1n32 @entry completionPort kernel32.GetQueuedCompletionStatusEx 1 = ~ [
       error: kernel32.GetLastError;
-      error kernel32.WAIT_TIMEOUT = not [
+      error kernel32.WAIT_TIMEOUT = ~ [
         ("FATAL: GetQueuedCompletionStatusEx failed, result=" error LF) assembleString print 1 exit
       ] when
     ] [
