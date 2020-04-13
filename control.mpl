@@ -53,6 +53,10 @@ AsRef: [{data:;}]; # for Ref Array
 
 drop: [v:;];
 
+dup: [v:; @v @v];
+
+swap: [v0: v1:;; @v1 @v0];
+
 when: [[] if];
 
 printAddr: [
@@ -121,6 +125,16 @@ max: [
 min: [
   a:b:;;
   a b < [a][b] if
+];
+
+between?: [
+  value: lower: upper:;;;
+  value lower < ~ [upper value < ~] &&
+];
+
+within?: [
+  value: lower: upper:;;;
+  value lower < ~ [value upper <] &&
 ];
 
 # usage:
@@ -275,9 +289,9 @@ asSlice: [
       array: @object; index: 0;
       0 @object fieldCount slice
     ] [
-      "Object cannot be used as slice" printCompilerMessage 0.ERROR
-    ] if
-  ] if
+      "Object cannot be used as slice" raiseStaticError
+    ] uif
+  ] uif
 ];
 
 slice: [
