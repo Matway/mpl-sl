@@ -24,7 +24,7 @@ makeArrayRangeRaw: [{
     dataSize
   ];
 
-  slice: [
+  view: [
     newIndex: newSize:;;
     {
       schema elementType: 0nx @elementType addressToReference;
@@ -33,7 +33,7 @@ makeArrayRangeRaw: [{
 
       at: [Natx cast elementType storageSize * getBufferBegin + @elementType addressToReference];
 
-      slice: @slice;
+      view: @view;
     }
   ];
 
@@ -144,7 +144,7 @@ Array: [{
     dataSize
   ];
 
-  slice: [
+  view: [
     newIndex: newSize:;;
     {
       schema elementType: 0nx @elementType addressToReference;
@@ -153,7 +153,7 @@ Array: [{
 
       at: [Natx cast elementType storageSize * getBufferBegin + @elementType addressToReference];
 
-      slice: @slice;
+      view: @view;
     }
   ];
 
@@ -296,13 +296,13 @@ Array: [{
 makeArray: [
   listIsMoved: isMoved;
   list:;
-  slice: list asSlice;
+  view: list asView;
   list "ARRAY_VIEW" has [FALSE @listIsMoved set] when
-  [slice.size 0 >] "List is empty!" assert
+  [view.size 0 >] "List is empty!" assert
   result: 0 @list @ newVarOfTheSameType Array;
   i: 0 dynamic;
   [
-    i slice.size < [
+    i view.size < [
       i @list @ listIsMoved moveIf @result.pushBack
       i 1 + @i set TRUE
     ] &&

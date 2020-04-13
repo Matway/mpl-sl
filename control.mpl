@@ -260,20 +260,20 @@ isBuiltinArray: [
   @object isCombined [@object () same [@object 0 fieldName "" =] ||] &&
 ];
 
-isSlice: [
+isView: [
   object:;
-  @object "at" has [@object "size" has [@object "slice" has] &&] &&
+  @object "at" has [@object "size" has [@object "view" has] &&] &&
 ];
 
 @: ["at" has] [.at] pfunc;
 
 !: ["at" has] [.at set] pfunc;
 
-asSlice: [
+asView: [
   object:;
-  @object isSlice [@object] [
+  @object isView [@object] [
     @object isBuiltinArray [
-      slice: [
+      view: [
         newIndex: newSize:;;
         {
           array: @array;
@@ -282,53 +282,53 @@ asSlice: [
 
           at: [index + @array @];
 
-          slice: @slice;
+          view: @view;
         }
       ];
 
       array: @object; index: 0;
-      0 @object fieldCount slice
+      0 @object fieldCount view
     ] [
-      "Object cannot be used as slice" raiseStaticError
+      "Object cannot be used as view" raiseStaticError
     ] uif
   ] uif
 ];
 
-slice: [
-  slice: index: size:;; asSlice;
-  index size @slice.slice
+view: [
+  view: index: size:;; asView;
+  index size @view.view
 ];
 
 range: [
-  slice: index0: index1:;; asSlice;
-  index0 index1 index0 - @slice.slice
+  view: index0: index1:;; asView;
+  index0 index1 index0 - @view.view
 ];
 
 head: [
-  slice: size:; asSlice;
-  0 size @slice.slice
+  view: size:; asView;
+  0 size @view.view
 ];
 
 tail: [
-  slice: size:; asSlice;
-  @slice.size size - size @slice.slice
+  view: size:; asView;
+  @view.size size - size @view.view
 ];
 
 unhead: [
-  slice: size:; asSlice;
-  size @slice.size size - @slice.slice
+  view: size:; asView;
+  size @view.size size - @view.view
 ];
 
 untail: [
-  slice: size:; asSlice;
-  0 @slice.size size - @slice.slice
+  view: size:; asView;
+  0 @view.size size - @view.view
 ];
 
 each: [
-  eachSlice: eachBody:; asSlice;
+  eachView: eachBody:; asView;
   eachIndex: 0; [
-    eachIndex @eachSlice.size = [FALSE] [
-      eachIndex @eachSlice.at @eachBody ucall
+    eachIndex @eachView.size = [FALSE] [
+      eachIndex @eachView.at @eachBody ucall
       eachIndex 1 + !eachIndex
       TRUE
     ] if

@@ -504,7 +504,7 @@ String: [{
   cat:                [makeNZ catNZ                makeZ];
 
   catMany: [
-    list: asSlice;
+    list: asView;
     makeNZ
     i: 0;
     [i list.size <] [
