@@ -6,22 +6,22 @@ getCodePointAndSize: [
   copy endSize:;
   copy buffer:;
 
-  endSize 0 > not [
+  endSize 0 > ~ [
     0n32 0
   ] [
     cu0: buffer Nat8 addressToReference copy;
-    cu0 0x80n8 < cu0 0xc0n8 < not cu0 0xf8n8 < and or not [
+    cu0 0x80n8 < cu0 0xc0n8 < ~ cu0 0xf8n8 < and or ~ [
       0n32 0
     ] [
       cu0 0x80n8 < [
         cu0 0n32 cast
         1
       ] [
-        endSize 1 > not [
+        endSize 1 > ~ [
           0n32 0
         ] [
           cu1: buffer 1nx + Nat8 addressToReference copy;
-          cu1 0xc0n8 and 0x80n8 = not [
+          cu1 0xc0n8 and 0x80n8 = ~ [
             0n32 0
           ] [
             cu0 0xe0n8 < [
@@ -29,11 +29,11 @@ getCodePointAndSize: [
               cu1 0n32 cast 0x3fn32 and or
               2
             ] [
-              endSize 2 > not [
+              endSize 2 > ~ [
                 0n32 0
               ] [
                 cu2: buffer 2nx + Nat8 addressToReference copy;
-                cu2 0xc0n8 and 0x80n8 = not [
+                cu2 0xc0n8 and 0x80n8 = ~ [
                   0n32 0
                 ] [
                   cu0 0xf0n8 < [
@@ -42,11 +42,11 @@ getCodePointAndSize: [
                     cu2 0n32 cast 0x3fn32 and or
                     3
                   ] [
-                    endSize 3 > not [
+                    endSize 3 > ~ [
                       0n32 0
                     ] [
                       cu3: buffer 3nx + Nat8 addressToReference copy;
-                      cu3 0xc0n8 and 0x80n8 = not [
+                      cu3 0xc0n8 and 0x80n8 = ~ [
                         0n32 0
                       ] [
                         cu0 0n32 cast 0x07n32 and 18n32 lshift
@@ -71,27 +71,27 @@ getCodePointSize: [
   copy endSize:;
   copy buffer:;
 
-  endSize 0 > not [0] [
+  endSize 0 > ~ [0] [
     cu0: buffer Nat8 addressToReference copy;
-    cu0 0x80n8 < cu0 0xc0n8 < not cu0 0xf8n8 < and or not [0] [
+    cu0 0x80n8 < cu0 0xc0n8 < ~ cu0 0xf8n8 < and or ~ [0] [
       cu0 0x80n8 < [
         1
       ] [
-        endSize 1 > not [0] [
+        endSize 1 > ~ [0] [
           cu1: buffer 1nx + Nat8 addressToReference copy;
-          cu1 0xc0n8 and 0x80n8 = not [0] [
+          cu1 0xc0n8 and 0x80n8 = ~ [0] [
             cu0 0xe0n8 < [
               2
             ] [
-              endSize 2 > not [0] [
+              endSize 2 > ~ [0] [
                 cu2: buffer 2nx + Nat8 addressToReference copy;
-                cu2 0xc0n8 and 0x80n8 = not [0] [
+                cu2 0xc0n8 and 0x80n8 = ~ [0] [
                   cu0 0xf0n8 < [
                     3
                   ] [
-                    endSize 3 > not [0] [
+                    endSize 3 > ~ [0] [
                       cu3: buffer 3nx + Nat8 addressToReference copy;
-                      cu3 0xc0n8 and 0x80n8 = not [0] [
+                      cu3 0xc0n8 and 0x80n8 = ~ [0] [
                         4
                       ] if
                     ] if
@@ -110,22 +110,22 @@ previousCodePointSize: [
   copy begSize:;
   copy buffer:;
 
-  begSize 0 > not [0] [
+  begSize 0 > ~ [0] [
     cu0: buffer 1nx - Nat8 addressToReference copy;
-    cu0 0xc0n8 and 0x80n8 = not [
+    cu0 0xc0n8 and 0x80n8 = ~ [
       cu0 0x80n8 < [1][0] if
     ] [
-      begSize 1 > not [0] [
+      begSize 1 > ~ [0] [
         cu1: buffer 2nx - Nat8 addressToReference copy;
-        cu1 0xc0n8 and 0x80n8 = not [
+        cu1 0xc0n8 and 0x80n8 = ~ [
           cu0 0xe0n8 and 0xc0n8 = [2][0] if
         ] [
-          begSize 2 > not [0] [
+          begSize 2 > ~ [0] [
             cu2: buffer 3nx - Nat8 addressToReference copy;
-            cu2 0xc0n8 and 0x80n8 = not [
+            cu2 0xc0n8 and 0x80n8 = ~ [
               cu0 0xf0n8 and 0xe0n8 = [3][0] if
             ] [
-              begSize 3 > not [0] [
+              begSize 3 > ~ [0] [
                 cu3: buffer 4nx - Nat8 addressToReference copy;
                 cu3 0xf8n8 and 0xf0n8 = cu3 0n32 cast 0x07n32 and 0x6n32 lshift cu0 0n32 cast 0x3fn32 and or 0x110n32 < and [4][0] if
               ] if
@@ -197,7 +197,7 @@ intPow: [
         ] if
       ] if
 
-      up 0 = not
+      up 0 = ~
     ] loop
     acc
   ] if
@@ -328,10 +328,10 @@ String: [{
     shifted: number 0n64 cast;
     rounded: 1n64 dynamic;
 
-    shifted 10n64 < not [
+    shifted 10n64 < ~ [
       [
         rounded 10n64 * @rounded set
-        rounded shifted 10n64 / > not
+        rounded shifted 10n64 / > ~
       ] loop
     ] when
 
@@ -353,10 +353,10 @@ String: [{
     shifted: number 0n64 cast;
     rounded: 1n64 dynamic;
 
-    shifted 16n64 < not [
+    shifted 16n64 < ~ [
       [
         rounded 16n64 * @rounded set
-        rounded shifted 16n64 / > not
+        rounded shifted 16n64 / > ~
       ] loop
     ] when
 
@@ -391,7 +391,7 @@ String: [{
           "-inf" catStringNZ
         ] if
       ] [
-        number number = not [
+        number number = ~ [
           "nan" catStringNZ
         ] [
           number 0 nc < [
@@ -413,7 +413,7 @@ String: [{
           digits: maxDigits copy;
           shift: nlog10 copy;
 
-          nlog10 maxOrder > nlog10 maxOrder 2 / neg < or not [
+          nlog10 maxOrder > nlog10 maxOrder 2 / neg < or ~ [
             0 @shift set
             newDigits: maxOrder nlog10 -;
             newDigits digits < [
@@ -448,10 +448,10 @@ String: [{
             rounded 0n32 = [1n32 @rounded set] when
             rp 1 - @rp set
 
-            shifted 0n32 > [rp 0 < not] ||
+            shifted 0n32 > [rp 0 < ~] ||
           ] loop
 
-          shift 0 = not [
+          shift 0 = ~ [
             "e" catStringNZ
             shift catIntNZ
           ] when

@@ -94,7 +94,7 @@ Variant: [{
 
   setTag: [
     index: copy dynamic;
-    index typeTag = not [
+    index typeTag = ~ [
       rawDestroy
       index @typeTag set
       rawInit

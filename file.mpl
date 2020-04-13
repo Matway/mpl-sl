@@ -80,7 +80,7 @@ loadString: [
 
   size: 0nx dynamic;
   f: "rb" storageAddress fileName stringMemory fopen;
-  f 0nx = not [
+  f 0nx = ~ [
     SEEK_END 0 f fseek 0 =
     [f ftell @size set
       SEEK_SET 0 f fseek 0 =] &&
@@ -101,7 +101,7 @@ saveString: [
   size: stringView textSize;
 
   f: "wb" storageAddress fileName stringMemory fopen;
-  f 0nx = not
+  f 0nx = ~
   [
     size 0nx = [f size 1nx stringView stringMemory fwrite size =] ||
     f fflush 0 = and
@@ -116,7 +116,7 @@ appendString: [
   size: stringView textSize;
 
   f: "ab" storageAddress fileName stringMemory fopen;
-  f 0nx = not
+  f 0nx = ~
   [
     size 0nx = [f size 1nx stringView stringMemory fwrite size =] ||
     f fflush 0 = and

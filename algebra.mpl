@@ -136,7 +136,7 @@ cosSin: [
 =: [
   v1:m2:;;
   v1 vector?
-  v1 matrix? not and
+  v1 matrix? ~ and
   m2 matrix? and
   v1 fieldCount m2 getColCount = and
   m2 getRowCount 1 = and
@@ -207,7 +207,7 @@ cosSin: [
 *: [
   v1:m2:;;
   v1 vector?
-  v1 matrix? not and
+  v1 matrix? ~ and
   m2 matrix? and
   v1 fieldCount m2 getRowCount = and
 ] [
@@ -345,7 +345,7 @@ cast: [v0:v1:;; v0 vector? v1 vector? and] [v0:v1:;; (v1 fieldCount [i v0 @ i v1
 trans: [
   v:;
   v vector?
-  v matrix? not and
+  v matrix? ~ and
 ] [
   v:;
   (v fieldCount [(i v @ copy)] times)

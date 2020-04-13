@@ -58,8 +58,8 @@ JSONImpl: [
     ) Variant;
   } result:;
 
-  result storageSize JSON storageSize = not [0 .STORAGE_SIZE_FAIL] when
-  result alignment   JSON alignment   = not [0 .ALIGNMENT_FAIL] when
+  result storageSize JSON storageSize = ~ [0 .STORAGE_SIZE_FAIL] when
+  result alignment   JSON alignment   = ~ [0 .ALIGNMENT_FAIL] when
   @result
 ];
 
@@ -204,7 +204,7 @@ parseJSONNodeImpl: [
     mainResult.success [
       [
         iterate
-        pos.currentCode ascii.null = not [pos.currentCode ascii.space > not] &&
+        pos.currentCode ascii.null = ~ [pos.currentCode ascii.space > ~] &&
       ] loop
     ] when
   ];
@@ -212,7 +212,7 @@ parseJSONNodeImpl: [
   iterateToNextCharAfterIterate: [
     mainResult.success [
       [
-        pos.currentCode ascii.null = not [pos.currentCode ascii.space > not] && [iterate TRUE] &&
+        pos.currentCode ascii.null = ~ [pos.currentCode ascii.space > ~] && [iterate TRUE] &&
       ] loop
     ] when
   ];
@@ -228,14 +228,14 @@ parseJSONNodeImpl: [
   ];
 
 
-  isDigit: [copy code:; code ascii.zero < not code ascii.zero 10n32 + < and];
+  isDigit: [copy code:; code ascii.zero < ~ code ascii.zero 10n32 + < and];
 
   parseString: [
     pos.currentCode ascii.quote = [
       result: String;
       [
         iterate
-        pos.currentCode ascii.quote = not [
+        pos.currentCode ascii.quote = ~ [
           pos.currentCode ascii.space < [
             "unterminated string" lexicalError
           ] [
@@ -267,13 +267,13 @@ parseJSONNodeImpl: [
                               4 dynamic [
                                 unicode 16n32 * @unicode set
                                 iterate
-                                pos.currentCode ascii.zero < not [pos.currentCode ascii.zero 10n32 + <] && [
+                                pos.currentCode ascii.zero < ~ [pos.currentCode ascii.zero 10n32 + <] && [
                                   pos.currentCode ascii.zero - unicode + @unicode set
                                 ] [
-                                  pos.currentCode ascii.aCode < not [pos.currentCode ascii.aCode 6n32 + <] && [
+                                  pos.currentCode ascii.aCode < ~ [pos.currentCode ascii.aCode 6n32 + <] && [
                                     pos.currentCode ascii.aCode - 10n32 + unicode + @unicode set
                                   ] [
-                                    pos.currentCode ascii.aCodeBig < not [pos.currentCode ascii.aCodeBig 6n32 + <] && [
+                                    pos.currentCode ascii.aCodeBig < ~ [pos.currentCode ascii.aCodeBig 6n32 + <] && [
                                       pos.currentCode ascii.aCodeBig - 10n32 + unicode + @unicode set
                                     ] [
                                       "error in unicode" lexicalError
@@ -358,7 +358,7 @@ parseJSONNodeImpl: [
           ] if
         ] if
       ] if
-      break not [mainResult.success copy] && [iterate TRUE] &&
+      break ~ [mainResult.success copy] && [iterate TRUE] &&
     ] loop
 
     n1.c 0 = [n2.c 0 =] && [
@@ -376,38 +376,38 @@ parseJSONNodeImpl: [
 
   parseCondJSON: [
     pos.currentCode ascii.tCode = [
-      pos.currentCode ascii.tCode = not ["failed to read \"true\"" lexicalError] when
+      pos.currentCode ascii.tCode = ~ ["failed to read \"true\"" lexicalError] when
       iterate
-      pos.currentCode ascii.rCode = not ["failed to read \"true\"" lexicalError] when
+      pos.currentCode ascii.rCode = ~ ["failed to read \"true\"" lexicalError] when
       iterate
-      pos.currentCode ascii.uCode = not ["failed to read \"true\"" lexicalError] when
+      pos.currentCode ascii.uCode = ~ ["failed to read \"true\"" lexicalError] when
       iterate
-      pos.currentCode ascii.eCode = not ["failed to read \"true\"" lexicalError] when
+      pos.currentCode ascii.eCode = ~ ["failed to read \"true\"" lexicalError] when
       iterateToNextChar
       TRUE condAsJSON
     ] [
-      pos.currentCode ascii.fCode = not ["failed to read \"false\"" lexicalError] when
+      pos.currentCode ascii.fCode = ~ ["failed to read \"false\"" lexicalError] when
       iterate
-      pos.currentCode ascii.aCode = not ["failed to read \"false\"" lexicalError] when
+      pos.currentCode ascii.aCode = ~ ["failed to read \"false\"" lexicalError] when
       iterate
-      pos.currentCode ascii.lCode = not ["failed to read \"false\"" lexicalError] when
+      pos.currentCode ascii.lCode = ~ ["failed to read \"false\"" lexicalError] when
       iterate
-      pos.currentCode ascii.sCode = not ["failed to read \"false\"" lexicalError] when
+      pos.currentCode ascii.sCode = ~ ["failed to read \"false\"" lexicalError] when
       iterate
-      pos.currentCode ascii.eCode = not ["failed to read \"false\"" lexicalError] when
+      pos.currentCode ascii.eCode = ~ ["failed to read \"false\"" lexicalError] when
       iterateToNextChar
       FALSE condAsJSON
     ] if
   ];
 
   parseNull: [
-    pos.currentCode ascii.nCode = not ["failed to read \"null\"" lexicalError] when
+    pos.currentCode ascii.nCode = ~ ["failed to read \"null\"" lexicalError] when
     iterate
-    pos.currentCode ascii.uCode = not ["failed to read \"null\"" lexicalError] when
+    pos.currentCode ascii.uCode = ~ ["failed to read \"null\"" lexicalError] when
     iterate
-    pos.currentCode ascii.lCode = not ["failed to read \"null\"" lexicalError] when
+    pos.currentCode ascii.lCode = ~ ["failed to read \"null\"" lexicalError] when
     iterate
-    pos.currentCode ascii.lCode = not ["failed to read \"null\"" lexicalError] when
+    pos.currentCode ascii.lCode = ~ ["failed to read \"null\"" lexicalError] when
     iterateToNextChar
     JSON
   ];
@@ -424,7 +424,7 @@ parseJSONNodeImpl: [
         key result.find.success [
           "duplicate key" lexicalError
         ] [
-          pos.currentCode ascii.colon = not [
+          pos.currentCode ascii.colon = ~ [
             ": expected here" lexicalError
           ] [
             iterateToNextChar
@@ -446,7 +446,7 @@ parseJSONNodeImpl: [
           ] if
         ] if
       ] if
-      break not [mainResult.success copy] &&
+      break ~ [mainResult.success copy] &&
     ] loop
     iterateToNextChar
     @result move objectAsJSON
@@ -475,7 +475,7 @@ parseJSONNodeImpl: [
           ] if
         ] if
       ] if
-      break not [mainResult.success copy] &&
+      break ~ [mainResult.success copy] &&
     ] loop
     iterateToNextChar
     @result move arrayAsJSON
@@ -589,7 +589,7 @@ catJSONNodeWithPaddingImpl: [
                     code ascii.tab = [
                       "\\t" @result.cat
                     ] [
-                      code ascii.space < not code ascii.tilda > not and [
+                      code ascii.space < ~ code ascii.tilda > ~ and [
                         symbol @result.cat
                       ] [
                         codePoint: size: symbol.data symbol.size getCodePointAndSize;;
@@ -622,7 +622,7 @@ catJSONNodeWithPaddingImpl: [
     first: TRUE;
     json.getArray [
       item:;
-      first not ["," @result.cat] [FALSE @first set] if
+      first ~ ["," @result.cat] [FALSE @first set] if
       TRUE catPad
 
       @result
@@ -638,7 +638,7 @@ catJSONNodeWithPaddingImpl: [
     first: TRUE;
     json.getObject [
       pair:;
-      first not ["," @result.cat] [FALSE @first set] if
+      first ~ ["," @result.cat] [FALSE @first set] if
       TRUE catPad
       pair.key catString
       ": " @result.cat

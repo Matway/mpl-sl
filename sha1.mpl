@@ -222,7 +222,7 @@ sha1: [
   source: makeArrayRange;
   state: (0x67452301n32 0xEFCDAB89n32 0x98BADCFEn32 0x10325476n32 0xC3D2E1F0n32);
   bitSize: source.getSize Nat64 cast 3n32 lshift;
-  [source.getSize 64 < not] [
+  [source.getSize 64 < ~] [
     @state source Sha1Internal.transform
     64 source.getSize source makeSubRange !source
   ] while

@@ -34,7 +34,7 @@ HashTable: [
           newB: h newBucketSize 1 - 0n32 cast and 0i32 cast;
 
           newB b = [
-            i j = not [
+            i j = ~ [
               i @current.at move
               j @current.at set
             ] when
@@ -62,7 +62,7 @@ HashTable: [
           value: 0nx @valueType addressToReference;
         };
 
-        dataSize 0 = not [
+        dataSize 0 = ~ [
           bucketIndex: keyHash data.dataSize 1 - 0n32 cast and 0 cast;
           curBucket: bucketIndex @data.at;
 
@@ -91,7 +91,7 @@ HashTable: [
       key:;
       keyHash: @key hash dynamic;
       [
-        dataSize 0 = not [
+        dataSize 0 = ~ [
           bucketIndex: keyHash data.dataSize 1 - 0n32 cast and 0 cast;
           curBucket: bucketIndex @data.at;
 
@@ -151,7 +151,7 @@ HashTable: [
         keyIsMoved: isMoved;
         key:;
         fr: key find;
-        [fr.success not] "Inserting existing element!" assert
+        [fr.success ~] "Inserting existing element!" assert
         @key keyIsMoved moveIf @value valueIsMoved moveIf insertUnsafe
       ] [
         insertUnsafe

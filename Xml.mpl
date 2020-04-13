@@ -50,8 +50,8 @@ XMLElement: [
     childrenStorage: XMLValueHelper Array;
   };
 
-  result storageSize XMLElementHelper storageSize = not [0 .STORAGE_SIZE_FAIL] when
-  result alignment   XMLElementHelper alignment   = not [0 .ALIGNMENT_FAIL] when
+  result storageSize XMLElementHelper storageSize = ~ [0 .STORAGE_SIZE_FAIL] when
+  result alignment   XMLElementHelper alignment   = ~ [0 .ALIGNMENT_FAIL] when
   @result
 ];
 

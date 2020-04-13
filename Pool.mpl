@@ -36,12 +36,12 @@ Pool: [
 
     valid: [
       copy index:;
-      index 0i32 same not [0 .ONLY_I32_ALLOWED] when
-      [index 0 < not [index dataSize <] &&] "Index is out of range!" assert
+      index 0i32 same ~ [0 .ONLY_I32_ALLOWED] when
+      [index 0 < ~ [index dataSize <] &&] "Index is out of range!" assert
       position: index 3n32 rshift;
       offset: index Nat32 cast 7n32 and Nat8 cast;
       bitBlock: position validAt;
-      bitBlock 1n8 offset lshift and 0n8 = not
+      bitBlock 1n8 offset lshift and 0n8 = ~
     ];
 
     getNextIndex: [
@@ -87,7 +87,7 @@ Pool: [
     firstValid: [
       i: 0;
       [
-        i dataSize < [i valid not] && [i 1 + !i TRUE] &&
+        i dataSize < [i valid ~] && [i 1 + !i TRUE] &&
       ] loop
 
       i
@@ -96,7 +96,7 @@ Pool: [
     nextValid: [
       i: 1 +;
       [
-        i dataSize < [i valid not] && [i 1 + !i TRUE] &&
+        i dataSize < [i valid ~] && [i 1 + !i TRUE] &&
       ] loop
 
       i
@@ -185,7 +185,7 @@ Pool: [
 
     DIE: [
       clear
-      data 0nx = not [
+      data 0nx = ~ [
         exactAllocatedMemSize data mplFree
       ] when
     ];

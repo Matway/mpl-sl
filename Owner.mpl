@@ -9,16 +9,16 @@ OwnerWithDestructor: [{
 
   assigned: [
     addr: memory storageAddress;
-    addr 0nx = not
+    addr 0nx = ~
   ];
 
   init: [
-    [assigned not] "Can init only empty pointers!" assert
+    [assigned ~] "Can init only empty pointers!" assert
     new !memory
   ];
 
   initDerived: [
-    [assigned not] "Can init only empty pointers!" assert
+    [assigned ~] "Can init only empty pointers!" assert
     new storageAddress @elementType addressToReference !memory
   ];
 

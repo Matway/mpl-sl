@@ -118,7 +118,7 @@ slerpWithEpsilon: [
     c neg !c
   ] when
 
-  c 1 o cast epsilon - > not [
+  c 1 o cast epsilon - > ~ [
     a: c cos;
     sr: 1 o cast a sin /;
     a2: a o *;

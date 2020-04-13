@@ -57,7 +57,7 @@ when: [[] if];
 
 printAddr: [
   copy addr:;
-  addr 0nx = not [(addr copy) "%s" printf] when
+  addr 0nx = ~ [(addr copy) "%s" printf] when
 ];
 
 while: [
@@ -88,7 +88,7 @@ times: [
 assert: [
   DEBUG [
     message:;
-    call not [
+    call ~ [
       message failProc
     ] when
   ] [

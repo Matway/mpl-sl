@@ -122,7 +122,7 @@ AVLMap: [
     swapNodes: [
       addr2:;
       addr1:;
-      addr1 addr2 = not [
+      addr1 addr2 = ~ [
         node1: addr1 asNode;
         node2: addr2 asNode;
         iswap: [i1:; i2:; tmp: i1 copy; i2 @i1 set tmp @i2 set];
@@ -170,8 +170,8 @@ AVLMap: [
             FALSE
           ] [
             curNode: current asNode;
-            [key curNode.key = not] "Inserting existing element!" assert
-            curNode.balance 0 = not [@current !prime] when
+            [key curNode.key = ~] "Inserting existing element!" assert
+            curNode.balance 0 = ~ [@current !prime] when
             key curNode.key < [@curNode.@left !current] [@curNode.@right !current] if
             TRUE
           ] if
@@ -188,7 +188,7 @@ AVLMap: [
 
         addr @current set
 
-        current prime is not [
+        current prime is ~ [
           # stage2: correct balance value
           p: @prime;
           [
@@ -200,7 +200,7 @@ AVLMap: [
               pNode.balance 1 + @pNode.@balance set
               @pNode.@left !p
             ] if
-            p current is not
+            p current is ~
           ] loop
 
           # stage3: rebalance
@@ -234,7 +234,7 @@ AVLMap: [
           ] [
             curNode: current asNode;
             haveP [
-              curNode.balance 0 = [curNode.left 0nx = not] && [
+              curNode.balance 0 = [curNode.left 0nx = ~] && [
                 @current !prime
               ] [
                 pNode: prev asNode;
@@ -264,11 +264,11 @@ AVLMap: [
           ] if
         ] loop
 
-        [dropped 0nx = not] "Erasing unexisting element!" assert
+        [dropped 0nx = ~] "Erasing unexisting element!" assert
 
 
         [
-          prime prev is not [
+          prime prev is ~ [
             primeNode: prime asNode;
             primeNode.key key < [
               primeNode.balance 1 + @primeNode.@balance set
@@ -313,7 +313,7 @@ AVLMap: [
         copy nodeAddr:;
         recursive
 
-        nodeAddr 0nx = not [
+        nodeAddr 0nx = ~ [
           node: nodeAddr asNode;
           node.left depth 1 + debugPrintImpl
           depth ["  " print] times
@@ -330,7 +330,7 @@ AVLMap: [
         copy nodeAddr:;
         recursive
 
-        nodeAddr 0nx = not [
+        nodeAddr 0nx = ~ [
           node: nodeAddr asNode;
           node.left clearImpl
           node.right clearImpl
@@ -384,7 +384,7 @@ each: [b:; "AVL_MAP" has] [
     copy eachNodeAddr:;
     recursive
 
-    eachNodeAddr 0nx = not [
+    eachNodeAddr 0nx = ~ [
       eachNode: eachNodeAddr @eachInTreeTree.asNode;
       eachNode.left eachImpl
       {key: eachNode.key; value: @eachNode.@value;} @eachInTreeBody call

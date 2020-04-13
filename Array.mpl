@@ -15,8 +15,8 @@ makeArrayRangeRaw: [{
 
   at: [
     copy index:;
-    index 0i32 same not [0 .ONLY_I32_ALLOWED] when
-    [index 0 < not [index dataSize <] &&] "Index is out of range!" assert
+    index 0i32 same ~ [0 .ONLY_I32_ALLOWED] when
+    [index 0 < ~ [index dataSize <] &&] "Index is out of range!" assert
     getBufferBegin index Natx cast elementSize * + @elementType addressToReference
   ];
 
@@ -62,7 +62,7 @@ makeArrayRangeRaw: [{
         max: index copy;
         left  heapSize < [max at left  at @comparator call] && [left  @max set] when
         right heapSize < [max at right at @comparator call] && [right @max set] when
-        max index = not [
+        max index = ~ [
           max index swap
           max @index set TRUE
         ] &&
@@ -113,9 +113,9 @@ makeSubRange: [
   makeArrayRange arg:;
   copy rangeEndIndex:;
   copy rangeBeginIndex:;
-  [0 rangeBeginIndex > not] "Invalid subrange, 0>begin!" assert
-  [rangeBeginIndex rangeEndIndex > not] "Invalid subrange, begin>end!" assert
-  [rangeEndIndex arg.dataSize > not] "Invalid subrange, end>size!" assert
+  [0 rangeBeginIndex > ~] "Invalid subrange, 0>begin!" assert
+  [rangeBeginIndex rangeEndIndex > ~] "Invalid subrange, begin>end!" assert
+  [rangeEndIndex arg.dataSize > ~] "Invalid subrange, end>size!" assert
   rangeEndIndex rangeBeginIndex - arg.getBufferBegin arg.elementSize rangeBeginIndex Natx cast * + @arg.@elementType addressToReference makeArrayRangeRaw
 ];
 
@@ -135,8 +135,8 @@ Array: [{
 
   at: [
     copy index:;
-    index 0i32 same not [0 .ONLY_I32_ALLOWED] when
-    [index 0 < not [index dataSize <] &&] "Index is out of range!" assert
+    index 0i32 same ~ [0 .ONLY_I32_ALLOWED] when
+    [index 0 < ~ [index dataSize <] &&] "Index is out of range!" assert
     getBufferBegin index Natx cast elementSize * + @elementType addressToReference
   ];
 
@@ -159,8 +159,8 @@ Array: [{
 
   erase: [
     copy index:;
-    index 0i32 same not [0 .ONLY_I32_ALLOWED] when
-    [index 0 < not [index dataSize <] &&] "Index is out of range!" assert
+    index 0i32 same ~ [0 .ONLY_I32_ALLOWED] when
+    [index 0 < ~ [index dataSize <] &&] "Index is out of range!" assert
 
     index getSize 1 - < [
       last move index at set
@@ -181,7 +181,7 @@ Array: [{
 
   setReserve: [
     copy newReserve:;
-    [newReserve dataReserve < not] "New reserve is less than old reserve!" assert
+    [newReserve dataReserve < ~] "New reserve is less than old reserve!" assert
     newReserve Natx cast elementSize * dataReserve Natx cast elementSize * getBufferBegin mplRealloc
     @elementType addressToReference !dataBegin
     newReserve @dataReserve set
@@ -205,7 +205,7 @@ Array: [{
 
   shrink: [
     copy newSize: dynamic;
-    [newSize dataSize > not] "Shrinked size is bigger than the old size!" assert
+    [newSize dataSize > ~] "Shrinked size is bigger than the old size!" assert
 
     i: dataSize copy;
     [i newSize >] [
@@ -226,7 +226,7 @@ Array: [{
 
   enlarge: [
     copy newSize: dynamic;
-    [newSize dataSize < not] "Enlarged size is less than old size!" assert
+    [newSize dataSize < ~] "Enlarged size is less than old size!" assert
 
     dataReserve newSize < [
       newReserve: getNextReserve;
@@ -262,7 +262,7 @@ Array: [{
     clear
     addr: getBufferBegin;
     size: dataReserve Natx cast elementSize *;
-    addr 0nx = not [size addr mplFree] when
+    addr 0nx = ~ [size addr mplFree] when
     0nx @elementType addressToReference !dataBegin
     0 dynamic @dataSize set
     0 dynamic @dataReserve set
@@ -289,7 +289,7 @@ Array: [{
     clear
     addr: getBufferBegin;
     size: dataReserve Natx cast elementSize *;
-    addr 0nx = not [size addr mplFree] when
+    addr 0nx = ~ [size addr mplFree] when
   ];
 }];
 
