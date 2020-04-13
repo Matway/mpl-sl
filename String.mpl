@@ -504,11 +504,11 @@ String: [{
   cat:                [makeNZ catNZ                makeZ];
 
   catMany: [
-    list:;
+    list: asSlice;
     makeNZ
     i: 0;
-    [i list fieldCount <] [
-      i 1 + list fieldCount < [i 1 + list @ "HEX" has] && [
+    [i list.size <] [
+      i 1 + list.size < [i 1 + list @ "HEX" has] && [
         i list @ catHexNZ
         i 1 + @i set
       ] [

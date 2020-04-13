@@ -238,3 +238,85 @@ enum: [
   ];
   {@enum_uloop ucall}
 ];
+
+# Collections
+
+isBuiltinArray: [
+  object:;
+  @object isCombined [@object () same [@object 0 fieldName "" =] ||] &&
+];
+
+isSlice: [
+  object:;
+  @object "at" has [@object "size" has [@object "slice" has] &&] &&
+];
+
+@: ["at" has] [.at] pfunc;
+
+!: ["at" has] [.at set] pfunc;
+
+asSlice: [
+  object:;
+  @object isSlice [@object] [
+    @object isBuiltinArray [
+      slice: [
+        newIndex: newSize:;;
+        {
+          array: @array;
+          index: index newIndex +;
+          size: newSize copy;
+
+          at: [index + @array @];
+
+          slice: @slice;
+        }
+      ];
+
+      array: @object; index: 0;
+      0 @object fieldCount slice
+    ] [
+      "Object cannot be used as slice" printCompilerMessage 0.ERROR
+    ] if
+  ] if
+];
+
+slice: [
+  slice: index: size:;; asSlice;
+  index size @slice.slice
+];
+
+range: [
+  slice: index0: index1:;; asSlice;
+  index0 index1 index0 - @slice.slice
+];
+
+head: [
+  slice: size:; asSlice;
+  0 size @slice.slice
+];
+
+tail: [
+  slice: size:; asSlice;
+  @slice.size size - size @slice.slice
+];
+
+unhead: [
+  slice: size:; asSlice;
+  size @slice.size size - @slice.slice
+];
+
+untail: [
+  slice: size:; asSlice;
+  0 @slice.size size - @slice.slice
+];
+
+each: [
+  eachSlice: eachBody:; asSlice;
+  eachIndex: 0; [
+    eachIndex @eachSlice.size = [FALSE] [
+      eachIndex @eachSlice.at @eachBody ucall
+      eachIndex 1 + !eachIndex
+      TRUE
+    ] if
+  ] loop
+];

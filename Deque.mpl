@@ -16,17 +16,17 @@ Deque: [{
   pushFront: [@head.pushBack];
 
   popBack: [
-    tail fieldCount 0 = [@head @tail swapBuffers] when
+    tail.size 0 = [@head @tail swapBuffers] when
     @tail.popBack
   ];
 
   popFront: [
-    head fieldCount 0 = [@tail @head swapBuffers] when
+    head.size 0 = [@tail @head swapBuffers] when
     @head.popBack
   ];
 
   back: [
-    tail fieldCount 0 = [
+    tail.size 0 = [
       0 @head.at
     ] [
       @tail.last
@@ -34,7 +34,7 @@ Deque: [{
   ];
 
   front: [
-    head fieldCount 0 = [
+    head.size 0 = [
       0 @tail.at
     ] [
       @head.last

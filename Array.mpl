@@ -20,6 +20,23 @@ makeArrayRangeRaw: [{
     getBufferBegin index Natx cast elementSize * + @elementType addressToReference
   ];
 
+  size: [
+    dataSize
+  ];
+
+  slice: [
+    newIndex: newSize:;;
+    {
+      schema elementType: 0nx @elementType addressToReference;
+      getBufferBegin: getBufferBegin elementType storageSize newIndex Natx cast * +;
+      size: newSize copy;
+
+      at: [Natx cast elementType storageSize * getBufferBegin + @elementType addressToReference];
+
+      slice: @slice;
+    }
+  ];
+
   getSize: [
     dataSize copy
   ];
@@ -123,6 +140,23 @@ Array: [{
     getBufferBegin index Natx cast elementSize * + @elementType addressToReference
   ];
 
+  size: [
+    dataSize
+  ];
+
+  slice: [
+    newIndex: newSize:;;
+    {
+      schema elementType: 0nx @elementType addressToReference;
+      getBufferBegin: getBufferBegin elementType storageSize newIndex Natx cast * +;
+      size: newSize copy;
+
+      at: [Natx cast elementType storageSize * getBufferBegin + @elementType addressToReference];
+
+      slice: @slice;
+    }
+  ];
+
   erase: [
     copy index:;
     index 0i32 same not [0 .ONLY_I32_ALLOWED] when
@@ -171,7 +205,7 @@ Array: [{
 
   shrink: [
     copy newSize: dynamic;
-      [newSize dataSize > not] "Shrinked size is bigger than the old size!" assert
+    [newSize dataSize > not] "Shrinked size is bigger than the old size!" assert
 
     i: dataSize copy;
     [i newSize >] [
@@ -262,12 +296,13 @@ Array: [{
 makeArray: [
   listIsMoved: isMoved;
   list:;
+  slice: list asSlice;
   list "ARRAY_VIEW" has [FALSE @listIsMoved set] when
-  [list fieldCount 0 >] "List is empty!" assert
+  [slice.size 0 >] "List is empty!" assert
   result: 0 @list @ newVarOfTheSameType Array;
   i: 0 dynamic;
   [
-    i list fieldCount < [
+    i slice.size < [
       i @list @ listIsMoved moveIf @result.pushBack
       i 1 + @i set TRUE
     ] &&
@@ -276,44 +311,8 @@ makeArray: [
   @result
 ];
 
-@: ["ARRAY" has] [.at] pfunc;
-@: ["ARRAY_RANGE" has] [.at] pfunc;
-!: ["ARRAY" has] [.at set] pfunc;
-!: ["ARRAY_RANGE" has] [.at set] pfunc;
-fieldCount: ["ARRAY" has] [.getSize] pfunc;
-fieldCount: ["ARRAY_RANGE" has] [.getSize] pfunc;
-
-each: [b:; fieldCount 0 =] [
-  eachInArrayBody:;
-  eachInArrayList:;
-] pfunc;
-
-each: [b:; 0 fieldName textSize 0nx =] [
-  eachInArrayBody:;
-  eachInArrayList:;
-
-  eachInArrayIndex: 0 static;
-  [
-    eachInArrayIndex eachInArrayList fieldCount < [
-      eachInArrayIndex @eachInArrayList @ @eachInArrayBody call
-      eachInArrayIndex 1 + @eachInArrayIndex set
-      TRUE static
-    ] [
-      FALSE static
-    ] if
-  ] loop
-] pfunc;
-
-each: [b:; a:; a "ARRAY" has a "ARRAY_RANGE" has or] [
-  eachInArrayBody:;
-  eachInArrayArray:;
-
-  eachInArrayIndex: 0 dynamic;
-  [eachInArrayIndex eachInArrayArray.dataSize <] [
-    eachInArrayIndex @eachInArrayArray.at @eachInArrayBody call
-    eachInArrayIndex 1 + @eachInArrayIndex set
-  ] while
-] pfunc;
+fieldCount: ["ARRAY" has] [0.getSize] pfunc;
+fieldCount: ["ARRAY_RANGE" has] [0.getSize] pfunc;
 
 getHeapUsedSize: ["ARRAY" has] [
   arg:;

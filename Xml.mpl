@@ -725,7 +725,7 @@ xmlInternal: {
       stringSplitResult: string splitString;
       [stringSplitResult.success] "string must be valid utf-8 sequence" assert
       stringChars: stringSplitResult.chars;
-      [stringChars fieldCount 0 >] "string must not be empty" assert
+      [stringChars.size 0 >] "string must not be empty" assert
       i: 0;
       [
         position.currentSymbol i stringChars @ = ~ [
