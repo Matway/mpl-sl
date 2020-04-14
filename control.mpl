@@ -1,5 +1,23 @@
 "conventions" includeModule
 
+Cond:   [v: FALSE  dynamic; @v];
+Int8:   [v: 0i8    dynamic; @v];
+Int16:  [v: 0i16   dynamic; @v];
+Int32:  [v: 0i32   dynamic; @v];
+Int64:  [v: 0i64   dynamic; @v];
+Intx:   [v: 0ix    dynamic; @v];
+Nat8:   [v: 0n8    dynamic; @v];
+Nat16:  [v: 0n16   dynamic; @v];
+Nat32:  [v: 0n32   dynamic; @v];
+Nat64:  [v: 0n64   dynamic; @v];
+Natx:   [v: 0nx    dynamic; @v];
+Real32: [v: 0.0r32 dynamic; @v];
+Real64: [v: 0.0r64 dynamic; @v];
+Text:   [v: ""     dynamic; @v];
+
+{format: Text;} () {variadic: TRUE; convention: cdecl;} "printf" importFunction # need for assert
+{result: 0;} () {convention: cdecl;} "exit" importFunction
+
 pfunc: [{
   virtual CALL:;
   virtual PRE:;
@@ -10,6 +28,10 @@ isCodeRef: [storageSize TRUE static] [FALSE static] pfunc;
 
 isCopyable: [drop FALSE];
 isCopyable: [x:; @x storageSize 0nx > [@x Ref] [@x] uif copy TRUE] [drop TRUE] pfunc;
+
+=: ["equal" has] [item0: item1:;; @item0 @item1.equal] pfunc;
+
+=: [item1:; "equal" has] [item0: item1:;; @item1 @item0.equal] pfunc;
 
 failProc: [
   storageAddress printAddr
@@ -29,27 +51,9 @@ failProc: [
   2 exit
 ];
 
-Cond:   [v: FALSE  dynamic; @v];
-Int8:   [v: 0i8    dynamic; @v];
-Int16:  [v: 0i16   dynamic; @v];
-Int32:  [v: 0i32   dynamic; @v];
-Int64:  [v: 0i64   dynamic; @v];
-Intx:   [v: 0ix    dynamic; @v];
-Nat8:   [v: 0n8    dynamic; @v];
-Nat16:  [v: 0n16   dynamic; @v];
-Nat32:  [v: 0n32   dynamic; @v];
-Nat64:  [v: 0n64   dynamic; @v];
-Natx:   [v: 0nx    dynamic; @v];
-Real32: [v: 0.0r32 dynamic; @v];
-Real64: [v: 0.0r64 dynamic; @v];
-Text:   [v: ""     dynamic; @v];
-
 Ref: [v:; 0nx @v addressToReference]; # for signatures
 Cref: [v:; 0nx v addressToReference]; # for signatures
 AsRef: [{data:;}]; # for Ref Array
-
-{format: Text;} () {variadic: TRUE; convention: cdecl;} "printf" importFunction # need for assert
-{result: 0;} () {convention: cdecl;} "exit" importFunction
 
 drop: [v:;];
 
@@ -103,6 +107,7 @@ assert: [
 unconst: [copy a:; @a];
 
 &&: [[FALSE] if];
+
 ||: [lazyOrIfFalse:; [TRUE] @lazyOrIfFalse if];
 
 iterate: [
@@ -137,14 +142,6 @@ within?: [
   value lower < ~ [value upper <] &&
 ];
 
-# usage:
-#
-# (
-#   [1 =] ["one"]
-#   [2 =] ["two"]
-#   ["unknown"]
-# ) cond
-
 isNil: [storageAddress 0nx =];
 
 condImpl: [
@@ -164,16 +161,6 @@ condImpl: [
 ];
 
 cond: [0 static condImpl];
-
-# usage:
-#
-# 2 dynamic
-# (
-#   0 ["zero"]
-#   1 ["one"]
-#   2 ["two"]
-#   ["unknown"]
-# ) case
 
 caseImpl: [
   copy caseIndex:;
@@ -255,6 +242,10 @@ enum: [
 
 # Collections
 
+!: ["at" has] [.at set] pfunc;
+
+@: ["at" has] [.at] pfunc;
+
 isBuiltinArray: [
   object:;
   @object isCombined [@object () same [@object 0 fieldName "" =] ||] &&
@@ -264,10 +255,6 @@ isView: [
   object:;
   @object "at" has [@object "size" has [@object "view" has] &&] &&
 ];
-
-@: ["at" has] [.at] pfunc;
-
-!: ["at" has] [.at set] pfunc;
 
 asView: [
   object:;

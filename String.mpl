@@ -206,6 +206,11 @@ intPow: [
 StringView: [{
   data: 0nx;
   size: 0;
+
+  equal: [
+    other: makeStringView;
+    size other.size = [size Natx cast other.data data memcmp 0 =] &&
+  ];
 }];
 
 makeStringView: [StringView same] [
@@ -267,6 +272,11 @@ String: [{
   ];
 
   getStringMemory: [chars.getBufferBegin];
+
+  equal: [
+    other: makeStringView;
+    self other.equal
+  ];
 
   getStringView: [
     chars.getSize 0 = [
@@ -560,32 +570,6 @@ assembleString: [
   list @result.catMany
   @result
 ];
-
-stringness: [
-  arg:;
-  arg "" same [1][arg StringView same [2][arg "STRING" has [2][0] if ] if] if
-];
-
-=: [
-  p1: stringness;
-  p2: stringness;
-  p1 p2 + 2 >
-] [
-  arg1: makeStringView;
-  arg2: makeStringView;
-  arg1.size arg2.size = [
-    result: TRUE;
-    i: 0 dynamic;
-    [result copy [i arg1.size <] &&] [
-      addr1: arg1.data i Natx cast + Nat8 addressToReference;
-      addr2: arg2.data i Natx cast + Nat8 addressToReference;
-      addr1 addr2 = @result set
-      i 1 + @i set
-    ] while
-
-    result copy
-  ] &&
-] pfunc;
 
 print: [
   toString stringMemory printAddr
