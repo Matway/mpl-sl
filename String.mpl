@@ -203,15 +203,54 @@ intPow: [
   ] if
 ];
 
-StringView: [{
-  data: 0nx;
-  size: 0;
+makeStringIterator2: [{
+  data: size: copy; copy;
+  codepointSize: data size getCodePointSize;
+
+  next: [
+    item: data codepointSize makeStringView2;
+    data codepointSize Natx cast + !data
+    size codepointSize - !size
+    data size getCodePointSize !codepointSize
+    @item
+  ];
+
+  valid: [codepointSize 0 = ~];
+}];
+
+StringIterator: [0nx 0 makeStringIterator2];
+
+makeStringIterator: [StringIterator same] [
+  copy
+] pfunc;
+
+makeStringIterator: [Text same] [
+  text:;
+  text storageAddress text textSize Int32 cast makeStringIterator2
+] pfunc;
+
+asIterator: ["" same] [
+  text:;
+  text storageAddress text textSize Int32 cast makeStringIterator2
+] pfunc;
+
+makeStringView2: [{
+  data: size: copy; copy;
 
   equal: [
-    other: makeStringView;
+    other: dup "" same [asView] when;
     size other.size = [size Natx cast other.data data memcmp 0 =] &&
   ];
+
+  iterator: [data size makeStringIterator2];
+
+  view: [
+    index: size:;;
+    data index Natx cast + size makeStringView2
+  ];
 }];
+
+StringView: [0nx 0 makeStringView2];
 
 makeStringView: [StringView same] [
   copy
@@ -222,13 +261,10 @@ makeStringView: [Text same] [
   text storageAddress text textSize Int32 cast makeStringView2
 ] pfunc;
 
-makeStringView2: [
-  data: size:;;
-  view: StringView;
-  data copy @view.!data
-  size copy @view.!size
-  @view
-];
+asView: ["" same] [
+  text:;
+  text storageAddress text textSize Int32 cast makeStringView2
+] pfunc;
 
 splitString: [
   string: makeStringView;
@@ -273,9 +309,20 @@ String: [{
 
   getStringMemory: [chars.getBufferBegin];
 
+  data: [getStringMemory];
+
+  size: [getTextSize];
+
   equal: [
     other: makeStringView;
     self other.equal
+  ];
+
+  iterator: [getStringMemory getTextSize makeStringIterator2];
+
+  view: [
+    index: size:;;
+    getStringMemory index Natx cast + getTextSize makeStringView2
   ];
 
   getStringView: [
@@ -571,16 +618,11 @@ assembleString: [
   @result
 ];
 
-print: [
-  toString stringMemory printAddr
-];
-
-print: ["" same] [
-  stringMemory printAddr
-] pfunc;
+print: ["" same ~] [toString print] pfunc;
 
 print: ["STRING" has] [
-  stringMemory printAddr
+  string:;
+  (string.getStringMemory) "%s\00" printf
 ] pfunc;
 
 addLog: [

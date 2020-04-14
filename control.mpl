@@ -13,7 +13,7 @@ Nat64:  [v: 0n64   dynamic; @v];
 Natx:   [v: 0nx    dynamic; @v];
 Real32: [v: 0.0r32 dynamic; @v];
 Real64: [v: 0.0r64 dynamic; @v];
-Text:   [v: ""     dynamic; @v];
+Text:   [v: ""; @v];
 
 {format: Text;} () {variadic: TRUE; convention: cdecl;} "printf" importFunction # need for assert
 {result: 0;} () {convention: cdecl;} "exit" importFunction
@@ -33,16 +33,32 @@ isCopyable: [x:; @x storageSize 0nx > [@x Ref] [@x] uif copy TRUE] [drop TRUE] p
 
 =: [item1:; "equal" has] [item0: item1:;; @item1 @item0.equal] pfunc;
 
+print: ["" same] [
+  text:;
+  text isDynamic [
+    i: 0nx dynamic; [
+      i text textSize = [FALSE] [
+        (text storageAddress i + Nat8 addressToReference copy) "%c\00" printf
+        i 1nx + !i
+        TRUE
+      ] if
+    ] loop
+  ] [
+    (text "\00" &) "%s\00" printf
+  ] if
+] pfunc;
+
 failProc: [
-  storageAddress printAddr
+  print
 
   trace: getCallTrace;
   [
     trace.first trace.last is [
       FALSE
     ] [
-      () LF printf
-      (trace.last.name trace.last.line copy trace.last.column copy) "in %s at %i:%i" printf
+      () "\nin \00" printf
+      trace.last.name print
+      (trace.last.line copy trace.last.column copy) " at %i:%i\00" printf
       trace.last.prev trace.last addressToReference @trace.!last
       TRUE
     ] if
@@ -62,11 +78,6 @@ dup: [v:; @v @v];
 swap: [v0: v1:;; @v1 @v0];
 
 when: [[] if];
-
-printAddr: [
-  copy addr:;
-  addr 0nx = ~ [(addr copy) "%s" printf] when
-];
 
 while: [
   whileBody:;
@@ -246,20 +257,100 @@ enum: [
 
 @: ["at" has] [.at] pfunc;
 
-isBuiltinArray: [
+isBuiltinTuple: [
   object:;
   @object isCombined [@object () same [@object 0 fieldName "" =] ||] &&
 ];
 
+isIndexable: [
+  object:;
+  @object "at" has [@object "size" has] &&
+];
+
+isIterator: [
+  object:;
+  @object "next" has [@object "valid" has] &&
+];
+
 isView: [
   object:;
-  @object "at" has [@object "size" has [@object "view" has] &&] &&
+  @object "size" has [@object "view" has] &&
+];
+
+asIndexable: [
+  object:;
+  @object isIndexable [@object] [
+    @object isBuiltinTuple [
+      {
+        tuple: @object;
+
+        at: [@tuple @];
+
+        size: [@tuple fieldCount];
+      }
+    ] [
+      "Object cannot be used as indexable" raiseStaticError
+    ] uif
+  ] uif
+];
+
+asIterator: [
+  object:;
+  @object isIterator [@object] [
+    @object "iterator" has [@object.iterator] [
+      @object isIndexable [
+        @object isView [
+          {
+            indexableView: 0 @object.size @object.view;
+
+            next: [
+              item: 0 @indexableView.at;
+              1 @indexableView.size 1 - @indexableView.view !indexableView
+              @item
+            ];
+
+            valid: [@indexableView.size 0 = ~];
+          }
+        ] [
+          {
+            indexable: @object;
+            index: 0;
+
+            next: [
+              item: index @indexable.at;
+              index 1 + !index
+              @item
+            ];
+
+            valid: [index @indexable.size = ~];
+          }
+        ] uif
+      ] [
+        @object isBuiltinTuple [
+          {
+            tuple: @object;
+            index: 0;
+
+            next: [
+              item: index @tuple @;
+              index 1 + !index
+              @item
+            ];
+
+            valid: [index @tuple fieldCount = ~];
+          }
+        ] [
+          "Object cannot be used as iterator" raiseStaticError
+        ] uif
+      ] uif
+    ] uif
+  ] uif
 ];
 
 asView: [
   object:;
   @object isView [@object] [
-    @object isBuiltinArray [
+    @object isBuiltinTuple [
       view: [
         newIndex: newSize:;;
         {
@@ -312,11 +403,10 @@ untail: [
 ];
 
 each: [
-  eachView: eachBody:; asView;
-  eachIndex: 0; [
-    eachIndex @eachView.size = [FALSE] [
-      eachIndex @eachView.at @eachBody ucall
-      eachIndex 1 + !eachIndex
+  eachIterator: eachBody:; asIterator;
+  [
+    @eachIterator.valid ~ [FALSE] [
+      @eachIterator.next @eachBody ucall
       TRUE
     ] if
   ] loop

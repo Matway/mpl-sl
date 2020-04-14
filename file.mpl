@@ -1,16 +1,16 @@
 "control" includeModule
 "String" includeModule
 
-{file: Natx;} Int32                                                {convention: cdecl;} "fclose"   importFunction
-{file: Natx;} Int32                                                {convention: cdecl;} "ferror"   importFunction
-{file: Natx;} Int32                                                {convention: cdecl;} "fflush"   importFunction
-{filename: Natx; mode: Natx;} Natx                                 {convention: cdecl;} "fopen"    importFunction
-{streamptr: Natx Ref; filename: Natx; mode: Natx;} Int32           {convention: cdecl;} "fopen_s"  importFunction
-{buffer: Natx; sizeOfElement: Natx; count: Natx; file: Natx;} Natx {convention: cdecl;} "fread"    importFunction
-{file: Natx; offset: Int32; origin: Int32;} Int32                  {convention: cdecl;} "fseek"    importFunction
-{file: Natx;} Natx                                                 {convention: cdecl;} "ftell"    importFunction
-{buffer: Natx; sizeOfElement: Natx; count: Natx; file: Natx;} Natx {convention: cdecl;} "fwrite"   importFunction
-{errnum: Int32;} Natx                                              {convention: cdecl;} "strerror" importFunction
+{stream: Natx;} Int32                                       {convention: cdecl;} "fclose"   importFunction
+{stream: Natx;} Int32                                       {convention: cdecl;} "ferror"   importFunction
+{stream: Natx;} Int32                                       {convention: cdecl;} "fflush"   importFunction
+{filename: Text; mode: Text;} Natx                          {convention: cdecl;} "fopen"    importFunction
+{streamptr: Natx Ref; filename: Text; mode: Text;} Int32    {convention: cdecl;} "fopen_s"  importFunction
+{buffer: Natx; size: Natx; count: Natx; stream: Natx;} Natx {convention: cdecl;} "fread"    importFunction
+{stream: Natx; offset: Int32; origin: Int32;} Int32         {convention: cdecl;} "fseek"    importFunction
+{stream: Natx;} Int32                                       {convention: cdecl;} "ftell"    importFunction
+{buffer: Natx; size: Natx; count: Natx; stream: Natx;} Natx {convention: cdecl;} "fwrite"   importFunction
+{errnum: Int32;} Natx                                       {convention: cdecl;} "strerror" importFunction
 
 SEEK_SET: [0i32];
 SEEK_CUR: [1i32];
@@ -21,7 +21,7 @@ getErrnoText: [
 ];
 
 loadFile: [
-  name:;
+  name: toString;
   result: {
     result: String;
     data: Nat8 Array;
@@ -32,12 +32,12 @@ loadFile: [
   () (
     [
       drop
-      "rb" stringMemory name stringMemory @file fopen_s !error error 0 = ~
+      "rb\00" name.getStringMemory Text addressToReference @file fopen_s !error error 0 = ~
     ] [("fopen failed, " error getErrnoText) assembleString @result.!result]
     [
       drop
       SEEK_END 0 file fseek drop
-      size: file ftell;
+      size: file ftell Natx cast;
       size Int32 cast @result.@data.resize
       SEEK_SET 0 file fseek drop
       file size 1nx result.data.getBufferBegin fread size = ~
@@ -51,13 +51,13 @@ loadFile: [
 ];
 
 saveFile: [
-  data: name:;;
+  data: name: toString;;
   file: Natx;
   error: Int32;
   () (
     [
       drop
-      "wb" stringMemory name stringMemory @file fopen_s !error error 0 = ~
+      "wb\00" name.getStringMemory Text addressToReference @file fopen_s !error error 0 = ~
     ] [("fopen failed, " error getErrnoText) assembleString]
     [
       drop
@@ -72,35 +72,35 @@ saveFile: [
 ];
 
 loadString: [
-  fileName: toString;
+  name: toString;
   result: {
     success: TRUE;
     data: String;
   };
 
   size: 0nx dynamic;
-  f: "rb" storageAddress fileName stringMemory fopen;
+  f: "rb\00" name.getStringMemory Text addressToReference fopen;
   f 0nx = ~ [
     SEEK_END 0 f fseek 0 =
-    [f ftell @size set
+    [f ftell Natx cast @size set
       SEEK_SET 0 f fseek 0 =] &&
     [size 0ix cast 0 cast @result.@data.@chars.resize
       f size 1nx @result.@data stringMemory fread size =] &&
     [0n8 @result.@data.@chars.pushBack TRUE] &&
     f fclose 0 = and
   ] &&
-  @result.@success set
 
+  @result.@success set
   result
 ];
 
 saveString: [
   stringView: makeStringView;
-  fileName: toString;
+  name: toString;
 
   size: stringView textSize;
 
-  f: "wb" storageAddress fileName stringMemory fopen;
+  f: "wb\00" name.getStringMemory Text addressToReference fopen;
   f 0nx = ~
   [
     size 0nx = [f size 1nx stringView stringMemory fwrite size =] ||
@@ -111,11 +111,11 @@ saveString: [
 
 appendString: [
   stringView: makeStringView;
-  fileName: toString;
+  name: toString;
 
   size: stringView textSize;
 
-  f: "ab" storageAddress fileName stringMemory fopen;
+  f: "ab\00" name.getStringMemory Text addressToReference fopen;
   f 0nx = ~
   [
     size 0nx = [f size 1nx stringView stringMemory fwrite size =] ||
