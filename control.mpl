@@ -29,6 +29,9 @@ isCodeRef: [storageSize TRUE static] [FALSE static] pfunc;
 isCopyable: [drop FALSE];
 isCopyable: [x:; @x storageSize 0nx > [@x Ref] [@x] uif copy TRUE] [drop TRUE] pfunc;
 
+isDynamic: [drop TRUE];
+isDynamic: [virtual v:; TRUE] [drop FALSE] pfunc;
+
 =: ["equal" has] [item0: item1:;; @item0 @item1.equal] pfunc;
 
 =: [item1:; "equal" has] [item0: item1:;; @item1 @item0.equal] pfunc;
