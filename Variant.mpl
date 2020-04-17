@@ -107,6 +107,19 @@ Variant: [{
     @memory storageAddress index @typeList @ addressToReference
   ];
 
+  visitInternal: [
+    visitBranches: visitIndex:;;
+    visitIndex visitBranches fieldCount = [] [
+      visitIndex visitBranches fieldCount 1 - = [visitIndex visitBranches @ ucall] [
+        visitIndex visitBranches @ typeTag = [visitIndex visitBranches @ get visitIndex 1 + visitBranches @ ucall] [
+          visitBranches visitIndex 2 + visitInternal
+        ] if
+      ] uif
+    ] uif
+  ];
+
+  visit: [0 visitInternal];
+
   INIT: [
     0 @typeTag set
     rawInit
