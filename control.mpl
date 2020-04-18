@@ -414,3 +414,31 @@ each: [
     ] if
   ] loop
 ];
+
+all: [
+  allIterator: allBody:; asIterator;
+  result: TRUE;
+  [
+    @allIterator.valid ~ [FALSE] [
+      @allIterator.next @allBody ucall ~ [FALSE !result FALSE] [
+        TRUE
+      ] if
+    ] if
+  ] loop
+
+  result
+];
+
+any: [
+  anyIterator: anyBody:; asIterator;
+  result: FALSE;
+  [
+    @anyIterator.valid ~ [FALSE] [
+      @anyIterator.next @anyBody ucall [TRUE !result FALSE] [
+        TRUE
+      ] if
+    ] if
+  ] loop
+
+  result
+];
