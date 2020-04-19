@@ -14,6 +14,20 @@ Pool: [
     firstFree: -1 dynamic;
     exactAllocatedMemSize: 0nx dynamic;
 
+    iterator: [@self [index: pool:;; {key: index copy; value: index @pool.at;}] makeIterator];
+    keys:     [self  [drop copy                                               ] makeIterator];
+    values:   [@self [.at                                                     ] makeIterator];
+
+    getSize: [
+      dataSize copy
+    ];
+
+    at: [
+      copy index:;
+      [index valid] "Pool::at: element is invalid!" assert
+      index elementAt
+    ];
+
     getAddressByIndex: [
       Natx cast entrySize * data +
     ];
@@ -50,16 +64,6 @@ Pool: [
       ] [
         firstFree copy
       ] if
-    ];
-
-    at: [
-      copy index:;
-      [index valid] "Pool::at: element is invalid!" assert
-      index elementAt
-    ];
-
-    getSize: [
-      dataSize copy
     ];
 
     erase: [
@@ -177,6 +181,16 @@ Pool: [
       index
     ];
 
+    makeIterator: [{
+      virtual method:;
+      pool:;
+      index: pool.firstValid;
+
+      valid: [index pool.dataSize = ~];
+      get: [index @pool @method call];
+      next: [index pool.nextValid !index];
+    }];
+
     INIT: [
       0nx dynamic @data set
       0   dynamic @dataSize set
@@ -191,17 +205,3 @@ Pool: [
     ];
   }
 ];
-
-@: ["POOL" has] [.at] pfunc;
-!: ["POOL" has] [.at set] pfunc;
-
-each: [b:; "POOL" has] [
-  eachInPoolBody:;
-  eachInPoolPool:;
-  eachInPoolIndex: eachInPoolPool.firstValid;
-  [eachInPoolIndex eachInPoolPool.getSize <] [
-    eachInPoolElement: eachInPoolIndex @eachInPoolPool.at;
-    {index: eachInPoolIndex copy; value: @eachInPoolElement;} @eachInPoolBody call
-    eachInPoolIndex eachInPoolPool.nextValid !eachInPoolIndex
-  ] while
-] pfunc;
