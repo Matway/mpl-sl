@@ -11,7 +11,6 @@ HashTable: [
 
     Node: [{
       key: key newVarOfTheSameType;
-      keyHash: 0n32 dynamic;
       value: value newVarOfTheSameType;
     }];
 
@@ -124,7 +123,6 @@ HashTable: [
 
         newNode: {
           key: @key keyIsMoved moveIf copy;
-          keyHash: key hash;
           value: @value valueIsMoved moveIf copy;
         };
 
@@ -174,7 +172,7 @@ HashTable: [
         i: 0 dynamic;
         j: 0 dynamic;
         [i current.dataSize <] [
-          h: i current.at.keyHash copy;
+          h: i current.at.@key hash;
           newB: h newBucketSize 1 - 0n32 cast and 0i32 cast;
 
           newB b = [
