@@ -203,7 +203,7 @@ intPow: [
   ] if
 ];
 
-makeStringIterator2: [{
+makeStringIter2: [{
   data: size: copy; copy;
   codepointSize: data size getCodePointSize;
 
@@ -216,20 +216,20 @@ makeStringIterator2: [{
   ];
 }];
 
-StringIterator: [0nx 0 makeStringIterator2];
+StringIter: [0nx 0 makeStringIter2];
 
-makeStringIterator: [StringIterator same] [
+makeStringIter: [StringIter same] [
   copy
 ] pfunc;
 
-makeStringIterator: [Text same] [
+makeStringIter: [Text same] [
   text:;
-  text storageAddress text textSize Int32 cast makeStringIterator2
+  text storageAddress text textSize Int32 cast makeStringIter2
 ] pfunc;
 
-asIterator: ["" same] [
+toIter: ["" same] [
   text:;
-  text storageAddress text textSize Int32 cast makeStringIterator2
+  text storageAddress text textSize Int32 cast makeStringIter2
 ] pfunc;
 
 makeStringView2: [{
@@ -240,7 +240,7 @@ makeStringView2: [{
     size other.size = [size Natx cast other.data data memcmp 0 =] &&
   ];
 
-  iterator: [data size makeStringIterator2];
+  iter: [data size makeStringIter2];
 
   view: [
     index: size:;;
@@ -316,7 +316,7 @@ String: [{
     self other.equal
   ];
 
-  iterator: [getStringMemory getTextSize makeStringIterator2];
+  iter: [getStringMemory getTextSize makeStringIter2];
 
   view: [
     index: size:;;

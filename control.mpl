@@ -74,6 +74,8 @@ Ref: [v:; 0nx @v addressToReference]; # for signatures
 Cref: [v:; 0nx v addressToReference]; # for signatures
 AsRef: [{data:;}]; # for Ref Array
 
+forceCopy: [isMoved moved:; v:; @v moved moveIf copy];
+
 drop: [v:;];
 
 dup: [v:; @v @v];
@@ -270,7 +272,7 @@ isIndexable: [
   @object "at" has [@object "size" has] &&
 ];
 
-isIterator: [
+isIter: [
   object:;
   @object "next" has [@object "valid" has] &&
 ];
@@ -297,10 +299,10 @@ asIndexable: [
   ] uif
 ];
 
-asIterator: [
+toIter: [
   object:;
-  @object isIterator [@object] [
-    @object "iterator" has [@object.iterator] [
+  @object isIter [@object copy] [
+    @object "iter" has [@object.iter] [
       @object isIndexable [
         @object isView [
           {
@@ -331,7 +333,7 @@ asIterator: [
             next: [index 1 + !index];
           }
         ] [
-          "Object cannot be used as iterator" raiseStaticError
+          "Object cannot be used as iter" raiseStaticError
         ] uif
       ] uif
     ] uif
@@ -393,62 +395,62 @@ untail: [
   0 @view.size size - @view.view
 ];
 
-# Simple iterator combinator
+# Simple iter combinator
 each: [
-  eachIterator: eachBody:; asIterator;
+  eachIter: eachBody:; toIter;
   [
-    @eachIterator.valid ~ [FALSE] [
-      @eachIterator.get @eachBody ucall
-      @eachIterator.next
+    @eachIter.valid ~ [FALSE] [
+      @eachIter.get eachBody
+      @eachIter.next
       TRUE
     ] if
   ] loop
 ];
 
-# Cond iterator combinators
+# Cond iter combinators
 all: [
-  allIterator: allBody:;;
-  @allIterator @allBody findNot .valid ~
+  allIter: allBody:;;
+  @allIter @allBody findNot .valid ~
 ];
 
 any: [
-  anyIterator: anyBody:;;
-  @anyIterator @anyBody findIf .valid
+  anyIter: anyBody:;;
+  @anyIter @anyBody findIf .valid
 ];
 
-# Iterator-returning iterator combinators
+# Iter-returning iter combinators
 findIf: [
-  findIfIterator: findIfBody:; asIterator;
+  findIfIter: findIfBody:; toIter;
   [
-    @findIfIterator.valid ~ [FALSE] [
-      @findIfIterator.get @findIfBody ucall [FALSE] [
-        @findIfIterator.next
+    @findIfIter.valid ~ [FALSE] [
+      @findIfIter.get findIfBody [FALSE] [
+        @findIfIter.next
         TRUE
       ] if
     ] if
   ] loop
 
-  @findIfIterator
+  @findIfIter
 ];
 
 findNot: [
-  findNotIterator: findNotBody:;;
-  @findNotIterator [@findNotBody ucall ~] findIf
+  findNotIter: findNotBody:;;
+  @findNotIter [findNotBody ~] findIf
 ];
 
 findEqual: [
-  findEqualIterator: findEqualValue:;;
-  @findEqualIterator [@findEqualValue =] findIf
+  findEqualIter: findEqualValue:;;
+  @findEqualIter [@findEqualValue =] findIf
 ];
 
-# Index iterator combinators
+# Index iter combinators
 findIndexIf: [
-  findIndexIfIterator: findIndexIfBody:; asIterator;
+  findIndexIfIter: findIndexIfBody:; toIter;
   findIndexIfIndex: 0;
   [
-    @findIndexIfIterator.valid ~ [-1 !findIndexIfIndex FALSE] [
-      @findIndexIfIterator.get @findIndexIfBody ucall [FALSE] [
-        @findIndexIfIterator.next
+    @findIndexIfIter.valid ~ [-1 !findIndexIfIndex FALSE] [
+      @findIndexIfIter.get findIndexIfBody [FALSE] [
+        @findIndexIfIter.next
         findIndexIfIndex 1 + !findIndexIfIndex
         TRUE
       ] if
@@ -459,26 +461,26 @@ findIndexIf: [
 ];
 
 findIndexNot: [
-  findIndexNotIterator: findIndexNotBody:;;
-  @findIndexNotIterator [@findIndexNotBody ucall ~] findIndexIf
+  findIndexNotIter: findIndexNotBody:;;
+  @findIndexNotIter [findIndexNotBody ~] findIndexIf
 ];
 
 findIndexEqual: [
-  findIndexEqualIterator: findIndexEqualValue:;;
-  @findIndexEqualIterator [@findIndexEqualValue =] findIndexIf
+  findIndexEqualIter: findIndexEqualValue:;;
+  @findIndexEqualIter [@findIndexEqualValue =] findIndexIf
 ];
 
-# Count iterator combinators
+# Count iter combinators
 countIf: [
-  countIfIterator: countIfBody:; asIterator;
+  countIfIter: countIfBody:; toIter;
   countIfCount: 0;
   [
-    @countIfIterator.valid ~ [FALSE] [
-      @countIfIterator.get @countIfBody ucall [
+    @countIfIter.valid ~ [FALSE] [
+      @countIfIter.get countIfBody [
         countIfCount 1 + !countIfCount
       ] when
 
-      @countIfIterator.next
+      @countIfIter.next
       TRUE
     ] if
   ] loop
@@ -487,11 +489,41 @@ countIf: [
 ];
 
 countNot: [
-  countNotIterator: countNotBody:; asIterator;
-  @countNotIterator [@countNotBody ucall ~] countIf
+  countNotIter: countNotBody:;;
+  @countNotIter [countNotBody ~] countIf
 ];
 
 countEqual: [
-  countNotIterator: countNotValue:; asIterator;
-  @countNotIterator [@countNotValue =] countIf
+  countNotIter: countNotValue:;;
+  @countNotIter [@countNotValue =] countIf
+];
+
+# Lazy iter combinators
+applyIter: [{
+  applyIterSource: applyIterBody:; toIter;
+
+  valid: [@applyIterSource.valid];
+  get:   [@applyIterSource.get applyIterBody];
+  next:  [@applyIterSource.next];
+}];
+
+filterIter: [{
+  filterIterSource: filterIterBody:; toIter;
+
+  valid: [@filterIterSource @filterIterBody findIf !filterIterSource @filterIterSource.valid];
+  get:   [@filterIterSource.get ];
+  next:  [@filterIterSource.next];
+}];
+
+wrapIter: [{
+  wrapIterSources: ([toIter] each);
+
+  valid: [@wrapIterSources [.valid] all   ];
+  get:   [@wrapIterSources [.get  ] (each)];
+  next:  [@wrapIterSources [.next ] each  ];
+}];
+
+joinIter: [
+  joinIterSources: joinIterBody:;;
+  @joinIterSources wrapIter [unwrap] applyIter @joinIterBody applyIter
 ];

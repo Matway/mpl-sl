@@ -18,9 +18,9 @@ HashTable: [
     data: Node Array Array;
     dataSize: 0 dynamic;
 
-    iterator: [@self.@data [itemRef:; {key: itemRef.key; value: @itemRef.@value;}] makeIterator];
-    keys:     [self .data  [.key                                                 ] makeIterator];
-    values:   [@self.@data [.@value                                              ] makeIterator];
+    iter:   [@self.@data [itemRef:; {key: itemRef.key; value: @itemRef.@value;}] makeIter];
+    keys:   [self .data  [.key                                                 ] makeIter];
+    values: [@self.@data [.@value                                              ] makeIter];
 
     getSize: [dataSize copy];
 
@@ -145,7 +145,7 @@ HashTable: [
       0 dynamic @dataSize set
     ];
 
-    makeIterator: [{
+    makeIter: [{
       virtual method:;
       data:;
       bucket: data [.size 0 =] findIndexNot;

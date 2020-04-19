@@ -14,9 +14,9 @@ Pool: [
     firstFree: -1 dynamic;
     exactAllocatedMemSize: 0nx dynamic;
 
-    iterator: [@self [index: pool:;; {key: index copy; value: index @pool.at;}] makeIterator];
-    keys:     [self  [drop copy                                               ] makeIterator];
-    values:   [@self [.at                                                     ] makeIterator];
+    iter:   [@self [index: pool:;; {key: index copy; value: index @pool.at;}] makeIter];
+    keys:   [self  [drop copy                                               ] makeIter];
+    values: [@self [.at                                                     ] makeIter];
 
     getSize: [
       dataSize copy
@@ -181,7 +181,7 @@ Pool: [
       index
     ];
 
-    makeIterator: [{
+    makeIter: [{
       virtual method:;
       pool:;
       index: pool.firstValid;
