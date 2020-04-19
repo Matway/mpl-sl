@@ -1,24 +1,5 @@
 "Array" includeModule
 
-makeHashTableIterator: [{
-  virtual method:;
-  data:;
-  bucket: data [.size 0 =] findIndexNot;
-  item: 0;
-
-  valid: [bucket -1 = ~];
-
-  get: [item bucket @data.at.at @method call];
-
-  next: [
-    item 1 + !item
-    item bucket data.at.size = [
-      data bucket 1 + unhead [.size 0 =] findIndexNot dup -1 = [copy] [bucket 1 + +] if !bucket
-      0 !item
-    ] when
-  ];
-}];
-
 HashTable: [
   value:;
   key:;
@@ -37,44 +18,11 @@ HashTable: [
     data: Node Array Array;
     dataSize: 0 dynamic;
 
+    iterator: [@self.@data [itemRef:; {key: itemRef.key; value: @itemRef.@value;}] makeIterator];
+    keys:     [self .data  [.key                                                 ] makeIterator];
+    values:   [@self.@data [.@value                                              ] makeIterator];
+
     getSize: [dataSize copy];
-
-    iterator: [@self.@data [itemRef:; {key: itemRef.key; value: @itemRef.@value;}] makeHashTableIterator];
-    keys:     [@self.@data [.key                                                 ] makeHashTableIterator];
-    values:   [@self.@data [.@value                                              ] makeHashTableIterator];
-
-    rebuild: [
-      copy newBucketSize:;
-
-      newBucketSize @data.resize
-      b: 0 dynamic;
-      [b data.dataSize <] [
-        current: b @data.at;
-        i: 0 dynamic;
-        j: 0 dynamic;
-        [i current.dataSize <] [
-          h: i current.at.keyHash copy;
-          newB: h newBucketSize 1 - 0n32 cast and 0i32 cast;
-
-          newB b = [
-            i j = ~ [
-              i @current.at move
-              j @current.at set
-            ] when
-            j 1 + @j set
-          ] [
-            pushTo: newB @data.at;
-            i @current.at move @pushTo.pushBack
-          ] if
-
-          i 1 + @i set
-        ] while
-
-        j @current.resize
-
-        b 1 + @b set
-      ] while
-    ];
 
     at: [
       result: find;
@@ -145,6 +93,20 @@ HashTable: [
       ] call
     ];
 
+    insert: [
+      DEBUG [
+        valueIsMoved: isMoved;
+        value:;
+        keyIsMoved: isMoved;
+        key:;
+        fr: key find;
+        [fr.success ~] "Inserting existing element!" assert
+        @key keyIsMoved moveIf @value valueIsMoved moveIf insertUnsafe
+      ] [
+        insertUnsafe
+      ] if
+    ];
+
     insertUnsafe: [ # make find before please
       valueIsMoved: isMoved;
       value:;
@@ -173,20 +135,6 @@ HashTable: [
       ] call
     ];
 
-    insert: [
-      DEBUG [
-        valueIsMoved: isMoved;
-        value:;
-        keyIsMoved: isMoved;
-        key:;
-        fr: key find;
-        [fr.success ~] "Inserting existing element!" assert
-        @key keyIsMoved moveIf @value valueIsMoved moveIf insertUnsafe
-      ] [
-        insertUnsafe
-      ] if
-    ];
-
     clear: [
       @data.clear
       0 dynamic @dataSize set
@@ -195,6 +143,58 @@ HashTable: [
     release: [
       @data.release
       0 dynamic @dataSize set
+    ];
+
+    makeIterator: [{
+      virtual method:;
+      data:;
+      bucket: data [.size 0 =] findIndexNot;
+      item: 0;
+
+      valid: [bucket -1 = ~];
+
+      get: [item bucket @data.at.at @method call];
+
+      next: [
+        item 1 + !item
+        item bucket data.at.size = [
+          data bucket 1 + unhead [.size 0 =] findIndexNot dup -1 = [copy] [bucket 1 + +] if !bucket
+          0 !item
+        ] when
+      ];
+    }];
+
+    rebuild: [
+      copy newBucketSize:;
+
+      newBucketSize @data.resize
+      b: 0 dynamic;
+      [b data.dataSize <] [
+        current: b @data.at;
+        i: 0 dynamic;
+        j: 0 dynamic;
+        [i current.dataSize <] [
+          h: i current.at.keyHash copy;
+          newB: h newBucketSize 1 - 0n32 cast and 0i32 cast;
+
+          newB b = [
+            i j = ~ [
+              i @current.at move
+              j @current.at set
+            ] when
+            j 1 + @j set
+          ] [
+            pushTo: newB @data.at;
+            i @current.at move @pushTo.pushBack
+          ] if
+
+          i 1 + @i set
+        ] while
+
+        j @current.resize
+
+        b 1 + @b set
+      ] while
     ];
 
     INIT: [
