@@ -207,15 +207,13 @@ makeStringIterator2: [{
   data: size: copy; copy;
   codepointSize: data size getCodePointSize;
 
+  valid: [codepointSize 0 = ~];
+  get: [data codepointSize makeStringView2];
   next: [
-    item: data codepointSize makeStringView2;
     data codepointSize Natx cast + !data
     size codepointSize - !size
     data size getCodePointSize !codepointSize
-    @item
   ];
-
-  valid: [codepointSize 0 = ~];
 }];
 
 StringIterator: [0nx 0 makeStringIterator2];
