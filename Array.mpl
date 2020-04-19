@@ -119,7 +119,9 @@ makeSubRange: [
   rangeEndIndex rangeBeginIndex - arg.getBufferBegin arg.elementSize rangeBeginIndex Natx cast * + @arg.@elementType addressToReference makeArrayRangeRaw
 ];
 
-Array: [{
+makeArrayObject: [{
+  virtual memoryDebugObject:;
+
   virtual CONTAINER: ();
   virtual ARRAY: ();
   virtual SCHEMA_NAME: "ARRAY";
@@ -169,6 +171,17 @@ Array: [{
     popBack
   ];
 
+  eraseIf: [
+    eraseIfBody:;
+    index: 0;
+    self toIter @eraseIfBody filterIter [
+      index at set
+      index 1 + !index
+    ] each
+
+    index shrink
+  ];
+
   getSize: [dataSize copy];
 
   getArrayRange: [
@@ -182,7 +195,9 @@ Array: [{
   setReserve: [
     copy newReserve:;
     [newReserve dataReserve < ~] "New reserve is less than old reserve!" assert
+    memoryDebugObject [TRUE !memoryDebugEnabled] when
     newReserve Natx cast elementSize * dataReserve Natx cast elementSize * getBufferBegin mplRealloc
+    memoryDebugObject [FALSE !memoryDebugEnabled] when
     @elementType addressToReference !dataBegin
     newReserve @dataReserve set
   ];
@@ -262,7 +277,9 @@ Array: [{
     clear
     addr: getBufferBegin;
     size: dataReserve Natx cast elementSize *;
+    memoryDebugObject [TRUE !memoryDebugEnabled] when
     addr 0nx = ~ [size addr mplFree] when
+    memoryDebugObject [FALSE !memoryDebugEnabled] when
     0nx @elementType addressToReference !dataBegin
     0 dynamic @dataSize set
     0 dynamic @dataReserve set
@@ -289,9 +306,14 @@ Array: [{
     clear
     addr: getBufferBegin;
     size: dataReserve Natx cast elementSize *;
+    memoryDebugObject [TRUE !memoryDebugEnabled] when
     addr 0nx = ~ [size addr mplFree] when
+    memoryDebugObject [FALSE !memoryDebugEnabled] when
   ];
 }];
+
+Array: [FALSE makeArrayObject];
+MemoryDebugArray: [TRUE makeArrayObject];
 
 makeArray: [
   listIsMoved: isMoved;
