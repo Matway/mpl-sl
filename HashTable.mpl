@@ -1,5 +1,24 @@
 "Array" includeModule
 
+makeHashTableIterator: [{
+  virtual method:;
+  data:;
+  bucket: data [.size 0 =] findIndexNot;
+  item: 0;
+
+  valid: [bucket -1 = ~];
+
+  get: [item bucket @data.at.at @method call];
+
+  next: [
+    item 1 + !item
+    item bucket data.at.size = [
+      data bucket 1 + unhead [.size 0 =] findIndexNot dup -1 = [copy] [bucket 1 + +] if !bucket
+      0 !item
+    ] when
+  ];
+}];
+
 HashTable: [
   value:;
   key:;
@@ -19,6 +38,10 @@ HashTable: [
     dataSize: 0 dynamic;
 
     getSize: [dataSize copy];
+
+    iterator: [@self.@data [itemRef:; {key: itemRef.key; value: @itemRef.@value;}] makeHashTableIterator];
+    keys:     [@self.@data [.key                                                 ] makeHashTableIterator];
+    values:   [@self.@data [.@value                                              ] makeHashTableIterator];
 
     rebuild: [
       copy newBucketSize:;
@@ -51,6 +74,12 @@ HashTable: [
 
         b 1 + @b set
       ] while
+    ];
+
+    at: [
+      result: find;
+      [result.success] "Key is not in the collection" assert
+      @result.@value
     ];
 
     find: [
@@ -182,28 +211,6 @@ HashTable: [
       #default
     ];
   }];
-
-each: [b:; "HASH_TABLE" has] [
-  eachInTableBody:;
-  eachInTableTable:;
-
-  eachInTableBucketIndex: 0;
-  [
-    eachInTableBucketIndex eachInTableTable.data.dataSize < [
-      eachInTableCurrentBucket: eachInTableBucketIndex @eachInTableTable.@data.at;
-      eachInTableI: 0;
-      [
-        eachInTableI eachInTableCurrentBucket.dataSize < [
-          eachInTableNode: eachInTableI @eachInTableCurrentBucket.at;
-          {key: eachInTableNode.key; value: @eachInTableNode.@value;} @eachInTableBody call
-          eachInTableI 1 + @eachInTableI set TRUE
-        ] &&
-      ] loop
-
-      eachInTableBucketIndex 1 + @eachInTableBucketIndex set TRUE
-    ] &&
-  ] loop
-] pfunc;
 
 hash: [0n8  same] [0n32 cast] pfunc;
 hash: [0n16 same] [0n32 cast] pfunc;
