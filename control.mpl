@@ -138,6 +138,18 @@ riterate: [
   x 1 - @x set
 ];
 
+abs: [
+  value:;
+  @value 0 @value cast < [@value neg] [@value] if
+];
+
+sign: [
+  value:;
+  0 @value cast @value < [1] [
+    @value 0 @value cast < [-1] [0] if
+  ] if
+];
+
 max: [
   a:b:;;
   a b > [a][b] if
@@ -364,6 +376,22 @@ asView: [
     ] uif
   ] uif
 ];
+
+=: [item0: item1:;; @item0 "equal" has ~ [@item1 "equal" has ~ [@item0 isIndexable [@item0 isBuiltinTuple] || [@item1 isIndexable [@item1 isBuiltinTuple] ||] &&] &&] &&] [
+  item0: item1: asIndexable; asIndexable;
+  @item0.size @item1.size = ~ [FALSE] [
+    result: TRUE;
+    i: 0; [
+      i @item0.size = [FALSE] [
+        i @item0.at i @item1.at = ~ [FALSE !result FALSE] [
+          i 1 + !i TRUE
+        ] if
+      ] if
+    ] loop
+
+    result
+  ] if
+] pfunc;
 
 view: [
   view: index: size:;; asView;

@@ -320,7 +320,7 @@ String: [{
 
   view: [
     index: size:;;
-    getStringMemory index Natx cast + getTextSize makeStringView2
+    getStringMemory index Natx cast + size makeStringView2
   ];
 
   getStringView: [
