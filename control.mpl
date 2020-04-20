@@ -140,7 +140,7 @@ riterate: [
 
 abs: [
   value:;
-  @value 0 @value cast < [@value neg] [@value] if
+  @value 0 @value cast < [@value neg] [@value copy] if
 ];
 
 sign: [
