@@ -423,13 +423,24 @@ untail: [
   0 @view.size size - @view.view
 ];
 
-# Simple iter combinator
+# Simple iter combinators
 each: [
   eachIter: eachBody:; toIter;
   [
     @eachIter.valid ~ [FALSE] [
       @eachIter.get eachBody
       @eachIter.next
+      TRUE
+    ] if
+  ] loop
+];
+
+mutate: [
+  mutateIter: mutateBody:; toIter;
+  [
+    @mutateIter.valid ~ [FALSE] [
+      @mutateIter.get mutateBody @mutateIter.get set
+      @mutateIter.next
       TRUE
     ] if
   ] loop

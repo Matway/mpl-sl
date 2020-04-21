@@ -218,6 +218,15 @@ makeArrayObject: [{
     @element elementIsMoved moveIf @newElement set
   ];
 
+  appendAll: [
+    view: asView;
+    index: size;
+    size view.size + enlarge
+    i: 0; [i view.size <] [i view.at i at set i 1 + !i] while
+  ];
+
+  appendEach: [[pushBack] each];
+
   shrink: [
     copy newSize: dynamic;
     [newSize dataSize > ~] "Shrinked size is bigger than the old size!" assert
