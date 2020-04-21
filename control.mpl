@@ -150,6 +150,11 @@ sign: [
   ] if
 ];
 
+sqr: [
+  value:;
+  value value *
+];
+
 max: [
   a:b:;;
   a b > [a][b] if
