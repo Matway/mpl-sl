@@ -1,4 +1,26 @@
-"Array" includeModule
+"Array.Array" use
+"control.&&" use
+"control.Int32" use
+"control.Int64" use
+"control.Nat32" use
+"control.Nat64" use
+"control.Nat8" use
+"control.Natx" use
+"control.Text" use
+"control.asView" use
+"control.assert" use
+"control.drop" use
+"control.dup" use
+"control.pfunc" use
+"control.print" use
+"control.printf" use
+"control.times" use
+"control.when" use
+"control.while" use
+"control.||" use
+"conventions.cdecl" use
+"memory.memcmp" use
+"memory.memcpy" use
 
 {arg: 0nx;} 0nx {convention: cdecl;} "strlen" importFunction
 
@@ -240,6 +262,16 @@ makeStringView2: [{
     size other.size = [size Natx cast other.data data memcmp 0 =] &&
   ];
 
+  hash: [
+    result: 33n32;
+    size [
+      codeunit: data i Natx cast + Nat8 addressToReference Nat32 cast;
+      result 47n32 * codeunit + !result
+    ] times
+
+    result
+  ];
+
   iter: [data size makeStringIter2];
 
   view: [
@@ -297,7 +329,9 @@ String: [{
   virtual STRING: ();
   chars: Nat8 Array;
 
-  getTextSize: [
+  data: [chars.getBufferBegin];
+
+  size: [
     chars.getSize 0 = [
       0
     ] [
@@ -305,22 +339,18 @@ String: [{
     ] if
   ];
 
-  getStringMemory: [chars.getBufferBegin];
-
-  data: [getStringMemory];
-
-  size: [getTextSize];
-
   equal: [
     other: makeStringView;
     self other.equal
   ];
 
-  iter: [getStringMemory getTextSize makeStringIter2];
+  hash: [getStringView.hash];
+
+  iter: [data size makeStringIter2];
 
   view: [
     index: size:;;
-    getStringMemory index Natx cast + size makeStringView2
+    data index Natx cast + size makeStringView2
   ];
 
   getStringView: [
@@ -563,11 +593,11 @@ String: [{
     makeNZ
     i: 0;
     [i list.size <] [
-      i 1 + list.size < [i 1 + list @ "HEX" has] && [
-        i list @ catHexNZ
+      i 1 + list.size < [i 1 + list.at "HEX" has] && [
+        i list.at catHexNZ
         i 1 + @i set
       ] [
-        i list @ catNZ
+        i list.at catNZ
       ] if
       i 1 + @i set
     ] while
@@ -579,9 +609,6 @@ Hex: [{
   virtual HEX: ();
 }];
 
-textSize: [StringView same] [.size Natx cast] pfunc;
-textSize: ["STRING" has] [.getTextSize Natx cast] pfunc;
-
 makeStringView: ["STRING" has] [
   .getStringView
 ] pfunc;
@@ -590,10 +617,6 @@ makeStringViewByAddress: [
   address:;
   address address strlen Int32 cast makeStringView2
 ];
-
-stringMemory: ["" same] [storageAddress] pfunc;
-stringMemory: [StringView same] [.data copy] pfunc;
-stringMemory: ["STRING" has] [.getStringMemory] pfunc;
 
 toString: [
   arg:;
@@ -620,7 +643,7 @@ print: ["" same ~] [toString print] pfunc;
 
 print: ["STRING" has] [
   string:;
-  (string.getStringMemory) "%s\00" printf
+  (string.data) "%s\00" printf
 ] pfunc;
 
 addLog: [
@@ -635,16 +658,4 @@ printList: [
   assembleString print
 ];
 
-hash: [makeStringView TRUE] [
-  string: makeStringView;
-  result: 33n32;
-
-  i: 0;
-  [i string.size = ~] [
-    byte: string.data i Natx cast + Nat8 addressToReference Nat32 cast;
-    result 47n32 * byte + !result
-    i 1 + !i
-  ] while
-
-  result
-] pfunc;
+hash: ["" same] [makeStringView.hash] pfunc;

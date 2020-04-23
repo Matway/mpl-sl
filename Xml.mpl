@@ -1,7 +1,27 @@
-"ascii"     includeModule
-"HashTable" includeModule
-"String"    includeModule
-"Variant"   includeModule
+"Array.Array" use
+"String.String" use
+"String.StringView" use
+"String.assembleString" use
+"String.getCodePointAndSize" use
+"String.splitString" use
+"Variant.Variant" use
+"ascii.ascii" use
+"control.&&" use
+"control.=" use
+"control.Cref" use
+"control.Int32" use
+"control.Nat32" use
+"control.Natx" use
+"control.Ref" use
+"control.assert" use
+"control.case" use
+"control.cond" use
+"control.drop" use
+"control.each" use
+"control.times" use
+"control.when" use
+"control.while" use
+"conventions.cdecl" use
 
 XMLParserResult: [{
   success: TRUE dynamic;
@@ -187,8 +207,8 @@ xmlInternal: {
 
     position.offset chars.getSize < [
       position.offset chars.at @position.@currentSymbol set
-      cpMemory: position.currentSymbol stringMemory;
-      cpSize: position.currentSymbol textSize Int32 cast;
+      cpMemory: position.currentSymbol.data;
+      cpSize: position.currentSymbol.size;
       cpMemory cpSize getCodePointAndSize drop @position.@currentCodepoint set
     ] [
       StringView @position.@currentSymbol set
@@ -211,13 +231,12 @@ xmlInternal: {
   ];
 
   lexicalError: [
+    message:;
     mainResult.success [
-      (makeStringView ", " position.currentSymbol " found") assembleString @mainResult.@errorInfo.@message set
+      (message ", " position.currentSymbol " found") @mainResult.@errorInfo.@message.catMany
       position @mainResult.@errorInfo.@position set
       FALSE @mainResult.@success set
-    ] [
-      m:;
-    ] if
+    ] when
   ];
 
   parseDocument: [
@@ -512,7 +531,7 @@ xmlInternal: {
 
           [
             data: parseCharData;
-            data textSize 0nx > [
+            data.size 0 > [
               result.getSize 1 + @result.resize
               XMLVALUE_CHARDATA @result.last.setTag
               @data move XMLVALUE_CHARDATA @result.last.get set
@@ -728,8 +747,8 @@ xmlInternal: {
       [stringChars.size 0 >] "string must not be empty" assert
       i: 0;
       [
-        position.currentSymbol i stringChars @ = ~ [
-          ("expected " i stringChars @) assembleString lexicalError
+        position.currentSymbol i stringChars.at = ~ [
+          ("expected " i stringChars.at) assembleString lexicalError
         ] when
 
         iterateChecked

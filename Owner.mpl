@@ -1,5 +1,8 @@
-"control" includeModule
-"memory" includeModule
+"control.assert" use
+"control.pfunc" use
+"control.when" use
+"memory.deleteWith" use
+"memory.new" use
 
 OwnerWithDestructor: [{
   virtual OWNER: ();

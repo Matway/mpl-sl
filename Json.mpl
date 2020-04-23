@@ -1,7 +1,27 @@
-"ascii"     includeModule
-"HashTable" includeModule
-"String"    includeModule
-"Variant"   includeModule
+"Array.Array" use
+"HashTable.HashTable" use
+"String.String" use
+"String.StringView" use
+"String.getCodePointAndSize" use
+"String.splitString" use
+"Variant.Variant" use
+"ascii.ascii" use
+"control.&&" use
+"control.=" use
+"control.Cond" use
+"control.Cref" use
+"control.Int32" use
+"control.Int64" use
+"control.Nat32" use
+"control.Nat8" use
+"control.Real64" use
+"control.Ref" use
+"control.assert" use
+"control.each" use
+"control.times" use
+"control.when" use
+"control.||" use
+"conventions.cdecl" use
 
 JSONNull:   [0 static];
 JSONInt:    [1 static];
@@ -149,7 +169,7 @@ jsonInternalFillPositionChars: [
 
   pos.offset chars.getSize < [
     pos.offset chars.at @pos.@currentSymbol set
-    pos.currentSymbol stringMemory Nat8 addressToReference Nat32 cast @pos.@currentCode set
+    pos.currentSymbol.data Nat8 addressToReference Nat32 cast @pos.@currentCode set
   ] [
     StringView @pos.@currentSymbol set
     ascii.null @pos.@currentCode set
@@ -218,13 +238,12 @@ parseJSONNodeImpl: [
   ];
 
   lexicalError: [
+    message:;
     mainResult.success [
-      (makeStringView ", " pos.currentSymbol " found") assembleString @mainResult.@errorInfo.@message set
+      (message ", " pos.currentSymbol " found") @mainResult.@errorInfo.@message.catMany
       pos @mainResult.@errorInfo.@position set
       FALSE @mainResult.@success set
-    ] [
-      m:;
-    ] if
+    ] when
   ];
 
 
@@ -564,7 +583,7 @@ catJSONNodeWithPaddingImpl: [
     [splitted.success copy] "Wrong encoding in JSON string!" assert
     splitted.chars [
       symbol: copy;
-      code: symbol stringMemory Nat8 addressToReference Nat32 cast;
+      code: symbol.data Nat8 addressToReference Nat32 cast;
       code ascii.quote = [
         "\\\"" @result.cat
       ] [

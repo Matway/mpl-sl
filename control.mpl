@@ -357,30 +357,26 @@ toIter: [
   ] uif
 ];
 
-asView: [
-  object:;
-  @object isView [@object] [
-    @object isBuiltinTuple [
-      view: [
-        newIndex: newSize:;;
-        {
-          array: @array;
-          index: index newIndex +;
-          size: newSize copy;
+asView: [isBuiltinTuple] [
+  tuple:;
+  view: [
+    newIndex: newSize:;;
+    {
+      tuple: @tuple;
+      index: index newIndex +;
+      size: newSize copy;
 
-          at: [index + @array @];
+      at: [index + @tuple @];
 
-          view: @view;
-        }
-      ];
+      view: @view;
+    }
+  ];
 
-      array: @object; index: 0;
-      0 @object fieldCount view
-    ] [
-      "Object cannot be used as view" raiseStaticError
-    ] uif
-  ] uif
-];
+  index: 0;
+  0 @tuple fieldCount view
+] pfunc;
+
+asView: [isView] [] pfunc;
 
 =: [item0: item1:;; @item0 "equal" has ~ [@item1 "equal" has ~ [@item0 isIndexable [@item0 isBuiltinTuple] || [@item1 isIndexable [@item1 isBuiltinTuple] ||] &&] &&] &&] [
   item0: item1: asIndexable; asIndexable;

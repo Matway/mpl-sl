@@ -132,7 +132,7 @@ debugMemory [
   memoryMaxAllocationSize: 0n64;
   memoryChecksum: 0nx;
 
-  mplMalloc: [
+  {size: Natx;} Natx {} [
     size:;
     result: size fastAllocate;
     memoryCurrentAllocationCount 1n64 + !memoryCurrentAllocationCount
@@ -142,9 +142,9 @@ debugMemory [
     memoryMaxAllocationSize memoryCurrentAllocationSize max copy !memoryMaxAllocationSize
     memoryChecksum result xor !memoryChecksum
     result
-  ];
+  ] "mplMalloc" exportFunction
 
-  mplRealloc: [
+  {ptr: Natx; oldSize: Natx; newSize: Natx;} Natx {} [
     newSize: oldSize: data:;;;
     data 0nx = [
       newSize mplMalloc
@@ -162,9 +162,9 @@ debugMemory [
 
       result
     ] if
-  ];
+  ] "mplRealloc" exportFunction
 
-  mplFree: [
+  {ptr: Natx; size: Natx;} {} {} [
     size: data:;;
     data 0nx = ~ [
       size data fastDeallocate
@@ -172,7 +172,7 @@ debugMemory [
       memoryCurrentAllocationSize size Nat64 cast - !memoryCurrentAllocationSize
       memoryChecksum data xor !memoryChecksum
     ] when
-  ];
+  ] "mplFree" exportFunction
 ] [
   mplMalloc: [fastAllocate];
   mplRealloc: [fastReallocate];

@@ -1,4 +1,6 @@
-"control" includeModule
+"control.assert" use
+"control.pfunc" use
+"control.when" use
 
 Variant: [{
   virtual VARIANT: ();
