@@ -1,5 +1,5 @@
-"control" includeModule
-"Array" includeModule
+"memory.memcpy" use
+"memory.memset" use
 
 Sha1Internal: {
   rol: [
