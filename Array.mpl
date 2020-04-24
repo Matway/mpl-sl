@@ -229,7 +229,7 @@ makeArrayObject: [{
     view: asView;
     index: size;
     size view.size + enlarge
-    i: 0; [i view.size <] [i view.at i at set i 1 + !i] while
+    i: 0; [i view.size <] [i view.at index i + at set i 1 + !i] while
   ];
 
   appendEach: [[pushBack] each];
