@@ -1,7 +1,6 @@
-"control" useModule
-"shell32Private" useModule
+"shell32Private" use
 
-shell32: {
+shell32Internal: {
   CSIDL_APPDATA: [0x001A];
 
   SHGFP_TYPE_CURRENT: [0];   # current value for user, verify it exists
@@ -10,3 +9,5 @@ shell32: {
   # shell32.Lib should be included for these functions
   SHGetFolderPathW: @SHGetFolderPathW;
 };
+
+shell32: [shell32Internal];

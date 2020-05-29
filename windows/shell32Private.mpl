@@ -1,5 +1,8 @@
-"control" useModule
-"user32" useModule
+"control.Int32" use
+"control.Nat32" use
+"control.Natx" use
+"conventions.stdcall" use
+"user32.user32" use
 
 {
   hwnd: user32.HWND;

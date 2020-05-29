@@ -1,4 +1,15 @@
-"control" includeModule
+"control.Int32" use
+"control.Nat64" use
+"control.Natx" use
+"control.Ref" use
+"control.drop" use
+"control.max" use
+"control.min" use
+"control.pfunc" use
+"control.when" use
+"control.||" use
+"conventions.cdecl" use
+"conventions.stdcall" use
 
 {size: Natx;} Natx            {convention: cdecl;} "malloc"  importFunction
 {ptr: Natx; size: Natx;} Natx {convention: cdecl;} "realloc" importFunction
@@ -125,22 +136,24 @@ debugMemory: [FALSE];
 debugMemory: [DEBUG_MEMORY][TRUE] pfunc;
 
 debugMemory [
-  memoryCurrentAllocationCount: 0n64;
-  memoryTotalAllocationCount: 0n64;
-  memoryCurrentAllocationSize: 0n64;
-  memoryTotalAllocationSize: 0n64;
-  memoryMaxAllocationSize: 0n64;
-  memoryChecksum: 0nx;
+  memoryMetrics: {
+    memoryCurrentAllocationCount: 0n64;
+    memoryTotalAllocationCount: 0n64;
+    memoryCurrentAllocationSize: 0n64;
+    memoryTotalAllocationSize: 0n64;
+    memoryMaxAllocationSize: 0n64;
+    memoryChecksum: 0nx;
+  };
 
   {size: Natx;} Natx {} [
     size:;
     result: size fastAllocate;
-    memoryCurrentAllocationCount 1n64 + !memoryCurrentAllocationCount
-    memoryTotalAllocationCount 1n64 + !memoryTotalAllocationCount
-    memoryCurrentAllocationSize size Nat64 cast + !memoryCurrentAllocationSize
-    memoryTotalAllocationSize size Nat64 cast + !memoryTotalAllocationSize
-    memoryMaxAllocationSize memoryCurrentAllocationSize max copy !memoryMaxAllocationSize
-    memoryChecksum result xor !memoryChecksum
+    memoryMetrics.memoryCurrentAllocationCount 1n64 + @memoryMetrics.!memoryCurrentAllocationCount
+    memoryMetrics.memoryTotalAllocationCount 1n64 + @memoryMetrics.!memoryTotalAllocationCount
+    memoryMetrics.memoryCurrentAllocationSize size Nat64 cast + @memoryMetrics.!memoryCurrentAllocationSize
+    memoryMetrics.memoryTotalAllocationSize size Nat64 cast + @memoryMetrics.!memoryTotalAllocationSize
+    memoryMetrics.memoryMaxAllocationSize memoryMetrics.memoryCurrentAllocationSize max copy @memoryMetrics.!memoryMaxAllocationSize
+    memoryMetrics.memoryChecksum result xor @memoryMetrics.!memoryChecksum
     result
   ] "mplMalloc" exportFunction
 
@@ -150,14 +163,14 @@ debugMemory [
       newSize mplMalloc
     ] [
       result: newSize oldSize data fastReallocate;
-      memoryCurrentAllocationSize newSize Nat64 cast + oldSize Nat64 cast - !memoryCurrentAllocationSize
+      memoryMetrics.memoryCurrentAllocationSize newSize Nat64 cast + oldSize Nat64 cast - @memoryMetrics.!memoryCurrentAllocationSize
       result data = [
-        memoryMaxAllocationSize memoryCurrentAllocationSize max copy !memoryMaxAllocationSize
+        memoryMetrics.memoryMaxAllocationSize memoryMetrics.memoryCurrentAllocationSize max copy @memoryMetrics.!memoryMaxAllocationSize
       ] [
-        memoryTotalAllocationCount 1n64 + !memoryTotalAllocationCount
-        memoryTotalAllocationSize newSize Nat64 cast + !memoryTotalAllocationSize
-        memoryMaxAllocationSize memoryCurrentAllocationSize oldSize Nat64 cast + max copy !memoryMaxAllocationSize
-        memoryChecksum result xor data xor !memoryChecksum
+        memoryMetrics.memoryTotalAllocationCount 1n64 + @memoryMetrics.!memoryTotalAllocationCount
+        memoryMetrics.memoryTotalAllocationSize newSize Nat64 cast + @memoryMetrics.!memoryTotalAllocationSize
+        memoryMetrics.memoryMaxAllocationSize memoryMetrics.memoryCurrentAllocationSize oldSize Nat64 cast + max copy @memoryMetrics.!memoryMaxAllocationSize
+        memoryMetrics.memoryChecksum result xor data xor @memoryMetrics.!memoryChecksum
       ] if
 
       result
@@ -168,11 +181,13 @@ debugMemory [
     size: data:;;
     data 0nx = ~ [
       size data fastDeallocate
-      memoryCurrentAllocationCount 1n64 - !memoryCurrentAllocationCount
-      memoryCurrentAllocationSize size Nat64 cast - !memoryCurrentAllocationSize
-      memoryChecksum data xor !memoryChecksum
+      memoryMetrics.memoryCurrentAllocationCount 1n64 - @memoryMetrics.!memoryCurrentAllocationCount
+      memoryMetrics.memoryCurrentAllocationSize size Nat64 cast - @memoryMetrics.!memoryCurrentAllocationSize
+      memoryMetrics.memoryChecksum data xor @memoryMetrics.!memoryChecksum
     ] when
   ] "mplFree" exportFunction
+
+  getMemoryMetrics: [memoryMetrics];
 ] [
   mplMalloc: [fastAllocate];
   mplRealloc: [fastReallocate];

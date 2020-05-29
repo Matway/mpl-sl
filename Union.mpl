@@ -1,4 +1,4 @@
-"control" includeModule
+"control.when" use
 
 Union: [{
   virtual UNION: ();

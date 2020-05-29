@@ -1,5 +1,6 @@
-"String" includeModule
-"kernel32" includeModule
+"String.assembleString" use
+"control.Ref" use
+"kernel32.kernel32" use
 
 Thread: [{
   INIT: [0nx !handle];

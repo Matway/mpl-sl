@@ -1,4 +1,10 @@
-"control" useModule
+"control.Nat8" use
+"control.Natx" use
+"control.Real32" use
+"control.Real64" use
+"control.pfunc" use
+"control.times" use
+"conventions.cdecl" use
 
 PI: [3.14159265358979323r32];
 Vector: [array];

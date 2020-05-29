@@ -1,5 +1,9 @@
-"memory" includeModule
-"control" includeModule
+"control.&&" use
+"control.assert" use
+"control.pfunc" use
+"control.when" use
+"memory.mplFree" use
+"memory.mplMalloc" use
 
 AVLMap: [
   value:;

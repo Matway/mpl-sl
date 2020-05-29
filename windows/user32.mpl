@@ -1,7 +1,7 @@
-"control" includeModule
-"user32Private" useModule
+"control.Natx" use
+"user32Private" use
 
-user32: {
+user32Internal: {
   HBRUSH: @HBRUSH;
   HCURSOR: @HCURSOR;
   HDC: @HDC;
@@ -33,3 +33,5 @@ user32: {
   ShowWindow: @ShowWindow;
   TranslateMessage: @TranslateMessage;
 };
+
+user32: [user32Internal];

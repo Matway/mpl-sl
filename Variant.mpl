@@ -112,8 +112,8 @@ Variant: [{
   visitInternal: [
     visitBranches: visitIndex:;;
     visitIndex visitBranches fieldCount = [] [
-      visitIndex visitBranches fieldCount 1 - = [visitIndex visitBranches @ ucall] [
-        visitIndex visitBranches @ typeTag = [visitIndex visitBranches @ get visitIndex 1 + visitBranches @ ucall] [
+      visitIndex visitBranches fieldCount 1 - = [visitIndex visitBranches @ call] [
+        visitIndex visitBranches @ typeTag = [visitIndex visitBranches @ get visitIndex 1 + visitBranches @ call] [
           visitBranches visitIndex 2 + visitInternal
         ] if
       ] uif

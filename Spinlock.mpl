@@ -1,4 +1,9 @@
-"atomic" includeModule
+"atomic.ACQUIRE" use
+"atomic.RELEASE" use
+"atomic.atomicExchange" use
+"atomic.atomicStore" use
+"control.assert" use
+"control.when" use
 
 Spinlock: [{
   state: 0n8;

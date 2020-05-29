@@ -1,7 +1,6 @@
-"control" includeModule
-"kernel32Private" useModule
+"kernel32Private" use
 
-kernel32: {
+kernel32Internal: {
   FARPROC: @FARPROC;
 
   LPTHREAD_START_ROUTINE: @LPTHREAD_START_ROUTINE;
@@ -79,3 +78,5 @@ kernel32: {
   WaitForSingleObject: @WaitForSingleObject;
   WriteFile: @WriteFile;
 };
+
+kernel32: [kernel32Internal];

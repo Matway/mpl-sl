@@ -1,4 +1,6 @@
-"control" useModule
+"control.Int32" use
+"control.Natx" use
+"conventions.stdcall" use
 
 {
   pvReserved: Natx;

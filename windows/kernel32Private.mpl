@@ -1,4 +1,12 @@
-"control" useModule
+"control.Cref" use
+"control.Int32" use
+"control.Int64" use
+"control.Intx" use
+"control.Nat32" use
+"control.Nat64" use
+"control.Natx" use
+"control.Ref" use
+"conventions.stdcall" use
 
 FARPROC: [{
 } Intx {convention: stdcall;} codeRef];

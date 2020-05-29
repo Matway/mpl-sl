@@ -1,5 +1,3 @@
-"control" includeModule
-
 RandomLCG: [{
   seed: 0n32;
   nextSeed: [seed 0x8088405n32 * 1n32 + @seed set seed copy];

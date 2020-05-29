@@ -1,4 +1,5 @@
-"conventions" includeModule
+"conventions.cdecl" use
+"conventions.stdcall" use
 
 Cond:   [v: FALSE  dynamic; @v];
 Int8:   [v: 0i8    dynamic; @v];
@@ -17,6 +18,25 @@ Text:   [v: ""; @v];
 
 {format: Text;} () {variadic: TRUE; convention: cdecl;} "printf" importFunction # need for assert
 {result: 0;} () {convention: cdecl;} "exit" importFunction
+
+overload failProc: [
+  print
+
+  trace: getCallTrace;
+  [
+    trace.first trace.last is [
+      FALSE
+    ] [
+      () "\nin \00" printf
+      trace.last.name print
+      (trace.last.line copy trace.last.column copy) " at %i:%i\00" printf
+      trace.last.prev trace.last addressToReference @trace.!last
+      TRUE
+    ] if
+  ] loop
+
+  2 exit
+];
 
 pfunc: [{
   virtual CALL:;
@@ -51,25 +71,6 @@ print: ["" same] [
   ] if
 ] pfunc;
 
-failProc: [
-  print
-
-  trace: getCallTrace;
-  [
-    trace.first trace.last is [
-      FALSE
-    ] [
-      () "\nin \00" printf
-      trace.last.name print
-      (trace.last.line copy trace.last.column copy) " at %i:%i\00" printf
-      trace.last.prev trace.last addressToReference @trace.!last
-      TRUE
-    ] if
-  ] loop
-
-  2 exit
-];
-
 Ref: [v:; 0nx @v addressToReference]; # for signatures
 Cref: [v:; 0nx v addressToReference]; # for signatures
 AsRef: [{data:;}]; # for Ref Array
@@ -98,7 +99,7 @@ while: [
 
 times: [
   timesBody:; 0 cast timesCount:;
-  i: timesCount timesCount -;
+  overload i: timesCount timesCount -;
   i timesCount <
   [
     [

@@ -1,5 +1,6 @@
 "Array.Array" use
 "control.&&" use
+"control.=" use
 "control.assert" use
 "control.dup" use
 "control.findIndexNot" use

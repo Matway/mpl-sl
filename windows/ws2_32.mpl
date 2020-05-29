@@ -1,7 +1,14 @@
-"kernel32" includeModule
-"ws2_32Private" useModule
+"control.Int32" use
+"control.Nat16" use
+"control.Nat32" use
+"control.Nat8" use
+"control.Natx" use
+"control.Ref" use
+"conventions.stdcall" use
+"kernel32.kernel32" use
+"ws2_32Private" use
 
-winsock2: {
+winsock2Internal: {
   FN_ACCEPTEXRef: [{
     sListenSocket: Natx;
     sAcceptSocket: Natx;
@@ -106,3 +113,5 @@ winsock2: {
   shutdown: @shutdown;
   socket: @socket;
 };
+
+winsock2: [winsock2Internal];

@@ -1,4 +1,8 @@
-"user32" useModule
+"control.Int32" use
+"control.Natx" use
+"control.Text" use
+"conventions.stdcall" use
+"user32.user32" use
 
 {
   Arg1: user32.HDC;

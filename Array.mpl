@@ -1,5 +1,7 @@
 "control.&&" use
+"control.@" use
 "control.Natx" use
+"control.asView" use
 "control.assert" use
 "control.pfunc" use
 "control.when" use
@@ -333,15 +335,16 @@ MemoryDebugArray: [TRUE makeArrayObject];
 
 makeArray: [
   listIsMoved: isMoved;
+
   list:;
   view: list asView;
   list "ARRAY_VIEW" has [FALSE @listIsMoved set] when
   [view.size 0 >] "List is empty!" assert
-  result: 0 @list @ newVarOfTheSameType Array;
+  result: 0 @view @ newVarOfTheSameType Array;
   i: 0 dynamic;
   [
     i view.size < [
-      i @list @ listIsMoved moveIf @result.pushBack
+      i @view @ listIsMoved moveIf @result.pushBack
       i 1 + @i set TRUE
     ] &&
   ] loop

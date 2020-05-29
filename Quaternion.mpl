@@ -1,4 +1,9 @@
-"control" useModule
+"algebra.*" use
+"algebra.dot" use
+"algebra.lerp" use
+"algebra.neg" use
+"control.pfunc" use
+"control.when" use
 
 Quaternion: [{
   QUATERNION: ();
@@ -90,7 +95,7 @@ unitChecked: [
 nlerp: [
   q0: q1: f:; copy;;
   q0 q1 dot 0 0 q0 @ cast < [q1.entries neg @q1.!entries] when
-  q0 q1 f lerp unitChecked
+  q0.entries q1.entries f lerp quaternion unitChecked
 ];
 
 conj: ["QUATERNION" has] [

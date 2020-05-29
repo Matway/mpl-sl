@@ -1,5 +1,3 @@
-"control" useModule
-
 lockGuard: [
   guard: {
     object:;

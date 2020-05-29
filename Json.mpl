@@ -4,6 +4,7 @@
 "String.StringView" use
 "String.getCodePointAndSize" use
 "String.splitString" use
+"String.toString" use
 "Variant.Variant" use
 "ascii.ascii" use
 "control.&&" use

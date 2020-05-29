@@ -1,5 +1,3 @@
-"control" useModule
-
 lowerBound: [
   value: range:;;
   low: 0;

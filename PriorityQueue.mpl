@@ -1,4 +1,4 @@
-"Array" includeModule
+"Array.Array" use
 
 PriorityQueue: [{
   data: Array;

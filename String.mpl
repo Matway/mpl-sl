@@ -12,7 +12,6 @@
 "control.drop" use
 "control.dup" use
 "control.pfunc" use
-"control.print" use
 "control.printf" use
 "control.times" use
 "control.when" use
