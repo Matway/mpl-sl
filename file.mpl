@@ -6,9 +6,12 @@
 "String.toString" use
 "control.&&" use
 "control.Int32" use
+"control.Nat8" use
 "control.Natx" use
 "control.Ref" use
 "control.Text" use
+"control.cond" use
+"control.drop" use
 "control.||" use
 "conventions.cdecl" use
 
