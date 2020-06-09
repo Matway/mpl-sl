@@ -385,10 +385,11 @@ parseJSONNodeImpl: [
       ov ["integer constant overflow" lexicalError] when
       n0.m [n0.vi neg][n0.vi copy] if intAsJSON
     ] [
-      value: n0.m [n0.vf neg] [n0.vf copy] if;
+      sign: n0.m [-1.0r64] [1.0r64] if;
+      value: n0.vf;
       frac: n1.vf 10.0r64 n1.c neg 0.0r64 cast ^ *;
       order: n2.m [n2.vf neg] [n2.vf copy] if;
-      value frac + 10.0r64 order ^ * realAsJSON
+      value frac + 10.0r64 order ^ * sign * realAsJSON
     ] if
 
     iterateToNextCharAfterIterate
