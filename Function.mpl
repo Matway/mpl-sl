@@ -28,10 +28,10 @@ INIT_FUNC: [3nx];
 
 Function: [{
   CONTEXT_SIZE: [32 static];
-  schema CALL_FUNC_SCHEMA: addContextToSignature;
-  schema DIE_FUNC_SCHEMA: {this: Natx;} {} {} codeRef;
-  schema ASSIGN_FUNC_SCHEMA: {this: Natx; other: Natx;} {} {} codeRef;
-  schema INIT_FUNC_SCHEMA: {this: Natx;} {} {} codeRef;
+  virtual CALL_FUNC_SCHEMA: addContextToSignature Ref;
+  virtual DIE_FUNC_SCHEMA: {this: Natx;} {} {} codeRef Ref;
+  virtual ASSIGN_FUNC_SCHEMA: {this: Natx; other: Natx;} {} {} codeRef Ref;
+  virtual INIT_FUNC_SCHEMA: {this: Natx;} {} {} codeRef Ref;
 
   contextData: Nat8 CONTEXT_SIZE array;
   vtable: {functionIndex: Natx;} Natx {} codeRef;
@@ -62,7 +62,7 @@ Function: [{
       ] when
     ] if
 
-    schema contextType: @context0;
+    virtual contextType: @context0 storageSize 0nx = [@context0][@context0 Ref] uif;
     updateVtable
   ];
 
@@ -76,10 +76,10 @@ Function: [{
   ];
 
   updateVtable: [
-    schema CALL_FUNC_SCHEMA: @CALL_FUNC_SCHEMA;
-    schema DIE_FUNC_SCHEMA: @DIE_FUNC_SCHEMA;
-    schema ASSIGN_FUNC_SCHEMA: @ASSIGN_FUNC_SCHEMA;
-    schema INIT_FUNC_SCHEMA: @INIT_FUNC_SCHEMA;
+    virtual CALL_FUNC_SCHEMA: @CALL_FUNC_SCHEMA Ref;
+    virtual DIE_FUNC_SCHEMA: @DIE_FUNC_SCHEMA Ref;
+    virtual ASSIGN_FUNC_SCHEMA: @ASSIGN_FUNC_SCHEMA Ref;
+    virtual INIT_FUNC_SCHEMA: @INIT_FUNC_SCHEMA Ref;
 
     [
       functionIndex:;
@@ -149,29 +149,29 @@ Function: [{
   ];
 
   makeEmptyVtable: [
-    schema CALL_FUNC_SCHEMA: @CALL_FUNC_SCHEMA;
-    schema DIE_FUNC_SCHEMA: @DIE_FUNC_SCHEMA;
-    schema ASSIGN_FUNC_SCHEMA: @ASSIGN_FUNC_SCHEMA;
-    schema INIT_FUNC_SCHEMA: @INIT_FUNC_SCHEMA;
+    virtual CALL_FUNC_SCHEMA: @CALL_FUNC_SCHEMA Ref;
+    virtual DIE_FUNC_SCHEMA: @DIE_FUNC_SCHEMA Ref;
+    virtual ASSIGN_FUNC_SCHEMA: @ASSIGN_FUNC_SCHEMA Ref;
+    virtual INIT_FUNC_SCHEMA: @INIT_FUNC_SCHEMA Ref;
 
     [
       (
         CALL_FUNC [0nx]
 
         DIE_FUNC [
-          f: DIE_FUNC_SCHEMA Ref;
+          f: @DIE_FUNC_SCHEMA Ref;
           [drop] !f
           @f storageAddress
         ]
 
         ASSIGN_FUNC [
-          f: ASSIGN_FUNC_SCHEMA Ref;
+          f: @ASSIGN_FUNC_SCHEMA Ref;
           [drop drop] !f
           @f storageAddress
         ]
 
         INIT_FUNC [
-          f: INIT_FUNC_SCHEMA Ref;
+          f: @INIT_FUNC_SCHEMA Ref;
           [drop] !f
           @f storageAddress
         ]
@@ -191,7 +191,7 @@ Function: [{
     other:;
     release
     @other.@vtable @closure.!vtable
-    @closure.@contextData storageAddress INIT_FUNC vtable @INIT_FUNC_SCHEMA addressToReference call
+    @closure.@contextData storageAddress @INIT_FUNC vtable @INIT_FUNC_SCHEMA addressToReference call
     @other.@contextData storageAddress @closure.@contextData storageAddress ASSIGN_FUNC vtable @ASSIGN_FUNC_SCHEMA addressToReference call
   ];
 

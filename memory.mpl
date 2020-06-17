@@ -1,3 +1,4 @@
+"control.&&" use
 "control.Int32" use
 "control.Nat64" use
 "control.Natx" use
@@ -97,14 +98,22 @@ atLocalStorage: [Natx storageSize * localStorage + Natx addressToReference];
   ] if
 ] "fastReallocate" exportFunction
 
+fieldIsRef: [index: struct: ;; FALSE];
+fieldIsRef: [index: struct: newVarOfTheSameType ;; index @struct @ Ref index @struct ! TRUE] [index: struct: ;; TRUE] pfunc;
+fieldIsRef: [index: struct: newVarOfTheSameType ;; index @struct @ Cref index @struct ! TRUE] [index: struct: ;; TRUE] pfunc;
+
 getHeapUsedSize: [arg:; 0nx];
+
 getHeapUsedSize: [isCombined] [
   arg:;
   i: 0;
   result: 0nx;
   [
-    i arg fieldCount < [
-      result i arg @ getHeapUsedSize + @result set
+    i @arg fieldCount < [
+      i @arg fieldIsRef ~ [
+        result i @arg @ getHeapUsedSize + @result set
+      ] when
+
       i 1 + @i set TRUE
     ] &&
   ] loop

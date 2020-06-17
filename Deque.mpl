@@ -1,4 +1,5 @@
 "Array.Array" use
+"control.Ref" use
 "control.assert" use
 "control.drop" use
 "control.each" use
@@ -10,7 +11,7 @@ Deque: [{
   # front: head tail :back
   virtual CONTAINER: ();
   virtual DEQUE: ();
-  schema elementType:;
+  virtual elementType: Ref;
   head: @elementType Array;
   tail: @elementType Array;
 

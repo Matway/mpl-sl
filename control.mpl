@@ -47,10 +47,10 @@ isCodeRef: [TRUE static];
 isCodeRef: [storageSize TRUE static] [FALSE static] pfunc;
 
 isCopyable: [drop FALSE];
-isCopyable: [x:; @x storageSize 0nx > [@x Ref] [@x] uif copy TRUE] [drop TRUE] pfunc;
+isCopyable: [x:; @x storageSize 0nx > [Natx @x addressToReference] [@x] uif copy TRUE] [drop TRUE] pfunc;
 
-isDynamic: [drop TRUE];
-isDynamic: [virtual v:; TRUE] [drop FALSE] pfunc;
+isDynamicText: [drop TRUE];
+isDynamicText: ["" & TRUE] [drop FALSE] pfunc;
 
 =: ["equal" has] [item0: item1:;; @item0 @item1.equal] pfunc;
 
@@ -58,7 +58,7 @@ isDynamic: [virtual v:; TRUE] [drop FALSE] pfunc;
 
 print: ["" same] [
   text:;
-  text isDynamic [
+  text isDynamicText [
     i: 0nx dynamic; [
       i text textSize = [FALSE] [
         (text storageAddress i + Nat8 addressToReference copy) "%c\00" printf

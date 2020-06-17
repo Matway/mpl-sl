@@ -1,9 +1,10 @@
+"control.Ref" use
 "control.when" use
 
 Union: [{
   virtual UNION: ();
 
-  schema typeList:;
+  virtual typeList: Ref;
 
   virtual maxSize: [
     result: 1 static;

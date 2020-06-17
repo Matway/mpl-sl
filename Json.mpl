@@ -84,7 +84,7 @@ JSONImpl: [
   @result
 ];
 
-schema JSONImplRef: JSONImpl;
+virtual JSONImplRef: JSONImpl Ref;
 
 {dst: 0nx;          } () {convention: cdecl;} [
   addrAsJSONImpl manuallyInitVariable
