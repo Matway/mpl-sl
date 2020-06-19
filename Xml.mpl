@@ -97,7 +97,7 @@ ArrayHelper: [{
 {dst: 0nx; src: 0nx;} () {convention: cdecl;} "XMLElementSet"     importFunction
 {dst: 0nx;          } () {convention: cdecl;} "XMLElementInit"    importFunction
 
-schema XMLElementRef: XMLElement;
+virtual XMLElementRef: XMLElement Ref;
 
 asXMLElement: [@XMLElementRef addressToReference];
 

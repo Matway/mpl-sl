@@ -1,6 +1,7 @@
 "Array.Array" use
 "control.&&" use
 "control.=" use
+"control.Ref" use
 "control.assert" use
 "control.dup" use
 "control.findIndexNot" use
@@ -15,8 +16,8 @@ HashTable: [
 
   {
     virtual HASH_TABLE: ();
-    schema keyType: @key;
-    schema valueType: @value;
+    virtual keyType: @key Ref;
+    virtual valueType: @value Ref;
 
     Node: [{
       key: key newVarOfTheSameType;
@@ -44,7 +45,7 @@ HashTable: [
       [
         result: {
           success: FALSE dynamic;
-          value: 0nx @valueType addressToReference;
+          value: 0nx dynamic @valueType addressToReference;
         };
 
         dataSize 0 = ~ [

@@ -1,4 +1,5 @@
 "control.&&" use
+"control.Ref" use
 "control.assert" use
 "control.pfunc" use
 "control.when" use
@@ -11,18 +12,18 @@ AVLMap: [
 
   {
     virtual AVL_MAP: ();
-    schema keyType: @key;
-    schema valueType: @value;
+    virtual keyType: @key Ref;
+    virtual valueType: @value Ref;
 
     makeNode: [{
-      copy value:;
-      copy key:;
+      value: copy;
+      key: copy;
       balance: 0 dynamic;
       left: 0nx dynamic;
       right: 0nx dynamic;
     }];
 
-    schema nodeType: key newVarOfTheSameType value newVarOfTheSameType makeNode;
+    virtual nodeType: @key newVarOfTheSameType @value newVarOfTheSameType makeNode Ref;
 
     asNode: [@nodeType addressToReference];
 
@@ -269,7 +270,6 @@ AVLMap: [
         ] loop
 
         [dropped 0nx = ~] "Erasing unexisting element!" assert
-
 
         [
           prime prev is ~ [

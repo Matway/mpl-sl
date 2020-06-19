@@ -1,3 +1,5 @@
+"control.Int32" use
+"control.Ref" use
 "control.assert" use
 "control.pfunc" use
 "control.when" use
@@ -5,14 +7,14 @@
 Variant: [{
   virtual VARIANT: ();
 
-  schema typeList:;
+  virtual typeList: Ref;
 
   virtual maxSize: [
     result: 1 static;
     i: 0 static;
     [
       i typeList fieldCount < [
-        curSize: i typeList @ storageSize 0ix cast 0 cast;
+        curSize: i @typeList @ storageSize Int32 cast;
         curSize result > [
           curSize @result set
         ] when
@@ -30,8 +32,8 @@ Variant: [{
     result: 1 static;
     i: 0 static;
     [
-      i typeList fieldCount < [
-        curSize: i typeList @ alignment 0ix cast 0 cast;
+      i @typeList fieldCount < [
+        curSize: i @typeList @ alignment Int32 cast;
         curSize result > [
           curSize @result set
         ] when
@@ -133,7 +135,7 @@ Variant: [{
 
     i: 0 static;
     [
-      i typeList fieldCount < [
+      i @typeList fieldCount < [
         i typeTag = [
           i other.get
           i get set
@@ -160,7 +162,7 @@ getHeapUsedSize: ["VARIANT" has] [
   i: 0 static;
   result: 0nx;
   [
-    i arg.typeList fieldCount < [
+    i arg.@typeList fieldCount < [
       i arg.typeTag = [
         result i arg.get getHeapUsedSize + @result set
       ] when

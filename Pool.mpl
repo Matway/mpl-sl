@@ -4,6 +4,7 @@
 "control.Nat32" use
 "control.Nat8" use
 "control.Natx" use
+"control.Ref" use
 "control.assert" use
 "control.times" use
 "control.when" use
@@ -16,7 +17,7 @@ Pool: [
   element:;
   {
     virtual POOL: ();
-    schema elementSchema: @element;
+    virtual elementSchema: @element Ref;
     virtual entrySize: (0 @element newVarOfTheSameType) Union storageSize;
 
     data: 0nx dynamic;

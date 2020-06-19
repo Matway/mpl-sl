@@ -1,6 +1,7 @@
 "control.&&" use
 "control.@" use
 "control.Natx" use
+"control.Ref" use
 "control.asView" use
 "control.assert" use
 "control.pfunc" use
@@ -13,8 +14,8 @@ makeArrayRangeRaw: [{
   virtual RANGE: ();
   virtual ARRAY_RANGE: ();
   dataBegin:;
-  dataSize: copy dynamic;
-  schema elementType: @dataBegin;
+  dataSize: copy;
+  virtual elementType: @dataBegin Ref;
   virtual elementSize: @dataBegin storageSize;
   @dataBegin storageAddress @elementType addressToReference !dataBegin #dynamize
 
@@ -36,7 +37,7 @@ makeArrayRangeRaw: [{
   view: [
     newIndex: newSize:;;
     {
-      schema elementType: 0nx @elementType addressToReference;
+      virtual elementType: @elementType Ref;
       getBufferBegin: getBufferBegin elementType storageSize newIndex Natx cast * +;
       size: newSize copy;
 
@@ -101,13 +102,14 @@ makeArrayRangeRaw: [{
 
 ArrayRange: [
   element:;
-  0 0nx @element addressToReference makeArrayRangeRaw
+  0 @element Ref makeArrayRangeRaw
 ];
 
 makeArrayRange: [
   list:;
-  schema listSchema: 0 dynamic @list @;
-  list fieldCount 0 dynamic list @ storageAddress @listSchema addressToReference makeArrayRangeRaw
+  virtual listSchema: @list Ref;
+  virtual elementSchema: 0 dynamic @listSchema @ Ref;
+  list fieldCount 0 dynamic list @ storageAddress @elementSchema addressToReference makeArrayRangeRaw
 ];
 
 makeArrayRange: ["ARRAY_RANGE" has] [
@@ -129,16 +131,16 @@ makeSubRange: [
 ];
 
 makeArrayObject: [{
-  virtual memoryDebugObject:;
+  virtual memoryDebugObject: copy;
 
   virtual CONTAINER: ();
   virtual ARRAY: ();
   virtual SCHEMA_NAME: "ARRAY";
-  schema elementType:;
-  dataBegin: 0nx @elementType addressToReference;
-  dataSize: 0 dynamic;
-  dataReserve: 0 dynamic;
-  virtual elementSize: elementType storageSize;
+  virtual elementType: Ref;
+  dataBegin: @elementType Ref;
+  dataSize: 0;
+  dataReserve: 0;
+  virtual elementSize: @elementType storageSize;
 
   getBufferBegin: [
     @dataBegin storageAddress
@@ -158,11 +160,11 @@ makeArrayObject: [{
   view: [
     newIndex: newSize:;;
     {
-      schema elementType: 0nx @elementType addressToReference;
-      getBufferBegin: getBufferBegin elementType storageSize newIndex Natx cast * +;
+      virtual elementType: @elementType Ref;
+      getBufferBegin: getBufferBegin @elementType storageSize newIndex Natx cast * +;
       size: newSize copy;
 
-      at: [Natx cast elementType storageSize * getBufferBegin + @elementType addressToReference];
+      at: [Natx cast @elementType storageSize * getBufferBegin + @elementType addressToReference];
 
       view: @view;
     }
@@ -231,16 +233,18 @@ makeArrayObject: [{
     view: asView;
     index: size;
     size view.size + enlarge
-    i: 0; [i view.size <] [i view.at index i + at set i 1 + !i] while
+    i: 0; [i view.size <] [
+      i view.at index i + at set i 1 + !i
+    ] while
   ];
 
   appendEach: [[pushBack] each];
 
   shrink: [
-    copy newSize: dynamic;
+    copy newSize:;
     [newSize dataSize > ~] "Shrinked size is bigger than the old size!" assert
 
-    i: dataSize copy;
+    i: dataSize copy dynamic;
     [i newSize >] [
       i 1 - @i set
       i at manuallyDestroyVariable
@@ -258,7 +262,7 @@ makeArrayObject: [{
   ];
 
   enlarge: [
-    copy newSize: dynamic;
+    copy dynamic newSize:;
     [newSize dataSize < ~] "Enlarged size is less than old size!" assert
 
     dataReserve newSize < [
@@ -276,7 +280,7 @@ makeArrayObject: [{
   ];
 
   resize: [
-    copy newSize: dynamic;
+    copy dynamic newSize:;
     newSize dataSize = [
     ] [
       newSize dataSize < [
@@ -288,7 +292,7 @@ makeArrayObject: [{
   ];
 
   clear: [
-    0 dynamic shrink
+    0 shrink
   ];
 
   release: [
@@ -298,15 +302,15 @@ makeArrayObject: [{
     memoryDebugObject [TRUE !memoryDebugEnabled] when
     addr 0nx = ~ [size addr mplFree] when
     memoryDebugObject [FALSE !memoryDebugEnabled] when
-    0nx @elementType addressToReference !dataBegin
-    0 dynamic @dataSize set
-    0 dynamic @dataReserve set
+    @elementType Ref !dataBegin
+    0 @dataSize set
+    0 @dataReserve set
   ];
 
   INIT: [
-    0nx @elementType addressToReference !dataBegin
-    0 dynamic @dataSize set
-    0 dynamic @dataReserve set
+    @elementType Ref !dataBegin
+    0 @dataSize set
+    0 @dataReserve set
   ];
 
   ASSIGN: [

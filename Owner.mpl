@@ -1,3 +1,4 @@
+"control.Ref" use
 "control.assert" use
 "control.pfunc" use
 "control.when" use
@@ -7,8 +8,8 @@
 OwnerWithDestructor: [{
   virtual OWNER: ();
   destructor:;
-  schema elementType:;
-  memory: 0nx @elementType addressToReference;
+  virtual elementType: Ref;
+  memory: @elementType Ref;
 
   assigned: [
     addr: memory storageAddress;
@@ -33,14 +34,14 @@ OwnerWithDestructor: [{
   clear: [
     assigned [
       @memory @destructor deleteWith
-      0nx @elementType addressToReference !memory
+      @elementType Ref !memory
     ] when
   ];
 
   release: [clear];
 
   INIT: [
-    0nx @elementType addressToReference !memory
+    @elementType Ref !memory
   ];
 
   DIE: [
