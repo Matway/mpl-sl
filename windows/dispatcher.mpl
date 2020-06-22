@@ -60,6 +60,8 @@ dispatcherInternal: {
       error kernel32.WAIT_TIMEOUT = ~ [
         ("FATAL: GetQueuedCompletionStatusEx failed, result=" error LF) assembleString print 1 exit
       ] when
+
+      FALSE
     ] [
       [actual 1n32 =] "unexpected actual entry count" assert
       entry.lpCompletionKey 0nx = [
@@ -69,6 +71,8 @@ dispatcherInternal: {
       ] [
         entry.lpOverlapped storageAddress entry.lpCompletionKey {context: Natx;} {} {} codeRef addressToReference call
       ] if
+
+      TRUE
     ] if
   ];
 
