@@ -397,24 +397,28 @@ String: [{
   ];
 
   catIntNZ: [
+    copy by3:;
     copy number:;
     number number number - < [
       "-" catStringNZ
-      number Int64 cast neg Nat64 cast catUintNZ
+      number Int64 cast neg Nat64 cast by3 catUintNZ
     ] [
-      number Nat64 cast catUintNZ
+      number Nat64 cast by3 catUintNZ
     ] if
   ];
 
   catUintNZ: [
+    copy by3:;
     copy number:;
     nc: [number cast];
 
     shifted: number 0n64 cast;
     rounded: 1n64 dynamic;
+    shift: 0 dynamic;
 
     shifted 10n64 < ~ [
       [
+        shift 1 + !shift
         rounded 10n64 * @rounded set
         rounded shifted 10n64 / > ~
       ] loop
@@ -423,9 +427,13 @@ String: [{
     [
       digit: shifted rounded /;
       digit 0n32 cast 48n32 + catAsciiSymbolCodeNZ
+      by3 [shift 0 >] && [shift 3 mod 0 =] && [44n32 catAsciiSymbolCodeNZ] when
+
 
       shifted digit rounded * - @shifted set
       rounded 10n64 / @rounded set
+
+      shift 1 - !shift
 
       rounded 0n64 >
     ] loop
@@ -462,6 +470,7 @@ String: [{
   ];
 
   catFloatNZ: [
+    copy by3:;
     copy number:;
 
     nc: [number cast];
@@ -521,9 +530,12 @@ String: [{
 
           [
             rp 0 = [
-              "." catStringNZ
-            ] when
-
+              46n32 catAsciiSymbolCodeNZ
+            ] [
+              by3 [rp 3 mod 0 =] && [
+                44n32 catAsciiSymbolCodeNZ
+              ] when
+            ] if
 
             digit: shifted rounded /;
             digit digitToCodePoint catAsciiSymbolCodeNZ
@@ -537,9 +549,28 @@ String: [{
           ] loop
 
           shift 0 = ~ [
-            "e" catStringNZ
-            shift catIntNZ
+            101n32 catAsciiSymbolCodeNZ
+            shift FALSE catIntNZ
           ] when
+        ] if
+      ] if
+    ] if
+  ];
+
+  catBy3NZ: [
+    arg:;
+
+    @arg 0.0r64 same [@arg 0.0r32 same] || [
+      @arg TRUE catFloatNZ
+    ] [
+      @arg 0i8 same [@arg 0i16 same] || [@arg 0i32 same] || [@arg 0i64 same] || [@arg 0ix same] || [
+        @arg TRUE catIntNZ
+      ] [
+        @arg 0n8 same [@arg 0n16 same] || [@arg 0n32 same] || [@arg 0n64 same] || [@arg 0nx same] || [
+          @arg TRUE catUintNZ
+        ] [
+          @arg printStack
+          0 .IS_NOT_A_NUMBER
         ] if
       ] if
     ] if
@@ -559,13 +590,13 @@ String: [{
       @arg catStringNZ
     ] [
       @arg 0.0r64 same [@arg 0.0r32 same] || [
-        @arg catFloatNZ
+        @arg FALSE catFloatNZ
       ] [
         @arg 0i8 same [@arg 0i16 same] || [@arg 0i32 same] || [@arg 0i64 same] || [@arg 0ix same] || [
-          @arg catIntNZ
+          @arg FALSE catIntNZ
         ] [
           @arg 0n8 same [@arg 0n16 same] || [@arg 0n32 same] || [@arg 0n64 same] || [@arg 0nx same] || [
-            @arg catUintNZ
+            @arg FALSE catUintNZ
           ] [
             @arg TRUE same [
               @arg catCondNZ
@@ -597,7 +628,12 @@ String: [{
         i list.at catHexNZ
         i 1 + @i set
       ] [
-        i list.at catNZ
+        i 1 + list.size < [i 1 + list.at "BY3" has] && [
+          i list.at catBy3NZ
+          i 1 + @i set
+        ] [
+          i list.at catNZ
+        ] if
       ] if
       i 1 + @i set
     ] while
@@ -607,6 +643,10 @@ String: [{
 
 Hex: [{
   virtual HEX: ();
+}];
+
+By3: [{
+  virtual BY3: ();
 }];
 
 makeStringView: ["STRING" has] [
