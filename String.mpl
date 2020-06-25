@@ -1,5 +1,6 @@
 "Array.Array" use
 "control.&&" use
+"control.Cond" use
 "control.Int32" use
 "control.Int64" use
 "control.Nat32" use
@@ -21,6 +22,14 @@
 "conventions.cdecl" use
 "memory.memcmp" use
 "memory.memcpy" use
+
+hasLogs: [
+  hasLogsImpl: [FALSE];
+  hasLogsImpl: [@HAS_LOGS TRUE] ["Invalid value for HAS_LOGS" raiseStaticError] pfunc;
+  hasLogsImpl: [HAS_LOGS Cond same] [HAS_LOGS] pfunc;
+  hasLogsImpl: [HAS_LOGS () same] [TRUE] pfunc;
+  hasLogsImpl
+];
 
 {arg: 0nx;} 0nx {convention: cdecl;} "strlen" importFunction
 
@@ -687,7 +696,7 @@ print: ["STRING" has] [
 ] pfunc;
 
 addLog: [
-  HAS_LOGS [
+  hasLogs [
     printList LF print
   ] [
     list:;
