@@ -1,5 +1,6 @@
 "Array.Array" use
 "control.&&" use
+"control.Cond" use
 "control.Int32" use
 "control.Int64" use
 "control.Nat32" use
