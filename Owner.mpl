@@ -7,6 +7,7 @@
 
 OwnerWithDestructor: [{
   virtual OWNER: ();
+  virtual SCHEMA_NAME: "Owner";
   destructor:;
   virtual elementType: Ref;
   memory: @elementType Ref;

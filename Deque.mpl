@@ -11,6 +11,7 @@ Deque: [{
   # front: head tail :back
   virtual CONTAINER: ();
   virtual DEQUE: ();
+  virtual SCHEMA_NAME: "Deque";
   virtual elementType: Ref;
   head: @elementType Array;
   tail: @elementType Array;

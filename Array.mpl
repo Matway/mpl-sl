@@ -135,7 +135,7 @@ makeArrayObject: [{
 
   virtual CONTAINER: ();
   virtual ARRAY: ();
-  virtual SCHEMA_NAME: "ARRAY";
+  virtual SCHEMA_NAME: "Array";
   virtual elementType: Ref;
   dataBegin: @elementType Ref;
   dataSize: 0;
@@ -160,11 +160,12 @@ makeArrayObject: [{
   view: [
     newIndex: newSize:;;
     {
+      virtual SCHEMA_NAME: "ArrayView";
       virtual elementType: @elementType Ref;
-      getBufferBegin: getBufferBegin @elementType storageSize newIndex Natx cast * +;
+      dataBegin: @dataBegin storageAddress @elementType storageSize newIndex Natx cast * + @elementType addressToReference;
       size: newSize copy;
 
-      at: [Natx cast @elementType storageSize * getBufferBegin + @elementType addressToReference];
+      at: [Natx cast @elementType storageSize * @dataBegin storageAddress + @elementType addressToReference];
 
       view: @view;
     }

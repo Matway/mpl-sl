@@ -368,7 +368,7 @@ String: [{
 
   view: [
     index: size:;;
-    data index Natx cast + size makeStringView2
+    (data storageAddress index Natx cast + Nat8 addressToReference const size copy) toStringView
   ];
 
   getStringView: [

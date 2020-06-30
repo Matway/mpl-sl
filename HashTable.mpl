@@ -16,6 +16,7 @@ HashTable: [
 
   {
     virtual HASH_TABLE: ();
+    virtual SCHEMA_NAME: "HashTable";
     virtual keyType: @key Ref;
     virtual valueType: @value Ref;
 

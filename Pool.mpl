@@ -6,6 +6,7 @@
 "control.Natx" use
 "control.Ref" use
 "control.assert" use
+"control.isNil" use
 "control.times" use
 "control.when" use
 "control.while" use
@@ -17,10 +18,11 @@ Pool: [
   element:;
   {
     virtual POOL: ();
+    virtual SCHEMA_NAME: "Pool";
     virtual elementSchema: @element Ref;
     virtual entrySize: (0 @element newVarOfTheSameType) Union storageSize;
 
-    data: 0nx dynamic;
+    data: @elementSchema Ref;
     dataSize: 0 dynamic;
     firstFree: -1 dynamic;
     exactAllocatedMemSize: 0nx dynamic;
@@ -40,11 +42,11 @@ Pool: [
     ];
 
     getAddressByIndex: [
-      Natx cast entrySize * data +
+      Natx cast entrySize * data storageAddress +
     ];
 
     getTailAddressByIndex: [
-      Natx cast dataSize Natx cast entrySize * data + +
+      Natx cast dataSize Natx cast entrySize * + data storageAddress +
     ];
 
     elementAt: [
@@ -127,7 +129,7 @@ Pool: [
         dataSize @index set
         dataSize 0 = [
           entrySize 8nx * 1nx + @exactAllocatedMemSize set
-          exactAllocatedMemSize mplMalloc @data set
+          exactAllocatedMemSize mplMalloc @elementSchema addressToReference !data
           7 [
             i 2 +
             i 1 + nextFreeAt set
@@ -144,11 +146,11 @@ Pool: [
           newTailSize: newDataSize 3n32 rshift;
 
           newExactAllocatedMemSize: entrySize newDataSize Natx cast * newTailSize Natx cast +;
-          newExactAllocatedMemSize exactAllocatedMemSize data mplRealloc @data set
+          newExactAllocatedMemSize exactAllocatedMemSize data storageAddress mplRealloc @elementSchema addressToReference !data
           newExactAllocatedMemSize @exactAllocatedMemSize set
 
           getNewTailAddressByIndex: [
-            Natx cast newDataSize Natx cast entrySize * data + +
+            Natx cast newDataSize Natx cast entrySize * + data storageAddress +
           ];
 
           newValidAt: [
@@ -210,8 +212,8 @@ Pool: [
 
     DIE: [
       clear
-      data 0nx = ~ [
-        exactAllocatedMemSize data mplFree
+      data isNil ~ [
+        exactAllocatedMemSize data storageAddress mplFree
       ] when
     ];
   }
