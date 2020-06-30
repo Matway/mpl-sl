@@ -170,7 +170,7 @@ jsonInternalFillPositionChars: [
 
   pos.offset chars.getSize < [
     pos.offset chars.at @pos.@currentSymbol set
-    pos.currentSymbol.data Nat8 addressToReference Nat32 cast @pos.@currentCode set
+    pos.currentSymbol.data Nat32 cast @pos.@currentCode set
   ] [
     StringView @pos.@currentSymbol set
     ascii.null @pos.@currentCode set
@@ -585,7 +585,7 @@ catJSONNodeWithPaddingImpl: [
     [splitted.success copy] "Wrong encoding in JSON string!" assert
     splitted.chars [
       symbol: copy;
-      code: symbol.data Nat8 addressToReference Nat32 cast;
+      code: symbol.data Nat32 cast;
       code ascii.quote = [
         "\\\"" @result.cat
       ] [

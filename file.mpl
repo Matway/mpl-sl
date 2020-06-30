@@ -46,7 +46,7 @@ loadFile: [
   () (
     [
       drop
-      "rb\00" name.data Text addressToReference @file fopen_s !error error 0 = ~
+      "rb\00" name.data storageAddress Text addressToReference @file fopen_s !error error 0 = ~
     ] [("fopen failed, " error getErrnoText) assembleString @result.!result]
     [
       drop
@@ -71,7 +71,7 @@ saveFile: [
   () (
     [
       drop
-      "wb\00" name.data Text addressToReference @file fopen_s !error error 0 = ~
+      "wb\00" name.data storageAddress Text addressToReference @file fopen_s !error error 0 = ~
     ] [("fopen failed, " error getErrnoText) assembleString]
     [
       drop
@@ -93,13 +93,13 @@ loadString: [
   };
 
   size: 0nx dynamic;
-  f: "rb\00" name.data Text addressToReference fopen;
+  f: "rb\00" name.data storageAddress Text addressToReference fopen;
   f 0nx = ~ [
     SEEK_END 0 f fseek 0 =
     [f ftell Natx cast @size set
       SEEK_SET 0 f fseek 0 =] &&
     [size 0ix cast 0 cast @result.@data.@chars.resize
-      f size 1nx @result.@data.data fread size =] &&
+      f size 1nx @result.@data.data storageAddress fread size =] &&
     [0n8 @result.@data.@chars.pushBack TRUE] &&
     f fclose 0 = and
   ] &&
@@ -114,10 +114,10 @@ saveString: [
 
   size: stringView.size;
 
-  f: "wb\00" name.data Text addressToReference fopen;
+  f: "wb\00" name.data storageAddress Text addressToReference fopen;
   f 0nx = ~
   [
-    size 0 = [f size Natx cast 1nx stringView.data fwrite size Natx cast =] ||
+    size 0 = [f size Natx cast 1nx stringView.data storageAddress fwrite size Natx cast =] ||
     f fflush 0 = and
     f fclose 0 = and
   ] &&
@@ -129,10 +129,10 @@ appendString: [
 
   size: stringView.size;
 
-  f: "ab\00" name.data Text addressToReference fopen;
+  f: "ab\00" name.data storageAddress Text addressToReference fopen;
   f 0nx = ~
   [
-    size 0 = [f size Natx cast 1nx stringView.data fwrite size Natx cast =] ||
+    size 0 = [f size Natx cast 1nx stringView.data storageAddress fwrite size Natx cast =] ||
     f fflush 0 = and
     f fclose 0 = and
   ] &&

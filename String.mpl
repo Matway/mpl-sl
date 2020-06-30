@@ -1,6 +1,7 @@
 "Array.Array" use
 "control.&&" use
 "control.Cond" use
+"control.Cref" use
 "control.Int32" use
 "control.Int64" use
 "control.Nat32" use
@@ -35,12 +36,12 @@ hasLogs: [
 
 getCodePointAndSize: [
   copy endSize:;
-  copy buffer:;
+  buffer:;
 
   endSize 0 > ~ [
     0n32 0
   ] [
-    cu0: buffer Nat8 addressToReference copy;
+    cu0: buffer copy;
     cu0 0x80n8 < cu0 0xc0n8 < ~ cu0 0xf8n8 < and or ~ [
       0n32 0
     ] [
@@ -51,7 +52,7 @@ getCodePointAndSize: [
         endSize 1 > ~ [
           0n32 0
         ] [
-          cu1: buffer 1nx + Nat8 addressToReference copy;
+          cu1: buffer storageAddress 1nx + Nat8 addressToReference const copy;
           cu1 0xc0n8 and 0x80n8 = ~ [
             0n32 0
           ] [
@@ -63,7 +64,7 @@ getCodePointAndSize: [
               endSize 2 > ~ [
                 0n32 0
               ] [
-                cu2: buffer 2nx + Nat8 addressToReference copy;
+                cu2: buffer storageAddress 2nx + Nat8 addressToReference const copy;
                 cu2 0xc0n8 and 0x80n8 = ~ [
                   0n32 0
                 ] [
@@ -76,7 +77,7 @@ getCodePointAndSize: [
                     endSize 3 > ~ [
                       0n32 0
                     ] [
-                      cu3: buffer 3nx + Nat8 addressToReference copy;
+                      cu3: buffer storageAddress 3nx + Nat8 addressToReference const copy;
                       cu3 0xc0n8 and 0x80n8 = ~ [
                         0n32 0
                       ] [
@@ -100,28 +101,28 @@ getCodePointAndSize: [
 
 getCodePointSize: [
   copy endSize:;
-  copy buffer:;
+  buffer:;
 
   endSize 0 > ~ [0] [
-    cu0: buffer Nat8 addressToReference copy;
+    cu0: buffer copy;
     cu0 0x80n8 < cu0 0xc0n8 < ~ cu0 0xf8n8 < and or ~ [0] [
       cu0 0x80n8 < [
         1
       ] [
         endSize 1 > ~ [0] [
-          cu1: buffer 1nx + Nat8 addressToReference copy;
+          cu1: buffer storageAddress 1nx + Nat8 addressToReference const copy;
           cu1 0xc0n8 and 0x80n8 = ~ [0] [
             cu0 0xe0n8 < [
               2
             ] [
               endSize 2 > ~ [0] [
-                cu2: buffer 2nx + Nat8 addressToReference copy;
+                cu2: buffer storageAddress 2nx + Nat8 addressToReference const copy;
                 cu2 0xc0n8 and 0x80n8 = ~ [0] [
                   cu0 0xf0n8 < [
                     3
                   ] [
                     endSize 3 > ~ [0] [
-                      cu3: buffer 3nx + Nat8 addressToReference copy;
+                      cu3: buffer storageAddress 3nx + Nat8 addressToReference const copy;
                       cu3 0xc0n8 and 0x80n8 = ~ [0] [
                         4
                       ] if
@@ -235,13 +236,13 @@ intPow: [
 ];
 
 makeStringIter2: [{
-  data: size: copy; copy;
+  data: size: copy;;
   codepointSize: data size getCodePointSize;
 
   valid: [codepointSize 0 = ~];
-  get: [data codepointSize makeStringView2];
+  get: [(data codepointSize copy) toStringView];
   next: [
-    data codepointSize Natx cast + !data
+    data storageAddress codepointSize Natx cast + Nat8 addressToReference const !data
     size codepointSize - !size
     data size getCodePointSize !codepointSize
   ];
@@ -263,33 +264,43 @@ toIter: ["" same] [
   text storageAddress text textSize Int32 cast makeStringIter2
 ] pfunc;
 
-makeStringView2: [{
-  data: size: copy; copy;
+toStringView: [
+  in:;
+  @in (Nat8 Cref Int32) same [] [@in printStack drop "[toStringView], invalid argument, (Nat8 Cref Int32) expected" raiseStaticError] uif
 
-  equal: [
-    other: dup "" same [asView] when;
-    size other.size = [size Natx cast other.data data memcmp 0 =] &&
-  ];
+  {
+    virtual SCHEMA_NAME: "StringView";
+    stringData: 0 in @;
+    stringSize: 1 in @ copy;
 
-  hash: [
-    result: 33n32;
-    size [
-      codeunit: data i Natx cast + Nat8 addressToReference Nat32 cast;
-      result 47n32 * codeunit + !result
-    ] times
+    data: [stringData];
+    size: [stringSize copy];
 
-    result
-  ];
+    equal: [
+      other: dup Text same [asView] when;
+      size other.size = [size Natx cast other.data storageAddress data storageAddress memcmp 0 =] &&
+    ];
 
-  iter: [data size makeStringIter2];
+    hash: [
+      result: 33n32;
+      size [
+        codeunit: data storageAddress i Natx cast + Nat8 addressToReference Nat32 cast;
+        result 47n32 * codeunit + !result
+      ] times
 
-  view: [
-    index: size:;;
-    data index Natx cast + size makeStringView2
-  ];
-}];
+      result
+    ];
 
-StringView: [0nx 0 makeStringView2];
+    iter: [data size makeStringIter2];
+
+    view: [
+      index: size:;;
+      (data storageAddress index Natx cast + Nat8 addressToReference const size copy) toStringView
+    ];
+  }
+];
+
+StringView: [(Nat8 Cref 0) toStringView];
 
 makeStringView: [StringView same] [
   copy
@@ -297,13 +308,10 @@ makeStringView: [StringView same] [
 
 makeStringView: [Text same] [
   text:;
-  text storageAddress text textSize Int32 cast makeStringView2
+  (text storageAddress Nat8 addressToReference const text textSize Int32 cast) toStringView
 ] pfunc;
 
-asView: ["" same] [
-  text:;
-  text storageAddress text textSize Int32 cast makeStringView2
-] pfunc;
+asView: [Text same] [makeStringView] pfunc;
 
 splitString: [
   string: makeStringView;
@@ -313,18 +321,18 @@ splitString: [
     chars: StringView Array;
   };
 
-  data: string.data copy;
-  size: string.size copy;
+  data: string.data;
+  size: string.size;
   [
     size 0 = [FALSE] [
       codepointSize: data size getCodePointSize;
       codepointSize 0 = [
         FALSE @result.!success
-        data string.data - Int32 cast @result.!errorOffset
+        data storageAddress string.data storageAddress - Int32 cast @result.!errorOffset
         FALSE
       ] [
-        data codepointSize makeStringView2 @result.@chars.pushBack
-        data codepointSize Natx cast + !data
+        (data codepointSize copy) toStringView @result.@chars.pushBack
+        data storageAddress codepointSize Natx cast + Nat8 addressToReference const !data
         size codepointSize - !size
         TRUE
       ] if
@@ -336,9 +344,10 @@ splitString: [
 
 String: [{
   virtual STRING: ();
+  virtual SCHEMA_NAME: "String";
   chars: Nat8 Array;
 
-  data: [chars.getBufferBegin];
+  data: [chars.dataBegin];
 
   size: [
     chars.getSize 0 = [
@@ -366,7 +375,7 @@ String: [{
     chars.getSize 0 = [
       StringView
     ] [
-      chars.getBufferBegin chars.dataSize 1 - makeStringView2
+      (chars.dataBegin chars.dataSize 1 -) toStringView
     ] if
   ];
 
@@ -401,7 +410,7 @@ String: [{
     string.size 0 = ~ [
       index: chars.getSize;
       index string.size + @chars.enlarge
-      string.size Natx cast string.data chars.getBufferBegin index Natx cast + memcpy drop
+      string.size Natx cast string.data storageAddress chars.getBufferBegin index Natx cast + memcpy drop
     ] when
   ];
 
@@ -664,7 +673,7 @@ makeStringView: ["STRING" has] [
 
 makeStringViewByAddress: [
   address:;
-  address address strlen Int32 cast makeStringView2
+  (address Nat8 addressToReference const address strlen Int32 cast) toStringView
 ];
 
 toString: [
