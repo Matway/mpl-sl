@@ -205,7 +205,7 @@ Pool: [
     }];
 
     INIT: [
-      0nx dynamic @data set
+      @elementSchema Ref !data
       0   dynamic @dataSize set
       -1  dynamic @firstFree set
     ];
