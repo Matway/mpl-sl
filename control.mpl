@@ -50,6 +50,9 @@ isCopyable: [x:; @x storageSize 0nx > [Natx @x addressToReference] [@x] uif copy
 isDynamicText: [drop TRUE];
 isDynamicText: ["" & TRUE] [drop FALSE] pfunc;
 
+isVirtual: [drop TRUE];
+isVirtual: [Ref TRUE] [drop FALSE] pfunc;
+
 =: ["equal" has] [item0: item1:;; @item0 @item1.equal] pfunc;
 
 =: [item1:; "equal" has] [item0: item1:;; @item1 @item0.equal] pfunc;
