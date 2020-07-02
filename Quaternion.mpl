@@ -1,4 +1,5 @@
 "algebra.*" use
+"algebra.+" use
 "algebra.dot" use
 "algebra.lerp" use
 "algebra.neg" use
