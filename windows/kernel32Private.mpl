@@ -11,6 +11,10 @@
 FARPROC: [{
 } Intx {convention: stdcall;} codeRef];
 
+LPFIBER_START_ROUTINE: [{
+  lpFiberParameter: Natx;
+} {} {convention: stdcall;} codeRef];
+
 LPTHREAD_START_ROUTINE: [{
   lpThreadParameter: Natx;
 } Nat32 {convention: stdcall;} codeRef];
@@ -66,9 +70,19 @@ SECURITY_ATTRIBUTES: [{
 } Int32 {convention: stdcall;} "CloseHandle" importFunction
 
 {
+  lpParameter: Natx;
+} Natx {convention: stdcall;} "ConvertThreadToFiber" importFunction
+
+{
   lpPathName: Natx;
   lpSecurityAttributes: SECURITY_ATTRIBUTES Ref;
 } Int32 {convention: stdcall;} "CreateDirectoryW" importFunction
+
+{
+  dwStackSize: Natx;
+  lpStartAddress: LPFIBER_START_ROUTINE;
+  lpParameter: Natx;
+} Natx {convention: stdcall;} "CreateFiber" importFunction
 
 {
   lpFileName: Natx;
@@ -201,6 +215,10 @@ SECURITY_ATTRIBUTES: [{
 {
   dwMilliseconds: Nat32;
 } {} {convention: stdcall;} "Sleep" importFunction
+
+{
+  lpFiber: Natx;
+} {} {convention: stdcall;} "SwitchToFiber" importFunction
 
 {
   hHandle: Natx;

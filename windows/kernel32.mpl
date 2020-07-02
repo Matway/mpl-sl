@@ -3,6 +3,7 @@
 kernel32Internal: {
   FARPROC: @FARPROC;
 
+  LPFIBER_START_ROUTINE: @LPFIBER_START_ROUTINE;
   LPTHREAD_START_ROUTINE: @LPTHREAD_START_ROUTINE;
 
   CREATE_NEW: [1];
@@ -51,7 +52,9 @@ kernel32Internal: {
   # kernel32.Lib should be included for these functions
   CancelIoEx: @CancelIoEx;
   CloseHandle: @CloseHandle;
+  ConvertThreadToFiber: @ConvertThreadToFiber;
   CreateDirectoryW: @CreateDirectoryW;
+  CreateFiber: @CreateFiber;
   CreateFileW: @CreateFileW;
   CreateIoCompletionPort: @CreateIoCompletionPort;
   CreateThread: @CreateThread;
@@ -75,6 +78,7 @@ kernel32Internal: {
   QueryPerformanceFrequency: @QueryPerformanceFrequency;
   ReadFile: @ReadFile;
   Sleep: @Sleep;
+  SwitchToFiber: @SwitchToFiber;
   WaitForSingleObject: @WaitForSingleObject;
   WriteFile: @WriteFile;
 };
