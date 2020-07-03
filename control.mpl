@@ -111,12 +111,16 @@ times: [
   ] when
 ];
 
+ensure: [
+  message:;
+  call ~ [
+    message failProc
+  ] when
+];
+
 assert: [
   DEBUG [
-    message:;
-    call ~ [
-      message failProc
-    ] when
+    ensure
   ] [
     message:; condition:;
   ] if
