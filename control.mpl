@@ -50,6 +50,9 @@ isCopyable: [x:; @x storageSize 0nx > [Natx @x addressToReference] [@x] uif copy
 isDynamicText: [drop TRUE];
 isDynamicText: ["" & TRUE] [drop FALSE] pfunc;
 
+isMovable: [drop FALSE];
+isMovable: [newVarOfTheSameType v:; @v move copy TRUE] [drop TRUE] pfunc;
+
 isVirtual: [drop TRUE];
 isVirtual: [Ref TRUE] [drop FALSE] pfunc;
 
