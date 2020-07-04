@@ -8,7 +8,7 @@
 # Intrusive singly linked list
 # Requires item objects to have field 'next' of type '[Item] Mref'
 IntrusiveStack: [{
-  INIT: [@Item !last];
+  INIT: [clear];
 
   DIE: [];
 
@@ -19,6 +19,8 @@ IntrusiveStack: [{
     @last @item.@prev.set
     @item !last
   ];
+
+  clear: [@Item !last];
 
   cutLast: [
     [empty? ~] "stack is empty" assert
@@ -80,6 +82,27 @@ IntrusiveStack: [{
     ] when
 
     count
+  ];
+
+  reverse: [
+    empty? ~ [
+      next: @last;
+      item: @next.prev;
+      item isNil ~ [
+        @Item Ref @next.@prev.set
+
+        [
+          prev: @item.prev;
+          @next @item.@prev.set
+          prev isNil ~ dup [
+            @item !next
+            @prev !item
+          ] when
+        ] loop
+
+        @item !last
+      ] when
+    ] when
   ];
 
   reverseIter: [{
