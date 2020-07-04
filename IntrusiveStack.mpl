@@ -33,15 +33,18 @@ IntrusiveStack: [{
 
   removeAllIf: [
     body:;
+    count: 0;
 
     [
       empty? [FALSE] [
         last @body call dup [
           cutLast
+          count 1 + !count
         ] [
           item: @last; [item.prev isNil ~] [
             item.prev @body call [
               @item.prev.prev @item.@prev.set
+              count 1 + !count
             ] [
               @item.prev !item
             ] if
@@ -49,13 +52,17 @@ IntrusiveStack: [{
         ] if
       ] if
     ] loop
+
+    count
   ];
 
   removeLastIf: [
     body:;
+    count: 0;
     empty? ~ [
       last @body call [
         cutLast
+        1 !count
       ] [
         item: @last;
 
@@ -65,11 +72,14 @@ IntrusiveStack: [{
               @item.prev !item
             ] [
               @item.prev.prev @item.@prev.set
+              1 !count
             ] if
           ] if
         ] loop
       ] if
     ] when
+
+    count
   ];
 
   reverseIter: [{
