@@ -10,6 +10,12 @@
 #
 # getSchema is a function returning object or reference of the required schema
 Mref: [{
+  INIT: [0nx !data];
+
+  DIE: [];
+
+  ASSIGN: [.data copy !data];
+
   CALL: [
     data getSchema addressToReference @closure isConst [const] when
   ];
@@ -20,6 +26,7 @@ Mref: [{
     ref storageAddress !data
   ];
 
+  virtual SCHEMA_NAME: "Mref";
   virtual getSchema:;
   data: Natx;
 }];
