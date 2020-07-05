@@ -1,3 +1,4 @@
+"control.AsRef" use
 "control.Int32" use
 "control.Nat16" use
 "control.Nat32" use
@@ -30,6 +31,17 @@ winsock2Internal: {
     lpOverlapped: kernel32.OVERLAPPED Ref;
   } Int32 {convention: stdcall;} codeRef];
 
+  FN_GETACCEPTEXSOCKADDRSRef: [{
+    lpOutputBuffer: Natx;
+    dwReceiveDataLength: Nat32;
+    dwLocalAddressLength: Nat32;
+    dwRemoteAddressLength: Nat32;
+    LocalSockaddr: sockaddr AsRef Ref;
+    LocalSockaddrLength: Int32 Ref;
+    RemoteSockaddr: sockaddr AsRef Ref;
+    RemoteSockaddrLength: Int32 Ref;
+  } {} {convention: stdcall;} codeRef];
+
   WSAOVERLAPPED_COMPLETION_ROUTINERef: @WSAOVERLAPPED_COMPLETION_ROUTINERef;
 
   AF_INET: [2];
@@ -42,6 +54,8 @@ winsock2Internal: {
 
   IPPROTO_TCP: [6];
 
+  SD_RECEIVE: [0];
+  SD_SEND: [1];
   SD_BOTH: [2];
 
   SIO_GET_EXTENSION_FUNCTION_POINTER: [0x80000000n32 0x40000000n32 or 0x08000000n32 or 6n32 or];
@@ -61,6 +75,7 @@ winsock2Internal: {
 
   WSAID_ACCEPTEX: [(0xB5367DF1n32 0xCBACn16 0x11CFn16 (0x95n8 0xCAn8 0x00n8 0x80n8 0x5Fn8 0x48n8 0xA1n8 0x92n8))];
   WSAID_CONNECTEX: [(0x25A207B9n32 0xDDF3n16 0x4660n16 (0x8En8 0xE9n8 0x76n8 0xE5n8 0x8Cn8 0x74n8 0x06n8 0x3En8))];
+  WSAID_GETACCEPTEXSOCKADDRS: [(0xB5367DF2n32 0xCBACn16 0x11CFn16 (0x95n8 0xCAn8 0x00n8 0x80n8 0x5Fn8 0x48n8 0xA1n8 0x92n8))];
 
   WSA_IO_PENDING: [997];
 
