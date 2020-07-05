@@ -347,7 +347,7 @@ String: [{
   virtual SCHEMA_NAME: "String";
   chars: Nat8 Array;
 
-  data: [chars.dataBegin];
+  data: [@chars.@dataBegin];
 
   size: [
     chars.getSize 0 = [
@@ -655,6 +655,12 @@ String: [{
       ] if
       i 1 + @i set
     ] while
+    makeZ
+  ];
+
+  resize: [
+    size:;
+    size @chars.resize
     makeZ
   ];
 }];
