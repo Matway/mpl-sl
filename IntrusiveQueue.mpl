@@ -79,15 +79,15 @@ IntrusiveQueue: [{
       @item @body call [
         [
           count 1 + !count
-          next: @item.next;
-          @next isNil [
+          prev: @item;
+          @item.next !item
+          @item isNil [
             @Item !first
-            [@last @item is] "invalid linked list state" assert
+            [@last @prev is] "invalid linked list state" assert
             @Item !last
             TRUE !skip
             FALSE
           ] [
-            @next !item
             @item @body call dup ~ [
               @item !first
             ] when
@@ -113,15 +113,15 @@ IntrusiveQueue: [{
         skip ~ [
           [
             count 1 + !count
-            next: @item.next;
-            @next isNil [
+            prev: @item;
+            @item.next !item
+            @item isNil [
               @Item @lastToKeep.@next.set
-              [@last @item is] "invalid linked list state" assert
+              [@last @prev is] "invalid linked list state" assert
               @lastToKeep !last
               TRUE !skip
               FALSE
             ] [
-              @next !item
               @item @body call dup ~ [
                 @item @lastToKeep.@next.set
               ] when
@@ -138,18 +138,16 @@ IntrusiveQueue: [{
     body:;
     count: 0;
     empty? ~ [
-      @first @body call [
+      item: @first;
+      @item @body call [
         1 !count
         cutFirst
       ] [
-        prev: @first;
-
         [
-          item: @prev.next;
+          prev: @item;
+          @item.next !item
           @item isNil [FALSE] [
-            @item @body call ~ dup [
-              @item !prev
-            ] [
+            @item @body call ~ dup ~ [
               1 !count
               next: @item.next;
               @next @prev.@next.set
@@ -157,7 +155,7 @@ IntrusiveQueue: [{
                 [@last @item is] "invalid linked list state" assert
                 @prev !last
               ] when
-            ] if
+            ] when
           ] if
         ] loop
       ] if
@@ -182,9 +180,10 @@ IntrusiveQueue: [{
           ] when
         ] loop
 
-        [@last @item is] "invalid linked list state" assert
-        @first !last
+        firstItem: @first;
         @item !first
+        [@last @item is] "invalid linked list state" assert
+        @firstItem !last
       ] when
     ] when
   ];
