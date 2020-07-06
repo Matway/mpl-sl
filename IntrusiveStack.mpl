@@ -22,18 +22,7 @@ IntrusiveStack: [{
 
   clear: [@Item !last];
 
-  cutLast: [
-    [empty? ~] "stack is empty" assert
-    @last.prev !last
-  ];
-
-  popLast: [
-    [empty? ~] "stack is empty" assert
-    @last
-    cutLast
-  ];
-
-  removeAllIf: [
+  cutAllIf: [
     body:;
     count: 0;
 
@@ -92,7 +81,12 @@ IntrusiveStack: [{
     count
   ];
 
-  removeLastIf: [
+  cutLast: [
+    [empty? ~] "stack is empty" assert
+    @last.prev !last
+  ];
+
+  cutLastIf: [
     body:;
     count: 0;
     empty? ~ [
@@ -115,6 +109,12 @@ IntrusiveStack: [{
     ] when
 
     count
+  ];
+
+  popLast: [
+    [empty? ~] "stack is empty" assert
+    @last
+    cutLast
   ];
 
   reverse: [

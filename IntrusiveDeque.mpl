@@ -35,69 +35,28 @@ IntrusiveDeque: [{
     @Item !last
   ];
 
-  cutFirst: [
-    [empty? ~] "deque is empty" assert
-    item: @first;
-    @item.next !first
-    @first isNil [
-      [@last @item is] "invalid linked list state" assert
-      @Item !last
-    ] [
-      [@first.prev @item is] "invalid linked list state" assert
-      @Item @first.@prev.set
-    ] if
-  ];
-
-  cutLast: [
-    [empty? ~] "deque is empty" assert
-    prev: @last.prev;
-    @prev isNil [
-      [@first @last is] "invalid linked list state" assert
-      @Item !first
-    ] [
-      [@prev.next @last is] "invalid linked list state" assert
-      @Item @prev.@next.set
-    ] if
-
-    @prev !last
-  ];
-
-  iter: [{
-    item: @first;
-
-    valid: [@item isNil ~];
-    get: [@item];
-    next: [@item.next !item];
-  }];
-
-  popFirst: [
-    [empty? ~] "deque is empty" assert
-    @first
-    cutFirst
-  ];
-
-  popLast: [
-    [empty? ~] "deque is empty" assert
-    @last
-    cutLast
-  ];
-
-  prepend: [
+  cut: [
     item:;
-    next: @first;
-    @Item @item.@prev.set
-    @next @item.@next.set
-    @item !first
-    @next isNil [
-      [@last isNil] "invalid linked list state" assert
-      @item !last
+    prev: @item.prev;
+    next: @item.next;
+    @prev isNil [
+      [@first @item is] "invalid linked list state" assert
+      @next !first
     ] [
-      [@next.prev isNil] "invalid linked list state" assert
-      @item @next.@prev.set
+      [@prev.next @item is] "invalid linked list state" assert
+      @next @prev.@next.set
+    ] if
+
+    @next isNil [
+      [@last @item is] "invalid linked list state" assert
+      @prev !last
+    ] [
+      [@next.prev @item is] "invalid linked list state" assert
+      @prev @next.@prev.set
     ] if
   ];
 
-  removeAllIf: [
+  cutAllIf: [
     body:;
     count: 0;
 
@@ -166,7 +125,20 @@ IntrusiveDeque: [{
     count
   ];
 
-  removeIf: [
+  cutFirst: [
+    [empty? ~] "deque is empty" assert
+    item: @first;
+    @item.next !first
+    @first isNil [
+      [@last @item is] "invalid linked list state" assert
+      @Item !last
+    ] [
+      [@first.prev @item is] "invalid linked list state" assert
+      @Item @first.@prev.set
+    ] if
+  ];
+
+  cutIf: [
     body:;
     count: 0;
     empty? ~ [
@@ -199,7 +171,21 @@ IntrusiveDeque: [{
     count
   ];
 
-  removeLastIf: [
+  cutLast: [
+    [empty? ~] "deque is empty" assert
+    prev: @last.prev;
+    @prev isNil [
+      [@first @last is] "invalid linked list state" assert
+      @Item !first
+    ] [
+      [@prev.next @last is] "invalid linked list state" assert
+      @Item @prev.@next.set
+    ] if
+
+    @prev !last
+  ];
+
+  cutLastIf: [
     body:;
     count: 0;
     empty? ~ [
@@ -231,6 +217,41 @@ IntrusiveDeque: [{
     ] when
 
     count
+  ];
+
+  iter: [{
+    item: @first;
+
+    valid: [@item isNil ~];
+    get: [@item];
+    next: [@item.next !item];
+  }];
+
+  popFirst: [
+    [empty? ~] "deque is empty" assert
+    @first
+    cutFirst
+  ];
+
+  popLast: [
+    [empty? ~] "deque is empty" assert
+    @last
+    cutLast
+  ];
+
+  prepend: [
+    item:;
+    next: @first;
+    @Item @item.@prev.set
+    @next @item.@next.set
+    @item !first
+    @next isNil [
+      [@last isNil] "invalid linked list state" assert
+      @item !last
+    ] [
+      [@next.prev isNil] "invalid linked list state" assert
+      @item @next.@prev.set
+    ] if
   ];
 
   reverse: [

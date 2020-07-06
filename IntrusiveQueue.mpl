@@ -34,42 +34,7 @@ IntrusiveQueue: [{
     @Item !last
   ];
 
-  cutFirst: [
-    [empty? ~] "queue is empty" assert
-    item: @first;
-    @item.next !first
-    @first isNil [
-      [@last @item is] "invalid linked list state" assert
-      @Item !last
-    ] when
-  ];
-
-  iter: [{
-    item: @first;
-
-    valid: [@item isNil ~];
-    get: [@item];
-    next: [@item.next !item];
-  }];
-
-  popFirst: [
-    [empty? ~] "queue is empty" assert
-    @first
-    cutFirst
-  ];
-
-  prepend: [
-    item:;
-    next: @first;
-    @next @item.@next.set
-    @item !first
-    @next isNil [
-      [@last isNil] "invalid linked list state" assert
-      @item !last
-    ] when
-  ];
-
-  removeAllIf: [
+  cutAllIf: [
     body:;
     count: 0;
 
@@ -134,7 +99,17 @@ IntrusiveQueue: [{
     count
   ];
 
-  removeIf: [
+  cutFirst: [
+    [empty? ~] "queue is empty" assert
+    item: @first;
+    @item.next !first
+    @first isNil [
+      [@last @item is] "invalid linked list state" assert
+      @Item !last
+    ] when
+  ];
+
+  cutIf: [
     body:;
     count: 0;
     empty? ~ [
@@ -162,6 +137,31 @@ IntrusiveQueue: [{
     ] when
 
     count
+  ];
+
+  iter: [{
+    item: @first;
+
+    valid: [@item isNil ~];
+    get: [@item];
+    next: [@item.next !item];
+  }];
+
+  popFirst: [
+    [empty? ~] "queue is empty" assert
+    @first
+    cutFirst
+  ];
+
+  prepend: [
+    item:;
+    next: @first;
+    @next @item.@next.set
+    @item !first
+    @next isNil [
+      [@last isNil] "invalid linked list state" assert
+      @item !last
+    ] when
   ];
 
   reverse: [
