@@ -96,21 +96,19 @@ IntrusiveStack: [{
     body:;
     count: 0;
     empty? ~ [
-      @last @body call [
+      item: @last;
+      @item @body call [
         1 !count
         cutLast
       ] [
-        next: @last;
-
         [
-          item: @next.prev;
+          next: @item;
+          @item.prev !item
           @item isNil [FALSE] [
-            @item @body call ~ dup [
-              @item !next
-            ] [
+            @item @body call ~ dup ~ [
               1 !count
               @item.prev @next.@prev.set
-            ] if
+            ] when
           ] if
         ] loop
       ] if
