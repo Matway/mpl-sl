@@ -23,7 +23,7 @@ Mref: [{
   set: [
     ref: getSchema Ref;
     !ref
-    ref storageAddress !data
+    @ref storageAddress !data
   ];
 
   virtual SCHEMA_NAME: "Mref";
