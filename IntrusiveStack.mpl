@@ -6,13 +6,13 @@
 "control.while" use
 
 # Intrusive singly linked list
-# Requires item objects to have field 'next' of type '[Item] Mref'
+# Requires item objects to have field 'prev' of type '[Item] Mref'
 IntrusiveStack: [{
   INIT: [clear];
 
   DIE: [];
 
-  empty?: [last isNil];
+  empty?: [@last isNil];
 
   append: [
     item:;
@@ -37,23 +37,57 @@ IntrusiveStack: [{
     body:;
     count: 0;
 
-    [
-      empty? [FALSE] [
-        last @body call dup [
-          cutLast
+    empty? ~ [
+      item: @last;
+      skip: FALSE;
+      @item @body call [
+        [
           count 1 + !count
-        ] [
-          item: @last; [item.prev isNil ~] [
-            item.prev @body call [
-              @item.prev.prev @item.@prev.set
-              count 1 + !count
+          @item.prev !item
+          @item isNil [
+            @Item !last
+            TRUE !skip
+            FALSE
+          ] [
+            @item @body call dup ~ [
+              @item !last
+            ] when
+          ] if
+        ] loop
+      ] when
+
+      [skip ~] [
+        firstToKeep: @item;
+
+        [
+          @item.prev !item
+          @item isNil [
+            TRUE !skip
+            FALSE
+          ] [
+            @item @body call ~ dup [
+              @item !firstToKeep
+            ] when
+          ] if
+        ] loop
+
+        skip ~ [
+          [
+            count 1 + !count
+            @item.prev !item
+            @item isNil [
+              @Item @firstToKeep.@prev.set
+              TRUE !skip
+              FALSE
             ] [
-              @item.prev !item
+              @item @body call dup ~ [
+                @item @firstToKeep.@prev.set
+              ] when
             ] if
-          ] while
-        ] if
-      ] if
-    ] loop
+          ] loop
+        ] when
+      ] while
+    ] when
 
     count
   ];
@@ -62,19 +96,20 @@ IntrusiveStack: [{
     body:;
     count: 0;
     empty? ~ [
-      last @body call [
-        cutLast
+      @last @body call [
         1 !count
+        cutLast
       ] [
-        item: @last;
+        next: @last;
 
         [
-          item.prev isNil [FALSE] [
-            item.prev @body call ~ dup [
-              @item.prev !item
+          item: @next.prev;
+          @item isNil [FALSE] [
+            @item @body call ~ dup [
+              @item !next
             ] [
-              @item.prev.prev @item.@prev.set
               1 !count
+              @item.prev @next.@prev.set
             ] if
           ] if
         ] loop
@@ -86,15 +121,15 @@ IntrusiveStack: [{
 
   reverse: [
     empty? ~ [
-      next: @last;
-      item: @next.prev;
-      item isNil ~ [
-        @Item Ref @next.@prev.set
+      item: @last.prev;
+      @item isNil ~ [
+        next: @last;
+        @Item @next.@prev.set
 
         [
           prev: @item.prev;
           @next @item.@prev.set
-          prev isNil ~ dup [
+          @prev isNil ~ dup [
             @item !next
             @prev !item
           ] when
@@ -108,7 +143,7 @@ IntrusiveStack: [{
   reverseIter: [{
     item: @last;
 
-    valid: [item isNil ~];
+    valid: [@item isNil ~];
     get: [@item];
     next: [@item.prev !item];
   }];
