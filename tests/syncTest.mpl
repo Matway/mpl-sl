@@ -6,14 +6,73 @@
 "control.when" use
 
 "sync/sync.connectTcp" use
+"sync/sync.getTime" use
 "sync/sync.ipv4ToString" use
 "sync/sync.listenTcp" use
+"sync/sync.sleepFor" use
 "sync/sync.spawn" use
+"sync/sync.yield" use
 
 syncTest: [];
 
 [
+  time0: getTime;
+  time1: getTime;
+  [time1 time0 < ~] "getTime returned non-monotonic values" ensure
+] call
+
+[
   [0xC0A86465n32 ipv4ToString "192.168.100.101" =] "ipv4ToString returned unexpected string" ensure
+] call
+
+# Test that sleepFor does not block in canceled contexts
+[
+  stage: 0;
+  context: {stage: @stage; CALL: [
+    0.01 sleepFor
+    1 @stage set
+  ];} () spawn;
+
+  @context.cancel
+  yield
+  [stage 1 =] "sleepFor blocked in the canceled context" ensure
+] call
+
+# Test that sleepFor blocks and cancels properly
+[
+  stage: 0;
+  context: {stage: @stage; CALL: [
+    1000.0 sleepFor
+    1 @stage set
+  ];} () spawn;
+
+  yield
+  [stage 0 =] "sleepFor did not block" ensure
+  @context.cancel
+  [stage 0 =] "sleepFor canceled immediately" ensure
+  yield
+  [stage 1 =] "sleepFor did not cancel" ensure
+] call
+
+# Test that sleepFor wakes context in the correct order
+[
+  stage: 0;
+  context0: {stage: @stage; CALL: [
+    0.01 sleepFor
+    [stage 1 =] "sleep woke contexts in the wrong order" ensure
+    2 @stage set
+  ];} () spawn;
+
+  context1: {stage: @stage; CALL: [
+    0.0 sleepFor
+    [stage 0 =] "sleep woke contexts in the wrong order" ensure
+    1 @stage set
+  ];} () spawn;
+
+  context2: {stage: @stage; CALL: [
+    0.02 sleepFor
+    [stage 2 =] "sleep woke contexts in the wrong order" ensure
+  ];} () spawn;
 ] call
 
 [
@@ -61,6 +120,6 @@ syncTest: [];
     result "" = ~ [("TcpConnection.shutdown failed, " result LF) printList "" failProc] when
   ];
 
-  clientContext: @client () spawn;
   serverContext: @server () spawn;
+  clientContext: @client () spawn;
 ] call
