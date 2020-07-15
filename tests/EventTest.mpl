@@ -59,7 +59,6 @@ EventTest: [];
 
     yield
     stage 0 = [ # Wait blocked, otherwise skip the test
-      @stage storageAddress v:; # Workaround for compiler bug
       @event.set
       [event.get] "Event.set did not set the state" ensure
       [stage 0 =] "Event.set woke contexts immediately" ensure
@@ -119,7 +118,6 @@ EventTest: [];
 
     yield
     stage 0 = [ # Wait blocked, otherwise skip the test
-      @stage storageAddress v:; # Workaround for compiler bug
       @event.wake
       [event.get ~] "Event.wake did set the state" ensure
       [stage 0 =] "Event.wake woke contexts immediately" ensure
@@ -147,7 +145,6 @@ EventTest: [];
 
     yield
     stage 0 = [ # Wait blocked, otherwise skip the test
-      @stage storageAddress v:; # Workaround for compiler bug
       @event.wakeOne
       [event.get ~] "Event.wakeOne did set the state" ensure
       [stage 0 =] "Event.wakeOne woke contexts immediately" ensure

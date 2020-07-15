@@ -43,7 +43,7 @@ ContextGroup: [{
       @data @group.@fibers.append
 
       [
-        in: @creationData.@in creationData.@in isMovable [move copy] when;
+        in: @creationData.@in dup isMovable [move copy] when;
         @data.@fiber @resumingFibers.append
         @creationData.@waitingFiber.switchTo
 
@@ -66,8 +66,6 @@ ContextGroup: [{
     ];
 
     creationData: {group: @self; in: @in; waitingFiber: @currentFiber;};
-    @self storageAddress drop # Workaround for compiler bug
-    @creationData.@in dup isVirtual ~ [storageAddress] when drop # Workaround for compiler bug
     creationData storageAddress @contextGroupFunc spawnFiber
   ];
 

@@ -92,7 +92,7 @@ makeContext: [
     @data @creationData.!data
 
     [
-      in: @creationData.@in creationData.@in isMovable [move copy] when;
+      in: @creationData.@in dup isMovable [move copy] when;
       @data.@fiber @resumingFibers.append
       @creationData.@waitingFiber.switchTo
 
@@ -128,7 +128,6 @@ makeContext: [
   ];
 
   creationData: {in: @in; waitingFiber: @currentFiber; data: @Out Context.Data Ref;};
-  @creationData.@in dup isVirtual ~ [storageAddress] when drop # Workaround for compiler bug
   creationData storageAddress @contextFunc spawnFiber
 
   context: @Out Context;

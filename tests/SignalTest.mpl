@@ -62,7 +62,6 @@ SignalTest: [];
 
   yield
   stage 0 = [ # Wait blocked, otherwise skip the test
-    @stage storageAddress v:; # Workaround for compiler bug
     @signal.wake
     [stage 0 =] "Signal.wake woke contexts immediately" ensure
     yield
@@ -102,7 +101,6 @@ SignalTest: [];
 
   yield
   stage 0 = [ # Wait blocked, otherwise skip the test
-    @stage storageAddress v:; # Workaround for compiler bug
     @signal.wakeOne
     [stage 0 =] "Signal.wakeOne woke contexts immediately" ensure
     yield
