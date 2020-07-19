@@ -133,8 +133,6 @@ spawn: [makeContext];
 # out:
 #   NONE
 yield: [
-  resumingFibers.empty? ~ [
-    @currentFiber @resumingFibers.append
-    dispatch
-  ] when
+  @currentFiber @resumingFibers.append
+  dispatch
 ];

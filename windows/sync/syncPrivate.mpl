@@ -59,6 +59,8 @@ defaultCancelFunc: {data: Natx;} {} {} codeRef; [
 ] !defaultCancelFunc
 
 dispatch: [
+  fiber: FiberData Ref;
+
   [
     timeout: kernel32.INFINITE;
     timers.empty? ~ [
@@ -92,15 +94,17 @@ dispatch: [
         }];
 
         syncOverlapped: entry.lpOverlapped storageAddress SyncOverlapped addressToReference;
-        syncOverlapped.fiber currentFiber is ~ [
-          @syncOverlapped.@fiber.switchTo
-        ] when
+        @syncOverlapped.@fiber !fiber
       ] if
     ] [
-      @resumingFibers.popFirst.switchTo
+      @resumingFibers.popFirst !fiber
       FALSE
     ] if
   ] loop
+
+  @fiber @currentFiber is ~ [
+    @fiber.switchTo
+  ] when
 ];
 
 emptyCancelFunc: {data: Natx;} {} {} codeRef; [
