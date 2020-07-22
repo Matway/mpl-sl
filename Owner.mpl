@@ -2,8 +2,11 @@
 "control.assert" use
 "control.pfunc" use
 "control.when" use
-"memory.deleteWith" use
-"memory.new" use
+"memory.mplFree" use
+"memory.mplMalloc" use
+
+objectSize: [storageSize];
+objectSize: ["SIZE" has] [.SIZE] pfunc;
 
 OwnerWithDestructor: [{
   virtual OWNER: ();
@@ -12,43 +15,65 @@ OwnerWithDestructor: [{
   virtual elementType: Ref;
   memory: @elementType Ref;
 
-  assigned: [
-    addr: memory storageAddress;
-    addr 0nx = ~
-  ];
-
-  init: [
-    [assigned ~] "Can init only empty pointers!" assert
-    new !memory
-  ];
-
-  initDerived: [
-    [assigned ~] "Can init only empty pointers!" assert
-    new storageAddress @elementType addressToReference !memory
-  ];
-
-  get: [
-    [assigned] "Pointer is null!" assert
-    @memory
-  ];
-
-  clear: [
-    assigned [
-      @memory @destructor deleteWith
-      @elementType Ref !memory
-    ] when
-  ];
-
-  release: [clear];
-
   INIT: [
     @elementType Ref !memory
   ];
 
   DIE: [
-    assigned [
-      @memory @destructor deleteWith
+    valid? [
+      @memory @destructor call @memory storageAddress mplFree
     ] when
+  ];
+
+  valid?: [
+    addr: @memory storageAddress;
+    addr 0nx = ~
+  ];
+
+  clear: [
+    valid? [
+      @memory @destructor call @memory storageAddress mplFree
+      @elementType Ref !memory
+    ] when
+  ];
+
+  get: [
+    [valid?] "invalid Owner" assert
+    @memory
+  ];
+
+  lower: [
+    [valid?] "invalid Owner" assert
+    base: @memory.base;
+    @elementType Ref !memory
+    result: @base Owner;
+    @base @result.!memory
+    @result
+  ];
+
+  init: [
+    [valid? ~] "Owner is already set" assert
+    object:;
+    data: @object storageSize mplMalloc @object addressToReference;
+    @data manuallyInitVariable
+    @object move @data set
+    @data !memory
+  ];
+
+  initDerived: [
+    [valid? ~] "Owner is already set" assert
+    object:;
+    data: @object storageSize mplMalloc @object addressToReference;
+    @data manuallyInitVariable
+    @object move @data set
+    @data storageAddress @elementType addressToReference !memory
+  ];
+
+  release: [
+    [valid?] "invalid Owner" assert
+    result: @memory;
+    @elementType Ref !memory
+    @result
   ];
 }];
 
@@ -56,7 +81,7 @@ Owner: [
   [
     x:;
     @x manuallyDestroyVariable
-    @x storageSize
+    @x objectSize
   ] OwnerWithDestructor
 ];
 
@@ -84,9 +109,9 @@ ownerDerived: [
 
 getHeapUsedSize: ["OWNER" has] [
   arg:;
-  arg.assigned [
+  arg.valid? [
     i: 0;
-    arg.elementType storageSize
+    arg.elementType objectSize
     arg.get getHeapUsedSize +
   ] [
     0nx

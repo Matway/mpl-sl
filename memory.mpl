@@ -120,27 +120,6 @@ getHeapUsedSize: [isCombined] [
   result
 ] pfunc;
 
-new: [
-  elementIsMoved: isMoved;
-  element:;
-  result: element storageSize mplMalloc @element addressToReference;
-  @result manuallyInitVariable
-  @element elementIsMoved moveIf @result set
-  @result
-];
-
-delete: [
-  element:;
-  @element manuallyDestroyVariable
-  @element storageSize @element storageAddress mplFree
-];
-
-deleteWith: [
-  destructor:;
-  element:;
-  @element @destructor call @element storageAddress mplFree
-];
-
 debugMemory: [FALSE];
 debugMemory: [DEBUG_MEMORY][TRUE] pfunc;
 
