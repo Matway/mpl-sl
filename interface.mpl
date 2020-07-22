@@ -1,6 +1,8 @@
 "control.Natx" use
 "control.Ref" use
 "control.drop" use
+"control.dup" use
+"control.isVirtual" use
 "control.pfunc" use
 "control.when" use
 "control.while" use
@@ -15,7 +17,7 @@ cloneField: [
 ];
 
 interface: [
-  virtual methods: call Ref;
+  virtual methods: call dup isVirtual ~ [Ref] when;
   index: 0;
   inputIndex: 0;
 
