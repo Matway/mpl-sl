@@ -13,6 +13,7 @@
 "control.Ref" use
 "control.asView" use
 "control.assert" use
+"control.drop" use
 "control.failProc" use
 "control.isNil" use
 "control.sequence" use
