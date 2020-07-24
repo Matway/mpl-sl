@@ -111,6 +111,12 @@ Variant: [{
     @memory storageAddress index @typeList @ addressToReference
   ];
 
+  assign: [
+    index:;
+    index setTag
+    index get set
+  ];
+
   visitInternal: [
     visitBranches: visitIndex:;;
     visitIndex visitBranches fieldCount = [] [
