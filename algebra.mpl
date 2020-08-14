@@ -3,6 +3,7 @@
 "control.Real32" use
 "control.Real64" use
 "control.pfunc" use
+"control.sqr" use
 "control.times" use
 "conventions.cdecl" use
 
@@ -340,8 +341,21 @@ length: [vector?] [
 
 unit: [vector?] [
   v:;
-  one: 1 0 v @ cast;
-  v one v length / *
+  ONE: [1 0 v @ cast];
+  v ONE v length / *
+] pfunc;
+
+unitChecked: [vector?] [
+  v:;
+  ZERO:      [0 0      v @ cast];
+  ONE:       [1 0      v @ cast];
+  THRESHOLD: [1.0e-6 0 v @ cast];
+  squaredLengthValue: v squaredLength;
+  squaredLengthValue THRESHOLD sqr < [
+    (ONE v fieldCount 1 - [ZERO] times)
+  ] [
+    v ONE squaredLengthValue sqrt / *
+  ] if
 ] pfunc;
 
 neg: [vector?] [v:; (v fieldCount [i v @ neg] times)] pfunc;
