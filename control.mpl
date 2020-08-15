@@ -556,6 +556,15 @@ applyIter: [{
   next:  [@applyIterSource.next];
 }];
 
+enumerate: [{
+  enumerateSource: toIter;
+  enumerateIndex: 0;
+
+  valid: [@enumerateSource.valid];
+  get:   [{key: enumerateIndex copy; value: @enumerateSource.get;}];
+  next:  [@enumerateSource.next enumerateIndex 1 + !enumerateIndex];
+}];
+
 filterIter: [{
   filterIterSource: filterIterBody:; toIter;
 
