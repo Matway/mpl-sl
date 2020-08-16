@@ -707,7 +707,7 @@ print: ["" same ~] [toString print] pfunc;
 
 print: ["STRING" has] [
   string:;
-  (string.data) "%s\00" printf
+  (string.data) "%s\00" printf drop
 ] pfunc;
 
 addLog: [

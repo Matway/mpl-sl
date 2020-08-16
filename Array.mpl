@@ -4,6 +4,7 @@
 "control.Ref" use
 "control.asView" use
 "control.assert" use
+"control.each" use
 "control.pfunc" use
 "control.when" use
 "control.while" use

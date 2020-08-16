@@ -16,7 +16,7 @@ Real32: [v: 0.0r32 dynamic; @v];
 Real64: [v: 0.0r64 dynamic; @v];
 Text:   [v: ""; @v];
 
-{format: Text;} () {variadic: TRUE; convention: cdecl;} "printf" importFunction # need for assert
+{format: Text;} Int32 {variadic: TRUE; convention: cdecl;} "printf" importFunction # need for assert
 {result: 0;} () {convention: cdecl;} "exit" importFunction
 
 overload failProc: [
@@ -27,7 +27,7 @@ overload failProc: [
     trace storageAddress 0nx = [
       FALSE
     ] [
-      (trace.name trace.line copy trace.column copy) " in %s at %i:%i\n\00" printf
+      (trace.name trace.line copy trace.column copy) " in %s at %i:%i\n\00" printf drop
       trace.prev trace addressToReference !trace
       TRUE
     ] if
@@ -65,13 +65,13 @@ print: ["" same] [
   text isDynamicText [
     i: 0nx dynamic; [
       i text textSize = [FALSE] [
-        (text storageAddress i + Nat8 addressToReference copy) "%c\00" printf
+        (text storageAddress i + Nat8 addressToReference copy) "%c\00" printf drop
         i 1nx + !i
         TRUE
       ] if
     ] loop
   ] [
-    (text "\00" &) "%s\00" printf
+    (text "\00" &) "%s\00" printf drop
   ] if
 ] pfunc;
 
