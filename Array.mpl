@@ -2,7 +2,7 @@
 "control.@" use
 "control.Natx" use
 "control.Ref" use
-"control.asView" use
+"control.asIndexable" use
 "control.assert" use
 "control.each" use
 "control.pfunc" use
@@ -232,7 +232,7 @@ makeArrayObject: [{
   ];
 
   appendAll: [
-    view: asView;
+    view: asIndexable;
     index: size;
     size view.size + enlarge
     i: 0; [i view.size <] [
@@ -343,14 +343,14 @@ makeArray: [
   listIsMoved: isMoved;
 
   list:;
-  view: list asView;
+  indexable: list asIndexable;
   list "ARRAY_VIEW" has [FALSE @listIsMoved set] when
-  [view.size 0 >] "List is empty!" assert
-  result: 0 @view @ newVarOfTheSameType Array;
+  [indexable.size 0 >] "List is empty!" assert
+  result: 0 @indexable @ newVarOfTheSameType Array;
   i: 0 dynamic;
   [
-    i view.size < [
-      i @view @ listIsMoved moveIf @result.pushBack
+    i indexable.size < [
+      i @indexable @ listIsMoved moveIf @result.pushBack
       i 1 + @i set TRUE
     ] &&
   ] loop
