@@ -22,7 +22,7 @@ HashTable: [
 
     Node: [{
       key: key newVarOfTheSameType;
-      value: value newVarOfTheSameType;
+      value: @value newVarOfTheSameType;
     }];
 
     data: Node Array Array;
