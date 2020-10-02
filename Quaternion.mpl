@@ -3,6 +3,8 @@
 "algebra.dot" use
 "algebra.lerp" use
 "algebra.neg" use
+"control.Ref" use
+"control.each" use
 "control.pfunc" use
 "control.when" use
 
@@ -51,6 +53,11 @@ fieldCount: ["QUATERNION" has] [.@entries fieldCount] pfunc;
     3 q0 @ 3 q1 @ * 0 q0 @ 0 q1 @ * - 1 q0 @ 1 q1 @ * - 2 q0 @ 2 q1 @ * -
   ) quaternion
 ] pfunc;
+
+quaternionCast: [
+  q: virtual Schema: Ref;;
+  q.entries [@Schema cast] (each) quaternion
+];
 
 squaredLength: ["QUATERNION" has] [
   q:;
