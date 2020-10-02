@@ -17,9 +17,8 @@
 "control.when" use
 
 pose: [
-  position0: orientation0: ;;
-  position0 Real32 3 Vector same ~ [0 .POSITION_TYPE_MISMATCH] when
-  orientation0 Real32 Quaternion same ~ [0 .ORIENTATION_TYPE_MISMATCH] when
+  position0: orientation0:;;
+
   {
     virtual POSE: ();
     position: position0 copy;
