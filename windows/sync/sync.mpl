@@ -34,7 +34,6 @@ canceled?: [
 #   result (String) - empty on success, error message on failure
 connectTcp: [makeTcpConnection];
 
-
 # Get time passed since sync subsystem was initialized, in seconds
 # in:
 #   NONE

@@ -475,9 +475,9 @@ String: [{
       digit: shifted rounded /;
 
       digit 10n64 < [
-        digit 0n32 cast 48n32 + catAsciiSymbolCodeNZ  # '0'
+        digit 0n32 cast 48n32 + catAsciiSymbolCodeNZ # '0'
       ] [
-        digit 0n32 cast 55n32 + catAsciiSymbolCodeNZ  # 'A'-10
+        digit 0n32 cast 55n32 + catAsciiSymbolCodeNZ # 'A'-10
       ] if
 
       shifted digit rounded * - @shifted set

@@ -42,11 +42,11 @@ Pool: [
     ];
 
     getAddressByIndex: [
-      Natx cast entrySize * data storageAddress +
+      Natx cast entrySize * @data storageAddress +
     ];
 
     getTailAddressByIndex: [
-      Natx cast dataSize Natx cast entrySize * + data storageAddress +
+      Natx cast dataSize Natx cast entrySize * + @data storageAddress +
     ];
 
     elementAt: [
@@ -146,11 +146,11 @@ Pool: [
           newTailSize: newDataSize 3n32 rshift;
 
           newExactAllocatedMemSize: entrySize newDataSize Natx cast * newTailSize Natx cast +;
-          newExactAllocatedMemSize exactAllocatedMemSize data storageAddress mplRealloc @elementSchema addressToReference !data
+          newExactAllocatedMemSize exactAllocatedMemSize @data storageAddress mplRealloc @elementSchema addressToReference !data
           newExactAllocatedMemSize @exactAllocatedMemSize set
 
           getNewTailAddressByIndex: [
-            Natx cast newDataSize Natx cast entrySize * + data storageAddress +
+            Natx cast newDataSize Natx cast entrySize * + @data storageAddress +
           ];
 
           newValidAt: [
@@ -206,14 +206,14 @@ Pool: [
 
     INIT: [
       @elementSchema Ref !data
-      0   dynamic @dataSize set
-      -1  dynamic @firstFree set
+      0  !dataSize
+      -1 !firstFree
     ];
 
     DIE: [
       clear
-      data isNil ~ [
-        exactAllocatedMemSize data storageAddress mplFree
+      @data isNil ~ [
+        exactAllocatedMemSize @data storageAddress mplFree
       ] when
     ];
   }
