@@ -7,35 +7,32 @@
 "control.times" use
 "conventions.cdecl" use
 
-PI: [3.14159265358979323r32];
+PI:   [3.14159265358979324r32];
+PI64: [3.14159265358979324];
+
 Vector: [array];
 Matrix: [rowCount:; Vector rowCount Vector];
 
 Natx storageSize 8nx = [
   {arg: Real32;} Real32 {convention: cdecl;} "acosf" importFunction
-  {arg: Real64;} Real64 {convention: cdecl;} "acosl" importFunction
+  {arg: Real64;} Real64 {convention: cdecl;} "acos"  importFunction
   acos: [Real32 same] [acosf] pfunc;
-  acos: [Real64 same] [acosl] pfunc;
 
   {arg: Real32;} Real32 {convention: cdecl;} "asinf" importFunction
-  {arg: Real64;} Real64 {convention: cdecl;} "asinl" importFunction
+  {arg: Real64;} Real64 {convention: cdecl;} "asin"  importFunction
   asin: [Real32 same] [asinf] pfunc;
-  asin: [Real64 same] [asinl] pfunc;
 
   {arg: Real32;} Real32 {convention: cdecl;} "tanf" importFunction
-  {arg: Real64;} Real64 {convention: cdecl;} "tanl" importFunction
+  {arg: Real64;} Real64 {convention: cdecl;} "tan"  importFunction
   tan: [Real32 same] [tanf] pfunc;
-  tan: [Real64 same] [tanl] pfunc;
 
   {arg: Real32;} Real32 {convention: cdecl;} "atanf" importFunction
-  {arg: Real64;} Real64 {convention: cdecl;} "atanl" importFunction
+  {arg: Real64;} Real64 {convention: cdecl;} "atan"  importFunction
   atan: [Real32 same] [atanf] pfunc;
-  atan: [Real64 same] [atanl] pfunc;
 
   {argy: Real32; argx: Real32;} Real32 {convention: cdecl;} "atan2f" importFunction
-  {argy: Real64; argx: Real64;} Real64 {convention: cdecl;} "atan2l" importFunction
+  {argy: Real64; argx: Real64;} Real64 {convention: cdecl;} "atan2"  importFunction
   atan2: [Real32 same] [atan2f] pfunc;
-  atan2: [Real64 same] [atan2l] pfunc;
 ] [
   {arg: Real64;} Real64 {convention: cdecl;} "acos" importFunction
   acosFunc: @acos;
@@ -385,12 +382,8 @@ trans: [matrix?] [
 ] pfunc;
 
 lerp: [
-  f: copy;
-  v1:;
-  v0:;
-  v0 1 f cast f - *
-  v1 f *
-  +
+  v0: v1: f:;;;
+  v1 v0 - f * v0 +
 ];
 
 rotationMatrix: [
