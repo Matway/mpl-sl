@@ -192,12 +192,12 @@ condImpl: [
   condControlVar:;
 
   condIndex condFunctionList fieldCount 1 - = [
-    condIndex condFunctionList @ call
+    condIndex @condFunctionList @ call
   ] [
     @condControlVar condIndex condFunctionList @ call [
-      condIndex 1 + condFunctionList @ call
+      condIndex 1 + @condFunctionList @ call
     ] [
-      @condControlVar condFunctionList condIndex 2 + condImpl
+      @condControlVar @condFunctionList condIndex 2 + condImpl
     ] if
   ] if
 ];
