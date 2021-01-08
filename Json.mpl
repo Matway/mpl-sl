@@ -39,7 +39,7 @@ JSON: [{
   mem3: 0nx dynamic;
 
   impl: [
-    @self storageAddress addrAsJSONImpl
+    @self storageAddress addrAsJSONImpl @self isConst [const] when
   ];
 
   getTag:    [impl.@data.getTag];
