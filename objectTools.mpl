@@ -33,7 +33,7 @@ insertField: [
     ] [] uif
 
     insertField_loopIndex @insertField_object fieldCount < [
-      insertField_loopIndex @insertField_object unwrapField @insertField_object insertField_loopIndex fieldName def
+      insertField_loopIndex @insertField_object insertField_objectIsMoved moveIf unwrapField @insertField_object insertField_loopIndex fieldName def
       insertField_loopIndex 1 static + !insertField_loopIndex
       @insertField_uloopBody ucall
     ] [
