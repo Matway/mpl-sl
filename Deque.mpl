@@ -1,9 +1,9 @@
 "Array.Array" use
 "control.Ref" use
 "control.assert" use
-"control.drop" use
-"control.each" use
-"control.pfunc" use
+"control.dup" use
+"control.isAutomatic" use
+"control.set" use
 "control.times" use
 "control.when" use
 
@@ -51,7 +51,7 @@ Deque: [{
   ];
 
   at: [
-    copy index:;
+    index:;
     index head.getSize < [
       head.getSize index - 1 - @head.at
     ] [
@@ -68,12 +68,12 @@ Deque: [{
     swapCount @to.resize
 
     swapCount [
-      i @from.at move
+      i @from.at dup isAutomatic ~ [const] when
       swapCount 1 - i - @to.at set
     ] times
 
     from.getSize swapCount - [
-      i swapCount + @from.at move
+      i swapCount + @from.at dup isAutomatic ~ [const] when
       i @from.at set
     ] times
 

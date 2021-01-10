@@ -4,8 +4,12 @@
 "control.Ref" use
 "control.asIndexable" use
 "control.assert" use
+"control.dup" use
 "control.each" use
+"control.isAutomatic" use
+"control.new" use
 "control.pfunc" use
+"control.set" use
 "control.when" use
 "control.while" use
 "memory.mplFree" use
@@ -15,7 +19,7 @@ makeArrayRangeRaw: [{
   virtual RANGE: ();
   virtual ARRAY_RANGE: ();
   dataBegin:;
-  dataSize: copy;
+  dataSize: new;
   virtual elementType: @dataBegin Ref;
   virtual elementSize: @dataBegin storageSize;
   @dataBegin storageAddress @elementType addressToReference !dataBegin #dynamize
@@ -25,7 +29,7 @@ makeArrayRangeRaw: [{
   ];
 
   at: [
-    copy index:;
+    index:;
     index 0i32 same ~ [0 .ONLY_I32_ALLOWED] when
     [index 0 < ~ [index dataSize <] &&] "Index is out of range!" assert
     getBufferBegin index Natx cast elementSize * + @elementType addressToReference
@@ -40,7 +44,7 @@ makeArrayRangeRaw: [{
     {
       virtual elementType: @elementType Ref;
       getBufferBegin: getBufferBegin elementType storageSize newIndex Natx cast * +;
-      size: newSize copy;
+      size: newSize new;
 
       at: [Natx cast elementType storageSize * getBufferBegin + @elementType addressToReference];
 
@@ -49,28 +53,28 @@ makeArrayRangeRaw: [{
   ];
 
   getSize: [
-    dataSize copy
+    dataSize new
   ];
 
   heapSortWithComparator: [
     comparator:;
 
     swap: [
-      copy i1:; copy i2:;
+      i1:; i2:;
       i1ref: i1 at;
       i2ref: i2 at;
-      tmp: @i1ref move copy;
-      @i2ref move @i1ref set
-      @tmp move @i2ref set
+      tmp: @i1ref dup isAutomatic ~ [const] when new;
+      @i2ref dup isAutomatic ~ [const] when @i1ref set
+      @tmp dup isAutomatic ~ [const] when @i2ref set
     ];
 
     pushDown: [
-      copy index:;
+      index: new;
       [
         left: index 2 * 1 +;
         right: left 1 +;
 
-        max: index copy;
+        max: index new;
         left  heapSize < [max at left  at @comparator call] && [left  @max set] when
         right heapSize < [max at right at @comparator call] && [right @max set] when
         max index = ~ [
@@ -80,14 +84,14 @@ makeArrayRangeRaw: [{
       ] loop
     ];
 
-    heapSize: dataSize copy;
+    heapSize: dataSize new;
     i: dataSize 1 + 2 /;
     [i 0 >] [
       i 1 - @i set
       i pushDown
     ] while
 
-    i: dataSize copy;
+    i: dataSize new;
     [i 1 >] [
       i 1 - @i set
       i 0 swap
@@ -114,7 +118,7 @@ makeArrayRange: [
 ];
 
 makeArrayRange: ["ARRAY_RANGE" has] [
-  copy
+  new
 ] pfunc;
 
 makeArrayRange: ["ARRAY" has] [
@@ -123,8 +127,8 @@ makeArrayRange: ["ARRAY" has] [
 
 makeSubRange: [
   makeArrayRange arg:;
-  copy rangeEndIndex:;
-  copy rangeBeginIndex:;
+  rangeEndIndex:;
+  rangeBeginIndex:;
   [0 rangeBeginIndex > ~] "Invalid subrange, 0>begin!" assert
   [rangeBeginIndex rangeEndIndex > ~] "Invalid subrange, begin>end!" assert
   [rangeEndIndex arg.dataSize > ~] "Invalid subrange, end>size!" assert
@@ -132,7 +136,7 @@ makeSubRange: [
 ];
 
 makeArrayObject: [{
-  virtual memoryDebugObject: copy;
+  virtual memoryDebugObject: new;
 
   virtual CONTAINER: ();
   virtual ARRAY: ();
@@ -148,14 +152,14 @@ makeArrayObject: [{
   ];
 
   at: [
-    copy index:;
+    index:;
     index 0i32 same ~ [0 .ONLY_I32_ALLOWED] when
     [index 0 < ~ [index dataSize <] &&] "Index is out of range!" assert
     getBufferBegin index Natx cast elementSize * + @elementType addressToReference
   ];
 
   size: [
-    dataSize copy
+    dataSize new
   ];
 
   view: [
@@ -164,7 +168,7 @@ makeArrayObject: [{
       virtual SCHEMA_NAME: "ArrayView";
       virtual elementType: @elementType Ref;
       dataBegin: @dataBegin storageAddress @elementType storageSize newIndex Natx cast * + @elementType addressToReference;
-      size: newSize copy;
+      size: newSize new;
 
       at: [Natx cast @elementType storageSize * @dataBegin storageAddress + @elementType addressToReference];
 
@@ -173,12 +177,12 @@ makeArrayObject: [{
   ];
 
   erase: [
-    copy index:;
+    index:;
     index 0i32 same ~ [0 .ONLY_I32_ALLOWED] when
     [index 0 < ~ [index dataSize <] &&] "Index is out of range!" assert
 
     index getSize 1 - < [
-      last move index at set
+      last dup isAutomatic ~ [const] when index at set
     ] when
 
     popBack
@@ -195,7 +199,7 @@ makeArrayObject: [{
     index shrink
   ];
 
-  getSize: [dataSize copy];
+  getSize: [dataSize new];
 
   getArrayRange: [
     dataSize @dataBegin storageAddress @elementType addressToReference makeArrayRangeRaw
@@ -206,7 +210,7 @@ makeArrayObject: [{
   ];
 
   setReserve: [
-    copy newReserve:;
+    newReserve:;
     [newReserve dataReserve < ~] "New reserve is less than old reserve!" assert
     memoryDebugObject [TRUE !memoryDebugEnabled] when
     newReserve Natx cast elementSize * dataReserve Natx cast elementSize * getBufferBegin mplRealloc
@@ -222,13 +226,12 @@ makeArrayObject: [{
   ];
 
   pushBack: [
-    elementIsMoved: isMoved;
     element:;
     addReserve
     dataSize 1 + @dataSize set
     newElement: dataSize 1 - at;
     @newElement manuallyInitVariable
-    @element elementIsMoved moveIf @newElement set
+    @element @newElement set
   ];
 
   appendAll: [
@@ -243,10 +246,10 @@ makeArrayObject: [{
   appendEach: [[pushBack] each];
 
   shrink: [
-    copy newSize:;
+    newSize:;
     [newSize dataSize > ~] "Shrinked size is bigger than the old size!" assert
 
-    i: dataSize copy dynamic;
+    i: dataSize new;
     [i newSize >] [
       i 1 - @i set
       i at manuallyDestroyVariable
@@ -264,7 +267,7 @@ makeArrayObject: [{
   ];
 
   enlarge: [
-    copy dynamic newSize:;
+    newSize: dynamic;
     [newSize dataSize < ~] "Enlarged size is less than old size!" assert
 
     dataReserve newSize < [
@@ -273,7 +276,7 @@ makeArrayObject: [{
       newReserve setReserve
     ] when
 
-    i: dataSize copy;
+    i: dataSize new;
     newSize @dataSize set
     [i dataSize <] [
       i at manuallyInitVariable
@@ -282,7 +285,7 @@ makeArrayObject: [{
   ];
 
   resize: [
-    copy dynamic newSize:;
+    newSize:;
     newSize dataSize = [
     ] [
       newSize dataSize < [
@@ -340,17 +343,13 @@ Array: [FALSE makeArrayObject];
 MemoryDebugArray: [TRUE makeArrayObject];
 
 makeArray: [
-  listIsMoved: isMoved;
-
-  list:;
-  indexable: list asIndexable;
-  list "ARRAY_VIEW" has [FALSE @listIsMoved set] when
+  indexable: asIndexable;
   [indexable.size 0 >] "List is empty!" assert
   result: 0 @indexable @ newVarOfTheSameType Array;
   i: 0 dynamic;
   [
     i indexable.size < [
-      i @indexable @ listIsMoved moveIf @result.pushBack
+      i @indexable @ @result.pushBack
       i 1 + @i set TRUE
     ] &&
   ] loop

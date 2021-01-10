@@ -1,11 +1,12 @@
 "control.Natx" use
 "control.Ref" use
 "control.assert" use
-"control.drop" use
 "control.dup" use
+"control.isAutomatic" use
 "control.isMovable" use
 "control.isNil" use
 "control.isVirtual" use
+"control.new" use
 "control.when" use
 
 "syncPrivate.FiberData" use
@@ -92,7 +93,7 @@ makeContext: [
     @data @creationData.!data
 
     [
-      in: @creationData.@in dup isMovable [move copy] when;
+      in: @creationData.@in dup isMovable [dup isAutomatic ~ [const] when new] when;
       @data.@fiber @resumingFibers.append
       @creationData.@waitingFiber.switchTo
 

@@ -1,5 +1,6 @@
 "Union.Union" use
 "control.&&" use
+"control.Cref" use
 "control.Int32" use
 "control.Nat32" use
 "control.Nat8" use
@@ -7,6 +8,8 @@
 "control.Ref" use
 "control.assert" use
 "control.isNil" use
+"control.new" use
+"control.set" use
 "control.times" use
 "control.when" use
 "control.while" use
@@ -27,16 +30,16 @@ Pool: [
     firstFree: -1 dynamic;
     exactAllocatedMemSize: 0nx dynamic;
 
-    iter:   [@self [index: pool:;; {key: index copy; value: index @pool.at;}] makeIter];
-    keys:   [self  [drop copy                                               ] makeIter];
-    values: [@self [.at                                                     ] makeIter];
+    iter:   [@self [index: pool:;; {key: index new; value: index @pool.at;}] makeIter];
+    keys:   [self  [drop new                                               ] makeIter];
+    values: [@self [.at                                                    ] makeIter];
 
     getSize: [
-      dataSize copy
+      dataSize new
     ];
 
     at: [
-      copy index:;
+      index:;
       [index valid] "Pool::at: element is invalid!" assert
       index elementAt
     ];
@@ -62,7 +65,7 @@ Pool: [
     ];
 
     valid: [
-      copy index:;
+      index:;
       index 0i32 same ~ [0 .ONLY_I32_ALLOWED] when
       [index 0 < ~ [index dataSize <] &&] "Index is out of range!" assert
       position: index 3n32 rshift;
@@ -73,14 +76,14 @@ Pool: [
 
     getNextIndex: [
       firstFree 0 < [
-        dataSize copy
+        dataSize new
       ] [
-        firstFree copy
+        firstFree new
       ] if
     ];
 
     erase: [
-      copy index:;
+      index:;
       [index valid] "Pool::erase: element is invalid!" assert
       index getAddressByIndex @elementSchema addressToReference manuallyDestroyVariable
       firstFree index nextFreeAt set
@@ -120,7 +123,6 @@ Pool: [
     ];
 
     insert: [
-      elementIsMoved: isMoved;
       element:;
 
       index: -1 dynamic;
@@ -159,7 +161,7 @@ Pool: [
 
           #set valid
           tailSize [
-            i validAt i newValidAt set
+            i validAt const i newValidAt set
           ] times
 
           newTailSize tailSize - [
@@ -179,12 +181,12 @@ Pool: [
         ] if
       ] [
         firstFree @index set
-        index nextFreeAt @firstFree set
+        index nextFreeAt const @firstFree set
       ] if
 
       newElement: index elementAt;
       @newElement manuallyInitVariable
-      @element elementIsMoved moveIf @newElement set
+      @element @newElement set
 
       position: index 3n32 rshift;
       offset: index Nat32 cast 7n32 and Nat8 cast;

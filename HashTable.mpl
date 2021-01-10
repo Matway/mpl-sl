@@ -5,7 +5,10 @@
 "control.assert" use
 "control.dup" use
 "control.findIndexNot" use
+"control.isAutomatic" use
+"control.new" use
 "control.pfunc" use
+"control.set" use
 "control.unhead" use
 "control.when" use
 "control.while" use
@@ -32,7 +35,7 @@ HashTable: [
     keys:   [self .data  [.key                                                 ] makeIter];
     values: [@self.@data [.@value                                              ] makeIter];
 
-    getSize: [dataSize copy];
+    getSize: [dataSize new];
 
     at: [
       result: find;
@@ -105,22 +108,17 @@ HashTable: [
 
     insert: [
       DEBUG [
-        valueIsMoved: isMoved;
-        value:;
-        keyIsMoved: isMoved;
-        key:;
+        key: value:;;
         fr: key find;
         [fr.success ~] "Inserting existing element!" assert
-        @key keyIsMoved moveIf @value valueIsMoved moveIf insertUnsafe
+        @key @value insertUnsafe
       ] [
         insertUnsafe
       ] if
     ];
 
     insertUnsafe: [ # make find before please
-      valueIsMoved: isMoved;
       value:;
-      keyIsMoved: isMoved;
       key:;
       keyHash: key hash dynamic;
 
@@ -132,13 +130,10 @@ HashTable: [
 
         bucketIndex: keyHash data.dataSize 1 - 0n32 cast and 0 cast;
 
-        newNode: {
-          key: @key keyIsMoved moveIf copy;
-          value: @value valueIsMoved moveIf copy;
-        };
-
-        pushTo: bucketIndex @data.at;
-        @newNode move @pushTo.pushBack
+        {
+          key: @key new;
+          value: @value dup isAutomatic ~ [const] when new;
+        } dup isAutomatic ~ [const] when bucketIndex @data.at.pushBack
 
         dataSize 1 + @dataSize set
       ] call
@@ -167,14 +162,14 @@ HashTable: [
       next: [
         item 1 + !item
         item bucket data.at.size = [
-          data bucket 1 + unhead [.size 0 =] findIndexNot dup -1 = [copy] [bucket 1 + +] if !bucket
+          data bucket 1 + unhead [.size 0 =] findIndexNot dup -1 = [new] [bucket 1 + +] if !bucket
           0 !item
         ] when
       ];
     }];
 
     rebuild: [
-      copy newBucketSize:;
+      newBucketSize:;
 
       newBucketSize @data.resize
       b: 0 dynamic;
@@ -188,13 +183,13 @@ HashTable: [
 
           newB b = [
             i j = ~ [
-              i @current.at move
+              i @current.at dup isAutomatic ~ [const] when
               j @current.at set
             ] when
             j 1 + @j set
           ] [
             pushTo: newB @data.at;
-            i @current.at move @pushTo.pushBack
+            i @current.at dup isAutomatic ~ [const] when @pushTo.pushBack
           ] if
 
           i 1 + @i set

@@ -2,12 +2,12 @@
 "Mref.Mref" use
 "control.Ref" use
 "control.assert" use
-"control.drop" use
 "control.dup" use
 "control.each" use
+"control.isAutomatic" use
 "control.isMovable" use
 "control.isNil" use
-"control.isVirtual" use
+"control.new" use
 "control.when" use
 "control.while" use
 
@@ -43,7 +43,7 @@ ContextGroup: [{
       @data @group.@fibers.append
 
       [
-        in: @creationData.@in dup isMovable [move copy] when;
+        in: @creationData.@in dup isMovable [dup isAutomatic ~ [const] when new] when;
         @data.@fiber @resumingFibers.append
         @creationData.@waitingFiber.switchTo
 

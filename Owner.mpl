@@ -1,6 +1,9 @@
 "control.Ref" use
 "control.assert" use
+"control.dup" use
+"control.isAutomatic" use
 "control.pfunc" use
+"control.set" use
 "control.when" use
 "memory.mplFree" use
 "memory.mplMalloc" use
@@ -56,7 +59,7 @@ OwnerWithDestructor: [{
     object:;
     data: @object storageSize mplMalloc @object addressToReference;
     @data manuallyInitVariable
-    @object move @data set
+    @object dup isAutomatic ~ [const] when @data set
     @data !memory
   ];
 
@@ -65,7 +68,7 @@ OwnerWithDestructor: [{
     object:;
     data: @object storageSize mplMalloc @object addressToReference;
     @data manuallyInitVariable
-    @object move @data set
+    @object @data set
     @data storageAddress @elementType addressToReference !memory
   ];
 
@@ -86,24 +89,16 @@ Owner: [
 ];
 
 owner: [
-  elementIsMoved: isMoved;
   element:;
-
   result: @element Owner;
-  @element elementIsMoved moveIf @result.init
-
+  @element @result.init
   @result
 ];
 
 ownerDerived: [
-  destructor:;
-  base:;
-  elementIsMoved: isMoved;
-  element:;
-
+  element: base: destructor:;;;
   result: @base @destructor OwnerWithDestructor;
-  @element elementIsMoved moveIf @result.initDerived
-
+  @element @result.initDerived
   @result
 ];
 

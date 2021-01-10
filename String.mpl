@@ -13,8 +13,8 @@
 "control.assert" use
 "control.drop" use
 "control.dup" use
+"control.new" use
 "control.pfunc" use
-"control.print" use
 "control.printf" use
 "control.times" use
 "control.when" use
@@ -35,13 +35,11 @@ hasLogs: [
 {arg: 0nx;} 0nx {convention: cdecl;} "strlen" importFunction
 
 getCodePointAndSize: [
-  copy endSize:;
-  buffer:;
-
+  buffer: endSize:;;
   endSize 0 > ~ [
     0n32 0
   ] [
-    cu0: buffer copy;
+    cu0: buffer new;
     cu0 0x80n8 < cu0 0xc0n8 < ~ cu0 0xf8n8 < and or ~ [
       0n32 0
     ] [
@@ -52,7 +50,7 @@ getCodePointAndSize: [
         endSize 1 > ~ [
           0n32 0
         ] [
-          cu1: buffer storageAddress 1nx + Nat8 addressToReference const copy;
+          cu1: buffer storageAddress 1nx + Nat8 Cref addressToReference new;
           cu1 0xc0n8 and 0x80n8 = ~ [
             0n32 0
           ] [
@@ -64,7 +62,7 @@ getCodePointAndSize: [
               endSize 2 > ~ [
                 0n32 0
               ] [
-                cu2: buffer storageAddress 2nx + Nat8 addressToReference const copy;
+                cu2: buffer storageAddress 2nx + Nat8 Cref addressToReference new;
                 cu2 0xc0n8 and 0x80n8 = ~ [
                   0n32 0
                 ] [
@@ -77,7 +75,7 @@ getCodePointAndSize: [
                     endSize 3 > ~ [
                       0n32 0
                     ] [
-                      cu3: buffer storageAddress 3nx + Nat8 addressToReference const copy;
+                      cu3: buffer storageAddress 3nx + Nat8 Cref addressToReference new;
                       cu3 0xc0n8 and 0x80n8 = ~ [
                         0n32 0
                       ] [
@@ -100,29 +98,27 @@ getCodePointAndSize: [
 ];
 
 getCodePointSize: [
-  copy endSize:;
-  buffer:;
-
+  buffer: endSize:;;
   endSize 0 > ~ [0] [
-    cu0: buffer copy;
+    cu0: buffer new;
     cu0 0x80n8 < cu0 0xc0n8 < ~ cu0 0xf8n8 < and or ~ [0] [
       cu0 0x80n8 < [
         1
       ] [
         endSize 1 > ~ [0] [
-          cu1: buffer storageAddress 1nx + Nat8 addressToReference const copy;
+          cu1: buffer storageAddress 1nx + Nat8 Cref addressToReference new;
           cu1 0xc0n8 and 0x80n8 = ~ [0] [
             cu0 0xe0n8 < [
               2
             ] [
               endSize 2 > ~ [0] [
-                cu2: buffer storageAddress 2nx + Nat8 addressToReference const copy;
+                cu2: buffer storageAddress 2nx + Nat8 Cref addressToReference new;
                 cu2 0xc0n8 and 0x80n8 = ~ [0] [
                   cu0 0xf0n8 < [
                     3
                   ] [
                     endSize 3 > ~ [0] [
-                      cu3: buffer storageAddress 3nx + Nat8 addressToReference const copy;
+                      cu3: buffer storageAddress 3nx + Nat8 Cref addressToReference new;
                       cu3 0xc0n8 and 0x80n8 = ~ [0] [
                         4
                       ] if
@@ -139,26 +135,24 @@ getCodePointSize: [
 ];
 
 previousCodePointSize: [
-  copy begSize:;
-  copy buffer:;
-
+  buffer: begSize:;;
   begSize 0 > ~ [0] [
-    cu0: buffer 1nx - Nat8 addressToReference copy;
+    cu0: buffer 1nx - Nat8 addressToReference new;
     cu0 0xc0n8 and 0x80n8 = ~ [
       cu0 0x80n8 < [1][0] if
     ] [
       begSize 1 > ~ [0] [
-        cu1: buffer 2nx - Nat8 addressToReference copy;
+        cu1: buffer 2nx - Nat8 addressToReference new;
         cu1 0xc0n8 and 0x80n8 = ~ [
           cu0 0xe0n8 and 0xc0n8 = [2][0] if
         ] [
           begSize 2 > ~ [0] [
-            cu2: buffer 3nx - Nat8 addressToReference copy;
+            cu2: buffer 3nx - Nat8 addressToReference new;
             cu2 0xc0n8 and 0x80n8 = ~ [
               cu0 0xf0n8 and 0xe0n8 = [3][0] if
             ] [
               begSize 3 > ~ [0] [
-                cu3: buffer 4nx - Nat8 addressToReference copy;
+                cu3: buffer 4nx - Nat8 addressToReference new;
                 cu3 0xf8n8 and 0xf0n8 = cu3 0n32 cast 0x07n32 and 0x6n32 lshift cu0 0n32 cast 0x3fn32 and or 0x110n32 < and [4][0] if
               ] if
             ] if
@@ -170,8 +164,7 @@ previousCodePointSize: [
 ];
 
 fromCodePoint: [
-  copy codePoint:;
-  copy bufferAddr:;
+  bufferAddr: codePoint:;;
   buffer: bufferAddr (0n8 0n8 0n8 0n8) addressToReference;
   codePoint 0x110000n32 < [
     codePoint 0x80n32 < [
@@ -203,8 +196,8 @@ fromCodePoint: [
 ];
 
 intPow: [
-  copy up:;
-  copy down:;
+  up:   new;
+  down: new;
   up 0 = [
     1 down cast
   ] [
@@ -236,11 +229,11 @@ intPow: [
 ];
 
 makeStringIter2: [{
-  data: size: copy;;
+  data: size: new;;
   codepointSize: data size getCodePointSize;
 
   valid: [codepointSize 0 = ~];
-  get: [(data codepointSize copy) toStringView];
+  get: [(data codepointSize new) toStringView];
   next: [
     data storageAddress codepointSize Natx cast + Nat8 addressToReference const !data
     size codepointSize - !size
@@ -251,7 +244,7 @@ makeStringIter2: [{
 StringIter: [0nx 0 makeStringIter2];
 
 makeStringIter: [StringIter same] [
-  copy
+  new
 ] pfunc;
 
 makeStringIter: [Text same] [
@@ -271,10 +264,10 @@ toStringView: [
   {
     virtual SCHEMA_NAME: "StringView";
     stringData: 0 in @;
-    stringSize: 1 in @ copy;
+    stringSize: 1 in @ new;
 
     data: [stringData];
-    size: [stringSize copy];
+    size: [stringSize new];
 
     equal: [
       other: dup Text same [asView] when;
@@ -295,7 +288,7 @@ toStringView: [
 
     view: [
       index: size:;;
-      (data storageAddress index Natx cast + Nat8 addressToReference const size copy) toStringView
+      (data storageAddress index Natx cast + Nat8 addressToReference const size new) toStringView
     ];
   }
 ];
@@ -303,7 +296,7 @@ toStringView: [
 StringView: [(Nat8 Cref 0) toStringView];
 
 makeStringView: [StringView same] [
-  copy
+  new
 ] pfunc;
 
 makeStringView: [Text same] [
@@ -331,7 +324,7 @@ splitString: [
         data storageAddress string.data storageAddress - Int32 cast @result.!errorOffset
         FALSE
       ] [
-        (data codepointSize copy) toStringView @result.@chars.pushBack
+        (data codepointSize new) toStringView @result.@chars.pushBack
         data storageAddress codepointSize Natx cast + Nat8 addressToReference const !data
         size codepointSize - !size
         TRUE
@@ -368,7 +361,7 @@ String: [{
 
   view: [
     index: size:;;
-    (data storageAddress index Natx cast + Nat8 addressToReference const size copy) toStringView
+    (data storageAddress index Natx cast + Nat8 addressToReference const size new) toStringView
   ];
 
   getStringView: [
@@ -388,13 +381,13 @@ String: [{
   ];
 
   catAsciiSymbolCodeNZ: [
-    copy codePoint:;
+    codePoint:;
     [codePoint 128n32 <] "Is not ascii symbol code!" assert
     codePoint 0n8 cast @chars.pushBack #end zero
   ];
 
   catSymbolCodeNZ: [
-    copy codePoint:;
+    codePoint:;
     buf: (0n8 0n8 0n8 0n8);
     length: @buf storageAddress codePoint fromCodePoint;
 
@@ -415,8 +408,7 @@ String: [{
   ];
 
   catIntNZ: [
-    copy by3:;
-    copy number:;
+    number: by3:;;
     number number number - < [
       "-" catStringNZ
       number Int64 cast neg Nat64 cast by3 catUintNZ
@@ -426,8 +418,7 @@ String: [{
   ];
 
   catUintNZ: [
-    copy by3:;
-    copy number:;
+    number: by3:;;
     nc: [number cast];
 
     shifted: number 0n64 cast;
@@ -458,7 +449,7 @@ String: [{
   ];
 
   catHexNZ: [
-    copy number:;
+    number:;
     nc: [number cast];
 
     shifted: number 0n64 cast;
@@ -488,9 +479,7 @@ String: [{
   ];
 
   catFloatNZ: [
-    copy by3:;
-    copy number:;
-
+    number: by3:; new;
     nc: [number cast];
 
     number 0 nc = [
@@ -522,8 +511,8 @@ String: [{
             7 dynamic @maxOrder set
           ] when
 
-          digits: maxDigits copy;
-          shift: nlog10 copy;
+          digits: maxDigits new;
+          shift: nlog10 new;
 
           nlog10 maxOrder > nlog10 maxOrder 2 / neg < or ~ [
             0 @shift set
@@ -605,7 +594,7 @@ String: [{
   catNZ: [
     arg:;
     @arg "" same [@arg StringView same] || [@arg "STRING" has] || [
-      @arg catStringNZ
+      arg catStringNZ
     ] [
       @arg 0.0r64 same [@arg 0.0r32 same] || [
         @arg FALSE catFloatNZ

@@ -4,19 +4,22 @@
 "control.Ref" use
 "control.case" use
 "control.drop" use
+"control.isAutomatic" use
 "control.isCodeRef" use
 "control.isCopyable" use
+"control.set" use
 "control.when" use
 "control.||" use
+"conventions.moveOld" use
 "objectTools.insertField" use
 "objectTools.unwrapField" use
 
 addContextToSignature: [
   signature:;
-  args: 0 static @signature @;
+  args:    0 static @signature @;
   options: 2 static @signature @;
 
-  (Natx) 0 static "context" @args move insertField
+  (Natx) 0 static "context" @args moveOld insertField
   1 static @signature unwrapField
   options codeRef
 ];
@@ -37,7 +40,6 @@ Function: [{
   vtable: {functionIndex: Natx;} Natx {} codeRef;
 
   assign: [
-    context0IsMoved: isMoved;
     context0IsCodeRef: isCodeRef;
     context0:;
 
@@ -47,10 +49,6 @@ Function: [{
       context: @contextData storageAddress Natx addressToReference;
       @context0 storageAddress @context set
     ] [
-      context0IsMoved @context0 isCopyable or ~ [
-        0 .ERROR_CONTEXT_NEITHER_MOVED_NOR_COPYABLE
-      ] when
-
       @context0 storageSize CONTEXT_SIZE Natx cast > [
         0 .ERROR_CONTEXT_SIZE_LARGER_THAN_FUNCTION_CONTEXT_SIZE
       ] when
@@ -58,7 +56,7 @@ Function: [{
       @context0 storageSize 0nx static > [
         context: contextData storageAddress @context0 addressToReference;
         @context manuallyInitVariable
-        @context0 context0IsMoved moveIf @context set
+        @context0 @context0 isAutomatic ~ [const] when @context set
       ] when
     ] if
 
@@ -114,7 +112,7 @@ Function: [{
               [
                 this: @contextType addressToReference;
                 other: @contextType addressToReference;
-                @other @this set
+                @other const @this set
               ] !f
             ] [
               [drop drop] !f
@@ -201,10 +199,8 @@ Function: [{
 }];
 
 makeFunction: [
-  signature:;
-  contextIsMoved: isMoved;
-  context:;
+  context: signature:;;
   function: @signature Function;
-  @context contextIsMoved moveIf @function.assign
+  @context @function.assign
   @function
 ];

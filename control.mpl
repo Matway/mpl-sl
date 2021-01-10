@@ -1,5 +1,25 @@
 "conventions.cdecl" use
+"conventions.copyOld" use
+"conventions.isMovedOld" use
+"conventions.moveOld" use
+"conventions.moveIfOld" use
+"conventions.setOld" use
 "conventions.stdcall" use
+
+copy:    ["deprecated" raiseStaticError];
+isMoved: ["deprecated" raiseStaticError];
+move:    ["deprecated" raiseStaticError];
+moveIf:  ["deprecated" raiseStaticError];
+
+new: [
+  source:;
+  @source @source isConst ~ moveIfOld copyOld
+];
+
+set: [
+  source: destination:;;
+  @source @source isConst ~ moveIfOld @destination setOld
+];
 
 Cond:   [v: FALSE  dynamic; @v];
 Int8:   [v: 0i8    dynamic; @v];
@@ -27,7 +47,7 @@ overload failProc: [
     trace storageAddress 0nx = [
       FALSE
     ] [
-      (trace.name trace.line copy trace.column copy) " in %s at %i:%i\n\00" printf drop
+      (trace.name trace.line new trace.column new) " in %s at %i:%i\n\00" printf drop
       trace.prev trace addressToReference !trace
       TRUE
     ] if
@@ -41,20 +61,33 @@ pfunc: [{
   virtual PRE:;
 }];
 
+isAutomatic: [drop FALSE];
+isAutomatic: [unconst moveOld isMovedOld] [drop TRUE] pfunc;
+
 isCodeRef: [TRUE static];
 isCodeRef: [storageSize TRUE static] [FALSE static] pfunc;
 
 isCopyable: [drop FALSE];
-isCopyable: [x:; @x storageSize 0nx > [Natx @x addressToReference] [@x] uif copy TRUE] [drop TRUE] pfunc;
+isCopyable: [x:; @x storageSize 0nx > [Natx @x addressToReference] [@x] uif copyOld TRUE] [drop TRUE] pfunc;
 
 isDynamicText: [drop TRUE];
 isDynamicText: ["" & TRUE] [drop FALSE] pfunc;
 
 isMovable: [drop FALSE];
-isMovable: [newVarOfTheSameType v:; @v move copy TRUE] [drop TRUE] pfunc;
+isMovable: [moveOld TRUE] [drop TRUE] pfunc;
 
 isVirtual: [drop TRUE];
 isVirtual: [Ref TRUE] [drop FALSE] pfunc;
+
+#new: [
+#  src:;
+#  @src isConst ~ [@src isVirtual ~ [@src moveOld isMovedOld swap drop ~] &&] &&
+#] ["RW ref to non-movable object" raiseStaticError] pfunc;
+
+#set: [
+#  src: dst:;;
+#  @src isConst ~ [@src isVirtual ~ [@src moveOld isMovedOld swap drop ~] &&] &&
+#] ["RW ref to non-movable object" raiseStaticError] pfunc;
 
 =: ["equal" has] [item0: item1:;; @item0 @item1.equal] pfunc;
 
@@ -65,7 +98,7 @@ print: ["" same] [
   text isDynamicText [
     i: 0nx dynamic; [
       i text textSize = [FALSE] [
-        (text storageAddress i + Nat8 addressToReference copy) "%c\00" printf drop
+        (text storageAddress i + Nat8 addressToReference new) "%c\00" printf drop
         i 1nx + !i
         TRUE
       ] if
@@ -78,6 +111,8 @@ print: ["" same] [
 Ref: [v:; 0nx @v addressToReference]; # for signatures
 Cref: [v:; 0nx v addressToReference]; # for signatures
 AsRef: [{data:;}]; # for Ref Array
+
+forceConst: [v:; @v const];
 
 forceCopy: [isMoved moved:; v:; @v moved moveIf copy];
 
@@ -129,7 +164,7 @@ assert: [
   ] if
 ];
 
-unconst: [copy a:; @a];
+unconst: [v:; @v storageAddress @v newVarOfTheSameType addressToReference];
 
 &&: [[FALSE] if];
 
@@ -149,7 +184,7 @@ riterate: [
 
 abs: [
   value:;
-  @value 0 @value cast < [@value neg] [@value copy] if
+  @value 0 @value cast < [@value neg] [@value new] if
 ];
 
 sign: [
@@ -205,7 +240,7 @@ condImpl: [
 cond: [0 static condImpl];
 
 caseImpl: [
-  copy caseIndex:;
+  caseIndex:;
   caseFunctionList:;
   caseControlVar:;
 
@@ -223,8 +258,8 @@ caseImpl: [
 case: [0 static caseImpl];
 
 bind: [{
-  bindBody: isCodeRef [] [copy] uif;
-  bindValue: isCodeRef [] [copy] uif;
+  bindBody: isCodeRef [] [new] uif;
+  bindValue: isCodeRef [] [new] uif;
 
   CALL: [@bindValue @bindBody call];
 }];
@@ -255,7 +290,7 @@ for: [
 ];
 
 sequenceImpl: [
-  copy sequenceIndex:;
+  sequenceIndex:;
   sequenceList:;
   sequenceIndex sequenceList fieldCount < [0 static sequenceList @ call] && [
     sequenceIndex sequenceList @ ucall
@@ -327,7 +362,7 @@ asIndexable: [
 
 toIter: [
   object:;
-  @object isIter [@object copy] [
+  @object isIter [@object new] [
     @object "iter" has [@object.iter] [
       @object isIndexable [
         @object isView [
@@ -373,7 +408,7 @@ asView: [isBuiltinTuple] [
     {
       tuple: @tuple;
       index: index newIndex +;
-      size: newSize copy;
+      size: newSize new;
 
       at: [index + @tuple @];
 
@@ -561,14 +596,14 @@ enumerate: [{
   enumerateIndex: 0;
 
   valid: [@enumerateSource.valid];
-  get:   [{key: enumerateIndex copy; value: @enumerateSource.get;}];
+  get:   [{key: enumerateIndex new; value: @enumerateSource.get;}];
   next:  [@enumerateSource.next enumerateIndex 1 + !enumerateIndex];
 }];
 
 filterIter: [{
   filterIterSource: filterIterBody:; toIter;
 
-  valid: [@filterIterSource @filterIterBody findIf !filterIterSource @filterIterSource.valid];
+  valid: [@filterIterSource const @filterIterBody findIf !filterIterSource @filterIterSource.valid];
   get:   [@filterIterSource.get ];
   next:  [@filterIterSource.next];
 }];
