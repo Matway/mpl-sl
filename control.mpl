@@ -64,8 +64,8 @@ pfunc: [{
 isAutomatic: [drop FALSE];
 isAutomatic: [unconst moveOld isMovedOld] [drop TRUE] pfunc;
 
-isCodeRef: [TRUE static];
-isCodeRef: [storageSize TRUE static] [FALSE static] pfunc;
+isCodeRef: [drop TRUE];
+isCodeRef: [storageSize TRUE] [drop FALSE] pfunc;
 
 isCopyable: [drop FALSE];
 isCopyable: [x:; @x storageSize 0nx > [Natx @x addressToReference] [@x] uif copyOld TRUE] [drop TRUE] pfunc;
@@ -78,16 +78,6 @@ isMovable: [moveOld TRUE] [drop TRUE] pfunc;
 
 isVirtual: [drop TRUE];
 isVirtual: [Ref TRUE] [drop FALSE] pfunc;
-
-#new: [
-#  src:;
-#  @src isConst ~ [@src isVirtual ~ [@src moveOld isMovedOld swap drop ~] &&] &&
-#] ["RW ref to non-movable object" raiseStaticError] pfunc;
-
-#set: [
-#  src: dst:;;
-#  @src isConst ~ [@src isVirtual ~ [@src moveOld isMovedOld swap drop ~] &&] &&
-#] ["RW ref to non-movable object" raiseStaticError] pfunc;
 
 =: ["equal" has] [item0: item1:;; @item0 @item1.equal] pfunc;
 
@@ -151,16 +141,21 @@ times: [
 
 ensure: [
   message:;
-  call ~ [
-    message failProc
-  ] when
+  call ~ dup isDynamic [
+    [message failProc] when
+  ] [
+    [message raiseStaticError] when
+  ] if
 ];
 
 assert: [
   DEBUG [
     ensure
   ] [
-    message:; condition:;
+    predicate: message:;;
+    assert: [];
+    assert: [@predicate call dup isDynamic [drop FALSE] [~] if] [message raiseStaticError] pfunc;
+    assert
   ] if
 ];
 
@@ -258,15 +253,15 @@ caseImpl: [
 case: [0 static caseImpl];
 
 bind: [{
-  bindBody: isCodeRef [] [new] uif;
-  bindValue: isCodeRef [] [new] uif;
+  bindBody:  dup isCodeRef ~ [new] when;
+  bindValue: dup isCodeRef ~ [new] when;
 
   CALL: [@bindValue @bindBody call];
 }];
 
 compose: [{
-  composeBody1: isCodeRef [] [copy] uif;
-  composeBody0: isCodeRef [] [copy] uif;
+  composeBody1: dup isCodeRef ~ [new] when;
+  composeBody0: dup isCodeRef ~ [new] when;
 
   CALL: [@composeBody0 call @composeBody1 call];
 }];

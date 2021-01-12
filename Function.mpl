@@ -40,12 +40,11 @@ Function: [{
   vtable: {functionIndex: Natx;} Natx {} codeRef;
 
   assign: [
-    context0IsCodeRef: isCodeRef;
     context0:;
 
     release
 
-    context0IsCodeRef [
+    @context0 isCodeRef [
       context: @contextData storageAddress Natx addressToReference;
       @context0 storageAddress @context set
     ] [
@@ -81,7 +80,7 @@ Function: [{
 
     [
       functionIndex:;
-      @contextType isCodeRef contextIsCodeRef:; drop
+      @contextType isCodeRef contextIsCodeRef:;
       functionIndex (
         CALL_FUNC [
           f: @CALL_FUNC_SCHEMA Ref;

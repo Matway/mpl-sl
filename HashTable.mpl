@@ -29,7 +29,7 @@ HashTable: [
     }];
 
     data: Node Array Array;
-    dataSize: 0 dynamic;
+    dataSize: 0;
 
     iter:   [@self.@data [itemRef:; {key: itemRef.key; value: @itemRef.@value;}] makeIter];
     keys:   [self .data  [.key                                                 ] makeIter];
@@ -96,7 +96,7 @@ HashTable: [
                 i 1 + @i set TRUE
               ] if
             ] [
-              [FALSE] "Erasing unexisting element!" assert
+              "Erasing unexisting element!" failProc
               FALSE
             ] if
           ] loop

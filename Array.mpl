@@ -249,7 +249,7 @@ makeArrayObject: [{
     newSize:;
     [newSize dataSize > ~] "Shrinked size is bigger than the old size!" assert
 
-    i: dataSize new;
+    i: dataSize new dynamic;
     [i newSize >] [
       i 1 - @i set
       i at manuallyDestroyVariable

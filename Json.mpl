@@ -695,7 +695,7 @@ catJSONNodeWithPaddingImpl: [
               json.getTag JSONObject = [
                 catObjectJSON
               ] [
-                [FALSE] "Unknown JSON tag!" assert
+                "Unknown JSON tag!" failProc
               ] if
             ] if
           ] if
