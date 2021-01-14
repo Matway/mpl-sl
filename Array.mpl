@@ -1,19 +1,22 @@
-"control.&&" use
-"control.@" use
-"control.Natx" use
-"control.Ref" use
-"control.asIndexable" use
-"control.assert" use
-"control.dup" use
-"control.each" use
-"control.isAutomatic" use
-"control.new" use
-"control.pfunc" use
-"control.set" use
-"control.when" use
-"control.while" use
-"memory.mplFree" use
-"memory.mplRealloc" use
+"algorithm.each"           use
+"algorithm.makeArrayIndex" use
+"algorithm.makeArrayIter"  use
+"algorithm.makeArrayView"  use
+"algorithm.toIndex"        use
+"control.&&"               use
+"control.@"                use
+"control.Natx"             use
+"control.Ref"              use
+"control.assert"           use
+"control.dup"              use
+"control.isAutomatic"      use
+"control.new"              use
+"control.pfunc"            use
+"control.set"              use
+"control.when"             use
+"control.while"            use
+"memory.mplFree"           use
+"memory.mplRealloc"        use
 
 makeArrayRangeRaw: [{
   virtual RANGE: ();
@@ -158,23 +161,23 @@ makeArrayObject: [{
     getBufferBegin index Natx cast elementSize * + @elementType addressToReference
   ];
 
+  iter: [@dataBegin dataSize makeArrayIter];
+
+  reverseIter: [
+    {
+      index: @dataBegin dataSize makeArrayIndex;
+      key:   dataSize new;
+      get:   [key 1 - @index.at];
+      next:  [key 1 - !key];
+      valid: [key 0 = ~];
+    }
+  ];
+
   size: [
     dataSize new
   ];
 
-  view: [
-    newIndex: newSize:;;
-    {
-      virtual SCHEMA_NAME: "ArrayView";
-      virtual elementType: @elementType Ref;
-      dataBegin: @dataBegin storageAddress @elementType storageSize newIndex Natx cast * + @elementType addressToReference;
-      size: newSize new;
-
-      at: [Natx cast @elementType storageSize * @dataBegin storageAddress + @elementType addressToReference];
-
-      view: @view;
-    }
-  ];
+  slice: [@dataBegin dataSize makeArrayView .slice];
 
   erase: [
     index:;
@@ -191,7 +194,7 @@ makeArrayObject: [{
   eraseIf: [
     eraseIfBody:;
     index: 0;
-    self toIter @eraseIfBody filterIter [
+    self toIter @eraseIfBody filter [
       index at set
       index 1 + !index
     ] each
@@ -235,7 +238,7 @@ makeArrayObject: [{
   ];
 
   appendAll: [
-    view: asIndexable;
+    view: toIndex;
     index: size;
     size view.size + enlarge
     i: 0; [i view.size <] [
@@ -343,7 +346,7 @@ Array: [FALSE makeArrayObject];
 MemoryDebugArray: [TRUE makeArrayObject];
 
 makeArray: [
-  indexable: asIndexable;
+  indexable: toIndex;
   [indexable.size 0 >] "List is empty!" assert
   result: 0 @indexable @ newVarOfTheSameType Array;
   i: 0 dynamic;

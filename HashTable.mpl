@@ -1,17 +1,17 @@
-"Array.Array" use
-"control.&&" use
-"control.=" use
-"control.Ref" use
-"control.assert" use
-"control.dup" use
-"control.findIndexNot" use
-"control.isAutomatic" use
-"control.new" use
-"control.pfunc" use
-"control.set" use
-"control.unhead" use
-"control.when" use
-"control.while" use
+"Array.Array"            use
+"algorithm.findIndexNot" use
+"algorithm.unhead"       use
+"control.&&"             use
+"control.="              use
+"control.Ref"            use
+"control.assert"         use
+"control.dup"            use
+"control.isAutomatic"    use
+"control.new"            use
+"control.pfunc"          use
+"control.set"            use
+"control.when"           use
+"control.while"          use
 
 HashTable: [
   value:;

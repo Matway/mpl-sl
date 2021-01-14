@@ -1,11 +1,11 @@
-"Array.Array" use
-"control.Ref" use
-"control.assert" use
-"control.dup" use
+"Array.Array"         use
+"control.Ref"         use
+"control.assert"      use
+"control.dup"         use
 "control.isAutomatic" use
-"control.set" use
-"control.times" use
-"control.when" use
+"control.set"         use
+"control.times"       use
+"control.when"        use
 
 Deque: [{
   # front: head tail :back
@@ -15,6 +15,16 @@ Deque: [{
   virtual elementType: Ref;
   head: @elementType Array;
   tail: @elementType Array;
+
+  iter: [
+    {
+      deque: @self;
+      key:   0;
+      get:   [key @deque.at];
+      next:  [key 1 + !key];
+      valid: [key deque.size = ~];
+    }
+  ];
 
   size: [getSize];
 

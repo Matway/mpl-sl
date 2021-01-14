@@ -1,28 +1,28 @@
-"Array.Array" use
-"control.&&" use
-"control.Cond" use
-"control.Cref" use
-"control.Int32" use
-"control.Int64" use
-"control.Nat32" use
-"control.Nat64" use
-"control.Nat8" use
-"control.Natx" use
-"control.Text" use
-"control.asView" use
-"control.assert" use
-"control.drop" use
-"control.dup" use
-"control.new" use
-"control.pfunc" use
-"control.printf" use
-"control.times" use
-"control.when" use
-"control.while" use
-"control.||" use
+"Array.Array"       use
+"algorithm.toIndex" use
+"control.&&"        use
+"control.Cond"      use
+"control.Cref"      use
+"control.Int32"     use
+"control.Int64"     use
+"control.Nat32"     use
+"control.Nat64"     use
+"control.Nat8"      use
+"control.Natx"      use
+"control.Text"      use
+"control.assert"    use
+"control.drop"      use
+"control.dup"       use
+"control.new"       use
+"control.pfunc"     use
+"control.printf"    use
+"control.times"     use
+"control.when"      use
+"control.while"     use
+"control.||"        use
 "conventions.cdecl" use
-"memory.memcmp" use
-"memory.memcpy" use
+"memory.memcmp"     use
+"memory.memcpy"     use
 
 hasLogs: [
   hasLogsImpl: [FALSE];
@@ -286,7 +286,7 @@ toStringView: [
 
     iter: [data size makeStringIter2];
 
-    view: [
+    slice: [
       index: size:;;
       (data storageAddress index Natx cast + Nat8 addressToReference const size new) toStringView
     ];
@@ -340,6 +340,12 @@ String: [{
   virtual SCHEMA_NAME: "String";
   chars: Nat8 Array;
 
+  INIT: [];
+
+  ASSIGN: [other:; @other.@chars @chars set];
+
+  DIE: [];
+
   data: [@chars.@dataBegin];
 
   size: [
@@ -359,7 +365,7 @@ String: [{
 
   iter: [data size makeStringIter2];
 
-  view: [
+  slice: [
     index: size:;;
     (data storageAddress index Natx cast + Nat8 addressToReference const size new) toStringView
   ];
@@ -627,7 +633,7 @@ String: [{
   cat:                [makeNZ catNZ                makeZ];
 
   catMany: [
-    list: asView;
+    list: toIndex;
     makeNZ
     i: 0;
     [i list.size <] [

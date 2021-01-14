@@ -1,33 +1,32 @@
-"String.String" use
-"String.asView" use
+"String.String"         use
 "String.assembleString" use
-"String.printList" use
-"control.=" use
-"control.AsRef" use
-"control.Cref" use
-"control.Int32" use
-"control.Nat16" use
-"control.Nat32" use
-"control.Nat8" use
-"control.Natx" use
-"control.Ref" use
-"control.asView" use
-"control.assert" use
-"control.drop" use
-"control.failProc" use
-"control.isNil" use
-"control.sequence" use
-"control.when" use
+"String.makeStringView" use
+"String.printList"      use
+"control.="             use
+"control.AsRef"         use
+"control.Cref"          use
+"control.Int32"         use
+"control.Nat16"         use
+"control.Nat32"         use
+"control.Nat8"          use
+"control.Natx"          use
+"control.Ref"           use
+"control.assert"        use
+"control.drop"          use
+"control.failProc"      use
+"control.isNil"         use
+"control.sequence"      use
+"control.when"          use
 
 "kernel32.kernel32" use
-"ws2_32.winsock2" use
+"ws2_32.winsock2"   use
 
-"syncPrivate.FiberData" use
-"syncPrivate.canceled?" use
-"syncPrivate.completionPort" use
-"syncPrivate.currentFiber" use
+"syncPrivate.FiberData"         use
+"syncPrivate.canceled?"         use
+"syncPrivate.completionPort"    use
+"syncPrivate.currentFiber"      use
 "syncPrivate.defaultCancelFunc" use
-"syncPrivate.dispatch" use
+"syncPrivate.dispatch"          use
 
 TcpConnection: [{
   INIT: [winsock2.INVALID_SOCKET !connection];
@@ -160,7 +159,7 @@ TcpConnection: [{
 
   writeString: [
     [valid?] "invalid TcpConnection" assert
-    string: asView;
+    string: makeStringView;
     string.data string.size write
   ];
 

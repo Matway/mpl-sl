@@ -1,12 +1,12 @@
-"algebra.*" use
-"algebra.+" use
-"algebra.dot" use
-"algebra.lerp" use
-"algebra.neg" use
-"control.Ref" use
-"control.each" use
-"control.pfunc" use
-"control.when" use
+"algebra.*"      use
+"algebra.+"      use
+"algebra.dot"    use
+"algebra.lerp"   use
+"algebra.neg"    use
+"algorithm.each" use
+"control.Ref"    use
+"control.pfunc"  use
+"control.when"   use
 
 Quaternion: [{
   QUATERNION: ();
