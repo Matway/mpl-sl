@@ -61,6 +61,49 @@ pfunc: [{
   virtual PRE:;
 }];
 
+isInt: [
+  v:;
+  @v 0i8 same [TRUE] [
+    @v 0i16 same [TRUE] [
+      @v 0i32 same [TRUE] [
+        @v 0i64 same [TRUE] [
+          @v 0ix same
+        ] if
+      ] if
+    ] if
+  ] if
+];
+
+isNat: [
+  v:;
+  @v 0n8 same [TRUE] [
+    @v 0n16 same [TRUE] [
+      @v 0n32 same [TRUE] [
+        @v 0n64 same [TRUE] [
+          @v 0nx same
+        ] if
+      ] if
+    ] if
+  ] if
+];
+
+isNumber: [
+  v:;
+  @v isInt [TRUE] [
+    @v isNat [TRUE] [
+      @v isReal
+    ] if
+  ] if
+];
+
+isReal: {CALL: [
+  v:;
+  @v 0.0r32 same [TRUE] [
+    @v 0.0r64 same
+  ] if
+];};
+
+
 isAutomatic: [drop FALSE];
 isAutomatic: [unconst moveOld isMovedOld] [drop TRUE] pfunc;
 
@@ -79,9 +122,12 @@ isMovable: [moveOld TRUE] [drop TRUE] pfunc;
 isVirtual: [drop TRUE];
 isVirtual: [Ref TRUE] [drop FALSE] pfunc;
 
-=: ["equal" has] [item0: item1:;; @item0 @item1.equal] pfunc;
-
-=: [item1:; "equal" has] [item0: item1:;; @item1 @item0.equal] pfunc;
+<: [drop "greater" has] [swap .greater] pfunc;
+<: [     "less"    has] [     .less   ] pfunc;
+=: [drop "equal"   has] [swap .equal  ] pfunc;
+=: [     "equal"   has] [     .equal  ] pfunc;
+>: [drop "less"    has] [swap .less   ] pfunc;
+>: [     "greater" has] [     .greater] pfunc;
 
 print: ["" same] [
   text:;
@@ -297,7 +343,11 @@ sequence: [
   1 static sequenceImpl
 ];
 
-unwrap: [list:; list fieldCount [i @list @] times];
+touch: [count:; count 0 = ~ [value:; count 1 - touch @value] when];
+
+unwrap: [list:; @list fieldCount [i @list @] times];
+
+wrap: [(touch)];
 
 enum: [
   enum_names:enum_type:;;
@@ -320,4 +370,9 @@ enum: [
 isBuiltinTuple: [
   object:;
   @object isCombined [@object () same [@object 0 fieldName "" =] ||] &&
+];
+
+hasSchemaName: [
+  object: name:;;
+  @object "SCHEMA_NAME" has [@object.@SCHEMA_NAME name =] &&
 ];
