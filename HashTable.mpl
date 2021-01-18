@@ -1,17 +1,17 @@
-"Array.Array"            use
-"algorithm.findIndexNot" use
-"algorithm.unhead"       use
-"control.&&"             use
-"control.="              use
-"control.Ref"            use
-"control.assert"         use
-"control.dup"            use
-"control.isAutomatic"    use
-"control.new"            use
-"control.pfunc"          use
-"control.set"            use
-"control.when"           use
-"control.while"          use
+"Array.Array"         use
+"algorithm.findIndex" use
+"algorithm.unhead"    use
+"control.&&"          use
+"control.="           use
+"control.Ref"         use
+"control.assert"      use
+"control.dup"         use
+"control.isAutomatic" use
+"control.new"         use
+"control.pfunc"       use
+"control.set"         use
+"control.when"        use
+"control.while"       use
 
 HashTable: [
   value:;
@@ -152,7 +152,7 @@ HashTable: [
     makeIter: [{
       virtual method:;
       data:;
-      bucket: data [.size 0 =] findIndexNot;
+      bucket: data [.size 0 = ~] findIndex;
       item: 0;
 
       valid: [bucket -1 = ~];
@@ -162,7 +162,7 @@ HashTable: [
       next: [
         item 1 + !item
         item bucket data.at.size = [
-          data bucket 1 + unhead [.size 0 =] findIndexNot dup -1 = [new] [bucket 1 + +] if !bucket
+          data bucket 1 + unhead [.size 0 = ~] findIndex dup -1 = [new] [bucket 1 + +] if !bucket
           0 !item
         ] when
       ];

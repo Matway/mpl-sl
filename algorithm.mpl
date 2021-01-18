@@ -346,7 +346,7 @@ beginsWith: [
       ] if
     ] loop
 
-    result
+    @result
   ] if
 ];
 
@@ -354,6 +354,26 @@ beginsWith: [toView swap toView TRUE] [
   object0: object1: toView; toView;
   @object0.size @object1.size < ~ [@object0 @object1.size head @object1 =] &&
 ] pfunc;
+
+contains: [
+  view0: view1: toView; toView;
+  result: FALSE;
+  i: 0; [
+    @view0.size i - @view1.size < [FALSE] [
+      iter0: @view0 i unhead toIter;
+      iter1: @view1 toIter;
+      j: 0; [
+        j view1.size = [TRUE !result FALSE] [
+          @iter0.get @iter1.get = dup [@iter0.next @iter1.next j 1 + !j] when
+        ] if
+      ] loop
+
+      result ~ dup [i 1 + !i] when
+    ] if
+  ] loop
+
+  @result
+];
 
 endsWith: [
   object0: object1: toView; toView;
@@ -439,6 +459,73 @@ joinIter: [
 ];
 
 # Iter consumers
+all: [swap toIter swap allStatic];
+all: [drop toIter dynamic .get TRUE] [
+  iter: body:; toIter;
+  result: TRUE;
+  [
+    @iter.valid ~ [FALSE] [
+      @iter.get body [@iter.next TRUE] [FALSE !result FALSE] if
+    ] if
+  ] loop
+
+  @result
+] pfunc;
+
+allStatic: [
+  iter: body:;;
+  @iter.valid ~ [TRUE] [
+    @iter.get body ~ [FALSE] [
+      @iter.next
+      @iter @body allStatic
+    ] if
+  ] if
+];
+
+any: [swap toIter swap anyStatic];
+any: [drop toIter dynamic .get TRUE] [
+  iter: body:; toIter;
+  result: FALSE;
+  [
+    @iter.valid ~ [FALSE] [
+      @iter.get body ~ dup [@iter.next] [TRUE !result] if
+    ] if
+  ] loop
+
+  @result
+] pfunc;
+
+anyStatic: [
+  iter: body:;;
+  @iter.valid ~ [FALSE] [
+    @iter.get body [TRUE] [
+      @iter.next
+      @iter @body anyStatic
+    ] if
+  ] if
+];
+
+count: [
+  iter: body:; toIter;
+  count: 0;
+  [@iter.valid] [
+    @iter.get body [count 1 + !count] when
+    @iter.next
+  ] while
+
+  @count
+];
+
+countEqual: [
+  iter: value:;;
+  @iter [@value =] count
+];
+
+countEqualNot: [
+  iter: value:;;
+  @iter [@value = ~] count
+];
+
 each: [
   iter: body:; toIter;
   [@iter.valid] [
@@ -447,75 +534,94 @@ each: [
   ] while
 ];
 
+findIndex: [swap toIter swap 0 findIndexStatic];
+findIndex: [drop toIter dynamic .get TRUE] [
+  iter: body:; toIter;
+  index: 0;
+  [
+    @iter.valid ~ [-1 !index FALSE] [
+      @iter.get body ~ dup [
+        @iter.next
+        index 1 + !index
+      ] when
+    ] if
+  ] loop
+
+  @index
+] pfunc;
+
+findIndexStatic: [
+  iter: body: index:;;;
+  @iter.valid ~ [-1] [
+    @iter.get body [index new] [
+      @iter.next
+      @iter @body index 1 + findIndexStatic
+    ] if
+  ] if
+];
+
+findIndexEqual: [
+  iter: value:;;
+  @iter [@value =] findIndex
+];
+
+findIndexEqualNot: [
+  iter: value:;;
+  @iter [@value = ~] findIndex
+];
+
+meetsAll: [toIter meetsAllStatic];
+meetsAll: [toIter dynamic .get TRUE] [
+  object: iter: toIter;;
+  result: TRUE;
+  [
+    @iter.valid ~ [FALSE] [
+      @object @iter.get call [@iter.next TRUE] [FALSE !result FALSE] if
+    ] if
+  ] loop
+
+  @result
+] pfunc;
+
+meetsAllStatic: [
+  object: iter:;;
+  @iter.valid ~ [TRUE] [
+    @object @iter.get call ~ [FALSE] [
+      @iter.next
+      @object @iter meetsAllStatic
+    ] if
+  ] if
+];
+
+meetsAny: [toIter meetsAnyStatic];
+meetsAny: [toIter dynamic .get TRUE] [
+  object: iter: toIter;;
+  result: FALSE;
+  [
+    @iter.valid ~ [FALSE] [
+      @object @iter.get call ~ dup [@iter.next] [TRUE !result] if
+    ] if
+  ] loop
+
+  @result
+] pfunc;
+
+meetsAnyStatic: [
+  object: iter:;;
+  @iter.valid ~ [FALSE] [
+    @object @iter.get call [TRUE] [
+      @iter.next
+      @object @iter meetsAnyStatic
+    ] if
+  ] if
+];
+
 mutate: [
   iter: body:; toIter;
   [@iter.valid] [
     @iter.get body @iter.get set
     @iter.next
   ] while
-];
-
-all: [
-  iter: body:;;
-  @iter @body [~] compose find .valid ~
-];
-
-any: [
-  iter: body:;;
-  @iter @body find .valid
-];
-
-count: [
-  iter: body:; toIter;
-  count: 0;
-  [
-    @iter.valid ~ [FALSE] [
-      @iter.get body [
-        count 1 + !count
-      ] when
-
-      @iter.next
-      TRUE
-    ] if
-  ] loop
-
-  count
-];
-
-countNot: [
-  iter: body:;;
-  @iter [body ~] count
-];
-
-countEqual: [
-  iter: value:;;
-  @iter [@value =] count
-];
-
-findIndex: [
-  iter: body:; toIter;
-  index: 0;
-  [
-    @iter.valid ~ [-1 !index FALSE] [
-      @iter.get body [FALSE] [
-        @iter.next
-        index 1 + !index
-        TRUE
-      ] if
-    ] if
-  ] loop
-
-  index
-];
-
-findIndexNot: [
-  iter: body:;;
-  @iter @body [~] compose findIndex
-];
-
-findIndexEqual: [
-  iter: value:;;
-  @iter [@value =] findIndex
 ];
 
 # View slicers
