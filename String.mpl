@@ -1,28 +1,39 @@
-"Array.Array"       use
-"algorithm.toIndex" use
-"control.&&"        use
-"control.Cond"      use
-"control.Cref"      use
-"control.Int32"     use
-"control.Int64"     use
-"control.Nat32"     use
-"control.Nat64"     use
-"control.Nat8"      use
-"control.Natx"      use
-"control.Text"      use
-"control.assert"    use
-"control.drop"      use
-"control.dup"       use
-"control.new"       use
-"control.pfunc"     use
-"control.printf"    use
-"control.times"     use
-"control.when"      use
-"control.while"     use
-"control.||"        use
-"conventions.cdecl" use
-"memory.memcmp"     use
-"memory.memcpy"     use
+"Array.Array"             use
+"algorithm.makeArrayIter" use
+"algorithm.toIndex"       use
+"algorithm.toIter"        use
+"algorithm.toTextIter"    use
+"control.&&"              use
+"control.Cond"            use
+"control.Cref"            use
+"control.Int32"           use
+"control.Int64"           use
+"control.Nat32"           use
+"control.Nat64"           use
+"control.Nat8"            use
+"control.Natx"            use
+"control.Text"            use
+"control.assert"          use
+"control.between"         use
+"control.cond"            use
+"control.drop"            use
+"control.dup"             use
+"control.hasSchemaName"   use
+"control.isInt"           use
+"control.isNat"           use
+"control.isReal"          use
+"control.new"             use
+"control.pfunc"           use
+"control.printf"          use
+"control.set"             use
+"control.times"           use
+"control.when"            use
+"control.while"           use
+"control.within"          use
+"control.||"              use
+"conventions.cdecl"       use
+"memory.memcmp"           use
+"memory.memcpy"           use
 
 hasLogs: [
   hasLogsImpl: [FALSE];
@@ -34,166 +45,44 @@ hasLogs: [
 
 {arg: 0nx;} 0nx {convention: cdecl;} "strlen" importFunction
 
-getCodePointAndSize: [
-  buffer: endSize:;;
-  endSize 0 > ~ [
-    0n32 0
-  ] [
-    cu0: buffer new;
-    cu0 0x80n8 < cu0 0xc0n8 < ~ cu0 0xf8n8 < and or ~ [
-      0n32 0
-    ] [
-      cu0 0x80n8 < [
-        cu0 0n32 cast
-        1
-      ] [
-        endSize 1 > ~ [
-          0n32 0
-        ] [
-          cu1: buffer storageAddress 1nx + Nat8 Cref addressToReference new;
-          cu1 0xc0n8 and 0x80n8 = ~ [
-            0n32 0
-          ] [
-            cu0 0xe0n8 < [
-              cu0 0n32 cast 0x1fn32 and 6n32 lshift
-              cu1 0n32 cast 0x3fn32 and or
-              2
-            ] [
-              endSize 2 > ~ [
-                0n32 0
-              ] [
-                cu2: buffer storageAddress 2nx + Nat8 Cref addressToReference new;
-                cu2 0xc0n8 and 0x80n8 = ~ [
-                  0n32 0
-                ] [
-                  cu0 0xf0n8 < [
-                    cu0 0n32 cast 0x0fn32 and 12n32 lshift
-                    cu1 0n32 cast 0x3fn32 and  6n32 lshift or
-                    cu2 0n32 cast 0x3fn32 and or
-                    3
-                  ] [
-                    endSize 3 > ~ [
-                      0n32 0
-                    ] [
-                      cu3: buffer storageAddress 3nx + Nat8 Cref addressToReference new;
-                      cu3 0xc0n8 and 0x80n8 = ~ [
-                        0n32 0
-                      ] [
-                        cu0 0n32 cast 0x07n32 and 18n32 lshift
-                        cu1 0n32 cast 0x3fn32 and 12n32 lshift or
-                        cu2 0n32 cast 0x3fn32 and  6n32 lshift or
-                        cu3 0n32 cast 0x3fn32 and or
-                        4
-                      ] if
-                    ] if
-                  ] if
-                ] if
-              ] if
-            ] if
-          ] if
-        ] if
-      ] if
-    ] if
-  ] if
-];
+Char: [{
+  codepoint: Int32;
 
-getCodePointSize: [
-  buffer: endSize:;;
-  endSize 0 > ~ [0] [
-    cu0: buffer new;
-    cu0 0x80n8 < cu0 0xc0n8 < ~ cu0 0xf8n8 < and or ~ [0] [
-      cu0 0x80n8 < [
-        1
-      ] [
-        endSize 1 > ~ [0] [
-          cu1: buffer storageAddress 1nx + Nat8 Cref addressToReference new;
-          cu1 0xc0n8 and 0x80n8 = ~ [0] [
-            cu0 0xe0n8 < [
-              2
-            ] [
-              endSize 2 > ~ [0] [
-                cu2: buffer storageAddress 2nx + Nat8 Cref addressToReference new;
-                cu2 0xc0n8 and 0x80n8 = ~ [0] [
-                  cu0 0xf0n8 < [
-                    3
-                  ] [
-                    endSize 3 > ~ [0] [
-                      cu3: buffer storageAddress 3nx + Nat8 Cref addressToReference new;
-                      cu3 0xc0n8 and 0x80n8 = ~ [0] [
-                        4
-                      ] if
-                    ] if
-                  ] if
-                ] if
-              ] if
-            ] if
-          ] if
-        ] if
-      ] if
-    ] if
-  ] if
-];
+  equal:   [.codepoint codepoint =];
+  greater: [.codepoint codepoint >];
+  less:    [.codepoint codepoint <];
+}];
 
-previousCodePointSize: [
-  buffer: begSize:;;
-  begSize 0 > ~ [0] [
-    cu0: buffer 1nx - Nat8 addressToReference new;
-    cu0 0xc0n8 and 0x80n8 = ~ [
-      cu0 0x80n8 < [1][0] if
-    ] [
-      begSize 1 > ~ [0] [
-        cu1: buffer 2nx - Nat8 addressToReference new;
-        cu1 0xc0n8 and 0x80n8 = ~ [
-          cu0 0xe0n8 and 0xc0n8 = [2][0] if
-        ] [
-          begSize 2 > ~ [0] [
-            cu2: buffer 3nx - Nat8 addressToReference new;
-            cu2 0xc0n8 and 0x80n8 = ~ [
-              cu0 0xf0n8 and 0xe0n8 = [3][0] if
-            ] [
-              begSize 3 > ~ [0] [
-                cu3: buffer 4nx - Nat8 addressToReference new;
-                cu3 0xf8n8 and 0xf0n8 = cu3 0n32 cast 0x07n32 and 0x6n32 lshift cu0 0n32 cast 0x3fn32 and or 0x110n32 < and [4][0] if
-              ] if
-            ] if
-          ] if
-        ] if
-      ] if
-    ] if
-  ] if
-];
+REPLACEMENT_CHARACTER: [0xFFFD toChar];
 
-fromCodePoint: [
-  bufferAddr: codePoint:;;
-  buffer: bufferAddr (0n8 0n8 0n8 0n8) addressToReference;
-  codePoint 0x110000n32 < [
-    codePoint 0x80n32 < [
-      codePoint 0n8 cast 0 @buffer @ set
-      1
-    ] [
-      codePoint 0x800n32 < [
-        codePoint 6n32 rshift             0xc0n32 or 0n8 cast 0 @buffer @ set
-        codePoint             0x3fn32 and 0x80n32 or 0n8 cast 1 @buffer @ set
-        2
-      ] [
-        codePoint 0x10000n32 < [
-          codePoint 12n32 rshift             0xe0n32 or 0n8 cast 0 @buffer @ set
-          codePoint  6n32 rshift 0x3fn32 and 0x80n32 or 0n8 cast 1 @buffer @ set
-          codePoint              0x3fn32 and 0x80n32 or 0n8 cast 2 @buffer @ set
-          3
-        ] [
-          codePoint 18n32 rshift             0xf0n32 or 0n8 cast 0 @buffer @ set
-          codePoint 12n32 rshift 0x3fn32 and 0x80n32 or 0n8 cast 1 @buffer @ set
-          codePoint  6n32 rshift 0x3fn32 and 0x80n32 or 0n8 cast 2 @buffer @ set
-          codePoint              0x3fn32 and 0x80n32 or 0n8 cast 3 @buffer @ set
-          4
-        ] if
-      ] if
-    ] if
-  ] [
-    0
-  ] if
-];
+isHeadUnit: [unit:; unit 0x80n8 < [unit 0xC0n8 0xF8n8 within] ||];
+isValidCodepoint: [codepoint:; codepoint 0 0xD7FF between [codepoint 0xE000 0x10FFFF between] ||];
+
+toChar: [Int32 same] [
+  codepoint:;
+  [codepoint isValidCodepoint] "invalid UTF-8 code point" assert
+  char: Char;
+  codepoint @char.@codepoint set
+  @char
+] pfunc;
+
+hash: [Char same] [.codepoint hash] pfunc;
+
+encodeIter: [Char same] [
+  codepoint: .codepoint Nat32 cast;
+  {
+    data: codepoint (
+      [   0x80n32 <] [0xFFFFFF00n32                                                                                                                   codepoint             or]
+      [  0x800n32 <] [0xFFFF80C0n32 codepoint 0x3Fn32 and  8n8 lshift or                                                                              codepoint  6n8 rshift or]
+      [0x10000n32 <] [0xFF8080E0n32 codepoint 0x3Fn32 and 16n8 lshift or codepoint 0xFC0n32 and  2n8 lshift or                                        codepoint 12n8 rshift or]
+      [               0x808080F0n32 codepoint 0x3Fn32 and 24n8 lshift or codepoint 0xFC0n32 and 10n8 lshift or codepoint 0x3F000n32 and 4n8 rshift or codepoint 18n8 rshift or]
+    ) cond;
+
+    get: [data Nat8 cast];
+    next: [0xFF000000n32 data 8n8 rshift or !data];
+    valid: [data 0xFFFFFFFFn32 = ~];
+  }
+] pfunc;
 
 intPow: [
   up:   new;
@@ -228,35 +117,6 @@ intPow: [
   ] if
 ];
 
-makeStringIter2: [{
-  data: size: new;;
-  codepointSize: data size getCodePointSize;
-
-  valid: [codepointSize 0 = ~];
-  get: [(data codepointSize new) toStringView];
-  next: [
-    data storageAddress codepointSize Natx cast + Nat8 addressToReference const !data
-    size codepointSize - !size
-    data size getCodePointSize !codepointSize
-  ];
-}];
-
-StringIter: [0nx 0 makeStringIter2];
-
-makeStringIter: [StringIter same] [
-  new
-] pfunc;
-
-makeStringIter: [Text same] [
-  text:;
-  text storageAddress text textSize Int32 cast makeStringIter2
-] pfunc;
-
-toIter: ["" same] [
-  text:;
-  text storageAddress text textSize Int32 cast makeStringIter2
-] pfunc;
-
 toStringView: [
   in:;
   @in (Nat8 Cref Int32) same [] [@in printStack drop "[toStringView], invalid argument, (Nat8 Cref Int32) expected" raiseStaticError] uif
@@ -270,7 +130,7 @@ toStringView: [
     size: [stringSize new];
 
     equal: [
-      other: dup Text same [asView] when;
+      other: dup Text same [makeStringView] when;
       size other.size = [size Natx cast other.data storageAddress data storageAddress memcmp 0 =] &&
     ];
 
@@ -284,12 +144,13 @@ toStringView: [
       result
     ];
 
-    iter: [data size makeStringIter2];
-
     slice: [
       index: size:;;
       (data storageAddress index Natx cast + Nat8 addressToReference const size new) toStringView
     ];
+
+    # Deprecated
+    iter: [data size makeStringIter2];
   }
 ];
 
@@ -304,49 +165,24 @@ makeStringView: [Text same] [
   (text storageAddress Nat8 addressToReference const text textSize Int32 cast) toStringView
 ] pfunc;
 
-asView: [Text same] [makeStringView] pfunc;
-
-splitString: [
-  string: makeStringView;
-  result: {
-    success: TRUE;
-    errorOffset: -1;
-    chars: StringView Array;
-  };
-
-  data: string.data;
-  size: string.size;
-  [
-    size 0 = [FALSE] [
-      codepointSize: data size getCodePointSize;
-      codepointSize 0 = [
-        FALSE @result.!success
-        data storageAddress string.data storageAddress - Int32 cast @result.!errorOffset
-        FALSE
-      ] [
-        (data codepointSize new) toStringView @result.@chars.pushBack
-        data storageAddress codepointSize Natx cast + Nat8 addressToReference const !data
-        size codepointSize - !size
-        TRUE
-      ] if
-    ] if
-  ] loop
-
-  @result
-];
-
 String: [{
-  virtual STRING: ();
   virtual SCHEMA_NAME: "String";
   chars: Nat8 Array;
-
-  INIT: [];
 
   ASSIGN: [other:; @other.@chars @chars set];
 
   DIE: [];
 
+  INIT: [];
+
   data: [@chars.@dataBegin];
+
+  equal: [
+    other: makeStringView;
+    self other.equal
+  ];
+
+  hash: [(data const size new) toStringView .hash];
 
   size: [
     chars.getSize 0 = [
@@ -356,34 +192,9 @@ String: [{
     ] if
   ];
 
-  equal: [
-    other: makeStringView;
-    self other.equal
-  ];
-
-  hash: [getStringView.hash];
-
-  iter: [data size makeStringIter2];
-
   slice: [
     index: size:;;
     (data storageAddress index Natx cast + Nat8 addressToReference const size new) toStringView
-  ];
-
-  getStringView: [
-    chars.getSize 0 = [
-      StringView
-    ] [
-      (chars.dataBegin chars.dataSize 1 -) toStringView
-    ] if
-  ];
-
-  makeNZ: [
-    chars.getSize 0 > [@chars.popBack] when #end zero
-  ];
-
-  makeZ: [
-    chars.getSize 0 > [0n8 @chars.pushBack] when #end zero
   ];
 
   catAsciiSymbolCodeNZ: [
@@ -392,16 +203,32 @@ String: [{
     codePoint 0n8 cast @chars.pushBack #end zero
   ];
 
-  catSymbolCodeNZ: [
-    codePoint:;
-    buf: (0n8 0n8 0n8 0n8);
-    length: @buf storageAddress codePoint fromCodePoint;
-
-    i: 0 dynamic;
-    [i length <] [
-      i buf @ @chars.pushBack
-      i 1 + @i set
-    ] while
+  catCharNZ: [
+    codepoint: .codepoint Nat32 cast;
+    offset: chars.size;
+    codepoint (
+      [0x80n32 <] [
+        offset 1 + @chars.enlarge
+        codepoint 0n8 cast offset @chars.at set
+      ]
+      [0x800n32 <] [
+        offset 2 + @chars.enlarge
+        codepoint 6n32 rshift 0xC0n32 or 0n8 cast offset     @chars.at set
+        codepoint 0x3Fn32 and 0x80n32 or 0n8 cast offset 1 + @chars.at set
+      ]
+      [0x10000n32 <] [
+        offset 3 + @chars.enlarge
+        codepoint 12n32 rshift             0xE0n32 or 0n8 cast offset     @chars.at set
+        codepoint  6n32 rshift 0x3Fn32 and 0x80n32 or 0n8 cast offset 1 + @chars.at set
+        codepoint              0x3Fn32 and 0x80n32 or 0n8 cast offset 2 + @chars.at set
+      ] [
+        offset 4 + @chars.enlarge
+        codepoint 18n32 rshift             0xF0n32 or 0n8 cast offset     @chars.at set
+        codepoint 12n32 rshift 0x3Fn32 and 0x80n32 or 0n8 cast offset 1 + @chars.at set
+        codepoint  6n32 rshift 0x3Fn32 and 0x80n32 or 0n8 cast offset 2 + @chars.at set
+        codepoint              0x3Fn32 and 0x80n32 or 0n8 cast offset 3 + @chars.at set
+      ]
+    ) cond
   ];
 
   catStringNZ: [
@@ -417,13 +244,13 @@ String: [{
     number: by3:;;
     number number number - < [
       "-" catStringNZ
-      number Int64 cast neg Nat64 cast by3 catUintNZ
+      number Int64 cast neg Nat64 cast by3 catNatNZ
     ] [
-      number Nat64 cast by3 catUintNZ
+      number Nat64 cast by3 catNatNZ
     ] if
   ];
 
-  catUintNZ: [
+  catNatNZ: [
     number: by3:;;
     nc: [number cast];
 
@@ -572,21 +399,15 @@ String: [{
 
   catBy3NZ: [
     arg:;
-
-    @arg 0.0r64 same [@arg 0.0r32 same] || [
-      @arg TRUE catFloatNZ
-    ] [
-      @arg 0i8 same [@arg 0i16 same] || [@arg 0i32 same] || [@arg 0i64 same] || [@arg 0ix same] || [
-        @arg TRUE catIntNZ
-      ] [
-        @arg 0n8 same [@arg 0n16 same] || [@arg 0n32 same] || [@arg 0n64 same] || [@arg 0nx same] || [
-          @arg TRUE catUintNZ
-        ] [
-          @arg printStack
-          0 .IS_NOT_A_NUMBER
-        ] if
-      ] if
-    ] if
+    () (
+      [@arg isInt ] [@arg TRUE catIntNZ  ]
+      [@arg isNat ] [@arg TRUE catNatNZ  ]
+      [@arg isReal] [@arg TRUE catFloatNZ]
+      [
+        @arg printStack
+        "object is not supported for string concatenation" raiseStaticError
+      ]
+    ) cond
   ];
 
   catCondNZ: [
@@ -599,32 +420,22 @@ String: [{
 
   catNZ: [
     arg:;
-    @arg "" same [@arg StringView same] || [@arg "STRING" has] || [
-      arg catStringNZ
-    ] [
-      @arg 0.0r64 same [@arg 0.0r32 same] || [
-        @arg FALSE catFloatNZ
-      ] [
-        @arg 0i8 same [@arg 0i16 same] || [@arg 0i32 same] || [@arg 0i64 same] || [@arg 0ix same] || [
-          @arg FALSE catIntNZ
-        ] [
-          @arg 0n8 same [@arg 0n16 same] || [@arg 0n32 same] || [@arg 0n64 same] || [@arg 0nx same] || [
-            @arg FALSE catUintNZ
-          ] [
-            @arg TRUE same [
-              @arg catCondNZ
-            ] [
-              @arg printStack
-              0 .CANNOT_CAT_THIS_TYPE
-            ] if
-          ] if
-        ] if
-      ] if
-    ] if
+    @arg (
+      [Char same] [@arg catCharNZ]
+      ["" same [@arg StringView same [@arg "SCHEMA_NAME" has [@arg.SCHEMA_NAME "String" =] &&] ||] ||] [@arg catStringNZ]
+      [TRUE same] [@arg catCondNZ]
+      [isInt ] [@arg FALSE catIntNZ  ]
+      [isNat ] [@arg FALSE catNatNZ  ]
+      [isReal] [@arg FALSE catFloatNZ]
+      [
+        @arg printStack
+        "object is not supported for string concatenation" raiseStaticError
+      ]
+    ) cond
   ];
 
   catAsciiSymbolCode: [makeNZ catAsciiSymbolCodeNZ makeZ];
-  catSymbolCode:      [makeNZ catSymbolCodeNZ      makeZ];
+  catChar:            [makeNZ catCharNZ            makeZ];
   catString:          [makeNZ catStringNZ          makeZ];
   catInt:             [makeNZ catIntNZ             makeZ];
   catUint:            [makeNZ catUintNZ            makeZ];
@@ -653,57 +464,45 @@ String: [{
     makeZ
   ];
 
+  makeNZ: [
+    chars.getSize 0 > [@chars.popBack] when #end zero
+  ];
+
+  makeZ: [
+    chars.getSize 0 > [0n8 @chars.pushBack] when #end zero
+  ];
+
   resize: [
     size:;
     size @chars.resize
     makeZ
   ];
-}];
 
-Hex: [{
-  virtual HEX: ();
+  # Deprecated
+  virtual STRING: ();
+
+  catSymbolCode: [
+    Int32 cast toChar catChar
+  ];
+
+  getStringView: [
+    chars.getSize 0 = [
+      StringView
+    ] [
+      (chars.dataBegin chars.dataSize 1 -) toStringView
+    ] if
+  ];
+
+  iter: [data size makeArrayIter];
 }];
 
 By3: [{
   virtual BY3: ();
 }];
 
-makeStringView: ["STRING" has] [
-  .getStringView
-] pfunc;
-
-makeStringViewByAddress: [
-  address:;
-  (address Nat8 addressToReference const address strlen Int32 cast) toStringView
-];
-
-toString: [
-  arg:;
-  result: String;
-  @arg @result.cat
-  @result
-];
-
-codepointToString: [
-  arg:;
-  result: String;
-  arg @result.catSymbolCode
-  @result
-];
-
-assembleString: [
-  list:;
-  result: String;
-  list @result.catMany
-  @result
-];
-
-print: ["" same ~] [toString print] pfunc;
-
-print: ["STRING" has] [
-  string:;
-  (string.data) "%s\00" printf drop
-] pfunc;
+Hex: [{
+  virtual HEX: ();
+}];
 
 addLog: [
   hasLogs [
@@ -713,8 +512,182 @@ addLog: [
   ] if
 ];
 
+assembleString: [
+  list:;
+  result: String;
+  list @result.catMany
+  @result
+];
+
+decode: [Text same                 ] [text:; (text storageAddress Nat8 addressToReference text textSize Int32 cast) toTextIter decodeChars] pfunc;
+decode: ["TextIter"   hasSchemaName] [                                                                                         decodeChars] pfunc;
+decode: ["StringView" hasSchemaName] [view:;   (view.data view.size) toTextIter                                                decodeChars] pfunc;
+decode: ["String"     hasSchemaName] [string:; (string.data string.size) toTextIter                                            decodeChars] pfunc;
+
+hash: ["" same] [makeStringView.hash] pfunc;
+
+makeStringView: [object:; @object "SCHEMA_NAME" has [@object.SCHEMA_NAME "String" =] &&] [
+  string:;
+  (string.data string.size) toStringView
+] pfunc;
+
+makeStringViewByAddress: [
+  address:;
+  (address Nat8 addressToReference const address strlen Int32 cast) toStringView
+];
+
+print: ["" same ~] [toString print] pfunc;
+
+print: [object:; @object "SCHEMA_NAME" has [@object.SCHEMA_NAME "String" =] &&] [
+  string:;
+  (string.data) "%s\00" printf drop
+] pfunc;
+
 printList: [
   assembleString print
 ];
 
-hash: ["" same] [makeStringView.hash] pfunc;
+toString: [
+  arg:;
+  result: String;
+  @arg @result.cat
+  @result
+];
+
+# Deprecated
+decodeChars: [{
+  source: toIter;
+  codepoint: 0;
+
+  get: [
+    [valid] "decoder is not valid" assert
+    codepoint toChar
+  ];
+
+  next: [
+    [valid] "decoder is not valid" assert
+    return3: [
+      @source.next source.valid ~ [-1] [
+        unit2: source.get new; unit2 0xC0n8 and 0x80n8 = ~ [-1] [
+          @source.next
+          unit0 0n32 cast 0x0Fn32 and 12n32 lshift
+          unit1 0n32 cast 0x3Fn32 and  6n32 lshift or
+          unit2 0n32 cast 0x3Fn32 and or
+          Int32 cast
+        ] if
+      ] if
+    ];
+
+    return4: [
+      @source.next source.valid ~ [-1] [
+        unit2: source.get new; unit2 0xC0n8 and 0x80n8 = ~ [-1] [
+          @source.next source.valid ~ [-1] [
+            unit3: source.get new; unit3 0xC0n8 and 0x80n8 = ~ [-1] [
+              @source.next
+              unit0 0n32 cast 0x07n32 and 18n32 lshift
+              unit1 0n32 cast 0x3Fn32 and 12n32 lshift or
+              unit2 0n32 cast 0x3Fn32 and  6n32 lshift or
+              unit3 0n32 cast 0x3Fn32 and or
+              Int32 cast
+            ] if
+          ] if
+        ] if
+      ] if
+    ];
+
+    source.valid ~ [-1] [
+      unit0: source.get new;
+      unit0 (
+        [0x80n8 <] [@source.next unit0 Int32 cast]
+        [0xC2n8 <] [-1]
+        [0xF5n8 <] [
+          @source.next source.valid ~ [-1] [
+            unit1: source.get new;
+            unit0 (
+              [0xE0n8 <] [
+                unit1 0xC0n8 and 0x80n8 = ~ [-1] [
+                  @source.next
+                  unit0 0n32 cast 0x1Fn32 and 6n32 lshift
+                  unit1 0n32 cast 0x3Fn32 and or
+                  Int32 cast
+                ] if
+              ]
+              [0xE0n8 =] [unit1 0xE0n8 and 0xA0n8 =  [return3] [-1] if]
+              [0xEDn8 <] [unit1 0xC0n8 and 0x80n8 =  [return3] [-1] if]
+              [0xEDn8 =] [unit1 0xE0n8 and 0x80n8 =  [return3] [-1] if]
+              [0xF0n8 <] [unit1 0xC0n8 and 0x80n8 =  [return3] [-1] if]
+              [0xF0n8 =] [unit1 0x90n8 0xC0n8 within [return4] [-1] if]
+              [0xF4n8 <] [unit1 0xC0n8 and 0x80n8 =  [return4] [-1] if]
+              [           unit1 0xF0n8 and 0x80n8 =  [return4] [-1] if]
+            ) cond
+          ] if
+        ]
+        [-1]
+      ) cond
+    ] if !codepoint
+  ];
+
+  valid: [codepoint -1 = ~];
+
+  next
+}];
+
+getCodePointAndSize: [
+  data: size:;;
+  iter: {iter: data size makeArrayIter; count: 0; DIE: []; get: [iter.get]; next: [@iter.next count 1 + !count]; valid: [iter.valid];};
+  decoder: @iter decodeChars;
+  decoder.valid [
+    decoder.get .codepoint Nat32 cast iter.count new
+  ] [
+    0n32 0
+  ] if
+];
+
+getCodePointSize: [
+  data: size:;;
+  iter: {iter: data size makeArrayIter; count: 0; DIE: []; get: [iter.get]; next: [@iter.next count 1 + !count]; valid: [iter.valid];};
+  decoder: @iter decodeChars;
+  decoder.valid [iter.count new] [0] if
+];
+
+makeStringIter2: [{
+  data: size: new;;
+  codepointSize: data size getCodePointSize;
+
+  valid: [codepointSize 0 = ~];
+  get: [(data codepointSize new) toStringView];
+  next: [
+    data storageAddress codepointSize Natx cast + Nat8 addressToReference const !data
+    size codepointSize - !size
+    data size getCodePointSize !codepointSize
+  ];
+}];
+
+splitString: [
+  string: makeStringView;
+  result: {
+    success: TRUE;
+    errorOffset: -1;
+    chars: StringView Array;
+  };
+
+  data: string.data;
+  size: string.size;
+  [
+    size 0 = [FALSE] [
+      codepointSize: data size getCodePointSize;
+      codepointSize 0 = [
+        FALSE @result.!success
+        data storageAddress string.data storageAddress - Int32 cast @result.!errorOffset
+        FALSE
+      ] [
+        (data codepointSize new) toStringView @result.@chars.pushBack
+        data storageAddress codepointSize Natx cast + Nat8 addressToReference const !data
+        size codepointSize - !size
+        TRUE
+      ] if
+    ] if
+  ] loop
+
+  @result
+];
