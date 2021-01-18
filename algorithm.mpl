@@ -55,6 +55,8 @@
 "control.isBuiltinTuple" use
 "control.new"            use
 "control.pfunc"          use
+"control.swap"           use
+"control.unwrap"         use
 "control.when"           use
 "control.while"          use
 "control.||"             use
@@ -75,7 +77,7 @@ isView: [
   @object "size" has [@object "slice" has] &&
 ];
 
-# Built-in tuple support
+# Built-in array, text, and tuple support
 makeArrayIndex: [
   data: size:;;
   [size 0 < ~] "invalid size" assert
@@ -144,6 +146,32 @@ makeArrayView: [
       [size 0 viewSize offset - between] "size is out of bounds" assert
       @data storageAddress @data storageSize offset Natx cast * + @data addressToReference size makeArrayView
     ];
+  }
+];
+
+toTextIter: [
+  unwrap data: size:;;
+  [size 0 < ~] "invalid size" assert
+  {
+    SCHEMA_NAME: virtual "TextIter";
+
+    data: @data;
+    iterSize: size new;
+
+    get: [
+      [valid] "Iter is not valid" assert
+      @data
+    ];
+
+    next: [
+      [valid] "Iter is not valid" assert
+      @data storageAddress @data storageSize + @data addressToReference !data
+      iterSize 1 - !iterSize
+    ];
+
+    size: [iterSize new];
+
+    valid: [iterSize 0 = ~];
   }
 ];
 
@@ -261,6 +289,34 @@ toView: [
 ];
 
 # Index algorithms
+=: [object0: object1:;; @object0 "equal" has [@object1 "equal" has] || [FALSE] [@object0 toIter drop @object1 toIter drop TRUE] if] [
+  iter0: iter1: toIter; toIter;
+  (@iter0 @iter1) ["size" has] all [
+    @iter0.size @iter1.size = ~ [FALSE] [
+      result: FALSE;
+      [
+        @iter1.valid ~ [TRUE !result FALSE] [
+          @iter0.get @iter1.get = dup [@iter0.next @iter1.next] when
+        ] if
+      ] loop
+
+      result
+    ] if
+  ] [
+    result: FALSE;
+    [
+      @iter1.valid ~ [
+        @iter0.valid ~ [TRUE !result] when
+        FALSE
+      ] [
+        @iter0.valid [@iter0.get @iter1.get =] && dup [@iter0.next @iter1.next] when
+      ] if
+    ] loop
+
+    result
+  ] if
+] pfunc;
+
 =: [object0: object1:;; @object0 "equal" has [@object1 "equal" has] || [FALSE] [@object0 toIndex drop @object1 toIndex drop TRUE] if] [
   object0: object1: toIndex; toIndex;
   @object0.size @object1.size = ~ [FALSE] [
@@ -278,9 +334,26 @@ toView: [
 ] pfunc;
 
 beginsWith: [
+  iter0: iter1: toIter; toIter;
+  sizeCheckable: @iter0 "size" has [@iter1 "size" has] &&;
+  sizeCheckable [@iter0.size @iter1.size <] && [FALSE] [
+    result: FALSE;
+    [
+      @iter1.valid ~ [TRUE !result FALSE] [
+        sizeCheckable [@iter0.valid] || [
+          @iter0.get @iter1.get = dup [@iter0.next @iter1.next] when
+        ] &&
+      ] if
+    ] loop
+
+    result
+  ] if
+];
+
+beginsWith: [toView swap toView TRUE] [
   object0: object1: toView; toView;
   @object0.size @object1.size < ~ [@object0 @object1.size head @object1 =] &&
-];
+] pfunc;
 
 endsWith: [
   object0: object1: toView; toView;
@@ -362,7 +435,7 @@ wrapIter: [{
 
 joinIter: [
   sources: body:;;
-  @sources wrapIter [unwrap] applyIter @body applyIter
+  @sources wrapIter [unwrap] map @body map
 ];
 
 # Iter consumers
