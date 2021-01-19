@@ -66,23 +66,9 @@ toChar: [Int32 same] [
   @char
 ] pfunc;
 
+toChar: [Text same] [decode .get] pfunc;
+
 hash: [Char same] [.codepoint hash] pfunc;
-
-encodeIter: [Char same] [
-  codepoint: .codepoint Nat32 cast;
-  {
-    data: codepoint (
-      [   0x80n32 <] [0xFFFFFF00n32                                                                                                                   codepoint             or]
-      [  0x800n32 <] [0xFFFF80C0n32 codepoint 0x3Fn32 and  8n8 lshift or                                                                              codepoint  6n8 rshift or]
-      [0x10000n32 <] [0xFF8080E0n32 codepoint 0x3Fn32 and 16n8 lshift or codepoint 0xFC0n32 and  2n8 lshift or                                        codepoint 12n8 rshift or]
-      [               0x808080F0n32 codepoint 0x3Fn32 and 24n8 lshift or codepoint 0xFC0n32 and 10n8 lshift or codepoint 0x3F000n32 and 4n8 rshift or codepoint 18n8 rshift or]
-    ) cond;
-
-    get: [data Nat8 cast];
-    next: [0xFF000000n32 data 8n8 rshift or !data];
-    valid: [data 0xFFFFFFFFn32 = ~];
-  }
-] pfunc;
 
 intPow: [
   up:   new;
@@ -183,6 +169,8 @@ String: [{
   ];
 
   hash: [(data const size new) toStringView .hash];
+
+  iter: [data size makeArrayIter];
 
   size: [
     chars.getSize 0 = [
@@ -492,8 +480,6 @@ String: [{
       (chars.dataBegin chars.dataSize 1 -) toStringView
     ] if
   ];
-
-  iter: [data size makeArrayIter];
 }];
 
 By3: [{
@@ -512,6 +498,12 @@ addLog: [
   ] if
 ];
 
+addTerminator: [
+  result: toString;
+  "\00" @result.cat
+  @result
+];
+
 assembleString: [
   list:;
   result: String;
@@ -522,7 +514,7 @@ assembleString: [
 decode: [Text same                 ] [text:; (text storageAddress Nat8 addressToReference text textSize Int32 cast) toTextIter decodeChars] pfunc;
 decode: ["TextIter"   hasSchemaName] [                                                                                         decodeChars] pfunc;
 decode: ["StringView" hasSchemaName] [view:;   (view.data view.size) toTextIter                                                decodeChars] pfunc;
-decode: ["String"     hasSchemaName] [string:; (string.data string.size) toTextIter                                            decodeChars] pfunc;
+decode: ["String"     hasSchemaName] [                                                                                         decodeChars] pfunc;
 
 hash: ["" same] [makeStringView.hash] pfunc;
 
@@ -539,7 +531,7 @@ makeStringViewByAddress: [
 print: ["" same ~] [toString print] pfunc;
 
 print: [object:; @object "SCHEMA_NAME" has [@object.SCHEMA_NAME "String" =] &&] [
-  string:;
+  string: addTerminator;
   (string.data) "%s\00" printf drop
 ] pfunc;
 

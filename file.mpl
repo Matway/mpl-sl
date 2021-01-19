@@ -1,19 +1,20 @@
-"Array.Array" use
-"String.String" use
-"String.assembleString" use
-"String.makeStringView" use
+"Array.Array"                    use
+"String.String"                  use
+"String.addTerminator"           use
+"String.assembleString"          use
+"String.makeStringView"          use
 "String.makeStringViewByAddress" use
-"String.toString" use
-"control.&&" use
-"control.Int32" use
-"control.Nat8" use
-"control.Natx" use
-"control.Ref" use
-"control.Text" use
-"control.cond" use
-"control.drop" use
-"control.||" use
-"conventions.cdecl" use
+"String.toString"                use
+"control.&&"                     use
+"control.Int32"                  use
+"control.Nat8"                   use
+"control.Natx"                   use
+"control.Ref"                    use
+"control.Text"                   use
+"control.cond"                   use
+"control.drop"                   use
+"control.||"                     use
+"conventions.cdecl"              use
 
 {stream: Natx;} Int32                                       {convention: cdecl;} "fclose"   importFunction
 {stream: Natx;} Int32                                       {convention: cdecl;} "ferror"   importFunction
@@ -35,7 +36,7 @@ getErrnoText: [
 ];
 
 loadFile: [
-  name: toString;
+  name: addTerminator;
   result: {
     result: String;
     data: Nat8 Array;
@@ -65,7 +66,7 @@ loadFile: [
 ];
 
 saveFile: [
-  data: name: toString;;
+  data: name: addTerminator;;
   file: Natx;
   error: Int32;
   () (
@@ -86,7 +87,7 @@ saveFile: [
 ];
 
 loadString: [
-  name: toString;
+  name: addTerminator;
   result: {
     success: TRUE;
     data: String;
@@ -110,10 +111,8 @@ loadString: [
 
 saveString: [
   stringView: makeStringView;
-  name: toString;
-
+  name: addTerminator;
   size: stringView.size;
-
   f: "wb\00" name.data storageAddress Text addressToReference fopen;
   f 0nx = ~
   [
@@ -125,10 +124,8 @@ saveString: [
 
 appendString: [
   stringView: makeStringView;
-  name: toString;
-
+  name: addTerminator;
   size: stringView.size;
-
   f: "ab\00" name.data storageAddress Text addressToReference fopen;
   f 0nx = ~
   [
