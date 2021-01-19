@@ -482,6 +482,111 @@ String: [{
   ];
 }];
 
+Utf8DecoderMode: {
+  REPORT:  [0]; # Produce Int32 code points; stop as soon as an error is detected and return -1
+  TRUST:   [1]; # Produce Chars; an ill-formed sequence is an undefined behavior
+  REPLACE: [2]; # Produce Chars; replace each maximal subpart of an ill-formed sequence with the replacement character
+};
+
+decodeUtf8: [{
+  mode: virtual new;
+  source: toIter;
+  codepoint: 0;
+
+  get: [
+    [valid] "decoder is not valid" assert
+    codepoint mode Utf8DecoderMode.REPORT = ~ [toChar] when
+  ];
+
+  next: [
+    [valid] "decoder is not valid" assert
+    check: [
+      predicate: action:;;
+      mode Utf8DecoderMode.TRUST = [
+        @predicate "ill-formed UTF-8 sequence" assert
+        action
+      ] [
+        predicate [action] [
+          mode Utf8DecoderMode.REPORT = [-1] [REPLACEMENT_CHARACTER.codepoint new] if
+        ] if
+      ] if
+    ];
+
+    source.valid ~ [-2] [
+      unit0: source.get new; @source.next
+      unit0 0x80n8 < [unit0 Int32 cast] [
+        unit0 0xE0n8 < [
+          [
+            unit0 0xC2n8 < ~ [source.valid] &&
+          ] [
+            unit1: source.get new;
+            [
+              unit1 0xC0n8 and 0x80n8 =
+            ] [
+              @source.next
+              unit0 0x1Fn8 and Nat32 cast 6n8 lshift
+              unit1 0x3Fn8 and Nat32 cast or
+              Int32 cast
+            ] check
+          ] check
+        ] [
+          unit0 0xF0n8 < [
+            [source.valid] [
+              unit1: source.get new;
+              [
+                unit1 unit0 0xE0n8 = [0xE0n8 and 0xA0n8] [
+                  unit0 0xEDn8 = [0xE0n8 and 0x80n8] [0xC0n8 and 0x80n8] if
+                ] if =
+              ] [
+                @source.next [source.valid] [
+                  unit2: source.get new;
+                  [unit2 0xC0n8 and 0x80n8 =] [
+                    @source.next
+                    unit0 0x0Fn8 and Nat32 cast 12n8 lshift
+                    unit1 0x3Fn8 and Nat32 cast  6n8 lshift or
+                    unit2 0x3Fn8 and Nat32 cast             or
+                    Int32 cast
+                  ] check
+                ] check
+              ] check
+            ] check
+          ] [
+            [unit0 0xF5n8 < [source.valid] &&] [
+              unit1: source.get new;
+              [
+                unit1 unit0 0xF0n8 = [0x90n8 0xC0n8 within] [
+                  unit0 0xF4n8 = [0xF0n8] [0xC0n8] if and 0x80n8 =
+                ] if
+              ] [
+                @source.next [source.valid] [
+                  unit2: source.get new;
+                  [unit2 0xC0n8 and 0x80n8 =] [
+                    @source.next [source.valid] [
+                      unit3: source.get new;
+                      [unit3 0xC0n8 and 0x80n8 =] [
+                        @source.next
+                        unit0 0x07n8 and Nat32 cast 18n8 lshift
+                        unit1 0x3Fn8 and Nat32 cast 12n8 lshift or
+                        unit2 0x3Fn8 and Nat32 cast  6n8 lshift or
+                        unit3 0x3Fn8 and Nat32 cast             or
+                        Int32 cast
+                      ] check
+                    ] check
+                  ] check
+                ] check
+              ] check
+            ] check
+          ] if
+        ] if
+      ] if
+    ] if !codepoint
+  ];
+
+  valid: [codepoint -2 = ~];
+
+  next
+}];
+
 By3: [{
   virtual BY3: ();
 }];
@@ -511,10 +616,10 @@ assembleString: [
   @result
 ];
 
-decode: [Text same                 ] [text:; (text storageAddress Nat8 addressToReference text textSize Int32 cast) toTextIter decodeChars] pfunc;
-decode: ["TextIter"   hasSchemaName] [                                                                                         decodeChars] pfunc;
-decode: ["StringView" hasSchemaName] [view:;   (view.data view.size) toTextIter                                                decodeChars] pfunc;
-decode: ["String"     hasSchemaName] [                                                                                         decodeChars] pfunc;
+decode: [Text same                 ] [text:; (text storageAddress Nat8 addressToReference text textSize Int32 cast) toTextIter Utf8DecoderMode.TRUST   decodeUt8] pfunc;
+decode: ["TextIter"   hasSchemaName] [                                                                                         Utf8DecoderMode.REPLACE decodeUt8] pfunc;
+decode: ["StringView" hasSchemaName] [view:; (view.data view.size) toTextIter                                                  Utf8DecoderMode.TRUST   decodeUt8] pfunc;
+decode: ["String"     hasSchemaName] [                                                                                         Utf8DecoderMode.TRUST   decodeUt8] pfunc;
 
 hash: ["" same] [makeStringView.hash] pfunc;
 
@@ -547,87 +652,10 @@ toString: [
 ];
 
 # Deprecated
-decodeChars: [{
-  source: toIter;
-  codepoint: 0;
-
-  get: [
-    [valid] "decoder is not valid" assert
-    codepoint toChar
-  ];
-
-  next: [
-    [valid] "decoder is not valid" assert
-    return3: [
-      @source.next source.valid ~ [-1] [
-        unit2: source.get new; unit2 0xC0n8 and 0x80n8 = ~ [-1] [
-          @source.next
-          unit0 0n32 cast 0x0Fn32 and 12n32 lshift
-          unit1 0n32 cast 0x3Fn32 and  6n32 lshift or
-          unit2 0n32 cast 0x3Fn32 and or
-          Int32 cast
-        ] if
-      ] if
-    ];
-
-    return4: [
-      @source.next source.valid ~ [-1] [
-        unit2: source.get new; unit2 0xC0n8 and 0x80n8 = ~ [-1] [
-          @source.next source.valid ~ [-1] [
-            unit3: source.get new; unit3 0xC0n8 and 0x80n8 = ~ [-1] [
-              @source.next
-              unit0 0n32 cast 0x07n32 and 18n32 lshift
-              unit1 0n32 cast 0x3Fn32 and 12n32 lshift or
-              unit2 0n32 cast 0x3Fn32 and  6n32 lshift or
-              unit3 0n32 cast 0x3Fn32 and or
-              Int32 cast
-            ] if
-          ] if
-        ] if
-      ] if
-    ];
-
-    source.valid ~ [-1] [
-      unit0: source.get new;
-      unit0 (
-        [0x80n8 <] [@source.next unit0 Int32 cast]
-        [0xC2n8 <] [-1]
-        [0xF5n8 <] [
-          @source.next source.valid ~ [-1] [
-            unit1: source.get new;
-            unit0 (
-              [0xE0n8 <] [
-                unit1 0xC0n8 and 0x80n8 = ~ [-1] [
-                  @source.next
-                  unit0 0n32 cast 0x1Fn32 and 6n32 lshift
-                  unit1 0n32 cast 0x3Fn32 and or
-                  Int32 cast
-                ] if
-              ]
-              [0xE0n8 =] [unit1 0xE0n8 and 0xA0n8 =  [return3] [-1] if]
-              [0xEDn8 <] [unit1 0xC0n8 and 0x80n8 =  [return3] [-1] if]
-              [0xEDn8 =] [unit1 0xE0n8 and 0x80n8 =  [return3] [-1] if]
-              [0xF0n8 <] [unit1 0xC0n8 and 0x80n8 =  [return3] [-1] if]
-              [0xF0n8 =] [unit1 0x90n8 0xC0n8 within [return4] [-1] if]
-              [0xF4n8 <] [unit1 0xC0n8 and 0x80n8 =  [return4] [-1] if]
-              [           unit1 0xF0n8 and 0x80n8 =  [return4] [-1] if]
-            ) cond
-          ] if
-        ]
-        [-1]
-      ) cond
-    ] if !codepoint
-  ];
-
-  valid: [codepoint -1 = ~];
-
-  next
-}];
-
 getCodePointAndSize: [
   data: size:;;
   iter: {iter: data size makeArrayIter; count: 0; DIE: []; get: [iter.get]; next: [@iter.next count 1 + !count]; valid: [iter.valid];};
-  decoder: @iter decodeChars;
+  decoder: @iter Utf8DecoderMode.REPLACE decodeUtf8;
   decoder.valid [
     decoder.get .codepoint Nat32 cast iter.count new
   ] [
@@ -638,7 +666,7 @@ getCodePointAndSize: [
 getCodePointSize: [
   data: size:;;
   iter: {iter: data size makeArrayIter; count: 0; DIE: []; get: [iter.get]; next: [@iter.next count 1 + !count]; valid: [iter.valid];};
-  decoder: @iter decodeChars;
+  decoder: @iter Utf8DecoderMode.REPLACE decodeUtf8;
   decoder.valid [iter.count new] [0] if
 ];
 
