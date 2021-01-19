@@ -616,10 +616,10 @@ assembleString: [
   @result
 ];
 
-decode: [Text same                 ] [text:; (text storageAddress Nat8 addressToReference text textSize Int32 cast) toTextIter Utf8DecoderMode.TRUST   decodeUt8] pfunc;
-decode: ["TextIter"   hasSchemaName] [                                                                                         Utf8DecoderMode.REPLACE decodeUt8] pfunc;
-decode: ["StringView" hasSchemaName] [view:; (view.data view.size) toTextIter                                                  Utf8DecoderMode.TRUST   decodeUt8] pfunc;
-decode: ["String"     hasSchemaName] [                                                                                         Utf8DecoderMode.TRUST   decodeUt8] pfunc;
+decode: [Text same                 ] [text:; (text storageAddress Nat8 addressToReference text textSize Int32 cast) toTextIter Utf8DecoderMode.TRUST   decodeUtf8] pfunc;
+decode: ["TextIter"   hasSchemaName] [                                                                                         Utf8DecoderMode.REPLACE decodeUtf8] pfunc;
+decode: ["StringView" hasSchemaName] [view:; (view.data view.size) toTextIter                                                  Utf8DecoderMode.TRUST   decodeUtf8] pfunc;
+decode: ["String"     hasSchemaName] [                                                                                         Utf8DecoderMode.TRUST   decodeUtf8] pfunc;
 
 hash: ["" same] [makeStringView.hash] pfunc;
 

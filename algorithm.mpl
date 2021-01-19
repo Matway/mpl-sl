@@ -400,13 +400,19 @@ iota: [
 ];
 
 # Iter processors
-find: [
+find: [swap toIter swap findStatic];
+find: [drop toIter dynamic .get TRUE] [
   iter: body:; toIter;
-  [@iter.valid [@iter.get body ~] &&] [
-    @iter.next
-  ] while
-
+  [@iter.valid [@iter.get body ~] &&] [@iter.next] while
   @iter
+] pfunc;
+
+findStatic: [
+  iter: body:;;
+  @iter.valid [@iter.get body ~] && ~ [@iter] [
+    @iter.next
+    @iter @body findStatic
+  ] if
 ];
 
 findNot: [
@@ -419,13 +425,19 @@ findEqual: [
   @iter [@value =] find
 ];
 
-# Iter transformers
-map: [{
-  source: body:; toIter;
+findEqualNot: [
+  iter: value:;;
+  @iter [@value = ~] find
+];
 
+# Iter transformers
+countIter: [{
+  source: swap toIter;
+  count:;
+
+  get:   [@source.get];
+  next:  [@source.next count 1 + @count set];
   valid: [@source.valid];
-  get:   [@source.get body];
-  next:  [@source.next];
 }];
 
 enumerate: [{
@@ -437,11 +449,28 @@ enumerate: [{
   next:  [@source.next key 1 + !key];
 }];
 
-filter: [{
+filter: [
+  source: body:;;
+  {
+    source: @source @body find;
+    body: @body;
+
+    get: [@source.get];
+    next: [@source.next @source @body find !source];
+    valid: [@source.valid];
+  }
+];
+
+joinIter: [
+  sources: body:;;
+  @sources wrapIter [unwrap] map @body map
+];
+
+map: [{
   source: body:; toIter;
 
-  valid: [@source const @body find !source @source.valid];
-  get:   [@source.get ];
+  valid: [@source.valid];
+  get:   [@source.get body];
   next:  [@source.next];
 }];
 
@@ -452,11 +481,6 @@ wrapIter: [{
   get:   [@sources [.get  ] (each)];
   next:  [@sources [.next ] each  ];
 }];
-
-joinIter: [
-  sources: body:;;
-  @sources wrapIter [unwrap] map @body map
-];
 
 # Iter consumers
 all: [swap toIter swap allStatic];
