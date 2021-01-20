@@ -1,30 +1,30 @@
-"String.String" use
+"String.String"    use
 "String.printList" use
-"control.=" use
-"control.AsRef" use
-"control.Int32" use
-"control.Nat16" use
-"control.Nat32" use
-"control.Nat8" use
-"control.Natx" use
-"control.Ref" use
-"control.assert" use
-"control.dup" use
+"algorithm.="      use
+"control.AsRef"    use
+"control.Int32"    use
+"control.Nat16"    use
+"control.Nat32"    use
+"control.Nat8"     use
+"control.Natx"     use
+"control.Ref"      use
+"control.assert"   use
+"control.dup"      use
 "control.failProc" use
-"control.isNil" use
+"control.isNil"    use
 "control.sequence" use
-"control.when" use
+"control.when"     use
 
 "kernel32.kernel32" use
-"ws2_32.winsock2" use
+"ws2_32.winsock2"   use
 
-"TcpConnection.TcpConnection" use
-"syncPrivate.FiberData" use
-"syncPrivate.canceled?" use
-"syncPrivate.completionPort" use
-"syncPrivate.currentFiber" use
+"TcpConnection.TcpConnection"   use
+"syncPrivate.FiberData"         use
+"syncPrivate.canceled?"         use
+"syncPrivate.completionPort"    use
+"syncPrivate.currentFiber"      use
 "syncPrivate.defaultCancelFunc" use
-"syncPrivate.dispatch" use
+"syncPrivate.dispatch"          use
 
 TcpAcceptor: [{
   INIT: [winsock2.INVALID_SOCKET !acceptor];

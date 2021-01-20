@@ -45,11 +45,12 @@
 # A View itself does not provide access to items, but other interfaces such as Index or Iterable can provide it.
 
 "control.&&"             use
-"control.="              use
+"control.Int32"          use
+"control.Nat8"           use
 "control.Natx"           use
+"control.Text"           use
 "control.assert"         use
 "control.between"        use
-"control.compose"        use
 "control.drop"           use
 "control.dup"            use
 "control.isBuiltinTuple" use
@@ -103,6 +104,7 @@ makeArrayIter: [
   data: size:;;
   [size 0 < ~] "invalid size" assert
   {
+    SCHEMA_NAME: virtual "ArrayIter";
     data: @data;
     iterSize: size new;
 
@@ -154,7 +156,6 @@ toTextIter: [
   [size 0 < ~] "invalid size" assert
   {
     SCHEMA_NAME: virtual "TextIter";
-
     data: @data;
     iterSize: size new;
 
@@ -172,6 +173,27 @@ toTextIter: [
     size: [iterSize new];
 
     valid: [iterSize 0 = ~];
+  }
+];
+
+toTextView: [
+  unwrap data: size:;;
+  [size 0 < ~] "invalid size" assert
+  {
+    SCHEMA_NAME: virtual "TextView";
+    data: @data;
+    viewSize: size dup new isDynamic [] [virtual] uif new;
+
+    iter: [(@data viewSize) toTextIter];
+
+    size: [viewSize new];
+
+    slice: [
+      offset: size:;;
+      [offset 0 viewSize between] "offset is out of bounds" assert
+      [size 0 viewSize offset - between] "size is out of bounds" assert
+      (@data storageAddress @data storageSize offset Natx cast * + @data addressToReference size) toTextView
+    ];
   }
 ];
 
@@ -270,10 +292,12 @@ toIndex: [
 
 toIter: [
   source:;
-  @source isBuiltinTuple [@source 0 @source fieldCount makeTupleIter] [
-    @source isIter [@source dup "DIE" has ~ [new] when] [
-      @source "iter" has [@source.iter] [
-        "Built-in tuple, Iter, or Iterable expected" raiseStaticError
+  @source Text same [(source storageAddress Nat8 addressToReference source textSize Int32 cast) toTextIter] [
+    @source isBuiltinTuple [@source 0 @source fieldCount makeTupleIter] [
+      @source isIter [@source dup "DIE" has ~ [new] when] [
+        @source "iter" has [@source.iter] [
+          "Built-in text, tuple, Iter, or Iterable expected" raiseStaticError
+        ] if
       ] if
     ] if
   ] if
@@ -281,62 +305,51 @@ toIter: [
 
 toView: [
   source:;
-  @source isBuiltinTuple [@source 0 @source fieldCount makeTupleView] [
-    @source isView [@source dup "DIE" has ~ [new] when] [
-      "Built-in tuple or View expected" raiseStaticError
+  @source Text same [(source storageAddress Nat8 addressToReference source textSize Int32 cast) toTextView] [
+    @source isBuiltinTuple [@source 0 @source fieldCount makeTupleView] [
+      @source isView [@source dup "DIE" has ~ [new] when] [
+        "Built-in tuple or View expected" raiseStaticError
+      ] if
     ] if
   ] if
 ];
 
-# Index algorithms
-=: [object0: object1:;; @object0 "equal" has [@object1 "equal" has] || [FALSE] [@object0 toIter drop @object1 toIter drop TRUE] if] [
-  iter0: iter1: toIter; toIter;
-  (@iter0 @iter1) ["size" has] all [
-    @iter0.size @iter1.size = ~ [FALSE] [
-      result: FALSE;
-      [
-        @iter1.valid ~ [TRUE !result FALSE] [
-          @iter0.get @iter1.get = dup [@iter0.next @iter1.next] when
-        ] if
-      ] loop
-
-      result
+# Comparison algorithms
+=: [
+  object0: object1:;;
+  @object0 isCombined [TRUE] [@object1 isCombined] if [
+    @object0 "equal" has [FALSE] [
+      @object1 "equal" has [FALSE] [
+        @object0 toIter drop
+        @object1 toIter drop
+        TRUE
+      ] if
     ] if
-  ] [
+  ] [FALSE] if
+] [
+  iter0: iter1: toIter; toIter;
+  sizeCheckable: @iter0 "size" has [@iter1 "size" has] &&;
+  sizeCheckable ~ [@iter0.size @iter1.size =] || [
     result: FALSE;
     [
       @iter1.valid ~ [
-        @iter0.valid ~ [TRUE !result] when
+        sizeCheckable [@iter0.valid ~] || [TRUE !result] when
         FALSE
       ] [
-        @iter0.valid [@iter0.get @iter1.get =] && dup [@iter0.next @iter1.next] when
+        sizeCheckable [@iter0.valid] || [
+          @iter0.get @iter1.get = dup [@iter0.next @iter1.next] when
+        ] &&
       ] if
     ] loop
 
     result
-  ] if
-] pfunc;
-
-=: [object0: object1:;; @object0 "equal" has [@object1 "equal" has] || [FALSE] [@object0 toIndex drop @object1 toIndex drop TRUE] if] [
-  object0: object1: toIndex; toIndex;
-  @object0.size @object1.size = ~ [FALSE] [
-    result: TRUE;
-    i: 0; [
-      i @object0.size = [FALSE] [
-        i @object0.at i @object1.at = ~ [FALSE !result FALSE] [
-          i 1 + !i TRUE
-        ] if
-      ] if
-    ] loop
-
-    result
-  ] if
+  ] &&
 ] pfunc;
 
 beginsWith: [
   iter0: iter1: toIter; toIter;
   sizeCheckable: @iter0 "size" has [@iter1 "size" has] &&;
-  sizeCheckable [@iter0.size @iter1.size <] && [FALSE] [
+  sizeCheckable [@iter0.size @iter1.size <] && ~ [
     result: FALSE;
     [
       @iter1.valid ~ [TRUE !result FALSE] [
@@ -346,20 +359,15 @@ beginsWith: [
       ] if
     ] loop
 
-    @result
-  ] if
+    result
+  ] &&
 ];
-
-beginsWith: [toView swap toView TRUE] [
-  object0: object1: toView; toView;
-  @object0.size @object1.size < ~ [@object0 @object1.size head @object1 =] &&
-] pfunc;
 
 contains: [
   view0: view1: toView; toView;
   result: FALSE;
   i: 0; [
-    @view0.size i - @view1.size < [FALSE] [
+    @view0.size i - @view1.size < ~ [
       iter0: @view0 i unhead toIter;
       iter1: @view1 toIter;
       j: 0; [
@@ -369,15 +377,26 @@ contains: [
       ] loop
 
       result ~ dup [i 1 + !i] when
-    ] if
+    ] &&
   ] loop
 
   @result
 ];
 
 endsWith: [
-  object0: object1: toView; toView;
-  @object0.size @object1.size < ~ [@object0 @object1.size tail @object1 =] &&
+  view0: view1: toView; toView;
+  @view0.size @view1.size < ~ [
+    result: FALSE;
+    iter0: @view0 @view1.size tail toIter;
+    iter1: @view1 toIter;
+    i: 0; [
+      i view1.size = [TRUE !result FALSE] [
+        @iter0.get @iter1.get = dup [@iter0.next @iter1.next i 1 + !i] when
+      ] if
+    ] loop
+
+    result
+  ] &&
 ];
 
 # Iter producers
@@ -399,6 +418,43 @@ iota: [
   }
 ];
 
+# Control combinators
+condImpl: [
+  condIndex:;
+  condFunctionList:;
+  condControlVar:;
+
+  condIndex condFunctionList fieldCount 1 - = [
+    condIndex @condFunctionList @ call
+  ] [
+    @condControlVar condIndex condFunctionList @ call [
+      condIndex 1 + @condFunctionList @ call
+    ] [
+      @condControlVar @condFunctionList condIndex 2 + condImpl
+    ] if
+  ] if
+];
+
+cond: [0 static condImpl];
+
+caseImpl: [
+  caseIndex:;
+  caseFunctionList:;
+  caseControlVar:;
+
+  caseIndex caseFunctionList fieldCount 1 - = [
+    caseIndex caseFunctionList @ call
+  ] [
+    caseControlVar caseIndex caseFunctionList @ = [
+      caseIndex 1 + caseFunctionList @ call
+    ] [
+      caseControlVar caseFunctionList caseIndex 2 + caseImpl
+    ] if
+  ] if
+];
+
+case: [0 static caseImpl];
+
 # Iter processors
 find: [swap toIter swap findStatic];
 find: [drop toIter dynamic .get TRUE] [
@@ -413,11 +469,6 @@ findStatic: [
     @iter.next
     @iter @body findStatic
   ] if
-];
-
-findNot: [
-  iter: body:;;
-  @iter @body [~] compose find
 ];
 
 findEqual: [
@@ -438,6 +489,10 @@ countIter: [{
   get:   [@source.get];
   next:  [@source.next count 1 + @count set];
   valid: [@source.valid];
+
+  @source "size" has [
+    size: [@source.size];
+  ] [] uif
 }];
 
 enumerate: [{
@@ -472,6 +527,10 @@ map: [{
   valid: [@source.valid];
   get:   [@source.get body];
   next:  [@source.next];
+
+  @source "size" has [
+    size: [@source.size];
+  ] [] uif
 }];
 
 wrapIter: [{

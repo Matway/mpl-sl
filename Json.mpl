@@ -9,7 +9,6 @@
 "algorithm.each"             use
 "ascii.ascii"                use
 "control.&&"                 use
-"control.="                  use
 "control.Cond"               use
 "control.Cref"               use
 "control.Int32"              use

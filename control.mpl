@@ -1,10 +1,10 @@
-"conventions.cdecl" use
-"conventions.copyOld" use
+"conventions.cdecl"      use
+"conventions.copyOld"    use
 "conventions.isMovedOld" use
-"conventions.moveOld" use
-"conventions.moveIfOld" use
-"conventions.setOld" use
-"conventions.stdcall" use
+"conventions.moveIfOld"  use
+"conventions.moveOld"    use
+"conventions.setOld"     use
+"conventions.stdcall"    use
 
 copy:    ["deprecated" raiseStaticError];
 isMoved: ["deprecated" raiseStaticError];
@@ -262,42 +262,6 @@ within: [
 
 isNil: [storageAddress 0nx =];
 
-condImpl: [
-  condIndex:;
-  condFunctionList:;
-  condControlVar:;
-
-  condIndex condFunctionList fieldCount 1 - = [
-    condIndex @condFunctionList @ call
-  ] [
-    @condControlVar condIndex condFunctionList @ call [
-      condIndex 1 + @condFunctionList @ call
-    ] [
-      @condControlVar @condFunctionList condIndex 2 + condImpl
-    ] if
-  ] if
-];
-
-cond: [0 static condImpl];
-
-caseImpl: [
-  caseIndex:;
-  caseFunctionList:;
-  caseControlVar:;
-
-  caseIndex caseFunctionList fieldCount 1 - = [
-    caseIndex caseFunctionList @ call
-  ] [
-    caseControlVar caseIndex caseFunctionList @ = [
-      caseIndex 1 + caseFunctionList @ call
-    ] [
-      caseControlVar caseFunctionList caseIndex 2 + caseImpl
-    ] if
-  ] if
-];
-
-case: [0 static caseImpl];
-
 bind: [{
   bindBody:  dup isCodeRef ~ [new] when;
   bindValue: dup isCodeRef ~ [new] when;
@@ -341,6 +305,12 @@ sequenceImpl: [
 
 sequence: [
   1 static sequenceImpl
+];
+
+keep: [
+  object: body:;;
+  @object body
+  @object
 ];
 
 touch: [count:; count 0 = ~ [value:; count 1 - touch @value] when];

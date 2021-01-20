@@ -1,4 +1,5 @@
 "Array.Array"         use
+"algorithm.="         use
 "algorithm.findIndex" use
 "algorithm.unhead"    use
 "control.&&"          use

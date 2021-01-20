@@ -1,4 +1,5 @@
 "Array.Array"             use
+"algorithm.cond"          use
 "algorithm.makeArrayIter" use
 "algorithm.toIndex"       use
 "algorithm.toIter"        use
@@ -15,7 +16,6 @@
 "control.Text"            use
 "control.assert"          use
 "control.between"         use
-"control.cond"            use
 "control.drop"            use
 "control.dup"             use
 "control.hasSchemaName"   use
@@ -48,9 +48,9 @@ hasLogs: [
 Char: [{
   codepoint: Int32;
 
-  equal:   [.codepoint codepoint =];
-  greater: [.codepoint codepoint >];
-  less:    [.codepoint codepoint <];
+  equal: [.codepoint codepoint =];
+  hash:  [codepoint Nat32 cast];
+  less:  [.codepoint codepoint <];
 }];
 
 REPLACEMENT_CHARACTER: [0xFFFD toChar];
@@ -67,8 +67,6 @@ toChar: [Int32 same] [
 ] pfunc;
 
 toChar: [Text same] [decode .get] pfunc;
-
-hash: [Char same] [.codepoint hash] pfunc;
 
 intPow: [
   up:   new;
@@ -115,11 +113,6 @@ toStringView: [
     data: [stringData];
     size: [stringSize new];
 
-    equal: [
-      other: dup Text same [makeStringView] when;
-      size other.size = [size Natx cast other.data storageAddress data storageAddress memcmp 0 =] &&
-    ];
-
     hash: [
       result: 33n32;
       size [
@@ -130,13 +123,12 @@ toStringView: [
       result
     ];
 
+    iter: [(data size) toTextIter];
+
     slice: [
       index: size:;;
       (data storageAddress index Natx cast + Nat8 addressToReference const size new) toStringView
     ];
-
-    # Deprecated
-    iter: [data size makeStringIter2];
   }
 ];
 
@@ -162,11 +154,6 @@ String: [{
   INIT: [];
 
   data: [@chars.@dataBegin];
-
-  equal: [
-    other: makeStringView;
-    self other.equal
-  ];
 
   hash: [(data const size new) toStringView .hash];
 

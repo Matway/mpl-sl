@@ -2,7 +2,7 @@
 "String.assembleString" use
 "String.makeStringView" use
 "String.printList"      use
-"control.="             use
+"algorithm.="           use
 "control.AsRef"         use
 "control.Cref"          use
 "control.Int32"         use

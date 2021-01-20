@@ -3,6 +3,7 @@
 "algorithm.makeArrayIter"  use
 "algorithm.makeArrayView"  use
 "algorithm.toIndex"        use
+"algorithm.toIter"         use
 "control.&&"               use
 "control.@"                use
 "control.Natx"             use
@@ -37,6 +38,8 @@ makeArrayRangeRaw: [{
     [index 0 < ~ [index dataSize <] &&] "Index is out of range!" assert
     getBufferBegin index Natx cast elementSize * + @elementType addressToReference
   ];
+
+  iter: [@dataBegin dataSize makeArrayIter];
 
   size: [
     dataSize
@@ -238,11 +241,15 @@ makeArrayObject: [{
   ];
 
   appendAll: [
-    view: toIndex;
-    index: size;
-    size view.size + enlarge
-    i: 0; [i view.size <] [
-      i view.at index i + at set i 1 + !i
+    iter: toIter;
+    @iter "size" has ~ ["sized Iter expected" raiseStaticError] when
+    offset: size;
+    iterSize: iter.size;
+    size iterSize + enlarge
+    i: 0; [i iterSize <] [
+      @iter.get offset i + at set
+      @iter.next
+      i 1 + !i
     ] while
   ];
 
@@ -373,3 +380,24 @@ getHeapUsedSize: ["ARRAY" has] [
 
   result
 ] pfunc;
+
+toArray: [
+  source: toIter;
+  first: @source.get;
+  array: @first newVarOfTheSameType Array;
+  @source "size" has [
+    @source.size @array.resize
+    @first 0 @array @ set
+    i: 1; [@source.next i @array.size <] [
+      @source.get i @array @ set
+      i 1 + !i
+    ] while
+  ] [
+    @first @array.pushBack
+    [@source.next @source.valid] [
+      @source.get @array.pushBack
+    ] while
+  ] if
+
+  @array
+];
