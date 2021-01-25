@@ -48,9 +48,10 @@ hasLogs: [
 Char: [{
   codepoint: Int32;
 
-  equal: [.codepoint codepoint =];
-  hash:  [codepoint Nat32 cast];
-  less:  [.codepoint codepoint <];
+  equal:   [dup Text same [toChar] when .codepoint codepoint =];
+  greater: [dup Text same [toChar] when .codepoint codepoint >];
+  hash:    [codepoint Nat32 cast];
+  less:    [dup Text same [toChar] when .codepoint codepoint <];
 }];
 
 REPLACEMENT_CHARACTER: [0xFFFD toChar];
@@ -603,10 +604,10 @@ assembleString: [
   @result
 ];
 
-decode: [Text same                 ] [text:; (text storageAddress Nat8 addressToReference text textSize Int32 cast) toTextIter Utf8DecoderMode.TRUST   decodeUtf8] pfunc;
-decode: ["TextIter"   hasSchemaName] [                                                                                         Utf8DecoderMode.REPLACE decodeUtf8] pfunc;
-decode: ["StringView" hasSchemaName] [view:; (view.data view.size) toTextIter                                                  Utf8DecoderMode.TRUST   decodeUtf8] pfunc;
-decode: ["String"     hasSchemaName] [                                                                                         Utf8DecoderMode.TRUST   decodeUtf8] pfunc;
+decode: [Text same                 ] [toIter dynamic Utf8DecoderMode.TRUST decodeUtf8] pfunc;
+decode: ["TextIter"   hasSchemaName] [Utf8DecoderMode.TRUST decodeUtf8] pfunc;
+decode: ["StringView" hasSchemaName] [Utf8DecoderMode.TRUST decodeUtf8] pfunc;
+decode: ["String"     hasSchemaName] [Utf8DecoderMode.TRUST decodeUtf8] pfunc;
 
 hash: ["" same] [makeStringView.hash] pfunc;
 
