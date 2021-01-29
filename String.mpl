@@ -592,9 +592,12 @@ addLog: [
 ];
 
 addTerminator: [
-  result: toString;
-  "\00" @result.cat
-  @result
+  source:;
+  @source Text same [source "\00" &] [
+    string: @source toString;
+    "\00" @string.cat
+    string
+  ] if
 ];
 
 assembleString: [
