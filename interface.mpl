@@ -93,7 +93,7 @@ implement: [
     CALL: [
       moveFields: [
         index @object fieldCount = [] [
-          index @object @ index @object fieldIsRef ~ [move copy] when @object index fieldName def
+          index @object @ index @object fieldIsRef ~ [new] when @object index fieldName def
           index 1 + !index
           @moveFields ucall
         ] uif

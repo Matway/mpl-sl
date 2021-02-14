@@ -81,7 +81,7 @@ sleepUntil: [
     [currentFiber.@func @defaultCancelFunc is] "invalid cancelation function" assert
     data: TimerData;
     @currentFiber @data.!fiber
-    time copy @data.!time
+    time new @data.!time
 
     # TODO: Improve complexity, it is O(n) currently
     prev: TimerData Ref;

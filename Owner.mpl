@@ -1,9 +1,7 @@
 "control.Ref" use
 "control.assert" use
 "control.dup" use
-"control.isAutomatic" use
 "control.pfunc" use
-"control.set" use
 "control.when" use
 "memory.mplFree" use
 "memory.mplMalloc" use
@@ -59,7 +57,7 @@ OwnerWithDestructor: [{
     object:;
     data: @object storageSize mplMalloc @object addressToReference;
     @data manuallyInitVariable
-    @object dup isAutomatic ~ [const] when @data set
+    @object @data set
     @data !memory
   ];
 

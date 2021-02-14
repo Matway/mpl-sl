@@ -4,13 +4,10 @@
 "control.Natx"            use
 "control.Ref"             use
 "control.drop"            use
-"control.isAutomatic"     use
 "control.isCodeRef"       use
 "control.isCopyable"      use
-"control.set"             use
 "control.when"            use
 "control.||"              use
-"conventions.moveOld"     use
 "objectTools.insertField" use
 "objectTools.unwrapField" use
 
@@ -19,7 +16,7 @@ addContextToSignature: [
   args:    0 static @signature @;
   options: 2 static @signature @;
 
-  (Natx) 0 static "context" @args moveOld insertField
+  (Natx) 0 static "context" @args insertField
   1 static @signature unwrapField
   options codeRef
 ];
@@ -55,7 +52,7 @@ Function: [{
       @context0 storageSize 0nx static > [
         context: contextData storageAddress @context0 addressToReference;
         @context manuallyInitVariable
-        @context0 @context0 isAutomatic ~ [const] when @context set
+        @context0 @context set
       ] when
     ] if
 

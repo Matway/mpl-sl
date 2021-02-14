@@ -142,11 +142,11 @@ objectAsJSON: [
 ];
 
 makeJSONParserPosition: [{
-  column: copy;
-  line: copy;
-  offset: copy;
-  currentSymbol: copy;
-  currentCode: copy;
+  column: new;
+  line: new;
+  offset: new;
+  currentSymbol: new;
+  currentCode: new;
 }];
 
 JSONParserPosition: [0n32 dynamic StringView 0 dynamic 1 dynamic 1 dynamic makeJSONParserPosition];
@@ -247,7 +247,7 @@ parseJSONNodeImpl: [
   ];
 
 
-  isDigit: [copy code:; code ascii.zero < ~ code ascii.zero 10n32 + < and];
+  isDigit: [code: new; code ascii.zero < ~ code ascii.zero 10n32 + < and];
 
   parseString: [
     pos.currentCode ascii.quote = [
@@ -315,7 +315,7 @@ parseJSONNodeImpl: [
               pos.currentSymbol @result.cat
             ] if
           ] if
-          mainResult.success copy
+          mainResult.success new
         ] &&
       ] loop
 
@@ -377,17 +377,17 @@ parseJSONNodeImpl: [
           ] if
         ] if
       ] if
-      break ~ [mainResult.success copy] && [iterate TRUE] &&
+      break ~ [mainResult.success new] && [iterate TRUE] &&
     ] loop
 
     n1.c 0 = [n2.c 0 =] && [
       ov ["integer constant overflow" lexicalError] when
-      n0.m [n0.vi neg][n0.vi copy] if intAsJSON
+      n0.m [n0.vi neg][n0.vi new] if intAsJSON
     ] [
       sign: n0.m [-1.0r64] [1.0r64] if;
       value: n0.vf;
       frac: n1.vf 10.0r64 n1.c neg 0.0r64 cast ^ *;
-      order: n2.m [n2.vf neg] [n2.vf copy] if;
+      order: n2.m [n2.vf neg] [n2.vf new] if;
       value frac + 10.0r64 order ^ * sign * realAsJSON
     ] if
 
@@ -452,7 +452,7 @@ parseJSONNodeImpl: [
             value: JSON;
             @value @mainResult chars @pos parseJSONNode
 
-            @key move @value move @result.insert
+            @key @value @result.insert
 
             pos.currentCode ascii.comma = [
               iterateToNextChar
@@ -466,10 +466,10 @@ parseJSONNodeImpl: [
           ] if
         ] if
       ] if
-      break ~ [mainResult.success copy] &&
+      break ~ [mainResult.success new] &&
     ] loop
     iterateToNextChar
-    @result move objectAsJSON
+    @result objectAsJSON
   ];
 
   parseArrayJSON: [
@@ -483,7 +483,7 @@ parseJSONNodeImpl: [
         value: JSON;
         @value @mainResult chars @pos parseJSONNode
 
-        @value move @result.pushBack
+        @value @result.pushBack
 
         pos.currentCode ascii.comma = [
           iterateToNextChar
@@ -495,10 +495,10 @@ parseJSONNodeImpl: [
           ] if
         ] if
       ] if
-      break ~ [mainResult.success copy] &&
+      break ~ [mainResult.success new] &&
     ] loop
     iterateToNextChar
-    @result move arrayAsJSON
+    @result arrayAsJSON
   ];
 
   iterateToNextCharAfterIterate
@@ -569,21 +569,21 @@ saveJSONToString: [
 
 catJSONNodeWithPaddingImpl: [
   json:;
-  copy padding:;
+  padding: new;
   result:;
 
   catPad: [
-    copy nested:;
+    nested: new;
     LF @result.cat
-    nested [padding 2 +] [padding copy] if [" " @result.cat] times
+    nested [padding 2 +] [padding new] if [" " @result.cat] times
   ];
 
   catString: [
     splitted: splitString;
     "\"" @result.cat
-    [splitted.success copy] "Wrong encoding in JSON string!" assert
+    [splitted.success new] "Wrong encoding in JSON string!" assert
     splitted.chars [
-      symbol: copy;
+      symbol: new;
       code: symbol.data Nat32 cast;
       code ascii.quote = [
         "\\\"" @result.cat

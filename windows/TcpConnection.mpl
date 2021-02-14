@@ -171,7 +171,7 @@ TcpConnection: [{
     data: size: onRead0:;;;
     old: IN_READ @states ACQUIRE atomicXor READ_MASK and;
     [old CONNECTED =] "TcpConnection.read: invalid state" assert
-    buf: {len: size Nat32 cast; buf: data copy;};
+    buf: {len: size Nat32 cast; buf: data new;};
     flags: 0n32;
     self storageAddress @readDispatcherContext.!context
     @onRead0 @onRead.assign
@@ -216,7 +216,7 @@ TcpConnection: [{
     data: size: onWrite0:;;;
     old: IN_WRITE @states ACQUIRE atomicXor WRITE_MASK and;
     [old CONNECTED =] "TcpConnection.write: invalid state" assert
-    buf: {len: size Nat32 cast; buf: data copy;};
+    buf: {len: size Nat32 cast; buf: data new;};
     self storageAddress @writeDispatcherContext.!context
     @onWrite0 @onWrite.assign
     IN_WRITE WRITING or @states RELEASE atomicXor drop
@@ -278,7 +278,7 @@ TcpConnection: [{
   onWrite: ({result: String Ref;} {} {}) Function;
 
   onConnectEvent: [
-    numberOfBytesTransferred: error: copy;;
+    numberOfBytesTransferred: error: new;;
     old: IN_ON_CONNECT_EVENT @states ACQUIRE atomicXor;
     [old CONNECTING = [old IN_CANCEL_CONNECT CONNECTING or =] ||] "TcpConnection.onConnectEvent: invalid state" assert
     old IN_CANCEL_CONNECT CONNECTING or = [("TcpConnection.onConnectEvent called before connect or cancelConnect returned - should be extremely rare" LF) assembleString print] [
@@ -305,12 +305,12 @@ TcpConnection: [{
       ] if
 
       @states RELEASE atomicXor drop
-      @result copy onWrite
+      @result onWrite
     ] if
   ];
 
   onReadEvent: [
-    numberOfBytesTransferred: error: copy;;
+    numberOfBytesTransferred: error: new;;
     old: IN_ON_READ_EVENT @states ACQUIRE atomicXor READ_MASK and;
     [old CONNECTED READING or = [old IN_CANCEL_READ CONNECTED or READING or =] ||] "TcpConnection.onReadEvent: invalid state" assert
     result: String;
@@ -327,7 +327,7 @@ TcpConnection: [{
   ];
 
   onWriteEvent: [
-    numberOfBytesTransferred: error: copy;;
+    numberOfBytesTransferred: error: new;;
     old: IN_ON_WRITE_EVENT @states ACQUIRE atomicXor WRITE_MASK and;
     [old CONNECTED WRITING or = [old IN_CANCEL_WRITE CONNECTED or WRITING or =] ||] "TcpConnection.onReadEvent: invalid state" assert
     result: String;

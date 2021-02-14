@@ -61,8 +61,8 @@ Natx storageSize 8nx = [
     x Real32 same
     y Real32 same and
   ] [
-    y: copy;
-    x: copy;
+    y: new;
+    x: new;
     x Real64 cast y Real64 cast atan2Func Real32 cast
   ] pfunc;
 
@@ -216,7 +216,7 @@ cosSin: [
   v1 fieldCount m2 getRowCount = and
 ] [
   v:m:;;
-  result: v copy;
+  result: v new;
   v fieldCount [ col1: i;
     0 v @
     col1 0 m @ @ *
@@ -389,12 +389,12 @@ lerp: [
 rotationMatrix: [
   Real32 same
 ] [
-  angle: copy;
+  angle: new;
   c: angle cos;
   s: angle sin;
   (
-    (c copy s copy)
-    (s neg  c copy)
+    (c new s new)
+    (s neg c new)
   )
 ] pfunc;
 

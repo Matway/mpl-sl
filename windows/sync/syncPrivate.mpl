@@ -29,7 +29,7 @@ FiberData: [{
   ];
 
   setFunc: [
-    !func copy !funcData
+    !func new !funcData
   ];
 
   switchTo: [
@@ -112,10 +112,10 @@ emptyCancelFunc: {data: Natx;} {} {} codeRef; [
 ] !emptyCancelFunc
 
 getTimePrivate: [
-  previousCounter0: timePreviousCounter copy;
+  previousCounter0: timePreviousCounter new;
   @timePreviousCounter storageAddress Int64 addressToReference kernel32.QueryPerformanceCounter drop
   timePreviousCounter previousCounter0 - Real64 cast timeMultiplier * timePreviousTime + !timePreviousTime
-  timePreviousTime copy
+  timePreviousTime new
 ];
 
 spawnFiber: [
@@ -124,9 +124,9 @@ spawnFiber: [
     fiberFunc: [
       creationData: creationData addressToReference;
       data: FiberData;
-      creationData.nativeFiber copy @data.!nativeFiber
+      creationData.nativeFiber new @data.!nativeFiber
       creationData.@func @data.!func
-      creationData.funcData copy @data.!funcData
+      creationData.funcData new @data.!funcData
       @data !currentFiber
 
       [

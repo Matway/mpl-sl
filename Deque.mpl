@@ -2,8 +2,6 @@
 "control.Ref"         use
 "control.assert"      use
 "control.dup"         use
-"control.isAutomatic" use
-"control.set"         use
 "control.times"       use
 "control.when"        use
 
@@ -78,12 +76,12 @@ Deque: [{
     swapCount @to.resize
 
     swapCount [
-      i @from.at dup isAutomatic ~ [const] when
+      i @from.at
       swapCount 1 - i - @to.at set
     ] times
 
     from.getSize swapCount - [
-      i swapCount + @from.at dup isAutomatic ~ [const] when
+      i swapCount + @from.at
       i @from.at set
     ] times
 

@@ -10,10 +10,7 @@
 "control.Ref"              use
 "control.assert"           use
 "control.dup"              use
-"control.isAutomatic"      use
-"control.new"              use
 "control.pfunc"            use
-"control.set"              use
 "control.when"             use
 "control.while"            use
 "memory.mplFree"           use
@@ -69,9 +66,9 @@ makeArrayRangeRaw: [{
       i1:; i2:;
       i1ref: i1 at;
       i2ref: i2 at;
-      tmp: @i1ref dup isAutomatic ~ [const] when new;
-      @i2ref dup isAutomatic ~ [const] when @i1ref set
-      @tmp dup isAutomatic ~ [const] when @i2ref set
+      tmp: @i1ref new;
+      @i2ref @i1ref set
+      @tmp @i2ref set
     ];
 
     pushDown: [
@@ -188,7 +185,7 @@ makeArrayObject: [{
     [index 0 < ~ [index dataSize <] &&] "Index is out of range!" assert
 
     index getSize 1 - < [
-      last dup isAutomatic ~ [const] when index at set
+      last index at set
     ] when
 
     popBack

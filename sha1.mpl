@@ -53,7 +53,7 @@ Sha1Internal: {
     i 2n32 + 0x0fn32 and Int32 cast x.at xor
     i 8n32 + 0x0fn32 and Int32 cast x.at xor
     i 13n32 + 0x0fn32 and Int32 cast x.at xor 1n32 rol @b set
-    b copy
+    b new
   ];
 
   r: [
@@ -73,11 +73,11 @@ Sha1Internal: {
       i @x !
     ] times
 
-    a: 0 state @ copy;
-    b: 1 state @ copy;
-    c: 2 state @ copy;
-    d: 3 state @ copy;
-    e: 4 state @ copy;
+    a: 0 state @ new;
+    b: 1 state @ new;
+    c: 2 state @ new;
+    d: 3 state @ new;
+    e: 4 state @ new;
 
     a @b c d @e @f1  0 x.at r
     e @a b c @d @f1  1 x.at r

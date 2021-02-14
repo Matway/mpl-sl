@@ -69,7 +69,7 @@ TcpConnection: [{
         ] when
       ] [
         @currentFiber @context.!fiber
-        connection copy @context.!connection
+        connection new @context.!connection
         context storageAddress [
           context: @context addressToReference;
           @context.@overlapped context.connection kernel32.CancelIoEx 1 = ~ [
@@ -134,7 +134,7 @@ TcpConnection: [{
         ] when
       ] [
         @currentFiber @context.!fiber
-        connection copy @context.!connection
+        connection new @context.!connection
         context storageAddress [
           context: @context addressToReference;
           @context.@overlapped context.connection kernel32.CancelIoEx 1 = ~ [
@@ -213,7 +213,7 @@ makeTcpConnection: [
       lastError winsock2.WSA_IO_PENDING = ~ [("ConnectEx failed, result=" lastError) @result.catMany] when
     ] [
       @currentFiber @context.!fiber
-      connection.connection copy @context.!connection
+      connection.connection new @context.!connection
       context storageAddress [
         context: @context addressToReference;
         @context.@overlapped context.connection kernel32.CancelIoEx 1 = ~ [

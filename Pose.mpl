@@ -21,8 +21,8 @@ pose: [
 
   {
     virtual POSE: ();
-    position: position0 copy;
-    orientation: orientation0 copy;
+    position: position0 new;
+    orientation: orientation0 new;
 
     getMatrix: [orientation matrix];
     translate: [position + !position];

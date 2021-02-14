@@ -15,7 +15,7 @@ Quaternion: [{
 
 quaternion: [{
   QUATERNION: ();
-  entries: copy;
+  entries: new;
 }];
 
 identityQuaternion: [
@@ -84,7 +84,7 @@ unit: ["QUATERNION" has] [
 ] pfunc;
 
 unitCheckedWithThresold: [
-  thresold: copy;
+  thresold: new;
   q:;
   squaredLength: q squaredLength;
   squaredLength thresold thresold * < [
@@ -101,7 +101,7 @@ unitChecked: [
 ];
 
 nlerp: [
-  q0: q1: f:; copy;;
+  q0: q1: f:; new;;
   q0 q1 dot 0 0 q0 @ cast < [q1.entries neg @q1.!entries] when
   q0.entries q1.entries f lerp quaternion unitChecked
 ];
@@ -109,16 +109,16 @@ nlerp: [
 conj: ["QUATERNION" has] [
   q:;
   (
-    0 q @ copy
-    1 q @ copy
-    2 q @ copy
+    0 q @ new
+    1 q @ new
+    2 q @ new
     3 q @ neg
   ) quaternion
 ] pfunc;
 
 slerpWithEpsilon: [
   q0:q1:o:epsilon:;;;;
-  q2: q1 copy;
+  q2: q1 new;
   c: q0 q2 dot;
 
   c 0 o cast < [

@@ -22,10 +22,8 @@
 "control.isInt"           use
 "control.isNat"           use
 "control.isReal"          use
-"control.new"             use
 "control.pfunc"           use
 "control.printf"          use
-"control.set"             use
 "control.times"           use
 "control.when"            use
 "control.while"           use
@@ -156,7 +154,7 @@ String: [{
 
   data: [@chars.@dataBegin];
 
-  hash: [(data const size new) toStringView .hash];
+  hash: [(data const size) toStringView .hash];
 
   iter: [data size makeArrayIter];
 

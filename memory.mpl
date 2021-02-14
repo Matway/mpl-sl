@@ -39,11 +39,11 @@ SL_MEMORY_MAX_CACHED_SIZE 1nx + Natx storageSize * 0 localStorage memset drop
 atLocalStorage: [Natx storageSize * localStorage + Natx addressToReference];
 
 {size: Natx;} Natx {} [
-  copy size:;
+  size: new;
   size 0nx = [
     0nx
   ] [
-    size Natx storageSize max copy !size
+    size Natx storageSize max new !size
     node: IntrusiveListNode Ref;
     size SL_MEMORY_MAX_CACHED_SIZE > [size atLocalStorage 0nx =] || [
       size malloc IntrusiveListNode addressToReference !node
@@ -57,13 +57,13 @@ atLocalStorage: [Natx storageSize * localStorage + Natx addressToReference];
 ] "fastAllocate" exportFunction
 
 {ptr: Natx; size: Natx;} {} {} [
-  copy ptr:;
-  copy size:;
+  ptr: new;
+  size: new;
   ptr 0nx = ~ [
     size SL_MEMORY_MAX_CACHED_SIZE > [
       ptr free
     ] [
-      size copy Natx storageSize max copy !size
+      size new Natx storageSize max new !size
       node: ptr IntrusiveListNode addressToReference;
       size atLocalStorage @node.@nextAddress set
       @node storageAddress size atLocalStorage set
@@ -72,9 +72,9 @@ atLocalStorage: [Natx storageSize * localStorage + Natx addressToReference];
 ] "fastDeallocate" exportFunction
 
 {ptr: Natx; oldSize: Natx; newSize: Natx;} Natx {} [
-  copy ptr:;
-  copy oldSize:;
-  copy newSize:;
+  ptr: new;
+  oldSize: new;
+  newSize: new;
 
   oldSize SL_MEMORY_MAX_CACHED_SIZE > [
     newSize 0nx = ~ [
@@ -86,7 +86,7 @@ atLocalStorage: [Natx storageSize * localStorage + Natx addressToReference];
   ] [
     dest: newSize fastAllocate;
     ptr 0nx = [oldSize 0nx =] || ~ [
-      num: newSize oldSize min copy;
+      num: newSize oldSize min new;
       num ptr dest memcpy drop
       node: ptr IntrusiveListNode addressToReference;
       oldSizeIndex: oldSize Natx storageSize max;
@@ -140,7 +140,7 @@ debugMemory [
     memoryMetrics.memoryTotalAllocationCount 1n64 + @memoryMetrics.!memoryTotalAllocationCount
     memoryMetrics.memoryCurrentAllocationSize size Nat64 cast + @memoryMetrics.!memoryCurrentAllocationSize
     memoryMetrics.memoryTotalAllocationSize size Nat64 cast + @memoryMetrics.!memoryTotalAllocationSize
-    memoryMetrics.memoryMaxAllocationSize memoryMetrics.memoryCurrentAllocationSize max copy @memoryMetrics.!memoryMaxAllocationSize
+    memoryMetrics.memoryMaxAllocationSize memoryMetrics.memoryCurrentAllocationSize max new @memoryMetrics.!memoryMaxAllocationSize
     memoryMetrics.memoryChecksum result xor @memoryMetrics.!memoryChecksum
     result
   ] "mplMalloc" exportFunction
@@ -153,11 +153,11 @@ debugMemory [
       result: newSize oldSize data fastReallocate;
       memoryMetrics.memoryCurrentAllocationSize newSize Nat64 cast + oldSize Nat64 cast - @memoryMetrics.!memoryCurrentAllocationSize
       result data = [
-        memoryMetrics.memoryMaxAllocationSize memoryMetrics.memoryCurrentAllocationSize max copy @memoryMetrics.!memoryMaxAllocationSize
+        memoryMetrics.memoryMaxAllocationSize memoryMetrics.memoryCurrentAllocationSize max new @memoryMetrics.!memoryMaxAllocationSize
       ] [
         memoryMetrics.memoryTotalAllocationCount 1n64 + @memoryMetrics.!memoryTotalAllocationCount
         memoryMetrics.memoryTotalAllocationSize newSize Nat64 cast + @memoryMetrics.!memoryTotalAllocationSize
-        memoryMetrics.memoryMaxAllocationSize memoryMetrics.memoryCurrentAllocationSize oldSize Nat64 cast + max copy @memoryMetrics.!memoryMaxAllocationSize
+        memoryMetrics.memoryMaxAllocationSize memoryMetrics.memoryCurrentAllocationSize oldSize Nat64 cast + max new @memoryMetrics.!memoryMaxAllocationSize
         memoryMetrics.memoryChecksum result xor data xor @memoryMetrics.!memoryChecksum
       ] if
 

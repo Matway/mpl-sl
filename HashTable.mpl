@@ -7,10 +7,7 @@
 "control.Ref"         use
 "control.assert"      use
 "control.dup"         use
-"control.isAutomatic" use
-"control.new"         use
 "control.pfunc"       use
-"control.set"         use
 "control.when"        use
 "control.while"       use
 
@@ -133,8 +130,8 @@ HashTable: [
 
         {
           key: @key new;
-          value: @value dup isAutomatic ~ [const] when new;
-        } dup isAutomatic ~ [const] when bucketIndex @data.at.pushBack
+          value: @value new;
+        } bucketIndex @data.at.pushBack
 
         dataSize 1 + @dataSize set
       ] call
@@ -184,13 +181,13 @@ HashTable: [
 
           newB b = [
             i j = ~ [
-              i @current.at dup isAutomatic ~ [const] when
+              i @current.at
               j @current.at set
             ] when
             j 1 + @j set
           ] [
             pushTo: newB @data.at;
-            i @current.at dup isAutomatic ~ [const] when @pushTo.pushBack
+            i @current.at @pushTo.pushBack
           ] if
 
           i 1 + @i set

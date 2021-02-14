@@ -17,10 +17,10 @@ runningTimeInternal: {
 
   get: [
     lock: @spinlock lockGuard;
-    previousCounter0: previousCounter copy;
+    previousCounter0: previousCounter new;
     @previousCounter storageAddress Int64 addressToReference kernel32.QueryPerformanceCounter drop
     previousCounter previousCounter0 - Real64 cast multiplier * previousTime + !previousTime
-    previousTime copy
+    previousTime new
   ];
 
   spinlock: Spinlock;

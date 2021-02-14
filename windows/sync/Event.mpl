@@ -10,7 +10,7 @@ Event: [{
   DIE: [];
 
   get: [
-    state copy
+    state new
   ];
 
   clear: [

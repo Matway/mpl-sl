@@ -94,10 +94,10 @@ Variant: [{
     ] loop
   ];
 
-  getTag: [typeTag copy];
+  getTag: [typeTag new];
 
   setTag: [
-    index: copy dynamic;
+    index: new dynamic;
     index typeTag = ~ [
       rawDestroy
       index @typeTag set
@@ -106,7 +106,7 @@ Variant: [{
   ];
 
   get: [
-    index: copy;
+    index: new;
     [index typeTag =] "Wrong tag in Tagged Union!" assert
     @memory storageAddress index @typeList @ addressToReference
   ];

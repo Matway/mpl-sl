@@ -55,7 +55,6 @@
 "control.drop"           use
 "control.dup"            use
 "control.isBuiltinTuple" use
-"control.new"            use
 "control.pfunc"          use
 "control.swap"           use
 "control.unwrap"         use
@@ -216,7 +215,7 @@ makeTupleIndex: [
 
       iter: [@tuple offset indexSize makeTupleIter];
 
-      size: [indexSize new];
+      size: [indexSize dup isDynamic [new] when];
 
       slice: [@tuple offset indexSize makeTupleView .slice];
     }
@@ -268,7 +267,7 @@ makeTupleView: [
 
       iter: [@tuple viewOffset viewSize makeTupleIter];
 
-      size: [viewSize new];
+      size: [viewSize dup isDynamic [new] when];
 
       slice: [
         offset: size:;;

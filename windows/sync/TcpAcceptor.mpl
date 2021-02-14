@@ -72,7 +72,7 @@ TcpAcceptor: [{
         lastError winsock2.WSA_IO_PENDING = ~ [("AcceptEx failed, result=" lastError) @result.catMany] when
       ] [
         @currentFiber @context.!fiber
-        acceptor copy @context.!acceptor
+        acceptor new @context.!acceptor
         context storageAddress [
           context: @context addressToReference;
           @context.@overlapped context.acceptor kernel32.CancelIoEx 1 = ~ [

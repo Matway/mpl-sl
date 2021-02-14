@@ -8,8 +8,6 @@
 "control.Ref" use
 "control.assert" use
 "control.isNil" use
-"control.new" use
-"control.set" use
 "control.times" use
 "control.when" use
 "control.while" use

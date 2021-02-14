@@ -4,10 +4,7 @@
 "control.Ref"                   use
 "control.assert"                use
 "control.dup"                   use
-"control.isAutomatic"           use
-"control.isMovable"             use
 "control.isNil"                 use
-"control.new"                   use
 "control.when"                  use
 "control.while"                 use
 
@@ -43,7 +40,7 @@ ContextGroup: [{
       @data @group.@fibers.append
 
       [
-        in: @creationData.@in dup isMovable [dup isAutomatic ~ [const] when new] when;
+        in: @creationData.@in dup isConst ~ [new] when;
         @data.@fiber @resumingFibers.append
         @creationData.@waitingFiber.switchTo
 

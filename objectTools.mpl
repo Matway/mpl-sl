@@ -8,11 +8,10 @@ fieldIsRef: [index:object:;; index @object @ Ref index @object ! TRUE] [drop dro
 fieldIsref: [isConst] [0 .ERROR_CAN_ONLY_HANDLE_MUTABLE_OBJECTS] pfunc;
 
 unwrapField: [
-  objectIsMoved: isMoved;
   object:;
   index:;
 
-  index @object fieldIsRef [index @object @] [index @object @ objectIsMoved moveIf copy] uif
+  index @object fieldIsRef [index @object @] [index @object @ new] uif
 ];
 
 unwrapFields: [
@@ -21,7 +20,6 @@ unwrapFields: [
 ];
 
 insertField: [
-  insertField_objectIsMoved: isMoved;
   insertField_object:;
   insertField_name:;
   insertField_index:;
@@ -33,7 +31,7 @@ insertField: [
     ] [] uif
 
     insertField_loopIndex @insertField_object fieldCount < [
-      insertField_loopIndex @insertField_object insertField_objectIsMoved moveIf unwrapField @insertField_object insertField_loopIndex fieldName def
+      insertField_loopIndex @insertField_object unwrapField @insertField_object insertField_loopIndex fieldName def
       insertField_loopIndex 1 static + !insertField_loopIndex
       @insertField_uloopBody ucall
     ] [

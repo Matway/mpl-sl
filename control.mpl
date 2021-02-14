@@ -1,25 +1,5 @@
 "conventions.cdecl"      use
-"conventions.copyOld"    use
-"conventions.isMovedOld" use
-"conventions.moveIfOld"  use
-"conventions.moveOld"    use
-"conventions.setOld"     use
 "conventions.stdcall"    use
-
-copy:    ["deprecated" raiseStaticError];
-isMoved: ["deprecated" raiseStaticError];
-move:    ["deprecated" raiseStaticError];
-moveIf:  ["deprecated" raiseStaticError];
-
-new: [
-  source:;
-  @source @source isConst ~ moveIfOld copyOld
-];
-
-set: [
-  source: destination:;;
-  @source @source isConst ~ moveIfOld @destination setOld
-];
 
 Cond:   [v: FALSE  dynamic; @v];
 Int8:   [v: 0i8    dynamic; @v];
@@ -104,9 +84,6 @@ isReal: {CALL: [
 ];};
 
 
-isAutomatic: [drop FALSE];
-isAutomatic: [unconst moveOld isMovedOld] [drop TRUE] pfunc;
-
 isCodeRef: [drop TRUE];
 isCodeRef: [storageSize TRUE] [drop FALSE] pfunc;
 
@@ -115,9 +92,6 @@ isCopyable: [x:; @x storageSize 0nx > [Natx @x addressToReference] [@x] uif copy
 
 isDynamicText: [drop TRUE];
 isDynamicText: ["" & TRUE] [drop FALSE] pfunc;
-
-isMovable: [drop FALSE];
-isMovable: [moveOld TRUE] [drop TRUE] pfunc;
 
 isVirtual: [drop TRUE];
 isVirtual: [Ref TRUE] [drop FALSE] pfunc;
@@ -149,8 +123,6 @@ Cref: [v:; 0nx v addressToReference]; # for signatures
 AsRef: [{data:;}]; # for Ref Array
 
 forceConst: [v:; @v const];
-
-forceCopy: [isMoved moved:; v:; @v moved moveIf copy];
 
 drop: [v:;];
 
