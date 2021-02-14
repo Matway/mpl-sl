@@ -375,10 +375,10 @@ String: [{
 
   catBy3NZ: [
     arg:;
-    () (
-      [@arg isInt ] [@arg TRUE catIntNZ  ]
-      [@arg isNat ] [@arg TRUE catNatNZ  ]
-      [@arg isReal] [@arg TRUE catFloatNZ]
+    @arg (
+      [isInt ] [@arg TRUE catIntNZ  ]
+      [isNat ] [@arg TRUE catNatNZ  ]
+      [isReal] [@arg TRUE catFloatNZ]
       [
         @arg printStack
         "object is not supported for string concatenation" raiseStaticError
