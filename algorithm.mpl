@@ -16,20 +16,13 @@
 # Trying to get an item outside the bounds of the Index is undefined behavior.
 
 # Iter
-#   get ( -- item ) get the item referenced by Iter by value or by reference
-#   next ( -- ) skip to the next item
-#   valid ( -- cond ) report whether access to the item is allowed or Iter has reached the end of the collection
+#   next ( -- item cond ) get next item by value or by reference
+#   size ( -- size ) [optional] return the number of items available through Iter
 #
 # An Iter provides access to the collection with the ability to work with items one at a time.
 # Iter is unidirectional - you can go to the next item but you cannot go back to the past.
-# Method 'valid' lets you know if an item is available or if the Iter has reached the end of the collection.
-# If the item is available ('valid' returned TRUE), it is allowed to get the item using the 'get' method.
-# If 'valid' returned FALSE, calling the 'get' method is undefined behavior.
-# Different Iter types can return items by read-only reference, read-write reference, or by value.
-# The 'get' method can be called many times on the same item, but keep in mind that for some Iter types this entails a potentially time-consuming computation of the item each time the 'get' method is called.
-# Use the 'next' method to move to the next item.
+# Different Iter types can provide items by read-only reference, read-write reference, or by value.
 # When moving to the next item, the Iter changes its internal state.
-# Attempting to call the 'next' method if the Iter has already reached the end of the collection ('valid' returns FALSE) is undefined behavior.
 
 # Iterable
 #   iter ( -- iter ) create an Iter that allows you to list all contained items, from first to last
@@ -42,6 +35,8 @@
 # The ReverseIterable interface allows you to create a new Iter to access the collection sequentially.
 
 # View
+#   index ( -- index ) [optional] create an Index that allows you to access all contained items
+#   iter ( -- iter ) create an Iter that allows you to list all contained items, from first to last
 #   size ( -- size ) return the size of the View, which does not necessarily match the number of items
 #   slice ( offset size -- view ) create a View with an offset from the current and another size
 #
@@ -53,6 +48,8 @@
 
 "control.&&"             use
 "control.="              use
+"control.AsRef"          use
+"control.Cref"           use
 "control.Int32"          use
 "control.Nat8"           use
 "control.Natx"           use
@@ -62,12 +59,19 @@
 "control.drop"           use
 "control.dup"            use
 "control.isBuiltinTuple" use
+"control.min"            use
 "control.pfunc"          use
 "control.swap"           use
+"control.times"          use
 "control.unwrap"         use
 "control.when"           use
-"control.while"          use
+"control.within"         use
 "control.||"             use
+
+isDirtyOrDynamic: [
+  object:;
+  @object isDirty [@object isDynamic] ||
+];
 
 # Predicates
 isIndex: [
@@ -77,12 +81,12 @@ isIndex: [
 
 isIter: [
   object:;
-  @object "get" has [@object "next" has [@object "valid" has] &&] &&
+  @object "next" has
 ];
 
 isView: [
   object:;
-  @object "size" has [@object "slice" has] &&
+  @object "iter" has [@object "size" has [@object "slice" has] &&] &&
 ];
 
 # Built-in array, text, and tuple support
@@ -90,20 +94,17 @@ makeArrayIndex: [
   data: size:;;
   [size 0 < ~] "invalid size" assert
   {
+    SCHEMA_NAME: virtual "ArrayIndex";
     data: @data;
     indexSize: size dup isDynamic [] [virtual] uif new;
 
     at: [
       key:;
-      [key 0 indexSize between] "key is out of bounds" assert
+      [key 0 indexSize within] "key is out of bounds" assert
       @data storageAddress @data storageSize key Natx cast * + @data addressToReference
     ];
 
-    iter: [@data indexSize makeArrayIter];
-
-    size: [indexSize new];
-
-    slice: [@data indexSize makeArrayView .slice];
+    size: [indexSize dup isDynamic [new] when];
   }
 ];
 
@@ -115,24 +116,15 @@ makeArrayIter: [
     data: @data;
     iterSize: size new;
 
-    get: [
-      [valid] "Iter is not valid" assert
-      @data
-    ];
-
-    index: [@data iterSize makeArrayIndex];
-
     next: [
-      [valid] "Iter is not valid" assert
-      @data storageAddress @data storageSize + @data addressToReference !data
-      iterSize 1 - !iterSize
+      @data
+      iterSize 0 = ~ dup [
+        @data storageAddress @data storageSize + @data addressToReference !data
+        iterSize 1 - !iterSize
+      ] when
     ];
 
     size: [iterSize new];
-
-    slice: [@data iterSize makeArrayView .slice];
-
-    valid: [iterSize 0 = ~];
   }
 ];
 
@@ -140,14 +132,15 @@ makeArrayView: [
   data: size:;;
   [size 0 < ~] "invalid size" assert
   {
+    SCHEMA_NAME: virtual "ArrayView";
     data: @data;
-    viewSize: size dup new isDynamic [] [virtual] uif new;
+    viewSize: size dup isDirtyOrDynamic [] [virtual] uif new;
 
     index: [@data viewSize makeArrayIndex];
 
     iter: [@data viewSize makeArrayIter];
 
-    size: [viewSize new];
+    size: [viewSize dup isDynamic [new] when];
 
     slice: [
       offset: size:;;
@@ -166,20 +159,15 @@ toTextIter: [
     data: @data;
     iterSize: size new;
 
-    get: [
-      [valid] "Iter is not valid" assert
-      @data
-    ];
-
     next: [
-      [valid] "Iter is not valid" assert
-      @data storageAddress @data storageSize + @data addressToReference !data
-      iterSize 1 - !iterSize
+      @data
+      iterSize 0 = ~ dup [
+        @data storageAddress @data storageSize + @data addressToReference !data
+        iterSize 1 - !iterSize
+      ] when
     ];
 
     size: [iterSize new];
-
-    valid: [iterSize 0 = ~];
   }
 ];
 
@@ -189,11 +177,11 @@ toTextView: [
   {
     SCHEMA_NAME: virtual "TextView";
     data: @data;
-    viewSize: size dup new isDynamic [] [virtual] uif new;
+    viewSize: size dup isDynamic [] [virtual] uif new;
 
     iter: [(@data viewSize) toTextIter];
 
-    size: [viewSize new];
+    size: [viewSize dup isDynamic [new] when];
 
     slice: [
       offset: size:;;
@@ -210,21 +198,18 @@ makeTupleIndex: [
   [size 0 @tuple fieldCount offset - between] "size is out of bounds" assert
   offset isDynamic [offset @tuple @ size makeArrayIndex] [
     {
+      SCHEMA_NAME: virtual "TupleIndex";
       tuple: @tuple;
       offset: virtual offset new;
       indexSize: size dup isDynamic [] [virtual] uif new;
 
       at: [
         key:;
-        [key 0 indexSize between] "key is out of bounds" assert
+        [key 0 indexSize within] "key is out of bounds" assert
         offset key + @tuple @
       ];
 
-      iter: [@tuple offset indexSize makeTupleIter];
-
       size: [indexSize dup isDynamic [new] when];
-
-      slice: [@tuple offset indexSize makeTupleView .slice];
     }
   ] if
 ];
@@ -235,27 +220,22 @@ makeTupleIter: [
   [size 0 @tuple fieldCount offset - between] "size is out of bounds" assert
   offset isDynamic [offset @tuple @ size makeArrayIter] [
     {
+      SCHEMA_NAME: virtual "TupleIter";
       tuple: @tuple;
       offset0: offset new;
       offset1: offset0 size + dup isDynamic [] [virtual] uif new;
 
-      get: [
-        [valid] "Iter is not valid" assert
-        offset0 @tuple @
-      ];
-
-      index: [@tuple offset0 size makeTupleIndex];
-
       next: [
-        [valid] "Iter is not valid" assert
-        offset0 1 + !offset0
+        offset0 offset1 <
+        offset0 isDynamic ~ [offset0 @tuple fieldCount =] && [()] [
+          offset0 @tuple @
+          offset0 1 + !offset0
+        ] if
+
+        swap
       ];
 
       size: [offset1 offset0 -];
-
-      slice: [@tuple offset0 size makeTupleView .slice];
-
-      valid: [offset0 offset1 = ~];
     }
   ] if
 ];
@@ -266,6 +246,7 @@ makeTupleView: [
   [size 0 @tuple fieldCount offset - between] "size is out of bounds" assert
   offset isDynamic [offset @tuple @ size makeArrayView] [
     {
+      SCHEMA_NAME: virtual "TupleView";
       tuple: @tuple;
       viewOffset: virtual offset new;
       viewSize: size dup isDynamic [] [virtual] uif new;
@@ -299,7 +280,7 @@ toIndex: [
 
 toIter: [
   source:;
-  @source Text same [(source storageAddress Nat8 addressToReference source textSize Int32 cast) toTextIter] [
+  @source Text same [(source storageAddress Nat8 Cref addressToReference source textSize Int32 cast) toTextIter] [
     @source isBuiltinTuple [@source 0 @source fieldCount makeTupleIter] [
       @source isIter [@source dup "DIE" has ~ [new] when] [
         @source "iter" has [@source.iter] [
@@ -312,7 +293,7 @@ toIter: [
 
 toView: [
   source:;
-  @source Text same [(source storageAddress Nat8 addressToReference source textSize Int32 cast) toTextView] [
+  @source Text same [(source storageAddress Nat8 Cref addressToReference source textSize Int32 cast) toTextView] [
     @source isBuiltinTuple [@source 0 @source fieldCount makeTupleView] [
       @source isView [@source dup "DIE" has ~ [new] when] [
         "Built-in tuple or View expected" raiseStaticError
@@ -327,8 +308,6 @@ toView: [
   @object0 isCombined [TRUE] [@object1 isCombined] if [
     @object0 "equal" has [FALSE] [
       @object1 "equal" has [FALSE] [
-        @object0 toIter drop
-        @object1 toIter drop
         TRUE
       ] if
     ] if
@@ -339,13 +318,13 @@ toView: [
   sizeCheckable ~ [@iter0.size @iter1.size =] || [
     result: FALSE;
     [
-      @iter1.valid ~ [
-        sizeCheckable [@iter0.valid ~] || [TRUE !result] when
-        FALSE
+      @iter1.next [
+        item:;
+        @iter0.next sizeCheckable [drop TRUE] when [@item =] [drop FALSE] if
       ] [
-        sizeCheckable [@iter0.valid] || [
-          @iter0.get @iter1.get = dup [@iter0.next @iter1.next] when
-        ] &&
+        drop
+        sizeCheckable [@iter0.next swap drop ~] || [TRUE !result] when
+        FALSE
       ] if
     ] loop
 
@@ -356,13 +335,16 @@ toView: [
 beginsWith: [
   iter0: iter1: toIter; toIter;
   sizeCheckable: @iter0 "size" has [@iter1 "size" has] &&;
-  sizeCheckable [@iter0.size @iter1.size <] && ~ [
+  sizeCheckable ~ [@iter0.size @iter1.size < ~] || [
     result: FALSE;
     [
-      @iter1.valid ~ [TRUE !result FALSE] [
-        sizeCheckable [@iter0.valid] || [
-          @iter0.get @iter1.get = dup [@iter0.next @iter1.next] when
-        ] &&
+      @iter1.next [
+        item:;
+        @iter0.next sizeCheckable [drop TRUE] when [@item =] [drop FALSE] if
+      ] [
+        drop
+        TRUE !result
+        FALSE
       ] if
     ] loop
 
@@ -379,7 +361,7 @@ contains: [
       iter1: @view1 toIter;
       j: 0; [
         j view1.size = [TRUE !result FALSE] [
-          @iter0.get @iter1.get = dup [@iter0.next @iter1.next j 1 + !j] when
+          @iter0.next drop @iter1.next drop = dup [j 1 + !j] when
         ] if
       ] loop
 
@@ -398,7 +380,7 @@ endsWith: [
     iter1: @view1 toIter;
     i: 0; [
       i view1.size = [TRUE !result FALSE] [
-        @iter0.get @iter1.get = dup [@iter0.next @iter1.next i 1 + !i] when
+        @iter0.next drop @iter1.next drop = dup [i 1 + !i] when
       ] if
     ] loop
 
@@ -406,86 +388,64 @@ endsWith: [
   ] &&
 ];
 
+# Control combinators
+case: [
+  caseInternal: [
+    value: descriptors: key:;;;
+    key descriptors fieldCount 1 - = [
+      key descriptors @ call
+    ] [
+      value key descriptors @ = [
+        key 1 + descriptors @ call
+      ] [
+        value descriptors key 2 + caseInternal
+      ] if
+    ] if
+  ];
+
+  0 caseInternal
+];
+
+cond: [
+  condInternal: [
+    value: descriptors: key:;;;
+    key descriptors fieldCount 1 - = [
+      key descriptors @ call
+    ] [
+      value key descriptors @ call [
+        key 1 + descriptors @ call
+      ] [
+        value descriptors key 2 + condInternal
+      ] if
+    ] if
+  ];
+
+  0 condInternal
+];
+
 # Iter producers
 fibonacci: [
   {
-    prev: current: new; new;
-    get: [@current new];
-    next: [@prev @current + @current @prev set !current];
-    valid: [TRUE];
+    prev: swap new;
+    current: new;
+
+    next: [
+      @prev @current + @current @prev set !current
+      @prev new TRUE
+    ];
   }
 ];
 
 iota: [
   {
     current: new;
-    get: [@current new];
-    next: [@current 1 @current cast + !current];
-    valid: [TRUE];
+
+    next: [
+      @current new
+      @current 1 @current cast + !current
+      TRUE
+    ];
   }
-];
-
-# Control combinators
-condImpl: [
-  condIndex:;
-  condFunctionList:;
-  condControlVar:;
-
-  condIndex condFunctionList fieldCount 1 - = [
-    condIndex @condFunctionList @ call
-  ] [
-    @condControlVar condIndex condFunctionList @ call [
-      condIndex 1 + @condFunctionList @ call
-    ] [
-      @condControlVar @condFunctionList condIndex 2 + condImpl
-    ] if
-  ] if
-];
-
-cond: [0 static condImpl];
-
-caseImpl: [
-  caseIndex:;
-  caseFunctionList:;
-  caseControlVar:;
-
-  caseIndex caseFunctionList fieldCount 1 - = [
-    caseIndex caseFunctionList @ call
-  ] [
-    caseControlVar caseIndex caseFunctionList @ = [
-      caseIndex 1 + caseFunctionList @ call
-    ] [
-      caseControlVar caseFunctionList caseIndex 2 + caseImpl
-    ] if
-  ] if
-];
-
-case: [0 static caseImpl];
-
-# Iter processors
-find: [swap toIter swap findStatic];
-find: [drop toIter dynamic .get TRUE] [
-  iter: body:; toIter;
-  [@iter.valid [@iter.get body ~] &&] [@iter.next] while
-  @iter
-] pfunc;
-
-findStatic: [
-  iter: body:;;
-  @iter.valid [@iter.get body ~] && ~ [@iter] [
-    @iter.next
-    @iter @body findStatic
-  ] if
-];
-
-findEqual: [
-  iter: value:;;
-  @iter [@value =] find
-];
-
-findEqualNot: [
-  iter: value:;;
-  @iter [@value = ~] find
 ];
 
 # Iter transformers
@@ -493,9 +453,9 @@ countIter: [{
   source: swap toIter;
   count:;
 
-  get:   [@source.get];
-  next:  [@source.next count 1 + @count set];
-  valid: [@source.valid];
+  next: [
+    @source.next dup [@count 1 @count cast + @count set] when
+  ];
 
   @source "size" has [
     size: [@source.size];
@@ -503,215 +463,233 @@ countIter: [{
 }];
 
 enumerate: [{
-  source: toIter;
-  key: 0;
+  source: swap toIter;
+  key: new;
 
-  valid: [@source.valid];
-  get:   [{key: key new; value: @source.get;}];
-  next:  [@source.next key 1 + !key];
-}];
-
-filter: [
-  source: body:;;
-  {
-    source: @source @body find;
-    body: @body;
-
-    get: [@source.get];
-    next: [@source.next @source @body find !source];
-    valid: [@source.valid];
-  }
-];
-
-joinIter: [
-  sources: body:;;
-  @sources wrapIter [unwrap] map @body map
-];
-
-map: [{
-  source: body:; toIter;
-
-  valid: [@source.valid];
-  get:   [@source.get body];
-  next:  [@source.next];
+  next: [
+    result: FALSE;
+    {key: @key new; value: @source.next !result;}
+    result dup [@key 1 @key cast + !key] when
+  ];
 
   @source "size" has [
     size: [@source.size];
   ] [] uif
 }];
 
+filter: [{
+  source: swap toIter;
+  pred:;
+
+  next: [
+    value: ref?: result: @source.next; isRef;;
+    result ~ [@value ref? ~ [new] when FALSE] [
+      @value pred [@value ref? ~ [new] when TRUE] [
+        @value ref? [AsRef] [new] if
+        [
+          drop
+          value: @source.next !result;
+          @value ref? [AsRef] when
+          result [@value pred ~] [FALSE] if
+        ] loop
+
+        ref? [.@data] when
+        result new
+      ] if
+    ] if
+  ];
+}];
+
+headIter: [
+  source: size: end:;;;
+  [size 0 < ~] "invalid size" assert
+  {
+    source: @source toIter;
+
+    @source "size" has [
+      stopSize: size @source.size < [@source.size size -] [0] if dup isDynamic [] [virtual] uif new;
+    ] [
+      iterSize: size new;
+    ] uif
+
+    end: @end;
+
+    next: [
+      @source "size" has [
+        @source.size stopSize = [end FALSE] [@source.next drop TRUE] if
+      ] [
+        iterSize 0 = [end FALSE] [
+          @source.next dup [iterSize 1 - !iterSize] when
+        ] if
+      ] if
+    ];
+
+    @source "size" has [
+      size: [@source.size stopSize -];
+    ] [] uif
+  }
+];
+
+joinIter: [
+  sources: transform: end:;;;
+  @sources wrapIter {
+    transform: @transform;
+    CALL: [unwrap transform];
+  } @end map
+];
+
+map: [
+  source: transform: end:;;;
+  {
+    source: @source toIter;
+    transform: @transform;
+    end: @end;
+
+    next: [
+      value: result: @source.next;; result [@value transform TRUE] [end FALSE] if
+    ];
+
+    @source "size" has [
+      size: [@source.size];
+    ] [] uif
+  }
+];
+
 wrapIter: [{
   sources: ([toIter] each);
 
-  valid: [@sources [.valid] all   ];
-  get:   [@sources [.get  ] (each)];
-  next:  [@sources [.next ] each  ];
+  next: [
+    @sources fieldCount 0 = [() FALSE] [
+      result: TRUE;
+      (
+        @sources [
+          .next ~ [FALSE !result] when
+        ] each
+      )
+
+      result
+    ] if
+  ];
+
+  @sources ["size" has] all [
+    size: [
+      @sources fieldCount 0 = [0] [
+        0 @sources @ .size @sources fieldCount 1 - [i 1 + @sources @ .size min] times
+      ] if
+    ];
+  ] [] uif
 }];
+
+# Iter processors
+unhead: [drop isIter] [
+  source: size: new;;
+  [size 0 < ~] "invalid size" assert
+  [
+    size 0 = [FALSE] [
+      @source.next swap drop dup [size 1 - !size] when
+    ] if
+  ] loop
+
+  @source
+] pfunc;
 
 # Iter consumers
 all: [swap toIter swap allStatic];
-all: [drop toIter dynamic .get TRUE] [
-  iter: body:; toIter;
-  result: TRUE;
-  [
-    @iter.valid ~ [FALSE] [
-      @iter.get body [@iter.next TRUE] [FALSE !result FALSE] if
-    ] if
+all: [drop toIter dynamic .next TRUE] [
+  source: pred:; toIter;
+  FALSE [
+    drop @source.next [pred TRUE = FALSE swap] [drop TRUE FALSE] if
   ] loop
-
-  @result
 ] pfunc;
 
 allStatic: [
-  iter: body:;;
-  @iter.valid ~ [TRUE] [
-    @iter.get body ~ [FALSE] [
-      @iter.next
-      @iter @body allStatic
-    ] if
-  ] if
+  source: pred:;;
+  @source.next [
+    pred [@source @pred allStatic] [FALSE] if
+  ] [drop TRUE] if
 ];
 
 any: [swap toIter swap anyStatic];
-any: [drop toIter dynamic .get TRUE] [
-  iter: body:; toIter;
-  result: FALSE;
-  [
-    @iter.valid ~ [FALSE] [
-      @iter.get body ~ dup [@iter.next] [TRUE !result] if
-    ] if
+any: [drop toIter dynamic .next TRUE] [
+  source: pred:; toIter;
+  FALSE [
+    drop @source.next [pred ~ TRUE swap] [drop FALSE FALSE] if
   ] loop
-
-  @result
 ] pfunc;
 
 anyStatic: [
-  iter: body:;;
-  @iter.valid ~ [FALSE] [
-    @iter.get body [TRUE] [
-      @iter.next
-      @iter @body anyStatic
-    ] if
-  ] if
+  source: pred:;;
+  @source.next [
+    pred [TRUE] [@source @pred anyStatic] if
+  ] [drop FALSE] if
 ];
 
 count: [
-  iter: body:; toIter;
-  count: 0;
-  [@iter.valid] [
-    @iter.get body [count 1 + !count] when
-    @iter.next
-  ] while
+  source: toIter;
+  @source "size" has [@source.size] [
+    itemCount: 0;
+    [
+      @source.next swap drop dup [itemCount 1 + !itemCount] when
+    ] loop
 
-  @count
-];
-
-countEqual: [
-  iter: value:;;
-  @iter [@value =] count
-];
-
-countEqualNot: [
-  iter: value:;;
-  @iter [@value = ~] count
+    itemCount
+  ] if
 ];
 
 each: [
-  iter: body:; toIter;
-  [@iter.valid] [
-    @iter.get body
-    @iter.next
-  ] while
+  source: consume:; toIter;
+  [
+    @source.next [consume TRUE] [drop FALSE] if
+  ] loop
 ];
 
-findIndex: [swap toIter swap 0 findIndexStatic];
-findIndex: [drop toIter dynamic .get TRUE] [
-  iter: body:; toIter;
-  index: 0;
+findOrdinal: [swap toIter swap 0 findOrdinalStatic];
+findOrdinal: [drop toIter dynamic .next TRUE] [
+  source: pred:; toIter;
+  key: 0;
   [
-    @iter.valid ~ [-1 !index FALSE] [
-      @iter.get body ~ dup [
-        @iter.next
-        index 1 + !index
-      ] when
-    ] if
+    @source.next [
+      pred ~ dup [key 1 + !key] when
+    ] [drop -1 !key FALSE] if
   ] loop
 
-  @index
+  key
 ] pfunc;
 
-findIndexStatic: [
-  iter: body: index:;;;
-  @iter.valid ~ [-1] [
-    @iter.get body [index new] [
-      @iter.next
-      @iter @body index 1 + findIndexStatic
-    ] if
-  ] if
+findOrdinalStatic: [
+  source: pred: key:;;;
+  @source.next [
+    pred [key new] [@source @pred key 1 + findOrdinalStatic] if
+  ] [drop -1] if
 ];
 
-findIndexEqual: [
-  iter: value:;;
-  @iter [@value =] findIndex
+meetsAll: [
+  meetsAllInternal: [
+    object: source:;;
+    @source.next [
+      @object swap call [@object @source meetsAllInternal] [FALSE] if
+    ] [drop TRUE] if
+  ];
+
+  toIter meetsAllInternal
 ];
 
-findIndexEqualNot: [
-  iter: value:;;
-  @iter [@value = ~] findIndex
-];
+meetsAny: [
+  meetsAnyInternal: [
+    object: source:;;
+    @source.next [
+      @object swap call [TRUE] [@object @source meetsAnyInternal] if
+    ] [drop FALSE] if
+  ];
 
-meetsAll: [toIter meetsAllStatic];
-meetsAll: [toIter dynamic .get TRUE] [
-  object: iter: toIter;;
-  result: TRUE;
-  [
-    @iter.valid ~ [FALSE] [
-      @object @iter.get call [@iter.next TRUE] [FALSE !result FALSE] if
-    ] if
-  ] loop
-
-  @result
-] pfunc;
-
-meetsAllStatic: [
-  object: iter:;;
-  @iter.valid ~ [TRUE] [
-    @object @iter.get call ~ [FALSE] [
-      @iter.next
-      @object @iter meetsAllStatic
-    ] if
-  ] if
-];
-
-meetsAny: [toIter meetsAnyStatic];
-meetsAny: [toIter dynamic .get TRUE] [
-  object: iter: toIter;;
-  result: FALSE;
-  [
-    @iter.valid ~ [FALSE] [
-      @object @iter.get call ~ dup [@iter.next] [TRUE !result] if
-    ] if
-  ] loop
-
-  @result
-] pfunc;
-
-meetsAnyStatic: [
-  object: iter:;;
-  @iter.valid ~ [FALSE] [
-    @object @iter.get call [TRUE] [
-      @iter.next
-      @object @iter meetsAnyStatic
-    ] if
-  ] if
+  toIter meetsAnyInternal
 ];
 
 mutate: [
-  iter: body:; toIter;
-  [@iter.valid] [
-    @iter.get body @iter.get set
-    @iter.next
-  ] while
+  source: transform:; toIter;
+  [
+    @source.next [dup transform swap set TRUE] [drop FALSE] if
+  ] loop
 ];
 
 # View slicers
@@ -741,11 +719,11 @@ tail: [
   @view.size size - size @view.slice
 ];
 
-unhead: [
+unhead: [drop toView TRUE] [
   view: size:; toView;
   [size 0 @view.size between] "size is out of bounds" assert
   size @view.size size - @view.slice
-];
+] pfunc;
 
 untail: [
   view: size:; toView;

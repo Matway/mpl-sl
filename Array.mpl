@@ -16,8 +16,10 @@
 "control.Natx"             use
 "control.Ref"              use
 "control.assert"           use
+"control.drop"             use
 "control.dup"              use
 "control.pfunc"            use
+"control.times"            use
 "control.when"             use
 "control.while"            use
 "memory.mplFree"           use
@@ -245,16 +247,14 @@ makeArrayObject: [{
   ];
 
   appendAll: [
-    iter: toIter;
-    @iter "size" has ~ ["sized Iter expected" raiseStaticError] when
+    source: toIter;
+    @source "size" has ~ ["sized Iter expected" raiseStaticError] when
     offset: size;
-    iterSize: iter.size;
+    iterSize: source.size;
     size iterSize + enlarge
-    i: 0; [i iterSize <] [
-      @iter.get offset i + at set
-      @iter.next
-      i 1 + !i
-    ] while
+    iterSize [
+      @source.next drop offset i + at set
+    ] times
   ];
 
   appendEach: [[pushBack] each];

@@ -14,7 +14,9 @@
 "control.Natx" use
 "control.Ref" use
 "control.assert" use
+"control.drop" use
 "control.isNil" use
+"control.swap" use
 "control.times" use
 "control.when" use
 "control.while" use
@@ -35,9 +37,9 @@ Pool: [
     firstFree: -1 dynamic;
     exactAllocatedMemSize: 0nx dynamic;
 
-    iter:   [@self [index: pool:;; {key: index new; value: index @pool.at;}] makeIter];
-    keys:   [self  [drop new                                               ] makeIter];
-    values: [@self [.at                                                    ] makeIter];
+    iter:   [@self [{key: swap new; value:;}] makeIter];
+    keys:   [self  [drop                    ] makeIter];
+    values: [@self [swap drop               ] makeIter];
 
     getSize: [
       dataSize new
@@ -206,9 +208,13 @@ Pool: [
       pool:;
       index: pool.firstValid;
 
-      valid: [index pool.dataSize = ~];
-      get: [index @pool @method call];
-      next: [index pool.nextValid !index];
+      next: [
+        index pool.dataSize = [0 @pool.@elementSchema method FALSE] [
+          index new index @pool.at method
+          index pool.nextValid !index
+          TRUE
+        ] if
+      ];
     }];
 
     INIT: [

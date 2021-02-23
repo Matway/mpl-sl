@@ -146,14 +146,19 @@ IntrusiveStack: [{
   ];
 
   reverseIter: [{
+    Item: virtual @Item Ref;
     item: @last;
 
-    valid: [@item isNil ~];
-    get: [@item];
-    next: [@item.prev !item];
+    next: [
+      @item isNil [@Item FALSE] [
+        @item
+        @item.prev !item
+        TRUE
+      ] if
+    ];
   }];
 
-  virtual SCHEMA_NAME: "IntrusiveStack";
-  virtual Item: Ref;
+  SCHEMA_NAME: virtual "IntrusiveStack";
+  Item: virtual Ref;
   last: @Item;
 }];

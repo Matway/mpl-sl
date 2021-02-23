@@ -227,11 +227,16 @@ IntrusiveDeque: [{
   ];
 
   iter: [{
+    Item: virtual @Item Ref;
     item: @first;
 
-    valid: [@item isNil ~];
-    get: [@item];
-    next: [@item.next !item];
+    next: [
+      @item isNil [@Item FALSE] [
+        @item
+        @item.next !item
+        TRUE
+      ] if
+    ];
   }];
 
   popFirst: [
@@ -290,11 +295,16 @@ IntrusiveDeque: [{
   ];
 
   reverseIter: [{
+    Item: virtual @Item Ref;
     item: @last;
 
-    valid: [@item isNil ~];
-    get: [@item];
-    next: [@item.prev !item];
+    next: [
+      @item isNil [@Item FALSE] [
+        @item
+        @item.prev !item
+        TRUE
+      ] if
+    ];
   }];
 
   validate: [
@@ -311,8 +321,8 @@ IntrusiveDeque: [{
     ] when
   ];
 
-  virtual SCHEMA_NAME: "IntrusiveDeque";
-  virtual Item: Ref;
+  SCHEMA_NAME: virtual "IntrusiveDeque";
+  Item: virtual Ref;
   first: @Item;
   last: @Item;
 }];

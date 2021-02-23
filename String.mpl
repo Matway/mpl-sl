@@ -7,6 +7,7 @@
 
 "Array.Array"             use
 "algorithm.cond"          use
+"algorithm.countIter"     use
 "algorithm.makeArrayIter" use
 "algorithm.toIndex"       use
 "algorithm.toIter"        use
@@ -484,87 +485,72 @@ Utf8DecoderMode: {
 decodeUtf8: [{
   mode: virtual new;
   source: toIter;
-  codepoint: 0;
-
-  get: [
-    [valid] "decoder is not valid" assert
-    codepoint mode Utf8DecoderMode.REPORT = ~ [toChar] when
-  ];
 
   next: [
-    [valid] "decoder is not valid" assert
     check: [
       predicate: action:;;
       mode Utf8DecoderMode.TRUST = [
         @predicate "ill-formed UTF-8 sequence" assert
         action
       ] [
-        predicate [action] [
-          mode Utf8DecoderMode.REPORT = [-1] [REPLACEMENT_CHARACTER.codepoint new] if
+        predicate @action [
+          mode Utf8DecoderMode.REPORT = [-1] [REPLACEMENT_CHARACTER] if
         ] if
       ] if
     ];
 
-    source.valid ~ [-2] [
-      unit0: source.get new; @source.next
-      unit0 0x80n8 < [unit0 Int32 cast] [
+    produce: [
+      Int32 cast mode Utf8DecoderMode.REPORT = ~ [toChar] when
+    ];
+
+    unit0: valid: @source.next;; valid ~ [mode Utf8DecoderMode.REPORT = [-1] [REPLACEMENT_CHARACTER] if FALSE] [
+      unit0 0x80n8 < [unit0 produce] [
         unit0 0xE0n8 < [
-          [
-            unit0 0xC2n8 < ~ [source.valid] &&
-          ] [
-            unit1: source.get new;
-            [
-              unit1 0xC0n8 and 0x80n8 =
-            ] [
-              @source.next
+          [unit0 0xC2n8 < ~] [
+            unit1: @source.next !valid;
+            [valid [unit1 0xC0n8 and 0x80n8 =] &&] [
               unit0 0x1Fn8 and Nat32 cast 6n8 lshift
               unit1 0x3Fn8 and Nat32 cast or
-              Int32 cast
+              produce
             ] check
           ] check
         ] [
           unit0 0xF0n8 < [
-            [source.valid] [
-              unit1: source.get new;
-              [
+            unit1: @source.next !valid;
+            [
+              valid [
                 unit1 unit0 0xE0n8 = [0xE0n8 and 0xA0n8] [
                   unit0 0xEDn8 = [0xE0n8 and 0x80n8] [0xC0n8 and 0x80n8] if
                 ] if =
-              ] [
-                @source.next [source.valid] [
-                  unit2: source.get new;
-                  [unit2 0xC0n8 and 0x80n8 =] [
-                    @source.next
-                    unit0 0x0Fn8 and Nat32 cast 12n8 lshift
-                    unit1 0x3Fn8 and Nat32 cast  6n8 lshift or
-                    unit2 0x3Fn8 and Nat32 cast             or
-                    Int32 cast
-                  ] check
-                ] check
+              ] &&
+            ] [
+              unit2: @source.next !valid;
+              [valid [unit2 0xC0n8 and 0x80n8 =] &&] [
+                unit0 0x0Fn8 and Nat32 cast 12n8 lshift
+                unit1 0x3Fn8 and Nat32 cast  6n8 lshift or
+                unit2 0x3Fn8 and Nat32 cast             or
+                produce
               ] check
             ] check
           ] [
-            [unit0 0xF5n8 < [source.valid] &&] [
-              unit1: source.get new;
+            [unit0 0xF5n8 <] [
+              unit1: @source.next !valid;
               [
-                unit1 unit0 0xF0n8 = [0x90n8 0xC0n8 within] [
-                  unit0 0xF4n8 = [0xF0n8] [0xC0n8] if and 0x80n8 =
-                ] if
+                valid [
+                  unit1 unit0 0xF0n8 = [0x90n8 0xC0n8 within] [
+                    unit0 0xF4n8 = [0xF0n8] [0xC0n8] if and 0x80n8 =
+                  ] if
+                ] &&
               ] [
-                @source.next [source.valid] [
-                  unit2: source.get new;
-                  [unit2 0xC0n8 and 0x80n8 =] [
-                    @source.next [source.valid] [
-                      unit3: source.get new;
-                      [unit3 0xC0n8 and 0x80n8 =] [
-                        @source.next
-                        unit0 0x07n8 and Nat32 cast 18n8 lshift
-                        unit1 0x3Fn8 and Nat32 cast 12n8 lshift or
-                        unit2 0x3Fn8 and Nat32 cast  6n8 lshift or
-                        unit3 0x3Fn8 and Nat32 cast             or
-                        Int32 cast
-                      ] check
-                    ] check
+                unit2: @source.next !valid;
+                [valid [unit2 0xC0n8 and 0x80n8 =] &&] [
+                  unit3: @source.next !valid;
+                  [valid [unit3 0xC0n8 and 0x80n8 =] &&] [
+                    unit0 0x07n8 and Nat32 cast 18n8 lshift
+                    unit1 0x3Fn8 and Nat32 cast 12n8 lshift or
+                    unit2 0x3Fn8 and Nat32 cast  6n8 lshift or
+                    unit3 0x3Fn8 and Nat32 cast             or
+                    produce
                   ] check
                 ] check
               ] check
@@ -572,12 +558,10 @@ decodeUtf8: [{
           ] if
         ] if
       ] if
-    ] if !codepoint
+
+      TRUE
+    ] if
   ];
-
-  valid: [codepoint -2 = ~];
-
-  next
 }];
 
 By3: [{
@@ -650,20 +634,16 @@ toString: [
 # Deprecated
 getCodePointAndSize: [
   data: size:;;
-  iter: {iter: data size makeArrayIter; count: 0; DIE: []; get: [iter.get]; next: [@iter.next count 1 + !count]; valid: [iter.valid];};
-  decoder: @iter Utf8DecoderMode.REPLACE decodeUtf8;
-  decoder.valid [
-    decoder.get .codepoint Nat32 cast iter.count new
-  ] [
-    0n32 0
-  ] if
+  count: 0;
+  decoder: data size makeArrayIter @count countIter Utf8DecoderMode.REPLACE decodeUtf8;
+  @decoder.next drop .codepoint Nat32 cast count
 ];
 
 getCodePointSize: [
   data: size:;;
-  iter: {iter: data size makeArrayIter; count: 0; DIE: []; get: [iter.get]; next: [@iter.next count 1 + !count]; valid: [iter.valid];};
-  decoder: @iter Utf8DecoderMode.REPLACE decodeUtf8;
-  decoder.valid [iter.count new] [0] if
+  count: 0;
+  decoder: data size makeArrayIter @count countIter Utf8DecoderMode.REPLACE decodeUtf8;
+  @decoder.next drop drop count
 ];
 
 makeStringIter2: [{

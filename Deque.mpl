@@ -25,9 +25,14 @@ Deque: [{
     {
       deque: @self;
       key:   0;
-      get:   [key @deque.at];
-      next:  [key 1 + !key];
-      valid: [key deque.size = ~];
+
+      next: [
+        key deque.size = [@deque.@elementType FALSE] [
+          key @deque.at
+          key 1 + !key
+          TRUE
+        ] if
+      ];
     }
   ];
 

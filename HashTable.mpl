@@ -5,18 +5,18 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"Array.Array"         use
-"algorithm.="         use
-"algorithm.findIndex" use
-"algorithm.unhead"    use
-"control.&&"          use
-"control.="           use
-"control.Ref"         use
-"control.assert"      use
-"control.dup"         use
-"control.pfunc"       use
-"control.when"        use
-"control.while"       use
+"Array.Array"           use
+"algorithm.="           use
+"algorithm.findOrdinal" use
+"algorithm.unhead"      use
+"control.&&"            use
+"control.="             use
+"control.Ref"           use
+"control.assert"        use
+"control.dup"           use
+"control.pfunc"         use
+"control.when"          use
+"control.while"         use
 
 HashTable: [
   value:;
@@ -157,19 +157,20 @@ HashTable: [
     makeIter: [{
       virtual method:;
       data:;
-      bucket: data [.size 0 = ~] findIndex;
+      bucket: data [.size 0 = ~] findOrdinal;
       item: 0;
 
-      valid: [bucket -1 = ~];
-
-      get: [item bucket @data.at.at @method call];
-
       next: [
-        item 1 + !item
-        item bucket data.at.size = [
-          data bucket 1 + unhead [.size 0 = ~] findIndex dup -1 = [new] [bucket 1 + +] if !bucket
-          0 !item
-        ] when
+        bucket -1 = [{key: @data.@elementType.@elementType.@key Ref; value: @data.@elementType.@elementType.@value Ref;} method FALSE] [
+          item bucket @data.at.at method
+          item 1 + !item
+          item bucket data.at.size = [
+            data bucket 1 + unhead [.size 0 = ~] findOrdinal dup -1 = [new] [bucket 1 + +] if !bucket
+            0 !item
+          ] when
+
+          TRUE
+        ] if
       ];
     }];
 

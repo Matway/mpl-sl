@@ -147,11 +147,16 @@ IntrusiveQueue: [{
   ];
 
   iter: [{
+    Item: virtual @Item Ref;
     item: @first;
 
-    valid: [@item isNil ~];
-    get: [@item];
-    next: [@item.next !item];
+    next: [
+      @item isNil [@Item FALSE] [
+        @item
+        @item.next !item
+        TRUE
+      ] if
+    ];
   }];
 
   popFirst: [
@@ -208,8 +213,8 @@ IntrusiveQueue: [{
     ] when
   ];
 
-  virtual SCHEMA_NAME: "IntrusiveQueue";
-  virtual Item: Ref;
+  SCHEMA_NAME: virtual "IntrusiveQueue";
+  Item: virtual Ref;
   first: @Item;
   last: @Item;
 }];
