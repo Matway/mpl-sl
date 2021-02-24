@@ -17,7 +17,6 @@
 "control.Ref"              use
 "control.assert"           use
 "control.drop"             use
-"control.dup"              use
 "control.pfunc"            use
 "control.times"            use
 "control.when"             use
@@ -387,20 +386,24 @@ getHeapUsedSize: ["ARRAY" has] [
 
 toArray: [
   source: toIter;
-  first: @source.get;
+  first: firstValid: @source.next;;
   array: @first newVarOfTheSameType Array;
   @source "size" has [
-    @source.size @array.resize
-    @first 0 @array @ set
-    i: 1; [@source.next i @array.size <] [
-      @source.get i @array @ set
-      i 1 + !i
-    ] while
+    @source.size 0 = ~ [
+      1 @source.size + @array.resize
+      @first 0 @array @ set
+      i: 1; [i @array.size <] [
+        @source.next drop i @array @ set
+        i 1 + !i
+      ] while
+    ] when
   ] [
-    @first @array.pushBack
-    [@source.next @source.valid] [
-      @source.get @array.pushBack
-    ] while
+    firstValid [
+      @first @array.pushBack
+      [
+        @source.next [@array.pushBack TRUE] [drop FALSE] if
+      ] loop
+    ] when
   ] if
 
   @array

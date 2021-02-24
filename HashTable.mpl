@@ -8,13 +8,16 @@
 "Array.Array"           use
 "algorithm.="           use
 "algorithm.findOrdinal" use
+"algorithm.toIter"      use
 "algorithm.unhead"      use
 "control.&&"            use
 "control.="             use
 "control.Ref"           use
 "control.assert"        use
+"control.drop"          use
 "control.dup"           use
 "control.pfunc"         use
+"control.unwrap"        use
 "control.when"          use
 "control.while"         use
 
@@ -234,3 +237,17 @@ hash: [0i64 same] [0i32 cast 0n32 cast] pfunc;
 hash: [0ix  same] [0i32 cast 0n32 cast] pfunc;
 
 hash: ["hash" has] [.hash] pfunc;
+
+toHashTable: [
+  source: toIter;
+  first: firstValid: @source.next;;
+  hashTable: 0 @first @ newVarOfTheSameType 1 @first @ newVarOfTheSameType HashTable;
+  firstValid [
+    @first unwrap @hashTable.insert
+    [
+      @source.next [unwrap @hashTable.insert TRUE] [drop FALSE] if
+    ] loop
+  ] when
+
+  @hashTable
+];

@@ -73,7 +73,7 @@ toChar: [Int32 same] [
   @char
 ] pfunc;
 
-toChar: [Text same] [decode .get] pfunc;
+toChar: [Text same] [decode .next drop] pfunc;
 
 intPow: [
   up:   new;
