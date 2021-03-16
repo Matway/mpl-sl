@@ -6,6 +6,7 @@
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
 "algorithm.each"           use
+"algorithm.filter"         use
 "algorithm.makeArrayIndex" use
 "algorithm.makeArrayIter"  use
 "algorithm.makeArrayView"  use
@@ -16,6 +17,7 @@
 "control.Natx"             use
 "control.Ref"              use
 "control.assert"           use
+"control.compose"          use
 "control.drop"             use
 "control.pfunc"            use
 "control.times"            use
@@ -201,13 +203,13 @@ makeArrayObject: [{
 
   eraseIf: [
     eraseIfBody:;
-    index: 0;
-    self toIter @eraseIfBody filter [
-      index at set
-      index 1 + !index
+    key: 0;
+    self @eraseIfBody [~] compose filter [
+      key at set
+      key 1 + !key
     ] each
 
-    index shrink
+    key shrink
   ];
 
   getSize: [dataSize new];
