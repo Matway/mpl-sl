@@ -7,11 +7,13 @@
 
 "algorithm.each"           use
 "algorithm.filter"         use
+"algorithm.findOrdinal"    use
 "algorithm.makeArrayIndex" use
 "algorithm.makeArrayIter"  use
 "algorithm.makeArrayView"  use
 "algorithm.toIndex"        use
 "algorithm.toIter"         use
+"algorithm.unhead"         use
 "control.&&"               use
 "control.@"                use
 "control.Natx"             use
@@ -203,13 +205,15 @@ makeArrayObject: [{
 
   eraseIf: [
     eraseIfBody:;
-    key: 0;
-    self @eraseIfBody [~] compose filter [
-      key at set
-      key 1 + !key
-    ] each
+    key: self @eraseIfBody findOrdinal;
+    key -1 = ~ [
+      @self key 1 + unhead @eraseIfBody [~] compose filter [
+        key at set
+        key 1 + !key
+      ] each
 
-    key shrink
+      key shrink
+    ] when
   ];
 
   getSize: [dataSize new];
