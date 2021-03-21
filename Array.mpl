@@ -394,23 +394,21 @@ toArray: [
   source: toIter;
   first: firstValid: @source.next;;
   array: @first newVarOfTheSameType Array;
-  @source "size" has [
-    @source.size 0 = ~ [
+  firstValid [
+    @source "size" has [
       1 @source.size + @array.resize
-      @first 0 @array @ set
+      @first 0 @array.at set
       i: 1; [i @array.size <] [
-        @source.next drop i @array @ set
+        @source.next drop i @array.at set
         i 1 + !i
       ] while
-    ] when
-  ] [
-    firstValid [
+    ] [
       @first @array.pushBack
       [
         @source.next [@array.pushBack TRUE] [drop FALSE] if
       ] loop
-    ] when
-  ] if
+    ] if
+  ] when
 
   @array
 ];
