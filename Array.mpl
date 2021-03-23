@@ -398,10 +398,9 @@ toArray: [
     @source "size" has [
       1 @source.size + @array.resize
       @first 0 @array.at set
-      i: 1; [i @array.size <] [
-        @source.next drop i @array.at set
-        i 1 + !i
-      ] while
+      @source.size [
+        @source.next drop 1 i + @array.at set
+      ] times
     ] [
       @first @array.pushBack
       [
