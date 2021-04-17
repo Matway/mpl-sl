@@ -7,7 +7,7 @@
 
 "String.String" use
 "String.printList" use
-"control.=" use
+"algorithm.=" use
 "control.ensure" use
 "control.failProc" use
 "control.when" use
