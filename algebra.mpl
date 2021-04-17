@@ -247,8 +247,8 @@ cosSin: [
 ] [
   m1:m2:;;
   (
-    m1 getRowCount [i m1 @ copy] times
-    m2 getRowCount [i m2 @ copy] times
+    m1 getRowCount [i m1 @ new] times
+    m2 getRowCount [i m2 @ new] times
   )
 ] pfunc;
 
@@ -260,8 +260,8 @@ cosSin: [
 ] [
   m:v:;;
   (
-    m getRowCount [i m @ copy] times
-    v copy
+    m getRowCount [i m @ new] times
+    v new
   )
 ] pfunc;
 
@@ -271,7 +271,7 @@ cosSin: [
   v2 vector? and
 ] [
   v1:v2:;;
-  (v1 fieldCount [i v1 @ copy] times v2 fieldCount [i v2 @ copy] times)
+  (v1 fieldCount [i v1 @ new] times v2 fieldCount [i v2 @ new] times)
 ] pfunc;
 
 &: [
@@ -284,14 +284,14 @@ cosSin: [
   (
     m1 getRowCount [ row: i;
       (
-        m1 getColCount [i row m1 @ @ copy] times
-        m2 getColCount [i row m2 @ @ copy] times
+        m1 getColCount [i row m1 @ @ new] times
+        m2 getColCount [i row m2 @ @ new] times
       )
     ] times
   )
 ] pfunc;
 
-toColumn: [vector?] [v:;(v fieldCount [(i v @ copy)] times)] pfunc;
+toColumn: [vector?] [v:;(v fieldCount [(i v @ new)] times)] pfunc;
 
 multiply: [
   v1:v2:;;
@@ -372,7 +372,7 @@ trans: [
   v matrix? ~ and
 ] [
   v:;
-  (v fieldCount [(i v @ copy)] times)
+  (v fieldCount [(i v @ new)] times)
 ] pfunc;
 
 trans: [matrix?] [
@@ -410,7 +410,7 @@ det: [
   m matrix?
   m getColCount 1 = and
   m getRowCount 1 = and
-] [m:; 0 0 m @ copy] pfunc;
+] [m:; 0 0 m @ new] pfunc;
 
 det: [
   m:;
