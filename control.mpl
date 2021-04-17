@@ -137,6 +137,8 @@ dup: [v:; @v @v];
 
 swap: [v0: v1:;; @v1 @v0];
 
+over: [v0: v1:;; @v0 @v1 @v0];
+
 when: [[] if];
 
 while: [
