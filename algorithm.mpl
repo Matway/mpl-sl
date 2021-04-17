@@ -35,6 +35,7 @@
 # The ReverseIterable interface allows you to create a new Iter to access the collection sequentially.
 
 # View
+#   at ( key -- item ) [optional] get the contained item either by value or by reference
 #   index ( -- index ) [optional] create an Index that allows you to access all contained items
 #   iter ( -- iter ) create an Iter that allows you to list all contained items, from first to last
 #   size ( -- size ) return the size of the View, which does not necessarily match the number of items
@@ -46,27 +47,7 @@
 # Trying to create a new View that goes beyond the current one is undefined behavior.
 # A View itself does not provide access to items, but other interfaces such as Index or Iterable can provide it.
 
-"control.&&"             use
-"control.="              use
-"control.AsRef"          use
-"control.Cref"           use
-"control.Int32"          use
-"control.Nat8"           use
-"control.Natx"           use
-"control.Text"           use
-"control.assert"         use
-"control.between"        use
-"control.drop"           use
-"control.dup"            use
-"control.isBuiltinTuple" use
-"control.min"            use
-"control.pfunc"          use
-"control.swap"           use
-"control.times"          use
-"control.unwrap"         use
-"control.when"           use
-"control.within"         use
-"control.||"             use
+"control" use
 
 isDirtyOrDynamic: [
   object:;
@@ -136,6 +117,12 @@ makeArrayView: [
     data: @data;
     viewSize: size dup isDirtyOrDynamic [] [virtual] uif new;
 
+    at: [
+      key:;
+      [key 0 viewSize within] "key is out of bounds" assert
+      @data storageAddress @data storageSize key Natx cast * + @data addressToReference
+    ];
+
     index: [@data viewSize makeArrayIndex];
 
     iter: [@data viewSize makeArrayIter];
@@ -196,7 +183,7 @@ makeTupleIndex: [
   tuple: offset: size:;;;
   [offset 0 @tuple fieldCount between] "offset is out of bounds" assert
   [size 0 @tuple fieldCount offset - between] "size is out of bounds" assert
-  offset isDynamic [offset @tuple @ size makeArrayIndex] [
+  offset isDynamic [@tuple storageAddress 0 dynamic @tuple @ storageSize offset Natx cast * + 0 @tuple @ addressToReference size makeArrayIndex] [
     {
       SCHEMA_NAME: virtual "TupleIndex";
       tuple: @tuple;
@@ -218,7 +205,7 @@ makeTupleIter: [
   tuple: offset: size:;;;
   [offset 0 @tuple fieldCount between] "offset is out of bounds" assert
   [size 0 @tuple fieldCount offset - between] "size is out of bounds" assert
-  offset isDynamic [offset @tuple @ size makeArrayIter] [
+  offset isDynamic [@tuple storageAddress 0 dynamic @tuple @ storageSize offset Natx cast * + 0 @tuple @ addressToReference size makeArrayIter] [
     {
       SCHEMA_NAME: virtual "TupleIter";
       tuple: @tuple;
@@ -226,13 +213,14 @@ makeTupleIter: [
       offset1: offset0 size + dup isDynamic [] [virtual] uif new;
 
       next: [
-        offset0 offset1 <
-        offset0 isDynamic ~ [offset0 @tuple fieldCount =] && [()] [
-          offset0 @tuple @
-          offset0 1 + !offset0
+        offset0 isDynamic [
+          @tuple storageAddress 0 dynamic @tuple @ storageSize offset0 Natx cast * + 0 @tuple @ addressToReference
+        ] [
+          offset0 @tuple fieldCount < [offset0 @tuple @] [()] if
         ] if
 
-        swap
+        offset0 offset1 <
+        offset0 1 + !offset0
       ];
 
       size: [offset1 offset0 -];
@@ -244,12 +232,18 @@ makeTupleView: [
   tuple: offset: size:;;;
   [offset 0 @tuple fieldCount between] "offset is out of bounds" assert
   [size 0 @tuple fieldCount offset - between] "size is out of bounds" assert
-  offset isDynamic [offset @tuple @ size makeArrayView] [
+  offset isDynamic [@tuple storageAddress 0 dynamic @tuple @ storageSize offset Natx cast * + 0 @tuple @ addressToReference size makeArrayView] [
     {
       SCHEMA_NAME: virtual "TupleView";
       tuple: @tuple;
       viewOffset: virtual offset new;
       viewSize: size dup isDynamic [] [virtual] uif new;
+
+      at: [
+        key:;
+        [key 0 viewSize within] "key is out of bounds" assert
+        viewOffset key + @tuple @
+      ];
 
       index: [@tuple viewOffset viewSize makeTupleIndex];
 
@@ -421,6 +415,25 @@ cond: [
   ];
 
   0 condInternal
+];
+
+cond0: [
+  cond0Internal: [
+    descriptors: key:;;
+    key descriptors fieldCount = ~ [
+      key descriptors fieldCount 1 - = [
+        key descriptors @ call
+      ] [
+        key descriptors @ call [
+          key 1 + descriptors @ call
+        ] [
+          descriptors key 2 + cond0Internal
+        ] if
+      ] if
+    ] when
+  ];
+
+  0 cond0Internal
 ];
 
 # Iter producers
@@ -641,6 +654,18 @@ each: [
   [
     @source.next [consume TRUE] [drop FALSE] if
   ] loop
+];
+
+eachStatic: [
+  eachStaticInternal: [
+    over .next [
+      over ucall @eachStaticInternal ucall
+    ] [
+      drop drop drop
+    ] uif
+  ];
+
+  swap toIter swap @eachStaticInternal ucall
 ];
 
 findOrdinal: [swap toIter swap 0 findOrdinalStatic];
