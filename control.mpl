@@ -231,6 +231,13 @@ min: [
   a b < [a][b] if
 ];
 
+clamp: [
+  value: lower: upper:;;;
+  value lower < [@lower] [
+    upper value < [@upper] [@value] if
+  ] if
+];
+
 between: [
   value: lower: upper:;;;
   value lower < ~ [upper value < ~] &&
