@@ -43,7 +43,7 @@ getErrnoText: [
 ];
 
 loadFile: [
-  name: addTerminator;
+  name: addTerminator makeStringView;
   result: {
     result: String;
     data: Nat8 Array;
@@ -73,7 +73,7 @@ loadFile: [
 ];
 
 saveFile: [
-  data: name: addTerminator;;
+  data: name: addTerminator makeStringView;;
   file: Natx;
   error: Int32;
   () (
@@ -94,7 +94,7 @@ saveFile: [
 ];
 
 loadString: [
-  name: addTerminator;
+  name: addTerminator makeStringView;
   result: {
     success: TRUE;
     data: String;
@@ -118,7 +118,7 @@ loadString: [
 
 saveString: [
   stringView: makeStringView;
-  name: addTerminator;
+  name: addTerminator makeStringView;
   size: stringView.size;
   f: "wb\00" name.data storageAddress Text addressToReference fopen;
   f 0nx = ~
@@ -131,7 +131,7 @@ saveString: [
 
 appendString: [
   stringView: makeStringView;
-  name: addTerminator;
+  name: addTerminator makeStringView;
   size: stringView.size;
   f: "ab\00" name.data storageAddress Text addressToReference fopen;
   f 0nx = ~
