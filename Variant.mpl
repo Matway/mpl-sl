@@ -5,11 +5,12 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"control.Int32" use
-"control.Ref" use
+"control.&&"     use
+"control.Int32"  use
+"control.Ref"    use
 "control.assert" use
-"control.pfunc" use
-"control.when" use
+"control.pfunc"  use
+"control.when"   use
 
 Variant: [{
   virtual VARIANT: ();
@@ -136,6 +137,30 @@ Variant: [{
   ];
 
   visit: [0 visitInternal];
+
+  equal: [
+    other:;
+
+    i: 0 static;
+
+    typeList other.typeList same [
+      typeTag other.typeTag = [
+        result: FALSE;
+        [
+          i other.typeList fieldCount < [
+            i other.typeTag = [
+              i get i other.get = @result set
+            ] when
+            i 1 + @i set
+            TRUE static
+          ] [
+            FALSE static
+          ] if
+        ] loop
+        result
+      ] &&
+    ] &&
+  ];
 
   INIT: [
     0 @typeTag set
