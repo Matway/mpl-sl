@@ -142,7 +142,6 @@ Variant: [{
     other:;
 
     i: 0 static;
-
     typeList other.typeList same [
       typeTag other.typeTag = [
         result: FALSE;
