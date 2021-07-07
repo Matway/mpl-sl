@@ -5,7 +5,9 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
+"algorithm.="    use
 "control.&&"     use
+"control.="      use
 "control.Int32"  use
 "control.Ref"    use
 "control.assert" use
