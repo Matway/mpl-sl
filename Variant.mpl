@@ -55,7 +55,7 @@ Variant: [{
     result
   ] call;
 
-  typeTag: 0 dynamic;
+  typeTag: 0;
 
   memory: [
     maxAlignment 1 static = [0n8 dynamic] [
@@ -105,7 +105,7 @@ Variant: [{
   getTag: [typeTag new];
 
   setTag: [
-    index: new dynamic;
+    index: new;
     index typeTag = ~ [
       rawDestroy
       index @typeTag set
