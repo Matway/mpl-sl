@@ -6,12 +6,12 @@
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
 "algorithm.="    use
-"control.&&"     use
 "control.="      use
 "control.Int32"  use
 "control.Ref"    use
 "control.assert" use
 "control.pfunc"  use
+"control.swap"   use
 "control.when"   use
 
 Variant: [{
@@ -121,6 +121,8 @@ Variant: [{
     @memory storageAddress index @typeList @ addressToReference
   ];
 
+  getUnchecked: [memory storageAddress swap @typeList @ addressToReference];
+
   assign: [
     index:;
     index setTag
@@ -143,13 +145,12 @@ Variant: [{
   equal: [
     other:;
 
-    i: 0 static;
-    typeList other.typeList same ~ ["Variants have different typeLists" raiseStaticError] when
+    typeList other.typeList same ~ ["Variants' supported types differ" raiseStaticError] when
     result: FALSE;
     typeTag other.typeTag = [
       i: 0 static;
       [
-        i typeTag = [i get i other.get = !result] when
+        i typeTag = [i getUnchecked i other.getUnchecked = !result] when
         i 1 + !i
         i typeList fieldCount <
       ] loop
