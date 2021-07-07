@@ -142,23 +142,17 @@ Variant: [{
     other:;
 
     i: 0 static;
-    typeList other.typeList same [
-      typeTag other.typeTag = [
-        result: FALSE;
-        [
-          i other.typeList fieldCount < [
-            i other.typeTag = [
-              i get i other.get = @result set
-            ] when
-            i 1 + @i set
-            TRUE static
-          ] [
-            FALSE static
-          ] if
-        ] loop
-        result
-      ] &&
-    ] &&
+    typeList other.typeList same ~ ["Variants have different typeLists" raiseStaticError] when
+    result: FALSE;
+    typeTag other.typeTag = [
+      i: 0 static;
+      [
+        i typeTag = [i get i other.get = !result] when
+        i 1 + !i
+        i typeList fieldCount <
+      ] loop
+    ] when
+    result
   ];
 
   INIT: [
