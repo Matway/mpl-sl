@@ -115,13 +115,13 @@ Variant: [{
     ] when
   ];
 
+  getUnchecked: [memory storageAddress swap @typeList @ addressToReference];
+
   get: [
     index: new;
     [index typeTag =] "Wrong tag in Tagged Union!" assert
-    @memory storageAddress index @typeList @ addressToReference
+    index getUnchecked
   ];
-
-  getUnchecked: [memory storageAddress swap @typeList @ addressToReference];
 
   assign: [
     index:;
@@ -144,7 +144,6 @@ Variant: [{
 
   equal: [
     other:;
-
     typeList other.typeList same ~ ["Variants' supported types differ" raiseStaticError] when
     result: FALSE;
     typeTag other.typeTag = [
