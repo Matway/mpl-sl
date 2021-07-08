@@ -170,8 +170,8 @@ Variant: [{
     [
       i @typeList fieldCount < [
         i typeTag = [
-          i other.get
-          i get set
+          i other.getUnchecked
+          i getUnchecked set
         ] when
         i 1 + @i set
         TRUE static
