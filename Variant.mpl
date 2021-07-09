@@ -142,6 +142,7 @@ Variant: [{
 
   visit: [0 visitInternal];
 
+  # Loop is kept to allow equality check of dynamic Variants
   equal: [
     other:;
     typeList other.typeList same ~ ["Variants' supported types differ" raiseStaticError] when
