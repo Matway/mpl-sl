@@ -5,11 +5,14 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"control.Int32" use
-"control.Ref" use
+"algorithm.="    use
+"control.="      use
+"control.Int32"  use
+"control.Ref"    use
 "control.assert" use
-"control.pfunc" use
-"control.when" use
+"control.pfunc"  use
+"control.swap"   use
+"control.when"   use
 
 Variant: [{
   virtual VARIANT: ();
@@ -54,7 +57,7 @@ Variant: [{
     result
   ] call;
 
-  typeTag: 0 dynamic;
+  typeTag: 0;
 
   memory: [
     maxAlignment 1 static = [0n8 dynamic] [
@@ -104,7 +107,7 @@ Variant: [{
   getTag: [typeTag new];
 
   setTag: [
-    index: new dynamic;
+    index: new;
     index typeTag = ~ [
       rawDestroy
       index @typeTag set
@@ -112,10 +115,12 @@ Variant: [{
     ] when
   ];
 
+  getUnchecked: [memory storageAddress swap @typeList @ addressToReference];
+
   get: [
     index: new;
     [index typeTag =] "Wrong tag in Tagged Union!" assert
-    @memory storageAddress index @typeList @ addressToReference
+    index getUnchecked
   ];
 
   assign: [
@@ -137,6 +142,22 @@ Variant: [{
 
   visit: [0 visitInternal];
 
+  # Loop is kept to allow equality check of dynamic Variants
+  equal: [
+    other:;
+    typeList other.typeList same ~ ["Variants' supported types differ" raiseStaticError] when
+    result: FALSE;
+    typeTag other.typeTag = [
+      i: 0 static;
+      [
+        i typeTag = [i getUnchecked i other.getUnchecked = !result] when
+        i 1 + !i
+        i typeList fieldCount <
+      ] loop
+    ] when
+    result
+  ];
+
   INIT: [
     0 @typeTag set
     rawInit
@@ -150,8 +171,8 @@ Variant: [{
     [
       i @typeList fieldCount < [
         i typeTag = [
-          i other.get
-          i get set
+          i other.getUnchecked
+          i getUnchecked set
         ] when
         i 1 + @i set
         TRUE static
