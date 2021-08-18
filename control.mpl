@@ -285,9 +285,9 @@ for: [
 sequenceImpl: [
   sequenceIndex:;
   sequenceList:;
-  sequenceIndex sequenceList fieldCount < [0 static sequenceList @ call] && [
-    sequenceIndex sequenceList @ ucall
-    sequenceList sequenceIndex 1 + sequenceImpl
+  sequenceIndex sequenceList fieldCount < [0 static @sequenceList @ call] && [
+    sequenceIndex @sequenceList @ ucall
+    @sequenceList sequenceIndex 1 + sequenceImpl
   ] when
 ];
 

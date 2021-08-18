@@ -387,12 +387,12 @@ case: [
   caseInternal: [
     value: descriptors: key:;;;
     key descriptors fieldCount 1 - = [
-      key descriptors @ call
+      key @descriptors @ call
     ] [
       value key descriptors @ = [
-        key 1 + descriptors @ call
+        key 1 + @descriptors @ call
       ] [
-        value descriptors key 2 + caseInternal
+        value @descriptors key 2 + caseInternal
       ] if
     ] if
   ];
@@ -404,12 +404,12 @@ cond: [
   condInternal: [
     value: descriptors: key:;;;
     key descriptors fieldCount 1 - = [
-      key descriptors @ call
+      key @descriptors @ call
     ] [
-      value key descriptors @ call [
-        key 1 + descriptors @ call
+      value key @descriptors @ call [
+        key 1 + @descriptors @ call
       ] [
-        value descriptors key 2 + condInternal
+        value @descriptors key 2 + condInternal
       ] if
     ] if
   ];
@@ -422,12 +422,12 @@ cond0: [
     descriptors: key:;;
     key descriptors fieldCount = ~ [
       key descriptors fieldCount 1 - = [
-        key descriptors @ call
+        key @descriptors @ call
       ] [
-        key descriptors @ call [
-          key 1 + descriptors @ call
+        key @descriptors @ call [
+          key 1 + @descriptors @ call
         ] [
-          descriptors key 2 + cond0Internal
+          @descriptors key 2 + cond0Internal
         ] if
       ] if
     ] when
