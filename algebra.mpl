@@ -9,6 +9,8 @@
 "control.Natx" use
 "control.Real32" use
 "control.Real64" use
+"control.abs" use
+"control.ensure" use
 "control.pfunc" use
 "control.sqr" use
 "control.times" use
@@ -410,7 +412,7 @@ det: [
   m matrix?
   m getColCount 1 = and
   m getRowCount 1 = and
-] [m:; 0 0 m @ new] pfunc;
+] [m:; 0 0 m @ @ new] pfunc;
 
 det: [
   m:;
@@ -603,4 +605,60 @@ inv: [
 ] [
   m:;
   m adj m det /
+] pfunc;
+
+solve: [
+  m: v:;;
+  m matrix?
+  m getColCount 1 = and
+  m getRowCount 1 = and
+  v fieldCount  1 = and
+] [
+  m: v:;;
+
+  v0: 0 v @ new;
+  m00: 0 0 m @ @;
+
+  (v0 m00 /)
+] pfunc;
+
+solve: [
+  m: v:;;
+  m matrix?
+  m getColCount m getRowCount = and
+  m getColCount v fieldCount = and
+] [
+  m: v:;;
+
+  THRESHOLD: [1.0e-6 0 v @ cast];
+  
+  columnCount: m getColCount;
+  determinant: m det;
+  
+  [determinant abs THRESHOLD >] "determinant of matrix cannot be 0" ensure
+
+  additionMatrices: m columnCount Vector;
+  
+  detIndex: 0;
+  additionMatrices getColCount [
+    columnIndex: i;
+    additionMatrix: columnIndex @additionMatrices @;
+    v fieldCount [
+      i v @ columnIndex i @additionMatrix @ @ set
+    ] times
+  ] times
+  
+  additionDeterminants: 0 v @ additionMatrices getColCount Vector;
+  
+  additionMatrices getColCount [
+    i additionMatrices @ det i @additionDeterminants @ set
+  ] times
+
+  res: (
+    v fieldCount [
+      i additionDeterminants @ determinant /
+    ] times
+  );
+
+  res
 ] pfunc;
