@@ -755,3 +755,54 @@ untail: [
   [size 0 @view.size between] "size is out of bounds" assert
   0 @view.size size - @view.slice
 ];
+
+objectKeys: [{
+  object:;
+
+  item: 0;
+  size: object fieldCount;
+
+  next: [
+    size 0 = ["" FALSE] [
+      item size = [object 0 fieldName FALSE] [
+        object item fieldName
+        item 1 + !item
+        TRUE
+      ] if
+    ] if
+  ];
+}];
+
+objectValues: [{
+  object:;
+
+  item: 0;
+  size: object fieldCount;
+
+  next: [
+    size 0 = [{} FALSE] [
+      item size = [0 @object @ FALSE] [
+        item @object @
+        item 1 + !item
+        TRUE
+      ] if
+    ] if
+  ];
+}];
+
+objectFields: [{
+  object:;
+
+  item: 0;
+  size: object fieldCount;
+
+  next: [
+    size 0 = [{key: ""; value: {};} FALSE] [
+      item size = [{key: object 0 fieldName; value: 0 @object @;} FALSE] [
+        {key: object item fieldName; value: item @object @;}
+        item 1 + !item
+        TRUE
+      ] if
+    ] if
+  ];
+}];
