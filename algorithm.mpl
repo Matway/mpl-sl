@@ -756,53 +756,26 @@ untail: [
   0 @view.size size - @view.slice
 ];
 
-objectKeys: [{
+makeObjectIter: [{
+  virtual method:;
   object:;
+  SCHEMA_NAME: virtual "ObjectIter";
 
-  item: 0;
+  offset: 0;
   size: object fieldCount;
 
   next: [
-    size 0 = ["" FALSE] [
-      item size = [object 0 fieldName FALSE] [
-        object item fieldName
-        item 1 + !item
-        TRUE
-      ] if
+    size 0 = [
+      {} FALSE
+    ] [
+      object offset method
+      offset 1 + !offset
+      size   1 - !size
+      TRUE
     ] if
   ];
 }];
 
-objectValues: [{
-  object:;
-
-  item: 0;
-  size: object fieldCount;
-
-  next: [
-    size 0 = [{} FALSE] [
-      item size = [0 @object @ FALSE] [
-        item @object @
-        item 1 + !item
-        TRUE
-      ] if
-    ] if
-  ];
-}];
-
-objectFields: [{
-  object:;
-
-  item: 0;
-  size: object fieldCount;
-
-  next: [
-    size 0 = [{key: ""; value: {};} FALSE] [
-      item size = [{key: object 0 fieldName; value: 0 @object @;} FALSE] [
-        {key: object item fieldName; value: item @object @;}
-        item 1 + !item
-        TRUE
-      ] if
-    ] if
-  ];
-}];
+objectFields: [ [object: offset:;; {key: object offset fieldName; value: offset @object @;}] makeObjectIter];
+objectKeys:   [ [object: offset:;; object offset fieldName                                 ] makeObjectIter];
+objectValues: [ [object: offset:;; offset @object @                                        ] makeObjectIter];
