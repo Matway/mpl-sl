@@ -762,13 +762,13 @@ makeObjectIter: [{
   SCHEMA_NAME: virtual "ObjectIter";
 
   offset: 0;
-  size: object fieldCount;
+  size: [object fieldCount offset -];
 
   next: [
-    object fieldCount offset - 0 = [
+    size 0 = [
       {} FALSE
     ] [
-      object offset method
+      @object offset method
       offset 1 + !offset
       TRUE
     ] if
