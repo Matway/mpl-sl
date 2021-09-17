@@ -765,12 +765,11 @@ makeObjectIter: [{
   size: object fieldCount;
 
   next: [
-    size 0 = [
+    object fieldCount offset - 0 = [
       {} FALSE
     ] [
       object offset method
       offset 1 + !offset
-      size   1 - !size
       TRUE
     ] if
   ];
