@@ -1003,3 +1003,85 @@ testView: [
     @tuple i new dynamic untail FALSE TRUE  TRUE @tuple 0 tuple fieldCount i - testView
   ] times
 ] call
+
+# objectKeys empty
+[
+  keys: {} objectKeys;
+  key:res: @keys.next;;
+
+  key {}    = FALSE TRUE FALSE FALSE check
+  res FALSE = FALSE TRUE FALSE FALSE check
+] call
+
+# objectValues empty
+[
+  values: {} objectValues;
+  key:res: @values.next;;
+
+  key {}    = FALSE TRUE FALSE FALSE check
+  res FALSE = FALSE TRUE FALSE FALSE check
+] call
+
+# objectFields empty
+[
+  fields: {} objectFields;
+  key:res: @fields.next;;
+
+  key {}    = FALSE TRUE FALSE FALSE check
+  res FALSE = FALSE TRUE FALSE FALSE check
+] call
+
+# objectKeys
+[
+  object: {a: 5; b: "name";};
+  keys: object objectKeys;
+  
+  2 [
+    key:res: @keys.next;;
+
+    key object i fieldName = FALSE TRUE FALSE FALSE check
+    res TRUE               = FALSE TRUE FALSE FALSE check
+  ] times
+
+  key:res: @keys.next;;
+
+  key {}    = FALSE TRUE FALSE FALSE check
+  res FALSE = FALSE TRUE FALSE FALSE check
+] call
+
+# objectValues
+[
+  object: {a: 5; b: "name";};
+  values: object objectValues;
+  
+  2 [
+    key:res: @values.next;;
+
+    key i object @ = FALSE TRUE FALSE FALSE check
+    res TRUE       = FALSE TRUE FALSE FALSE check
+  ] times
+
+  key:res: @values.next;;
+
+  key {}    = FALSE TRUE FALSE FALSE check
+  res FALSE = FALSE TRUE FALSE FALSE check
+] call
+
+# objectFields
+[
+  object: {a: 5; b: "name";};
+  fields: object objectFields;
+  
+  2 [
+    key:res: @fields.next;;
+
+    key.key   object i fieldName = FALSE TRUE FALSE FALSE check
+    key.value i object @         = FALSE TRUE FALSE FALSE check
+    res TRUE                     = FALSE TRUE FALSE FALSE check
+  ] times
+
+  key:res: @fields.next;;
+
+  key {}    = FALSE TRUE FALSE FALSE check
+  res FALSE = FALSE TRUE FALSE FALSE check
+] call
