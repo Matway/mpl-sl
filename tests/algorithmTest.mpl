@@ -336,36 +336,36 @@ testView: [
 
   fields: {} objectFields;
   tuple: ();
-  @fields TRUE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
+  @fields TRUE FALSE TRUE FALSE FALSE @tuple 0 tuple fieldCount testIter
 
   object: {a: 5; b: "name";};
-  fields: object objectFields;
-  tuple: ({key: "a"; value: object.a;}  {key: "b"; value: object.b;});
-  @fields FALSE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
+  fields: @object objectFields;
+  tuple: ({key: "a"; value: @object.@a;} {key: "b"; value: @object.@b;});
+  @fields FALSE FALSE TRUE FALSE FALSE @tuple 0 tuple fieldCount testIter
 ] call
 
 # objectKeys
 [
   keys: {} objectKeys;
   tuple: ();
-  @keys TRUE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
+  @keys TRUE FALSE TRUE FALSE FALSE @tuple 0 tuple fieldCount testIter
 
   object: {a: 5; b: "name";};
-  keys: object objectKeys;
+  keys: @object objectKeys;
   tuple: ("a" "b");
-  @keys TRUE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
+  @keys TRUE FALSE TRUE FALSE FALSE @tuple 0 tuple fieldCount testIter
 ] call
 
 # objectValues
 [
   values: {} objectValues;
   tuple: ();
-  @values TRUE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
+  @values TRUE FALSE TRUE FALSE FALSE @tuple 0 tuple fieldCount testIter
 
   object: {a: 5; b: "name";};
-  values: object objectValues;
-  tuple: (object.a object.b);
-  @values TRUE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
+  values: @object objectValues;
+  tuple: (@object.@a @object.@b);
+  @values TRUE FALSE TRUE FALSE FALSE @tuple 0 tuple fieldCount testIter
 ] call
 
 # =
