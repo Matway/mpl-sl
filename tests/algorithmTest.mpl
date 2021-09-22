@@ -336,7 +336,7 @@ testView: [
 
   fields: {} objectFields;
   tuple: ();
-  @fields TRUE FALSE TRUE FALSE FALSE @tuple 0 tuple fieldCount testIter
+  fields TRUE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
 
   object: {a: 5; b: "name";};
   fields: @object objectFields;
@@ -348,7 +348,7 @@ testView: [
 [
   keys: {} objectKeys;
   tuple: ();
-  @keys TRUE FALSE TRUE FALSE FALSE @tuple 0 tuple fieldCount testIter
+  keys TRUE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
 
   object: {a: 5; b: "name";};
   keys: @object objectKeys;
@@ -360,7 +360,7 @@ testView: [
 [
   values: {} objectValues;
   tuple: ();
-  @values TRUE FALSE TRUE FALSE FALSE @tuple 0 tuple fieldCount testIter
+  values TRUE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
 
   object: {a: 5; b: "name";};
   values: @object objectValues;
