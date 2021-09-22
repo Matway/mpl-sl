@@ -304,7 +304,7 @@ makeObjectIter: [{
   offset: 0;
 
   next: [
-    size 0 = [
+    offset object fieldCount = [
       {} FALSE
     ] [
       @object offset method
