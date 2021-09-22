@@ -301,7 +301,6 @@ makeObjectIter: [{
   SCHEMA_NAME: virtual "ObjectIter";
   method: virtual;
   object:;
-
   offset: 0;
 
   next: [
