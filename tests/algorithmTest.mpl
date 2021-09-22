@@ -584,43 +584,26 @@ testView: [
   count1 new isRef tuple fieldCount Real64 cast FALSE FALSE check
 ] call
 
-# objectKeys empty
+# objectKeys
 [
   keys: {} objectKeys;
   tuple: ();
   @keys TRUE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
-] call
 
-# objectValues empty
-[
-  values: {} objectValues;
-  tuple: ();
-  @values TRUE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
-] call
-
-
-# iter: refValues?: dynamicValues?: sized?: dynamicSize?: infinite?: tuple: offset: size:;;;;;;;;;
-# objectFields empty
-[
-  fields: {} objectFields;
-  tuple: ();
-  @fields TRUE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
-] call
-
-# objectKeys
-[
   object: {a: 5; b: "name";};
   keys: object objectKeys;
-
   tuple: ("a" "b");
   @keys TRUE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
 ] call
 
 # objectValues
 [
+  values: {} objectValues;
+  tuple: ();
+  @values TRUE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
+
   object: {a: 5; b: "name";};
   values: object objectValues;
-
   tuple: (object.a object.b);
   @values TRUE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
 ] call
@@ -632,9 +615,12 @@ testView: [
     pair0.key pair1.key = [@pair0.@value isConst @pair1.@value isConst = [pair0.value pair1.value is] &&] &&
   ] pfunc;
 
+  fields: {} objectFields;
+  tuple: ();
+  @fields TRUE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
+
   object: {a: 5; b: "name";};
   fields: object objectFields;
-
   tuple: ({key: "a"; value: object.a;}  {key: "b"; value: object.b;});
   @fields FALSE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
 ] call
