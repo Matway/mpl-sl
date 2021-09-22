@@ -296,6 +296,30 @@ toView: [
   ] if
 ];
 
+# Object iters
+makeObjectIter: [{
+  SCHEMA_NAME: virtual "ObjectIter";
+  method: virtual;
+  object:;
+  offset: 0;
+
+  next: [
+    offset @object fieldCount = [
+      {} FALSE
+    ] [
+      @object offset method
+      offset 1 + !offset
+      TRUE
+    ] if
+  ];
+
+  size: [@object fieldCount offset -];
+}];
+
+objectFields: [[object: offset:;; {key: @object offset fieldName; value: offset @object @;}] makeObjectIter];
+objectKeys:   [[object: offset:;; @object offset fieldName                                 ] makeObjectIter];
+objectValues: [[object: offset:;; offset @object @                                         ] makeObjectIter];
+
 # Comparison algorithms
 =: [
   object0: object1:;;
