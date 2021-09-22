@@ -299,7 +299,7 @@ toView: [
 # Object iters
 makeObjectIter: [{
   SCHEMA_NAME: virtual "ObjectIter";
-  virtual method:;
+  method: virtual;
   object:;
 
   offset: 0;
