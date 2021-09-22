@@ -303,7 +303,6 @@ makeObjectIter: [{
   object:;
 
   offset: 0;
-  size: [object fieldCount offset -];
 
   next: [
     size 0 = [
@@ -314,6 +313,8 @@ makeObjectIter: [{
       TRUE
     ] if
   ];
+
+  size: [object fieldCount offset -];
 }];
 
 objectFields: [[object: offset:;; {key: object offset fieldName; value: offset @object @;}] makeObjectIter];
