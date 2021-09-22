@@ -304,7 +304,7 @@ makeObjectIter: [{
   offset: 0;
 
   next: [
-    offset object fieldCount = [
+    offset @object fieldCount = [
       {} FALSE
     ] [
       @object offset method
@@ -313,11 +313,11 @@ makeObjectIter: [{
     ] if
   ];
 
-  size: [object fieldCount offset -];
+  size: [@object fieldCount offset -];
 }];
 
 objectFields: [[object: offset:;; {key: object offset fieldName; value: offset @object @;}] makeObjectIter];
-objectKeys:   [[object: offset:;; object offset fieldName                                 ] makeObjectIter];
+objectKeys:   [[object: offset:;; @object offset fieldName                                ] makeObjectIter];
 objectValues: [[object: offset:;; offset @object @                                        ] makeObjectIter];
 
 # Comparison algorithms
