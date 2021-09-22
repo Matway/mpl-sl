@@ -296,6 +296,30 @@ toView: [
   ] if
 ];
 
+# Object iters
+makeObjectIter: [{
+  SCHEMA_NAME: virtual "ObjectIter";
+  virtual method:;
+  object:;
+
+  offset: 0;
+  size: [object fieldCount offset -];
+
+  next: [
+    size 0 = [
+      {} FALSE
+    ] [
+      @object offset method
+      offset 1 + !offset
+      TRUE
+    ] if
+  ];
+}];
+
+objectFields: [[object: offset:;; {key: object offset fieldName; value: offset @object @;}] makeObjectIter];
+objectKeys:   [[object: offset:;; object offset fieldName                                 ] makeObjectIter];
+objectValues: [[object: offset:;; offset @object @                                        ] makeObjectIter];
+
 # Comparison algorithms
 =: [
   object0: object1:;;
@@ -756,25 +780,3 @@ untail: [
   0 @view.size size - @view.slice
 ];
 
-makeObjectIter: [{
-  virtual method:;
-  object:;
-  SCHEMA_NAME: virtual "ObjectIter";
-
-  offset: 0;
-  size: [object fieldCount offset -];
-
-  next: [
-    size 0 = [
-      {} FALSE
-    ] [
-      @object offset method
-      offset 1 + !offset
-      TRUE
-    ] if
-  ];
-}];
-
-objectFields: [ [object: offset:;; {key: object offset fieldName; value: offset @object @;}] makeObjectIter];
-objectKeys:   [ [object: offset:;; object offset fieldName                                 ] makeObjectIter];
-objectValues: [ [object: offset:;; offset @object @                                        ] makeObjectIter];
