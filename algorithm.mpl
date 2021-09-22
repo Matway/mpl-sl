@@ -316,9 +316,9 @@ makeObjectIter: [{
   size: [@object fieldCount offset -];
 }];
 
-objectFields: [[object: offset:;; {key: object offset fieldName; value: offset @object @;}] makeObjectIter];
-objectKeys:   [[object: offset:;; @object offset fieldName                                ] makeObjectIter];
-objectValues: [[object: offset:;; offset @object @                                        ] makeObjectIter];
+objectFields: [[object: offset:;; {key: @object offset fieldName; value: offset @object @;}] makeObjectIter];
+objectKeys:   [[object: offset:;; @object offset fieldName                                 ] makeObjectIter];
+objectValues: [[object: offset:;; offset @object @                                         ] makeObjectIter];
 
 # Comparison algorithms
 =: [
