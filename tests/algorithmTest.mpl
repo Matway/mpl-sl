@@ -327,6 +327,47 @@ testView: [
   view1.count new isRef tuple fieldCount 1 + dup 1 + * 2 / 1 + FALSE FALSE check
 ] call
 
+# objectFields
+[
+  =: [pair0: pair1:;; pair0 "key" has [pair1 "key" has] &&] [
+    pair0: pair1:;;
+    pair0.key pair1.key = [@pair0.@value isConst @pair1.@value isConst = [pair0.value pair1.value is] &&] &&
+  ] pfunc;
+
+  fields: {} objectFields;
+  tuple: ();
+  @fields TRUE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
+
+  object: {a: 5; b: "name";};
+  fields: object objectFields;
+  tuple: ({key: "a"; value: object.a;}  {key: "b"; value: object.b;});
+  @fields FALSE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
+] call
+
+# objectKeys
+[
+  keys: {} objectKeys;
+  tuple: ();
+  @keys TRUE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
+
+  object: {a: 5; b: "name";};
+  keys: object objectKeys;
+  tuple: ("a" "b");
+  @keys TRUE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
+] call
+
+# objectValues
+[
+  values: {} objectValues;
+  tuple: ();
+  @values TRUE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
+
+  object: {a: 5; b: "name";};
+  values: object objectValues;
+  tuple: (object.a object.b);
+  @values TRUE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
+] call
+
 # =
 [
   (     ) (   ) = isRef TRUE  FALSE FALSE check
@@ -582,47 +623,6 @@ testView: [
   count1: 0.0;
   TRUE makeIter @count1 countIter TRUE FALSE TRUE FALSE FALSE @tuple 0 tuple fieldCount testIter
   count1 new isRef tuple fieldCount Real64 cast FALSE FALSE check
-] call
-
-# objectFields
-[
-  =: [pair0: pair1:;; pair0 "key" has [pair1 "key" has] &&] [
-    pair0: pair1:;;
-    pair0.key pair1.key = [@pair0.@value isConst @pair1.@value isConst = [pair0.value pair1.value is] &&] &&
-  ] pfunc;
-
-  fields: {} objectFields;
-  tuple: ();
-  @fields TRUE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
-
-  object: {a: 5; b: "name";};
-  fields: object objectFields;
-  tuple: ({key: "a"; value: object.a;}  {key: "b"; value: object.b;});
-  @fields FALSE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
-] call
-
-# objectKeys
-[
-  keys: {} objectKeys;
-  tuple: ();
-  @keys TRUE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
-
-  object: {a: 5; b: "name";};
-  keys: object objectKeys;
-  tuple: ("a" "b");
-  @keys TRUE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
-] call
-
-# objectValues
-[
-  values: {} objectValues;
-  tuple: ();
-  @values TRUE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
-
-  object: {a: 5; b: "name";};
-  values: object objectValues;
-  tuple: (object.a object.b);
-  @values TRUE FALSE TRUE FALSE FALSE tuple 0 tuple fieldCount testIter
 ] call
 
 # enumerate
