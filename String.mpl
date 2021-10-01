@@ -182,7 +182,7 @@ String: [{
   catAsciiSymbolCodeNZ: [
     codePoint:;
     [codePoint 128n32 <] "Is not ascii symbol code!" assert
-    codePoint 0n8 cast @chars.pushBack #end zero
+    codePoint 0n8 cast @chars.append #end zero
   ];
 
   catCharNZ: [
@@ -451,7 +451,7 @@ String: [{
   ];
 
   makeZ: [
-    chars.getSize 0 > [0n8 @chars.pushBack] when #end zero
+    chars.getSize 0 > [0n8 @chars.append] when #end zero
   ];
 
   resize: [
@@ -677,7 +677,7 @@ splitString: [
         data storageAddress string.data storageAddress - Int32 cast @result.!errorOffset
         FALSE
       ] [
-        (data codepointSize new) toStringView @result.@chars.pushBack
+        (data codepointSize new) toStringView @result.@chars.append
         data storageAddress codepointSize Natx cast + Nat8 addressToReference const !data
         size codepointSize - !size
         TRUE

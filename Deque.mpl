@@ -40,9 +40,9 @@ Deque: [{
 
   getSize: [head.getSize tail.getSize +];
 
-  pushBack: [@tail.pushBack];
+  pushBack: [@tail.append];
 
-  pushFront: [@head.pushBack];
+  pushFront: [@head.append];
 
   popBack: [
     tail.size 0 = [@head @tail swapBuffers] when

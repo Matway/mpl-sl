@@ -490,7 +490,7 @@ parseJSONNodeImpl: [
         value: JSON;
         @value @mainResult chars @pos parseJSONNode
 
-        @value @result.pushBack
+        @value @result.append
 
         pos.currentCode ascii.comma = [
           iterateToNextChar

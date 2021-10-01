@@ -108,7 +108,7 @@ loadString: [
       SEEK_SET 0 f fseek 0 =] &&
     [size 0ix cast 0 cast @result.@data.@chars.resize
       f size 1nx @result.@data.data storageAddress fread size =] &&
-    [0n8 @result.@data.@chars.pushBack TRUE] &&
+    [0n8 @result.@data.@chars.append TRUE] &&
     f fclose 0 = and
   ] &&
 
