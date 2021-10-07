@@ -38,7 +38,7 @@ PriorityQueue: [{
   ];
 
   push: [
-    @data.pushBack
+    @data.append
     data.getSize 1 - lift
   ];
 
