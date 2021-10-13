@@ -679,7 +679,7 @@ xmlInternal: {
             ("Duplicated attribute " attribute.name) assembleString lexicalError
             FALSE
           ] [
-            @attribute move @result.pushBack
+            @attribute move @result.append
             TRUE
           ] if
         ] [

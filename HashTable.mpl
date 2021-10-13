@@ -141,7 +141,7 @@ HashTable: [
         {
           key: @key new;
           value: @value new;
-        } bucketIndex @data.at.pushBack
+        } bucketIndex @data.at.append
 
         dataSize 1 + @dataSize set
       ] call
@@ -198,7 +198,7 @@ HashTable: [
             j 1 + @j set
           ] [
             pushTo: newB @data.at;
-            i @current.at @pushTo.pushBack
+            i @current.at @pushTo.append
           ] if
 
           i 1 + @i set

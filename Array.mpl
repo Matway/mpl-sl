@@ -242,7 +242,7 @@ makeArrayObject: [{
     ] when
   ];
 
-  pushBack: [
+  append: [
     element:;
     addReserve
     dataSize 1 + @dataSize set
@@ -262,7 +262,7 @@ makeArrayObject: [{
     ] times
   ];
 
-  appendEach: [[pushBack] each];
+  appendEach: [[append] each];
 
   shrink: [
     newSize:;
@@ -368,7 +368,7 @@ makeArray: [
   i: 0 dynamic;
   [
     i indexable.size < [
-      i @indexable @ @result.pushBack
+      i @indexable @ @result.append
       i 1 + @i set TRUE
     ] &&
   ] loop
@@ -402,9 +402,9 @@ toArray: [
         @source.next drop 1 i + @array.at set
       ] times
     ] [
-      @first @array.pushBack
+      @first @array.append
       [
-        @source.next [@array.pushBack TRUE] [drop FALSE] if
+        @source.next [@array.append TRUE] [drop FALSE] if
       ] loop
     ] if
   ] when
