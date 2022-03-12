@@ -21,6 +21,10 @@ Vector: [array];
 Matrix: [rowCount:; Vector rowCount Vector];
 
 Natx storageSize 8nx = [
+  {arg: Real32;} Real32 {convention: cdecl;} "expf" importFunction
+  {arg: Real64;} Real64 {convention: cdecl;} "exp"  importFunction
+  exp: [Real32 same] [expf] pfunc;
+
   {arg: Real32;} Real32 {convention: cdecl;} "acosf" importFunction
   {arg: Real64;} Real64 {convention: cdecl;} "acos"  importFunction
   acos: [Real32 same] [acosf] pfunc;
@@ -41,6 +45,11 @@ Natx storageSize 8nx = [
   {argy: Real64; argx: Real64;} Real64 {convention: cdecl;} "atan2"  importFunction
   atan2: [Real32 same] [atan2f] pfunc;
 ] [
+  {arg: Real64;} Real64 {convention: cdecl;} "exp" importFunction
+  expFunc: @exp;
+  exp: [Real32 same] [Real64 cast expFunc Real32 cast] pfunc;
+  exp: [Real64 same] [expFunc] pfunc;
+
   {arg: Real64;} Real64 {convention: cdecl;} "acos" importFunction
   acosFunc: @acos;
   acos: [Real32 same] [Real64 cast acosFunc Real32 cast] pfunc;
