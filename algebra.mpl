@@ -29,6 +29,10 @@ Natx storageSize 8nx = [
   {arg: Real64;} Real64 {convention: cdecl;} "asin"  importFunction
   asin: [Real32 same] [asinf] pfunc;
 
+  {arg: Real32;} Real32 {convention: cdecl;} "expf" importFunction
+  {arg: Real64;} Real64 {convention: cdecl;} "exp"  importFunction
+  exp: [Real32 same] [expf] pfunc;
+
   {arg: Real32;} Real32 {convention: cdecl;} "tanf" importFunction
   {arg: Real64;} Real64 {convention: cdecl;} "tan"  importFunction
   tan: [Real32 same] [tanf] pfunc;
@@ -50,6 +54,11 @@ Natx storageSize 8nx = [
   asinFunc: @asin;
   asin: [Real32 same] [Real64 cast asinFunc Real32 cast] pfunc;
   asin: [Real64 same] [asinFunc] pfunc;
+
+  {arg: Real64;} Real64 {convention: cdecl;} "exp" importFunction
+  expFunc: @exp;
+  exp: [Real32 same] [Real64 cast expFunc Real32 cast] pfunc;
+  exp: [Real64 same] [expFunc] pfunc;
 
   {arg: Real64;} Real64 {convention: cdecl;} "tan" importFunction
   tanFunc: @tan;
