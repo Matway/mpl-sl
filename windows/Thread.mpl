@@ -6,7 +6,13 @@
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
 "String.assembleString" use
+"String.print" use
+"control.Nat32" use
 "control.Ref" use
+"control.assert" use
+"control.drop" use
+"control.exit" use
+"control.when" use
 "kernel32.kernel32" use
 
 Thread: [{
