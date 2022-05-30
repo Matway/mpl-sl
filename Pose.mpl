@@ -6,11 +6,13 @@
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
 "Quaternion.*" use
+"Quaternion.@" use
 "Quaternion.Quaternion" use
 "Quaternion.conj" use
 "Quaternion.identityQuaternion" use
 "Quaternion.matrix" use
 "Quaternion.nlerp" use
+"Quaternion.quaternion" use
 "algebra.*" use
 "algebra.+" use
 "algebra.-" use
@@ -45,21 +47,21 @@ identityPose: [
 ];
 
 *: [
-  p0:p1:;;
+  p0: p1:;;
   p0 "POSE" has
   p1 "POSE" has and
 ] [
-  p0:p1:;;
+  p0: p1:;;
   p0.position p1.getMatrix * p1.position +
   p0.orientation p1.orientation * pose
 ] pfunc;
 
 *: [
-  v:p:;;
+  v: p:;;
   v vector?
   p "POSE" has and
 ] [
-  v:p:;;
+  v: p:;;
   v p.getMatrix * p.position +
 ] pfunc;
 
@@ -70,7 +72,7 @@ inverse: ["POSE" has] [
 ] pfunc;
 
 interpolate: [
-  p0:p1:f:;;;
+  p0: p1: f:;;;
   p0 "POSE" has
   p1 "POSE" has and
 ] [
@@ -80,19 +82,19 @@ interpolate: [
 ] pfunc;
 
 mirrorVertically: [
-  p:m:;;
+  p: m:;;
   p "POSE" has
 ] [
-  p:m:;;
+  p: m:;;
   (
-    0 p.position @ copy
-    1 p.position @ copy
+    0 p.position @ new
+    1 p.position @ new
     m 2 p.position @ -
   )
   (
     0 p.orientation @ neg
     1 p.orientation @ neg
-    2 p.orientation @ copy
-    3 p.orientation @ copy
-  ) quatertion pose
+    2 p.orientation @ new
+    3 p.orientation @ new
+  ) quaternion pose
 ] pfunc;
