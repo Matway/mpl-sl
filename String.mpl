@@ -298,7 +298,7 @@ String: [{
     nc: [number cast];
 
     number 0 nc = [
-      "0" catStringNZ
+      "0.0" catStringNZ
     ] [
       number number number + = [
         number 0 nc > [
