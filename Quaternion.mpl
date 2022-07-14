@@ -155,7 +155,7 @@ slerp: [
 ];
 
 vector: ["QUATERNION" has] [
-  .entries copy
+  .entries new
 ] pfunc;
 
 matrix: ["QUATERNION" has] [
