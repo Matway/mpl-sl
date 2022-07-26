@@ -5,15 +5,18 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"algebra.*"      use
-"algebra.+"      use
-"algebra.dot"    use
-"algebra.lerp"   use
-"algebra.neg"    use
-"algorithm.each" use
-"control.Ref"    use
-"control.pfunc"  use
-"control.when"   use
+"algebra.*"             use
+"algebra.+"             use
+"algebra.dot"           use
+"algebra.length"        use
+"algebra.lerp"          use
+"algebra.neg"           use
+"algebra.squaredLength" use
+"algorithm.each"        use
+"control.Ref"           use
+"control.pfunc"         use
+"control.sqr"           use
+"control.when"          use
 
 Quaternion: [{
   QUATERNION: ();
@@ -192,3 +195,28 @@ axisAngleQuaternion: [
     ah cos
   ) quaternion
 ];
+
+rotationQuaternion: [
+  rotation:;
+
+  rotation 1.0e-12 rotationQuaternion
+];
+
+rotationQuaternion: [rotation: threshold:;; TRUE] [
+  rotation: threshold:;;
+
+  threshold: threshold 0 rotation @ cast;
+  rotation squaredLength threshold sqr < [
+    0 rotation @ identityQuaternion
+  ] [
+    length: rotation length;
+    halfAngle: length 2.0 length cast /;
+    coefficient: halfAngle sin length /;
+    (
+      0 rotation @ coefficient *
+      1 rotation @ coefficient *
+      2 rotation @ coefficient *
+      halfAngle cos
+    ) quaternion
+  ] if
+] pfunc;
