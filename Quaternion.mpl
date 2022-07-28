@@ -5,6 +5,7 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
+"algebra.&"             use
 "algebra.*"             use
 "algebra.+"             use
 "algebra.dot"           use
@@ -12,8 +13,10 @@
 "algebra.lerp"          use
 "algebra.neg"           use
 "algebra.squaredLength" use
+"algebra.unit"          use
 "algorithm.each"        use
 "control.Ref"           use
+"control.isReal"        use
 "control.pfunc"         use
 "control.sqr"           use
 "control.when"          use
@@ -202,21 +205,14 @@ rotationQuaternion: [
   rotation 1.0e-12 rotationQuaternion
 ];
 
-rotationQuaternion: [rotation: threshold:;; TRUE] [
+rotationQuaternion: [rotation: threshold:;; threshold isReal] [
   rotation: threshold:;;
 
   threshold: threshold 0 rotation @ cast;
   rotation squaredLength threshold sqr < [
     0 rotation @ identityQuaternion
   ] [
-    length: rotation length;
-    halfAngle: length 2.0 length cast /;
-    coefficient: halfAngle sin length /;
-    (
-      0 rotation @ coefficient *
-      1 rotation @ coefficient *
-      2 rotation @ coefficient *
-      halfAngle cos
-    ) quaternion
+    angle: rotation length;
+    rotation unit (angle) & axisAngleQuaternion
   ] if
 ] pfunc;
