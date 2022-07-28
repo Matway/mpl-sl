@@ -36,7 +36,12 @@ quaternion: [
   m getColCount 3 = and
   m getRowCount 3 = and
 ] [
-  m: trans;
+  trans quaternionFromRotationMatrix
+] pfunc;
+
+quaternionFromRotationMatrix: [
+  m:;
+
   trace: 3 [i i m @ @] times + +;
   trace 0 trace cast > [
     a: trace 1 trace cast + sqrt;
@@ -49,10 +54,11 @@ quaternion: [
     ) quaternion
   ] [
     next: (1 2 0);
-    i: 1 1 m @ @ 0 0 m @ @ > [1] [0] if ;
+    i: 1 1 m @ @ 0 0 m @ @ > [1] [0] if;
     2 2 m @ @ i i m @ @ > [
-     2 !i
+      2 !i
     ] when
+
     j: i next @;
     k: j next @;
 
@@ -66,7 +72,7 @@ quaternion: [
     j k m @ @ k j m @ @ - b * 3 @q @ set
     q
   ] if
-] pfunc;
+];
 
 identityQuaternion: [
   entry:;
