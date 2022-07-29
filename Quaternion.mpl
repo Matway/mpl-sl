@@ -44,13 +44,13 @@ quaternionFromRotationMatrix: [
 
   trace: 3 [i i m @ @] times + +;
   trace 0 trace cast > [
-    a: trace 1 trace cast + sqrt;
-    b: 0.5 a cast a /;
+    w: trace 1 trace cast + sqrt 0.5 trace cast *;
+    fr: 0.25 w cast w /;
     (
-      1 2 m @ @ 2 1 m @ @ - b *
-      2 0 m @ @ 0 2 m @ @ - b *
-      0 1 m @ @ 1 0 m @ @ - b *
-      0.5 a cast a *
+      1 2 m @ @ 2 1 m @ @ - fr *
+      2 0 m @ @ 0 2 m @ @ - fr *
+      0 1 m @ @ 1 0 m @ @ - fr *
+      w new
     ) quaternion
   ] [
     next: (1 2 0);
@@ -63,13 +63,13 @@ quaternionFromRotationMatrix: [
     k: j next @;
 
     q: trace Quaternion;
-    a: i i m @ @ j j m @ @ - k k m @ @ - 1 trace cast + sqrt;
-    b: 0.5 a cast a /;
+    qi: i i m @ @ j j m @ @ - k k m @ @ - 1 trace cast + sqrt 0.5 trace cast *;
+    fr: 0.25 qi cast qi /;
 
-    0.5 a cast a *            i @q @ set
-    i j m @ @ j i m @ @ + b * j @q @ set
-    i k m @ @ k i m @ @ + b * k @q @ set
-    j k m @ @ k j m @ @ - b * 3 @q @ set
+    qi                         i @q @ set
+    i j m @ @ j i m @ @ + fr * j @q @ set
+    i k m @ @ k i m @ @ + fr * k @q @ set
+    j k m @ @ k j m @ @ - fr * 3 @q @ set
     q
   ] if
 ];
