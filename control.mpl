@@ -28,18 +28,7 @@ Text:   [v: ""; @v];
 
 overload failProc: [
   print
-
-  trace: getCallTrace;
-  [
-    trace storageAddress 0nx = [
-      FALSE
-    ] [
-      (trace.name trace.line new trace.column new) " in %s at %i:%i\n\00" printf drop
-      trace.prev trace addressToReference !trace
-      TRUE
-    ] if
-  ] loop
-
+  getCallTrace printCallTrace
   2 exit
 ];
 
@@ -124,6 +113,17 @@ print: ["" same] [
     (text "\00" &) "%s\00" printf drop
   ] if
 ] pfunc;
+
+printCallTrace: [
+  trace:;
+  [
+    trace isNil [FALSE] [
+      (trace.name trace.line new trace.column new) " in %s at %i:%i\n\00" printf drop
+      trace.prev trace addressToReference !trace
+      TRUE
+    ] if
+  ] loop
+];
 
 Ref: [v:; 0nx @v addressToReference]; # for signatures
 Cref: [v:; 0nx v addressToReference]; # for signatures
