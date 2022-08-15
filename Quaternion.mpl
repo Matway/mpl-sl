@@ -201,13 +201,11 @@ axisAngleQuaternion: [
 
 rotationQuaternion: [
   rotation:;
-
   rotation 1.0e-12 rotationQuaternion
 ];
 
 rotationQuaternion: [rotation: threshold:;; threshold isReal] [
   rotation: threshold:;;
-
   threshold: threshold 0 rotation @ cast;
   rotation squaredLength threshold sqr < [
     0 rotation @ identityQuaternion
