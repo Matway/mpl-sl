@@ -41,7 +41,6 @@ quaternion: [
 
 quaternionFromRotationMatrix: [
   m:;
-
   trace: 3 [i i m @ @] times + +;
   trace 0 trace cast > [
     w: trace 1 trace cast + sqrt 0.5 trace cast *;
