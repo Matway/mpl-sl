@@ -9,6 +9,7 @@
 "algebra.unit"   use
 "control.abs"    use
 "control.ensure" use
+"control.min"    use
 "control.times"  use
 
 "Quaternion" use
@@ -21,12 +22,13 @@ QuaternionTest: [];
   test: [
     q:;
     q2: q matrix quaternion;
-    error: 0.0r32 4 [i q @ i q2 @ - abs +] times;
-    [error 1.0e-6r32 <] "q and q2 differ" ensure
+    q2Error:      0.0r32 4 [i q @ i q2 @ - abs +] times;
+    minusQ2Error: 0.0r32 4 [i q @ i q2 @ + abs +] times;
+    [q2Error minusQ2Error min 1.0e-6r32 <] "q and q2 differ" ensure
   ];
 
   1000 dynamic [
-    q: (4 [@random.getr32] times) unit quaternion;
+    q: (4 [@random.getr32 2.0r32 * 1.0r32 -] times) unit quaternion;
     q test
   ] times
 ] call
