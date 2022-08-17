@@ -562,6 +562,11 @@ decodeUtf8: [{
       TRUE
     ] if
   ];
+
+  source "size" has [
+    size: source.size;
+  ] [
+  ] uif
 }];
 
 By3: [{
