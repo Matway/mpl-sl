@@ -7,6 +7,7 @@
 
 "algebra.*"      use
 "algebra.+"      use
+"algebra.acos"   use
 "algebra.dot"    use
 "algebra.lerp"   use
 "algebra.neg"    use
@@ -90,21 +91,21 @@ unit: ["QUATERNION" has] [
   q one length / *
 ] pfunc;
 
-unitCheckedWithThresold: [
-  thresold: new;
+unitCheckedWithThreshold: [
+  threshold: new;
   q:;
   squaredLength: q squaredLength;
-  squaredLength thresold thresold * < [
-    thresold identityQuaternion
+  squaredLength threshold threshold * < [
+    threshold identityQuaternion
   ] [
-    one: 1 thresold cast;
+    one: 1 threshold cast;
     q one squaredLength sqrt / *
   ] if
 ];
 
 unitChecked: [
   q:;
-  q 1.0e-6 0 q @ cast unitCheckedWithThresold
+  q 1.0e-6 0 q @ cast unitCheckedWithThreshold
 ];
 
 nlerp: [
@@ -129,17 +130,12 @@ slerpWithEpsilon: [
   c: q0 q2 dot;
 
   c 0 o cast < [
-    (
-      0 q2 @ neg
-      1 q2 @ neg
-      2 q2 @ neg
-      3 q2 @ neg
-    ) quaternion !q2
+    q2.entries neg @q2.!entries
     c neg !c
   ] when
 
   c 1 o cast epsilon - > ~ [
-    a: c cos;
+    a: c acos;
     sr: 1 o cast a sin /;
     a2: a o *;
     k0: a a2 - sin sr *;
