@@ -160,13 +160,13 @@ checkEqual: [
     axis     (angle)        &     axisAngleQuaternion t.q                                       checkEqual
     axis     (angle)        & neg axisAngleQuaternion t.q                                       checkEqual
     axis     (angle PI64 +) &     axisAngleQuaternion axis (angle PI64 -) & axisAngleQuaternion checkEqual
-    axis neg (angle)        &     axisAngleQuaternion axis (angle neg)    & axisAngleQuaternion checkEqual
+    axis neg (angle)        &     axisAngleQuaternion axis (angle neg   ) & axisAngleQuaternion checkEqual
 
     63 [
       angle': 0.1 i 0.0 cast *;
       q:  axis (angle angle' +) & axisAngleQuaternion;
-      q0: axis (angle )         & axisAngleQuaternion;
-      q1: axis (angle')         & axisAngleQuaternion;
+      q0: axis (angle         ) & axisAngleQuaternion;
+      q1: axis (angle'        ) & axisAngleQuaternion;
 
       q q0 q1 * checkEqual
       q q1 q0 * checkEqual
