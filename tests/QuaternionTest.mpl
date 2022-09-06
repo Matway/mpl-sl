@@ -5,19 +5,19 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"RandomLCG"       use
-"algebra.&"       use
-"algebra.*"       use
-"algebra.PI64"    use
-"algebra.neg"     use
-"algebra.unit"    use
-"algebra.trans"   use
-"algebra.vector?" use
-"algorithm.each"  use
-"control.abs"     use
-"control.ensure"  use
-"control.pfunc"   use
-"control.times"   use
+"RandomLCG.RandomLCG" use
+"algebra.&"           use
+"algebra.*"           use
+"algebra.PI64"        use
+"algebra.neg"         use
+"algebra.unit"        use
+"algebra.trans"       use
+"algebra.vector?"     use
+"algorithm.each"      use
+"control.abs"         use
+"control.ensure"      use
+"control.pfunc"       use
+"control.times"       use
 
 "Quaternion" use
 
