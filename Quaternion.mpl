@@ -38,11 +38,6 @@ identityQuaternion: [
   (0 entry cast 0 entry cast 0 entry cast 1 entry cast) quaternion
 ];
 
-quaternion: [{
-  QUATERNION: ();
-  entries: new;
-}];
-
 matrix: ["QUATERNION" has] [
   q:;
   one: 1 0 q @ cast;
@@ -64,6 +59,11 @@ matrix: ["QUATERNION" has] [
     (xz2 yw2 +       yz2 xw2 -   omxx2 yy2 -)
   )
 ] pfunc;
+
+quaternion: [{
+  QUATERNION: ();
+  entries: new;
+}];
 
 quaternionCast: [
   q: virtual Schema: Ref;;
