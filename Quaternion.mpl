@@ -15,7 +15,6 @@
 "control.pfunc"  use
 "control.when"   use
 
-# Constructors
 Quaternion: [{
   QUATERNION: ();
   entries: 4 array;
@@ -44,7 +43,37 @@ quaternion: [{
   entries: new;
 }];
 
-# Getters/Setters
+matrix: ["QUATERNION" has] [
+  q:;
+  one: 1 0 q @ cast;
+  x2: 0 q @ 0 q @ +;
+  y2: 1 q @ 1 q @ +;
+  z2: 2 q @ 2 q @ +;
+  omxx2: one x2 0 q @ * -;
+  xy2: x2 1 q @ *;
+  xz2: x2 2 q @ *;
+  xw2: x2 3 q @ *;
+  yy2: y2 1 q @ *;
+  yz2: y2 2 q @ *;
+  yw2: y2 3 q @ *;
+  zz2: z2 2 q @ *;
+  zw2: z2 3 q @ *;
+  (
+    (one yy2 - zz2 - xy2 zw2 +   xz2 yw2 -)
+    (xy2 zw2 -       omxx2 zz2 - yz2 xw2 +)
+    (xz2 yw2 +       yz2 xw2 -   omxx2 yy2 -)
+  )
+] pfunc;
+
+quaternionCast: [
+  q: virtual Schema: Ref;;
+  q.entries [@Schema cast] (each) quaternion
+];
+
+vector: ["QUATERNION" has] [
+  .entries new
+] pfunc;
+
 !: ["QUATERNION" has] [.@entries !] pfunc;
 
 @: ["QUATERNION" has] [.@entries @] pfunc;
@@ -127,38 +156,6 @@ unitCheckedWithThresold: [
     q one squaredLength sqrt / *
   ] if
 ];
-
-# Casting
-matrix: ["QUATERNION" has] [
-  q:;
-  one: 1 0 q @ cast;
-  x2: 0 q @ 0 q @ +;
-  y2: 1 q @ 1 q @ +;
-  z2: 2 q @ 2 q @ +;
-  omxx2: one x2 0 q @ * -;
-  xy2: x2 1 q @ *;
-  xz2: x2 2 q @ *;
-  xw2: x2 3 q @ *;
-  yy2: y2 1 q @ *;
-  yz2: y2 2 q @ *;
-  yw2: y2 3 q @ *;
-  zz2: z2 2 q @ *;
-  zw2: z2 3 q @ *;
-  (
-    (one yy2 - zz2 - xy2 zw2 +   xz2 yw2 -)
-    (xy2 zw2 -       omxx2 zz2 - yz2 xw2 +)
-    (xz2 yw2 +       yz2 xw2 -   omxx2 yy2 -)
-  )
-] pfunc;
-
-quaternionCast: [
-  q: virtual Schema: Ref;;
-  q.entries [@Schema cast] (each) quaternion
-];
-
-vector: ["QUATERNION" has] [
-  .entries new
-] pfunc;
 
 # Interpolation
 nlerp: [
