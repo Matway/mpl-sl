@@ -14,19 +14,38 @@
 "algebra.trans"       use
 "algebra.vector?"     use
 "algorithm.each"      use
+"control.Real32"      use
+"control.Real64"      use
 "control.abs"         use
 "control.ensure"      use
 "control.pfunc"       use
 "control.times"       use
 
-"Quaternion" use
+"Quaternion.!"                        use
+"Quaternion.*"                        use
+"Quaternion.+"                        use
+"Quaternion.@"                        use
+"Quaternion.axisAngleQuaternion"      use
+"Quaternion.conj"                     use
+"Quaternion.dot"                      use
+"Quaternion.fieldCount"               use
+"Quaternion.identityQuaternion"       use
+"Quaternion.matrix"                   use
+"Quaternion.nlerp"                    use
+"Quaternion.quaternion"               use
+"Quaternion.quaternionCast"           use
+"Quaternion.slerp"                    use
+"Quaternion.unit"                     use
+"Quaternion.unitChecked"              use
+"Quaternion.unitCheckedWithThreshold" use
 
 QuaternionTest: [];
 
+# test helpers
 equal: [
   v0: v1:;;
   epsilon: 1.0e-6 v0 cast;
-  v0 v1 - abs epsilon <
+  v0 v1 - abs epsilon > ~
 ];
 
 equal: [
@@ -57,93 +76,17 @@ checkEqual: [
   [value0 value1 equal] "value0 and value1 differ" ensure
 ];
 
-# basic ops
-[
-  q0: (1.0 2.0 neg 3.0 4.0    ) quaternion;
-  q1: (5.0 6.0     7.0 8.0 neg) quaternion;
-
-  q: (0.182574185835055 0.365148371670111 neg 0.5477225575051 0.7302967433402) quaternion;
-  tests: (
-    {op: [q0 q1 +  ]; expected: ( 6.0  4.0     10.0      4.0 neg) quaternion;}
-    {op: [q0 2.0 * ]; expected: ( 2.0  4.0 neg  6.0      8.0    ) quaternion;}
-    {op: [2.0 q0 * ]; expected: ( 2.0  4.0 neg  6.0      8.0    ) quaternion;}
-    {op: [q0 q1 *  ]; expected: (44.0 32.0     12.0 neg 46.0 neg) quaternion;}
-    {op: [q0 conj  ]; expected: ( 1.0  2.0 neg  3.0      4.0 neg) quaternion;}
-
-    {op: [q0 q1 dot]; expected: 18.0 neg;}
-
-    {op: [q0 unit                          ]; expected: q                           ;}
-    {op: [q0 unitChecked                   ]; expected: q                           ;}
-    {op: [q0 100.0 unitCheckedWithThreshold]; expected: (0.0 0.0 0.0 1.0) quaternion;}
-  );
-
-  tests [
-    t:;
-    t.op t.expected checkEqual
-  ] each
-] call
-
-# nlerp
-[
-  q0: (1.0 2.0 neg 3.0 4.0    ) quaternion;
-  q1: (5.0 6.0     7.0 8.0 neg) quaternion;
-  tests: (
-    {f: 0.0; q: q0 unit                                                                                        ;}
-    {f: 0.3; q: (0.129913960492326 neg 0.519655841969305 neg 0.0                   0.84444074320012) quaternion;}
-    {f: 0.6; q: (0.298083609185736 neg 0.504449184775861 neg 0.343942625983541 neg 0.73374426876488) quaternion;}
-    {f: 1.0; q: q1 unit                                                                                        ;}
-  );
+testInterpolation: [
+  interpolation:;
   2 [
     tests [
       t:;
-      q0 q1 t.f              nlerp t.q checkEqual
-      q1 q0 1 t.f cast t.f - nlerp t.q checkEqual
+      q0 q1 t.f              interpolation t.q checkEqual
+      q1 q0 1 t.f cast t.f - interpolation t.q checkEqual
     ] each
     q1.entries neg @q1.!entries
   ] times
-] call
-
-# slerp
-[
-  q0: (1.0 2.0 neg 3.0 4.0    ) quaternion unit;
-  q1: (5.0 6.0     7.0 8.0 neg) quaternion unit;
-  tests: (
-    {f: 0.0; q: q0 new                                                                                      ;}
-    {f: 0.3; q: (0.000501537327541 neg 0.48176120346404 neg 0.23987752707694     0.8428313373983) quaternion;}
-    {f: 0.6; q: (0.183499748964156 neg 0.52391886713953 neg 0.10504006435854 neg 0.8251081430121) quaternion;}
-    {f: 1.0; q: q1 new                                                                                      ;}
-  );
-  2 [
-    tests [
-      t:;
-      q0 q1 t.f              slerp t.q checkEqual
-      q1 q0 1 t.f cast t.f - slerp t.q checkEqual
-    ] each
-    q1.entries neg @q1.!entries
-  ] times
-] call
-
-# matrix
-[
-  q0: (1.0 2.0 neg 3.0 4.0) quaternion unit;
-
-  rotationMatrix: (
-    (0.13333333 0.93333333 neg 0.33333333 neg)
-    (0.66666667 0.33333333     0.66666667 neg)
-    (0.73333333 0.13333333 neg 0.66666667    )
-  );
-  q0 matrix trans rotationMatrix checkEqual
-
-  random: RandomLCG;
-  100 dynamic [
-    q0: (4 [@random.getr32 2.0r32 * 1.0r32 -] times) unit quaternion;
-    q1: (4 [@random.getr32 2.0r32 * 1.0r32 -] times) unit quaternion;
-
-    m:  q0 matrix q1 matrix *;
-    m': q0 q1 * matrix;
-    m m' checkEqual
-  ] times
-] call
+];
 
 # axisAngleQuaternion
 [
@@ -172,4 +115,108 @@ checkEqual: [
       q q1 q0 * checkEqual
     ] times
   ] each
+] call
+
+# identityQuaternion
+[
+  Real32 identityQuaternion (0.0r32 0.0r32 0.0r32 1.0r32) quaternion checkEqual
+  Real64 identityQuaternion (0.0    0.0    0.0    1.0   ) quaternion checkEqual
+] call
+
+# matrix
+[
+  q0: (1.0 2.0 neg 3.0 4.0) quaternion unit;
+
+  rotationMatrix: (
+    (0.13333333 0.93333333 neg 0.33333333 neg)
+    (0.66666667 0.33333333     0.66666667 neg)
+    (0.73333333 0.13333333 neg 0.66666667    )
+  );
+  q0 matrix trans rotationMatrix checkEqual
+
+  random: RandomLCG;
+  100 dynamic [
+    q0: (4 [@random.getr32 2.0r32 * 1.0r32 -] times) unit quaternion;
+    q1: (4 [@random.getr32 2.0r32 * 1.0r32 -] times) unit quaternion;
+
+    m:  q0 matrix q1 matrix *;
+    m': q0 q1 * matrix;
+    m m' checkEqual
+  ] times
+] call
+
+# quaternionCast
+[
+  q0: (1.2    3.4    neg 5.6    7.8   ) quaternion;
+  q1: (1.2r32 3.4r32 neg 5.6r32 7.8r32) quaternion;
+
+  q0 Real32 quaternionCast q1 checkEqual
+  q1 Real64 quaternionCast q0 checkEqual
+] call
+
+# ! @ fieldCount
+[
+  q0: (1.0 2.0 neg 3.0 4.0) quaternion;
+  q1: (1.0 5.5     3.0 4.0) quaternion;
+
+  q0 fieldCount 4 checkEqual
+  2 q0 @ 3.0 checkEqual
+  5.5 2 @q0 !
+  2 q0 @ 5.5 checkEqual
+] call
+
+# Basic operations
+[
+  q0: (1.0 2.0 neg 3.0 4.0    ) quaternion;
+  q1: (5.0 6.0     7.0 8.0 neg) quaternion;
+
+  iq: Real64 identityQuaternion;
+  q: (0.182574185835055 0.365148371670111 neg 0.5477225575051 0.7302967433402) quaternion;
+  tests: (
+    {op: [q0 q1 + ]; expected: ( 6.0  4.0     10.0      4.0 neg) quaternion;}
+    {op: [q0 2.0 *]; expected: ( 2.0  4.0 neg  6.0      8.0    ) quaternion;}
+    {op: [2.0 q0 *]; expected: ( 2.0  4.0 neg  6.0      8.0    ) quaternion;}
+    {op: [q0 q1 * ]; expected: (44.0 32.0     12.0 neg 46.0 neg) quaternion;}
+    {op: [q0 iq * ]; expected: q0                                          ;}
+    {op: [iq q0 * ]; expected: q0                                          ;}
+    {op: [q0 conj ]; expected: ( 1.0  2.0 neg  3.0      4.0 neg) quaternion;}
+
+    {op: [q0 q1 dot]; expected: 18.0 neg;}
+
+    {op: [q0 unit                          ]; expected: q ;}
+    {op: [q0 unitChecked                   ]; expected: q ;}
+    {op: [q0 100.0 unitCheckedWithThreshold]; expected: iq;}
+  );
+
+  tests [
+    t:;
+    t.op t.expected checkEqual
+  ] each
+] call
+
+# Interpolation
+# nlerp
+[
+  q0: (1.0 2.0 neg 3.0 4.0    ) quaternion;
+  q1: (5.0 6.0     7.0 8.0 neg) quaternion;
+  tests: (
+    {f: 0.0; q: q0 unit                                                                                        ;}
+    {f: 0.3; q: (0.129913960492326 neg 0.519655841969305 neg 0.0                   0.84444074320012) quaternion;}
+    {f: 0.6; q: (0.298083609185736 neg 0.504449184775861 neg 0.343942625983541 neg 0.73374426876488) quaternion;}
+    {f: 1.0; q: q1 unit                                                                                        ;}
+  );
+  @nlerp testInterpolation
+] call
+
+# slerp
+[
+  q0: (1.0 2.0 neg 3.0 4.0    ) quaternion unit;
+  q1: (5.0 6.0     7.0 8.0 neg) quaternion unit;
+  tests: (
+    {f: 0.0; q: q0 new                                                                                      ;}
+    {f: 0.3; q: (0.000501537327541 neg 0.48176120346404 neg 0.23987752707694     0.8428313373983) quaternion;}
+    {f: 0.6; q: (0.183499748964156 neg 0.52391886713953 neg 0.10504006435854 neg 0.8251081430121) quaternion;}
+    {f: 1.0; q: q1 new                                                                                      ;}
+  );
+  @slerp testInterpolation
 ] call

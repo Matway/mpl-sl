@@ -75,11 +75,14 @@ vector: ["QUATERNION" has] [
   .entries new
 ] pfunc;
 
-!: ["QUATERNION" has] [.@entries !] pfunc;
+!: ["QUATERNION" has] [
+  value:index:q:;;;
+  value new index @q.@entries !
+] pfunc;
 
 @: ["QUATERNION" has] [.@entries @] pfunc;
 
-fieldCount: ["QUATERNION" has] [.@entries fieldCount] pfunc;
+fieldCount: ["QUATERNION" has] [.entries fieldCount] pfunc;
 
 # Basic operations
 *: [value:q:;; q "QUATERNION" has value 0 q @ same and] [
@@ -118,11 +121,11 @@ conj: ["QUATERNION" has] [
 ] pfunc;
 
 dot: [
-  q0: q1:;;
+  q0:q1:;;
   q0 "QUATERNION" has
   q1 "QUATERNION" has and
 ] [
-  q0: q1:;;
+  q0:q1:;;
   0 q0 @ 0 q1 @ *
   1 q0 @ 1 q1 @ * +
   2 q0 @ 2 q1 @ * +
