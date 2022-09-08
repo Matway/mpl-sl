@@ -54,8 +54,8 @@ matrix: ["QUATERNION" has] [
   zz2: z2 2 q @ *;
   zw2: z2 3 q @ *;
   (
-    (one yy2 - zz2 - xy2 zw2 +   xz2 yw2 -)
-    (xy2 zw2 -       omxx2 zz2 - yz2 xw2 +)
+    (one yy2 - zz2 - xy2 zw2 +   xz2 yw2 -  )
+    (xy2 zw2 -       omxx2 zz2 - yz2 xw2 +  )
     (xz2 yw2 +       yz2 xw2 -   omxx2 yy2 -)
   )
 ] pfunc;
