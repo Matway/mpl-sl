@@ -77,12 +77,13 @@ checkEqual: [
 ];
 
 testInterpolation: [
-  interpolation:;
+  tests: interpolation:;;
+  q0: q1: new; new;
   2 [
     tests [
       t:;
-      q0 q1 t.f              interpolation t.q checkEqual
-      q1 q0 1 t.f cast t.f - interpolation t.q checkEqual
+      q0 q1 t.fraction                     interpolation t.q checkEqual
+      q1 q0 1 t.fraction cast t.fraction - interpolation t.q checkEqual
     ] each
     q1.entries neg @q1.!entries
   ] times
@@ -173,24 +174,24 @@ testInterpolation: [
   iq: Real64 identityQuaternion;
   q: (0.182574185835055 0.365148371670111 neg 0.5477225575051 0.7302967433402) quaternion;
   tests: (
-    {op: [q0 q1 + ]; expected: ( 6.0  4.0     10.0      4.0 neg) quaternion;}
-    {op: [q0 2.0 *]; expected: ( 2.0  4.0 neg  6.0      8.0    ) quaternion;}
-    {op: [2.0 q0 *]; expected: ( 2.0  4.0 neg  6.0      8.0    ) quaternion;}
-    {op: [q0 q1 * ]; expected: (44.0 32.0     12.0 neg 46.0 neg) quaternion;}
-    {op: [q0 iq * ]; expected: q0                                          ;}
-    {op: [iq q0 * ]; expected: q0                                          ;}
-    {op: [q0 conj ]; expected: ( 1.0  2.0 neg  3.0      4.0 neg) quaternion;}
+    {operation: [q0 q1 + ]; expected: ( 6.0  4.0     10.0      4.0 neg) quaternion;}
+    {operation: [q0 2.0 *]; expected: ( 2.0  4.0 neg  6.0      8.0    ) quaternion;}
+    {operation: [2.0 q0 *]; expected: ( 2.0  4.0 neg  6.0      8.0    ) quaternion;}
+    {operation: [q0 q1 * ]; expected: (44.0 32.0     12.0 neg 46.0 neg) quaternion;}
+    {operation: [q0 iq * ]; expected: q0                                          ;}
+    {operation: [iq q0 * ]; expected: q0                                          ;}
+    {operation: [q0 conj ]; expected: ( 1.0  2.0 neg  3.0      4.0 neg) quaternion;}
 
-    {op: [q0 q1 dot]; expected: 18.0 neg;}
+    {operation: [q0 q1 dot]; expected: 18.0 neg;}
 
-    {op: [q0 unit                          ]; expected: q ;}
-    {op: [q0 unitChecked                   ]; expected: q ;}
-    {op: [q0 100.0 unitCheckedWithThreshold]; expected: iq;}
+    {operation: [q0 unit                          ]; expected: q ;}
+    {operation: [q0 unitChecked                   ]; expected: q ;}
+    {operation: [q0 100.0 unitCheckedWithThreshold]; expected: iq;}
   );
 
   tests [
     t:;
-    t.op t.expected checkEqual
+    t.operation t.expected checkEqual
   ] each
 ] call
 
@@ -200,12 +201,12 @@ testInterpolation: [
   q0: (1.0 2.0 neg 3.0 4.0    ) quaternion;
   q1: (5.0 6.0     7.0 8.0 neg) quaternion;
   tests: (
-    {f: 0.0; q: q0 unit                                                                                        ;}
-    {f: 0.3; q: (0.129913960492326 neg 0.519655841969305 neg 0.0                   0.84444074320012) quaternion;}
-    {f: 0.6; q: (0.298083609185736 neg 0.504449184775861 neg 0.343942625983541 neg 0.73374426876488) quaternion;}
-    {f: 1.0; q: q1 unit                                                                                        ;}
+    {fraction: 0.0; q: q0 unit                                                                                        ;}
+    {fraction: 0.3; q: (0.129913960492326 neg 0.519655841969305 neg 0.0                   0.84444074320012) quaternion;}
+    {fraction: 0.6; q: (0.298083609185736 neg 0.504449184775861 neg 0.343942625983541 neg 0.73374426876488) quaternion;}
+    {fraction: 1.0; q: q1 unit                                                                                        ;}
   );
-  @nlerp testInterpolation
+  q0 q1 tests @nlerp testInterpolation
 ] call
 
 # slerp
@@ -213,10 +214,10 @@ testInterpolation: [
   q0: (1.0 2.0 neg 3.0 4.0    ) quaternion unit;
   q1: (5.0 6.0     7.0 8.0 neg) quaternion unit;
   tests: (
-    {f: 0.0; q: q0 new                                                                                      ;}
-    {f: 0.3; q: (0.000501537327541 neg 0.48176120346404 neg 0.23987752707694     0.8428313373983) quaternion;}
-    {f: 0.6; q: (0.183499748964156 neg 0.52391886713953 neg 0.10504006435854 neg 0.8251081430121) quaternion;}
-    {f: 1.0; q: q1 new                                                                                      ;}
+    {fraction: 0.0; q: q0 new                                                                                      ;}
+    {fraction: 0.3; q: (0.000501537327541 neg 0.48176120346404 neg 0.23987752707694     0.8428313373983) quaternion;}
+    {fraction: 0.6; q: (0.183499748964156 neg 0.52391886713953 neg 0.10504006435854 neg 0.8251081430121) quaternion;}
+    {fraction: 1.0; q: q1 new                                                                                      ;}
   );
-  @slerp testInterpolation
+  q0 q1 tests @slerp testInterpolation
 ] call
