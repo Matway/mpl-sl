@@ -10,8 +10,8 @@
 "algebra.*"           use
 "algebra.PI64"        use
 "algebra.neg"         use
-"algebra.unit"        use
 "algebra.trans"       use
+"algebra.unit"        use
 "algebra.vector?"     use
 "algorithm.each"      use
 "control.Real32"      use
