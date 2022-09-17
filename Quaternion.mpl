@@ -7,6 +7,7 @@
 
 "algebra.*"      use
 "algebra.+"      use
+"algebra.acos"   use
 "algebra.dot"    use
 "algebra.lerp"   use
 "algebra.neg"    use
@@ -74,25 +75,28 @@ vector: ["QUATERNION" has] [
   .entries new
 ] pfunc;
 
-!: ["QUATERNION" has] [.@entries !] pfunc;
+!: ["QUATERNION" has] [
+  value: index: q:;;;
+  value new index @q.@entries !
+] pfunc;
 
 @: ["QUATERNION" has] [.@entries @] pfunc;
 
-fieldCount: ["QUATERNION" has] [.@entries fieldCount] pfunc;
+fieldCount: ["QUATERNION" has] [.entries fieldCount] pfunc;
 
 # Basic operations
-*: [value:q:;; q "QUATERNION" has value 0 q @ same and] [
-  value:q:;;
+*: [value: q:;; q "QUATERNION" has value 0 q @ same and] [
+  value: q:;;
   value q.entries * quaternion
 ] pfunc;
 
-*: [q:value:;; q "QUATERNION" has value 0 q @ same and] [
-  q:value:;;
+*: [q: value:;; q "QUATERNION" has value 0 q @ same and] [
+  q: value:;;
   q.entries value * quaternion
 ] pfunc;
 
-*: [q0:q1:;; q0 "QUATERNION" has q1 "QUATERNION" has and] [
-  q0:q1:;;
+*: [q0: q1:;; q0 "QUATERNION" has q1 "QUATERNION" has and] [
+  q0: q1:;;
   (
     0 q0 @ 3 q1 @ * 3 q0 @ 0 q1 @ * + 2 q0 @ 1 q1 @ * + 1 q0 @ 2 q1 @ * -
     1 q0 @ 3 q1 @ * 3 q0 @ 1 q1 @ * + 0 q0 @ 2 q1 @ * + 2 q0 @ 0 q1 @ * -
@@ -101,8 +105,8 @@ fieldCount: ["QUATERNION" has] [.@entries fieldCount] pfunc;
   ) quaternion
 ] pfunc;
 
-+: [q0:q1:;; q0 "QUATERNION" has q1 "QUATERNION" has and] [
-  q0:q1:;;
++: [q0: q1:;; q0 "QUATERNION" has q1 "QUATERNION" has and] [
+  q0: q1:;;
   q0.entries q1.entries + quaternion
 ] pfunc;
 
@@ -142,54 +146,49 @@ unit: ["QUATERNION" has] [
 
 unitChecked: [
   q:;
-  q 1.0e-6 0 q @ cast unitCheckedWithThresold
+  q 1.0e-6 0 q @ cast unitCheckedWithThreshold
 ];
 
-unitCheckedWithThresold: [
-  thresold: new;
+unitCheckedWithThreshold: [
+  threshold: new;
   q:;
   squaredLength: q squaredLength;
-  squaredLength thresold thresold * < [
-    thresold identityQuaternion
+  squaredLength threshold threshold * < [
+    threshold identityQuaternion
   ] [
-    one: 1 thresold cast;
+    one: 1 threshold cast;
     q one squaredLength sqrt / *
   ] if
 ];
 
 # Interpolation
 nlerp: [
-  q0: q1: f:; new;;
+  q0: q1: fraction:; new;;
   q0 q1 dot 0 0 q0 @ cast < [q1.entries neg @q1.!entries] when
-  q0.entries q1.entries f lerp quaternion unitChecked
+  q0.entries q1.entries fraction lerp quaternion unitChecked
 ];
 
 slerp: [
-  o:;
-  o 1.0e-6 o cast slerpWithEpsilon
+  fraction:;
+  fraction 1.0e-6 fraction cast slerpWithEpsilon
 ];
 
 slerpWithEpsilon: [
-  q0:q1:o:epsilon:;;;;
+  q0: q1: fraction: epsilon:;;;;
   q2: q1 new;
   c: q0 q2 dot;
 
-  c 0 o cast < [
-    (
-      0 q2 @ neg
-      1 q2 @ neg
-      2 q2 @ neg
-      3 q2 @ neg
-    ) quaternion !q2
+  c 0 fraction cast < [
+    q2.entries neg @q2.!entries
     c neg !c
   ] when
 
-  c 1 o cast epsilon - > ~ [
-    a: c cos;
-    sr: 1 o cast a sin /;
-    a2: a o *;
-    k0: a a2 - sin sr *;
-    k2: a2 sin sr *;
+  c 1 fraction cast epsilon - > ~ [
+    angle: c acos;
+    sr: 1 fraction cast angle sin /;
+    angle2: angle fraction *;
+    k0: angle angle2 - sin sr *;
+    k2: angle2 sin sr *;
     q0 k0 * q2 k2 * + !q2
   ] when
   q2
