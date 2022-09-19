@@ -7,6 +7,7 @@
 
 "algebra.*"           use
 "algebra.+"           use
+"algebra.acos"        use
 "algebra.dot"         use
 "algebra.getColCount" use
 "algebra.getRowCount" use
@@ -25,6 +26,46 @@ Quaternion: [{
   entries: 4 array;
 }];
 
+axisAngleQuaternion: [
+  axisAngle:;
+  third: 3 axisAngle @;
+  ah: third 0.5 third cast *;
+  ahs: ah sin;
+  (
+    0 axisAngle @ ahs *
+    1 axisAngle @ ahs *
+    2 axisAngle @ ahs *
+    ah cos
+  ) quaternion
+];
+
+identityQuaternion: [
+  entry:;
+  (0 entry cast 0 entry cast 0 entry cast 1 entry cast) quaternion
+];
+
+matrix: ["QUATERNION" has] [
+  q:;
+  one: 1 0 q @ cast;
+  x2: 0 q @ 0 q @ +;
+  y2: 1 q @ 1 q @ +;
+  z2: 2 q @ 2 q @ +;
+  omxx2: one x2 0 q @ * -;
+  xy2: x2 1 q @ *;
+  xz2: x2 2 q @ *;
+  xw2: x2 3 q @ *;
+  yy2: y2 1 q @ *;
+  yz2: y2 2 q @ *;
+  yw2: y2 3 q @ *;
+  zz2: z2 2 q @ *;
+  zw2: z2 3 q @ *;
+  (
+    (one yy2 - zz2 - xy2 zw2 +   xz2 yw2 -  )
+    (xy2 zw2 -       omxx2 zz2 - yz2 xw2 +  )
+    (xz2 yw2 +       yz2 xw2 -   omxx2 yy2 -)
+  )
+] pfunc;
+
 quaternion: [{
   QUATERNION: ();
   entries: new;
@@ -38,6 +79,11 @@ quaternion: [
 ] [
   trans quaternionFromRotationMatrix
 ] pfunc;
+
+quaternionCast: [
+  q: virtual Schema: Ref;;
+  q.entries [@Schema cast] (each) quaternion
+];
 
 quaternionFromRotationMatrix: [
   m:;
@@ -73,34 +119,32 @@ quaternionFromRotationMatrix: [
   ] if
 ];
 
-identityQuaternion: [
-  entry:;
-  (0 entry cast 0 entry cast 0 entry cast 1 entry cast) quaternion
-];
+vector: ["QUATERNION" has] [
+  .entries new
+] pfunc;
 
-fieldCount: ["QUATERNION" has] [.@entries fieldCount] pfunc;
+!: ["QUATERNION" has] [
+  value: index: q:;;;
+  value new index @q.@entries !
+] pfunc;
 
 @: ["QUATERNION" has] [.@entries @] pfunc;
 
-!: ["QUATERNION" has] [.@entries !] pfunc;
+fieldCount: ["QUATERNION" has] [.entries fieldCount] pfunc;
 
-+: [q0:q1:;; q0 "QUATERNION" has q1 "QUATERNION" has and] [
-  q0:q1:;;
-  q0.entries q1.entries + quaternion
-] pfunc;
-
-*: [value:q:;; q "QUATERNION" has value 0 q @ same and] [
-  value:q:;;
+# Basic operations
+*: [value: q:;; q "QUATERNION" has value 0 q @ same and] [
+  value: q:;;
   value q.entries * quaternion
 ] pfunc;
 
-*: [q:value:;; q "QUATERNION" has value 0 q @ same and] [
-  q:value:;;
+*: [q: value:;; q "QUATERNION" has value 0 q @ same and] [
+  q: value:;;
   q.entries value * quaternion
 ] pfunc;
 
-*: [q0:q1:;; q0 "QUATERNION" has q1 "QUATERNION" has and] [
-  q0:q1:;;
+*: [q0: q1:;; q0 "QUATERNION" has q1 "QUATERNION" has and] [
+  q0: q1:;;
   (
     0 q0 @ 3 q1 @ * 3 q0 @ 0 q1 @ * + 2 q0 @ 1 q1 @ * + 1 q0 @ 2 q1 @ * -
     1 q0 @ 3 q1 @ * 3 q0 @ 1 q1 @ * + 0 q0 @ 2 q1 @ * + 2 q0 @ 0 q1 @ * -
@@ -109,14 +153,19 @@ fieldCount: ["QUATERNION" has] [.@entries fieldCount] pfunc;
   ) quaternion
 ] pfunc;
 
-quaternionCast: [
-  q: virtual Schema: Ref;;
-  q.entries [@Schema cast] (each) quaternion
-];
++: [q0: q1:;; q0 "QUATERNION" has q1 "QUATERNION" has and] [
+  q0: q1:;;
+  q0.entries q1.entries + quaternion
+] pfunc;
 
-squaredLength: ["QUATERNION" has] [
+conj: ["QUATERNION" has] [
   q:;
-  q q dot
+  (
+    0 q @ new
+    1 q @ new
+    2 q @ new
+    3 q @ neg
+  ) quaternion
 ] pfunc;
 
 dot: [
@@ -131,6 +180,11 @@ dot: [
   3 q0 @ 3 q1 @ * +
 ] pfunc;
 
+squaredLength: ["QUATERNION" has] [
+  q:;
+  q q dot
+] pfunc;
+
 unit: ["QUATERNION" has] [
   q:;
   length: q squaredLength sqrt;
@@ -138,105 +192,52 @@ unit: ["QUATERNION" has] [
   q one length / *
 ] pfunc;
 
-unitCheckedWithThresold: [
-  thresold: new;
+unitChecked: [
+  q:;
+  q 1.0e-6 0 q @ cast unitCheckedWithThreshold
+];
+
+unitCheckedWithThreshold: [
+  threshold: new;
   q:;
   squaredLength: q squaredLength;
-  squaredLength thresold thresold * < [
-    thresold identityQuaternion
+  squaredLength threshold threshold * < [
+    threshold identityQuaternion
   ] [
-    one: 1 thresold cast;
+    one: 1 threshold cast;
     q one squaredLength sqrt / *
   ] if
 ];
 
-unitChecked: [
-  q:;
-  q 1.0e-6 0 q @ cast unitCheckedWithThresold
-];
-
+# Interpolation
 nlerp: [
-  q0: q1: f:; new;;
+  q0: q1: fraction:; new;;
   q0 q1 dot 0 0 q0 @ cast < [q1.entries neg @q1.!entries] when
-  q0.entries q1.entries f lerp quaternion unitChecked
-];
-
-conj: ["QUATERNION" has] [
-  q:;
-  (
-    0 q @ new
-    1 q @ new
-    2 q @ new
-    3 q @ neg
-  ) quaternion
-] pfunc;
-
-slerpWithEpsilon: [
-  q0:q1:o:epsilon:;;;;
-  q2: q1 new;
-  c: q0 q2 dot;
-
-  c 0 o cast < [
-    (
-      0 q2 @ neg
-      1 q2 @ neg
-      2 q2 @ neg
-      3 q2 @ neg
-    ) quaternion !q2
-    c neg !c
-  ] when
-
-  c 1 o cast epsilon - > ~ [
-    a: c cos;
-    sr: 1 o cast a sin /;
-    a2: a o *;
-    k0: a a2 - sin sr *;
-    k2: a2 sin sr *;
-    q0 k0 * q2 k2 * + !q2
-  ] when
-  q2
+  q0.entries q1.entries fraction lerp quaternion unitChecked
 ];
 
 slerp: [
-  o:;
-  o 1.0e-6 o cast slerpWithEpsilon
+  fraction:;
+  fraction 1.0e-6 fraction cast slerpWithEpsilon
 ];
 
-vector: ["QUATERNION" has] [
-  .entries copy
-] pfunc;
+slerpWithEpsilon: [
+  q0: q1: fraction: epsilon:;;;;
+  q2: q1 new;
+  c: q0 q2 dot;
 
-matrix: ["QUATERNION" has] [
-  q:;
-  one: 1 0 q @ cast;
-  x2: 0 q @ 0 q @ +;
-  y2: 1 q @ 1 q @ +;
-  z2: 2 q @ 2 q @ +;
-  omxx2: one x2 0 q @ * -;
-  xy2: x2 1 q @ *;
-  xz2: x2 2 q @ *;
-  xw2: x2 3 q @ *;
-  yy2: y2 1 q @ *;
-  yz2: y2 2 q @ *;
-  yw2: y2 3 q @ *;
-  zz2: z2 2 q @ *;
-  zw2: z2 3 q @ *;
-  (
-    (one yy2 - zz2 - xy2 zw2 +   xz2 yw2 -)
-    (xy2 zw2 -       omxx2 zz2 - yz2 xw2 +)
-    (xz2 yw2 +       yz2 xw2 -   omxx2 yy2 -)
-  )
-] pfunc;
+  c 0 fraction cast < [
+    q2.entries neg @q2.!entries
+    c neg !c
+  ] when
 
-axisAngleQuaternion: [
-  axisAngle:;
-  third: 3 axisAngle @;
-  ah: third 0.5 third cast *;
-  ahs: ah sin;
-  (
-    0 axisAngle @ ahs *
-    1 axisAngle @ ahs *
-    2 axisAngle @ ahs *
-    ah cos
-  ) quaternion
+  c 1 fraction cast epsilon - > ~ [
+    angle: c acos;
+    sr: 1 fraction cast angle sin /;
+    angle2: angle fraction *;
+    k0: angle angle2 - sin sr *;
+    k2: angle2 sin sr *;
+    q0 k0 * q2 k2 * + !q2
+  ] when
+  q2
 ];
