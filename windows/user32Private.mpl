@@ -150,7 +150,7 @@ WNDCLASSW: [{
 } HDC {convention: stdcall;} "GetDC" importFunction
 
 {
-  hmonitor: HMONITOR;
+  hMonitor: HMONITOR;
   lpmi: MONITORINFO Ref;
 } Int32 {convention: stdcall;} "GetMonitorInfoW" importFunction
 
@@ -221,7 +221,7 @@ Natx storageSize 8nx = [
 
 {
   hWnd: HWND;
-  lpwndpl: WINDOWPLACEMENT Ref;
+  lpwndpl: WINDOWPLACEMENT Cref;
 } Int32 {convention: stdcall;} "SetWindowPlacement" importFunction
 
 {
