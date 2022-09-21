@@ -44,7 +44,7 @@ QuaternionTest: [];
 # test helpers
 random: RandomLCG;
 
-getFromRange: [
+generateFromRange: [
   from: to:;;
   @random.getr32 to from - * from +
 ];
@@ -143,8 +143,8 @@ testInterpolation: [
   q0 matrix trans rotationMatrix checkEqual
 
   100 dynamic [
-    q0: (4 [-1.0r32 1.0r32 getFromRange] times) unit quaternion;
-    q1: (4 [-1.0r32 1.0r32 getFromRange] times) unit quaternion;
+    q0: (4 [-1.0r32 1.0r32 generateFromRange] times) unit quaternion;
+    q1: (4 [-1.0r32 1.0r32 generateFromRange] times) unit quaternion;
 
     m:  q0 matrix q1 matrix *;
     m': q0 q1 * matrix;
@@ -155,7 +155,7 @@ testInterpolation: [
 # quaternion
 [
   100 dynamic [
-    q0: (4 [-1.0r32 1.0r32 getFromRange] times) unit quaternion;
+    q0: (4 [-1.0r32 1.0r32 generateFromRange] times) unit quaternion;
     q1: q0 matrix quaternion;
     q0 q1 checkEqual
   ] times
