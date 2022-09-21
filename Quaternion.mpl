@@ -77,16 +77,7 @@ quaternion: [
   m getColCount 3 = and
   m getRowCount 3 = and
 ] [
-  trans quaternionFromRotationMatrix
-] pfunc;
-
-quaternionCast: [
-  q: virtual Schema: Ref;;
-  q.entries [@Schema cast] (each) quaternion
-];
-
-quaternionFromRotationMatrix: [
-  m:;
+  m: trans;
   trace: 3 [i i m @ @] times + +;
   trace 0 trace cast > [
     w: trace 1 trace cast + sqrt 0.5 trace cast *;
@@ -117,6 +108,11 @@ quaternionFromRotationMatrix: [
     j k m @ @ k j m @ @ - fr * 3 @q @ set
     q
   ] if
+] pfunc;
+
+quaternionCast: [
+  q: virtual Schema: Ref;;
+  q.entries [@Schema cast] (each) quaternion
 ];
 
 vector: ["QUATERNION" has] [
