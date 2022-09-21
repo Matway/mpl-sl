@@ -5,16 +5,21 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"algebra.*"      use
-"algebra.+"      use
-"algebra.acos"   use
-"algebra.dot"    use
-"algebra.lerp"   use
-"algebra.neg"    use
-"algorithm.each" use
-"control.Ref"    use
-"control.pfunc"  use
-"control.when"   use
+"algebra.*"           use
+"algebra.+"           use
+"algebra.acos"        use
+"algebra.dot"         use
+"algebra.getColCount" use
+"algebra.getRowCount" use
+"algebra.lerp"        use
+"algebra.matrix?"     use
+"algebra.neg"         use
+"algebra.trans"       use
+"algorithm.each"      use
+"control.Ref"         use
+"control.pfunc"       use
+"control.times"       use
+"control.when"        use
 
 Quaternion: [{
   QUATERNION: ();
@@ -65,6 +70,45 @@ quaternion: [{
   QUATERNION: ();
   entries: new;
 }];
+
+quaternion: [
+  m:;
+  m matrix?
+  m getColCount 3 = and
+  m getRowCount 3 = and
+] [
+  m: trans;
+  trace: 3 [i i m @ @] times + +;
+  trace 0 trace cast > [
+    w: trace 1 trace cast + sqrt 0.5 trace cast *;
+    fr: 0.25 w cast w /;
+    (
+      1 2 m @ @ 2 1 m @ @ - fr *
+      2 0 m @ @ 0 2 m @ @ - fr *
+      0 1 m @ @ 1 0 m @ @ - fr *
+      w new
+    ) quaternion
+  ] [
+    next: (1 2 0);
+    i: 1 1 m @ @ 0 0 m @ @ > [1] [0] if;
+    2 2 m @ @ i i m @ @ > [
+      2 !i
+    ] when
+
+    j: i next @;
+    k: j next @;
+
+    q: trace Quaternion;
+    qi: i i m @ @ j j m @ @ - k k m @ @ - 1 trace cast + sqrt 0.5 trace cast *;
+    fr: 0.25 qi cast qi /;
+
+    qi                         i @q @ set
+    i j m @ @ j i m @ @ + fr * j @q @ set
+    i k m @ @ k i m @ @ + fr * k @q @ set
+    j k m @ @ k j m @ @ - fr * 3 @q @ set
+    q
+  ] if
+] pfunc;
 
 quaternionCast: [
   q: virtual Schema: Ref;;
