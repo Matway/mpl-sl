@@ -15,10 +15,14 @@ user32Internal: {
   HGLRC: @HGLRC;
   HICON: @HICON;
   HMENU: @HMENU;
+  HMONITOR: @HMONITOR;
   HWND: @HWND;
 
+  MONITORINFO: @MONITORINFO;
   MSG: @MSG;
   POINT: @POINT;
+  RECT: @RECT;
+  WINDOWPLACEMENT: @WINDOWPLACEMENT;
   WNDCLASSW: @WNDCLASSW;
 
   # User32.Lib should be included for these functions
@@ -28,14 +32,19 @@ user32Internal: {
   DestroyWindow: @DestroyWindow;
   DispatchMessageW: @DispatchMessageW;
   GetDC: @GetDC;
+  GetMonitorInfoW: @GetMonitorInfoW;
   GetWindowLongPtrW: Natx storageSize 8nx = [@GetWindowLongPtrW] [@GetWindowLongW] if;
+  GetWindowPlacement: @GetWindowPlacement;
   LoadCursorW: @LoadCursorW;
+  MonitorFromWindow: @MonitorFromWindow;
   PeekMessageW: @PeekMessageW;
   RegisterClassW: @RegisterClassW;
   ReleaseCapture: @ReleaseCapture;
   SetCapture: @SetCapture;
   SetCursorPos: @SetCursorPos;
   SetWindowLongPtrW: Natx storageSize 8nx = [@SetWindowLongPtrW] [@SetWindowLongW] if;
+  SetWindowPlacement: @SetWindowPlacement;
+  SetWindowPos: @SetWindowPos;
   ShowCursor: @ShowCursor;
   ShowWindow: @ShowWindow;
   TranslateMessage: @TranslateMessage;
