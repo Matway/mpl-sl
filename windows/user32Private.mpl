@@ -49,10 +49,22 @@ HMENU: [{
   unused: Int32;
 } Cref];
 
+HMONITOR: [{
+  virtual MONITOR: {};
+  unused: Int32;
+} Cref];
+
 HWND: [{
   virtual WND: {};
   unused: Int32;
 } Cref];
+
+MONITORINFO: [{
+  cbSize: Nat32;
+  rcMonitor: RECT;
+  rcWork: RECT;
+  dwFlags: Nat32;
+}];
 
 MSG: [{
   hwnd: HWND;
@@ -66,6 +78,23 @@ MSG: [{
 POINT: [{
   x: Int32;
   y: Int32;
+}];
+
+RECT: [{
+  left: Int32;
+  top: Int32;
+  right: Int32;
+  bottom: Int32;
+}];
+
+WINDOWPLACEMENT: [{
+  length: Nat32;
+  flags: Nat32;
+  showCmd: Nat32;
+  ptMinPosition: POINT;
+  ptMaxPosition: POINT;
+  rcNormalPosition: RECT;
+  rcDevice: RECT;
 }];
 
 WNDCLASSW: [{
@@ -120,6 +149,11 @@ WNDCLASSW: [{
   hWnd: HWND;
 } HDC {convention: stdcall;} "GetDC" importFunction
 
+{
+  hMonitor: HMONITOR;
+  lpmi: MONITORINFO Ref;
+} Int32 {convention: stdcall;} "GetMonitorInfoW" importFunction
+
 Natx storageSize 8nx = [
   {
     hWnd: HWND;
@@ -133,9 +167,19 @@ Natx storageSize 8nx = [
 ] uif
 
 {
+  hWnd: HWND;
+  lpwndpl: WINDOWPLACEMENT Ref;
+} Int32 {convention: stdcall;} "GetWindowPlacement" importFunction
+
+{
   hInstance: kernel32.HINSTANCE;
   lpCursorName: Natx;
 } HCURSOR {convention: stdcall;} "LoadCursorW" importFunction
+
+{
+  hwnd: HWND;
+  dwFlags: Nat32;
+} HMONITOR {convention: stdcall;} "MonitorFromWindow" importFunction
 
 {
   lpMsg: MSG Ref;
@@ -174,6 +218,21 @@ Natx storageSize 8nx = [
     dwNewLong: Intx;
   } Intx {convention: stdcall;} "SetWindowLongW" importFunction
 ] uif
+
+{
+  hWnd: HWND;
+  lpwndpl: WINDOWPLACEMENT Cref;
+} Int32 {convention: stdcall;} "SetWindowPlacement" importFunction
+
+{
+  hWnd: HWND;
+  hWndInsertAfter: HWND;
+  X: Int32;
+  Y: Int32;
+  cx: Int32;
+  cy: Int32;
+  uFlags: Nat32;
+} Int32 {convention: stdcall;} "SetWindowPos" importFunction
 
 {
   bShow: Int32;
