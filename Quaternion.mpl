@@ -5,21 +5,27 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"algebra.*"           use
-"algebra.+"           use
-"algebra.acos"        use
-"algebra.dot"         use
-"algebra.getColCount" use
-"algebra.getRowCount" use
-"algebra.lerp"        use
-"algebra.matrix?"     use
-"algebra.neg"         use
-"algebra.trans"       use
-"algorithm.each"      use
-"control.Ref"         use
-"control.pfunc"       use
-"control.times"       use
-"control.when"        use
+"algebra.&"             use
+"algebra.*"             use
+"algebra.+"             use
+"algebra.acos"          use
+"algebra.dot"           use
+"algebra.getColCount"   use
+"algebra.getRowCount"   use
+"algebra.length"        use
+"algebra.lerp"          use
+"algebra.matrix?"       use
+"algebra.neg"           use
+"algebra.squaredLength" use
+"algebra.trans"         use
+"algebra.unit"          use
+"algorithm.each"        use
+"control.Ref"           use
+"control.isReal"        use
+"control.pfunc"         use
+"control.sqr"           use
+"control.times"         use
+"control.when"          use
 
 Quaternion: [{
   QUATERNION: ();
@@ -114,6 +120,22 @@ quaternionCast: [
   q: virtual Schema: Ref;;
   q.entries [@Schema cast] (each) quaternion
 ];
+
+rotationQuaternion: [
+  rotation:;
+  rotation 1.0e-12 rotationQuaternion
+];
+
+rotationQuaternion: [rotation: threshold:;; threshold isReal] [
+  rotation: threshold:;;
+  threshold: threshold 0 rotation @ cast;
+  rotation squaredLength threshold sqr < [
+    0 rotation @ identityQuaternion
+  ] [
+    angle: rotation length;
+    rotation unit (angle) & axisAngleQuaternion
+  ] if
+] pfunc;
 
 vector: ["QUATERNION" has] [
   .entries new

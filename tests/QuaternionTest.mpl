@@ -8,6 +8,7 @@
 "RandomLCG.RandomLCG" use
 "algebra.&"           use
 "algebra.*"           use
+"algebra.PI"          use
 "algebra.PI64"        use
 "algebra.neg"         use
 "algebra.trans"       use
@@ -34,6 +35,7 @@
 "Quaternion.nlerp"                    use
 "Quaternion.quaternion"               use
 "Quaternion.quaternionCast"           use
+"Quaternion.rotationQuaternion"       use
 "Quaternion.slerp"                    use
 "Quaternion.unit"                     use
 "Quaternion.unitChecked"              use
@@ -168,6 +170,16 @@ testInterpolation: [
 
   q0 Real32 quaternionCast q1 checkEqual
   q1 Real64 quaternionCast q0 checkEqual
+] call
+
+# rotationQuaternion
+[
+  random: RandomLCG;
+  100 dynamic [
+    axis: (3 [-1.0r32 1.0r32 generateFromRange] times) unit;
+    angle: 0.0r32 2.0r32 PI * generateFromRange;
+    axis (angle) & axisAngleQuaternion axis angle * rotationQuaternion checkEqual
+  ] times
 ] call
 
 # ! @ fieldCount
