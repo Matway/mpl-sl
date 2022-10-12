@@ -21,7 +21,7 @@ Mref: [{
 
   DIE: [];
 
-  ASSIGN: [.data copy !data];
+  ASSIGN: [.data new !data];
 
   CALL: [
     data getSchema addressToReference @closure isConst [const] when
