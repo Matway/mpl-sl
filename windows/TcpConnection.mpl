@@ -151,7 +151,9 @@ TcpConnection: [{
         @writeDispatcherContext.@overlapped 0nx writeDispatcherContext.overlapped.InternalHigh Nat32 cast dispatcher.completionPort kernel32.PostQueuedCompletionStatus 1 = ~ [
           ("FATAL: PostQueuedCompletionStatus failed, result=" kernel32.GetLastError LF) assembleString print 1 exit
         ] when
-      ] when
+      ] [
+        0n32 @states RELEASE atomicStore
+      ] if
     ] if
   ];
 
