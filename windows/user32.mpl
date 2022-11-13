@@ -25,6 +25,10 @@ user32Internal: {
   WINDOWPLACEMENT: @WINDOWPLACEMENT;
   WNDCLASSW: @WNDCLASSW;
 
+  JOYINFOEX: @JOYINFOEX;
+
+  getJoyPosEx: @joyGetPosEx;
+
   # User32.Lib should be included for these functions
   ClientToScreen: @ClientToScreen;
   CreateWindowExW: @CreateWindowExW;

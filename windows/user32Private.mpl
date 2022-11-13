@@ -6,8 +6,10 @@
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
 "control.Cref" use
+"control.Int16" use
 "control.Int32" use
 "control.Intx" use
+"control.Nat8" use
 "control.Nat16" use
 "control.Nat32" use
 "control.Natx" use
@@ -108,6 +110,22 @@ WNDCLASSW: [{
   hbrBackground: HBRUSH;
   lpszMenuName: Natx;
   lpszClassName: Natx;
+}];
+
+JOYINFOEX: [{
+  dwSize: Nat32;
+  dwFlags: Nat32;
+  dwXpos: Nat32;
+  dwYpos: Nat32;
+  dwZpos: Nat32;
+  dwRpos: Nat32;
+  dwUpos: Nat32;
+  dwVpos: Nat32;
+  dwButtons: Nat32;
+  dwButtonNumber: Nat32;
+  dwPOV: Nat32;
+  dwReserved1: Nat32;
+  dwReserved2: Nat32;
 }];
 
 {
@@ -246,3 +264,8 @@ Natx storageSize 8nx = [
 {
   lpMsg: MSG Cref;
 } Int32 {convention: stdcall;} "TranslateMessage" importFunction
+
+{
+  uJoyID: Nat32;
+  pji: JOYINFOEX Ref;
+} Nat32 {convention: stdcall;} "joyGetPosEx" importFunction
