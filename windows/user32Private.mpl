@@ -6,10 +6,8 @@
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
 "control.Cref" use
-"control.Int16" use
 "control.Int32" use
 "control.Intx" use
-"control.Nat8" use
 "control.Nat16" use
 "control.Nat32" use
 "control.Natx" use
