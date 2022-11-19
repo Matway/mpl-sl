@@ -11,7 +11,7 @@ winmmInternal: {
   JOYINFOEX: @JOYINFOEX;
 
   # winmm.Lib should be included for these functions 
-  getJoyPosEx: @joyGetPosEx;
+  joyGetPosEx: @joyGetPosEx;
 };
 
 winmm: [winmmInternal];
