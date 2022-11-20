@@ -1,4 +1,4 @@
-; Copyright (C) 2021 Matway Burkow
+; Copyright (C) 2022 Matway Burkow
 ;
 ; This repository and all its contents belong to Matway Burkow (referred here and below as "the owner").
 ; The content is for demonstration purposes only.
