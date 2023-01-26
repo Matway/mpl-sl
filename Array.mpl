@@ -331,6 +331,11 @@ makeArrayObject: [{
     0 @dataReserve set
   ];
 
+  toSpan: [
+    "Span.toSpan2" use
+    @dataBegin dataSize toSpan2
+  ];
+
   INIT: [
     @elementType Ref !dataBegin
     0 @dataSize set
