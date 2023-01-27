@@ -7,7 +7,6 @@
 
 "control.Ref" use
 "control.assert" use
-"control.dup" use
 "control.pfunc" use
 "control.when" use
 "memory.mplFree" use
@@ -36,6 +35,16 @@ OwnerWithDestructor: [{
   valid?: [
     addr: @memory storageAddress;
     addr 0nx = ~
+  ];
+
+  acquire: [
+    element:;
+
+    valid? [
+      @memory @destructor call @memory storageAddress mplFree
+    ] when
+
+    @element !memory
   ];
 
   clear: [
