@@ -45,26 +45,29 @@ Function: [{
 
   assign: [
     context0:;
-
-    release
-
-    @context0 isCodeRef [
-      context: @contextData storageAddress Natx addressToReference;
-      @context0 storageAddress @context set
+    @context0 @self same [
+      @context0 @self set
     ] [
-      @context0 storageSize CONTEXT_SIZE Natx cast > [
-        0 .ERROR_CONTEXT_SIZE_LARGER_THAN_FUNCTION_CONTEXT_SIZE
-      ] when
+      release
 
-      @context0 storageSize 0nx static > [
-        context: contextData storageAddress @context0 addressToReference;
-        @context manuallyInitVariable
-        @context0 @context set
-      ] when
+      @context0 isCodeRef [
+        context: @contextData storageAddress Natx addressToReference;
+        @context0 storageAddress @context set
+      ] [
+        @context0 storageSize CONTEXT_SIZE Natx cast > [
+          "The object is too large to be encapsulated in a Function" raiseStaticError
+        ] when
+
+        @context0 storageSize 0nx > [
+          context: contextData storageAddress @context0 addressToReference;
+          @context manuallyInitVariable
+          @context0 @context set
+        ] when
+      ] if
+
+      contextType: @context0 storageSize 0nx = [@context0] [@context0 Ref] uif virtual;
+      updateVtable
     ] if
-
-    virtual contextType: @context0 storageSize 0nx = [@context0][@context0 Ref] uif;
-    updateVtable
   ];
 
   hasContext: [
