@@ -5,8 +5,7 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"control.Natx" use
-"control.Ref" use
+"control.Ref"  use
 "control.when" use
 
 # Temporary solution until mplc supports recursive schemas
@@ -35,5 +34,5 @@ Mref: [{
 
   virtual SCHEMA_NAME: "Mref";
   virtual getSchema:;
-  data: Natx;
+  data: 0nx;
 }];
