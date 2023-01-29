@@ -6,6 +6,7 @@
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
 "Array.Array"             use
+"Span.toSpan2"            use
 "algorithm.cond"          use
 "algorithm.countIter"     use
 "algorithm.makeArrayIter" use
@@ -473,6 +474,10 @@ String: [{
     ] [
       (chars.dataBegin chars.dataSize 1 -) toStringView
     ] if
+  ];
+
+  toSpan: [
+    data size toSpan2
   ];
 }];
 
