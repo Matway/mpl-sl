@@ -1,4 +1,3 @@
-"control.Int32" use
 "control.Natx" use
 "control.Ref" use
 "control.assert" use
@@ -11,7 +10,7 @@
 
 Span: [
   data:;
-  @data Ref Int32 toSpan2
+  @data Ref 0 toSpan2
 ];
 
 toSpan: [isBuiltinTuple] [
