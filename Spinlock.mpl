@@ -5,42 +5,43 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"atomic.ACQUIRE" use
-"atomic.RELEASE" use
+"atomic.ACQUIRE"        use
+"atomic.RELEASE"        use
 "atomic.atomicExchange" use
-"atomic.atomicStore" use
-"control.assert" use
-"control.when" use
+"atomic.atomicStore"    use
+"control.assert"        use
 
 Spinlock: [{
-  state: 0n8;
+  LOCKED:   [1n8];
+  UNLOCKED: [0n8];
 
-  INIT: [
-    0n8 !state
-  ];
+  MAXIMUM_SPIN_COUNT: [1000000];
+
+  state: UNLOCKED;
 
   DIE: [
-    [state 0n8 =] "attempted to destroy a locked Spinlock" assert
+    [state UNLOCKED =] "Attempted to destroy a locked [Spinlock]" assert
   ];
 
-  lock: [
-    1n8 @state ACQUIRE atomicExchange 1n8 = [
-      counter: 1;
-      [
-        counter 2000000 = [
-          "spinlocked for a long time" failProc
-        ] when
+  INIT: [UNLOCKED !state];
 
-        1n8 @state ACQUIRE atomicExchange 1n8 = [
-          counter 1 + !counter TRUE
-        ] [
-          FALSE
-        ] if
-      ] loop
-    ] when
+  lock: [
+    DEBUG [counter: 0;] [] uif
+
+    [
+      [counter MAXIMUM_SPIN_COUNT = ~] "The maximum [Spinlock] spin count has been reached" assert
+
+      LOCKED @state ACQUIRE atomicExchange LOCKED = [
+        counter 1 + !counter
+        TRUE
+      ] [
+        FALSE
+      ] if
+    ] loop
   ];
 
   unlock: [
-    0n8 @state RELEASE atomicStore
+    [state LOCKED =] "[unlock] was called in an invalid [Spinlock] state" assert
+    UNLOCKED @state RELEASE atomicStore
   ];
 }];
