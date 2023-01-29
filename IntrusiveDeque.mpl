@@ -5,13 +5,13 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"control.Ref" use
+"control.Ref"    use
 "control.assert" use
-"control.dup" use
+"control.dup"    use
 "control.ensure" use
-"control.isNil" use
-"control.when" use
-"control.while" use
+"control.isNil"  use
+"control.when"   use
+"control.while"  use
 
 # Intrusive doubly linked list
 # Requires item objects to have fields 'prev' and 'next' of type '[Item] Mref'
@@ -35,6 +35,27 @@ IntrusiveDeque: [{
     ] if
 
     @item !last
+  ];
+
+  appendAll: [
+    other:;
+    otherFirst: @other.@first;
+    @otherFirst isNil ~ [
+      @last isNil [
+        [@first isNil] "invalid linked list state" assert
+        @otherFirst !first
+      ] [
+        [@otherFirst.prev isNil] "invalid linked list state" assert
+        @last @otherFirst.@prev.set
+        [@last.next isNil] "invalid linked list state" assert
+        @otherFirst @last.@next.set
+      ] if
+
+      [other.@last isNil ~] "invalid linked list state" assert
+      @other.@last !last
+      @Item @other.!first
+      @Item @other.!last
+    ] when
   ];
 
   clear: [
