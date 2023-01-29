@@ -680,15 +680,15 @@ each: [
   ] loop
 ];
 
-eachStatic: [
-  eachStaticInternal: [
-    over .next [
-      over ucall @eachStaticInternal ucall
-    ] [
-      drop drop drop
-    ] uif
-  ];
+eachStaticInternal: [
+  over .next [
+    over ucall @eachStaticInternal ucall
+  ] [
+    drop drop drop
+  ] uif
+];
 
+eachStatic: [
   swap toIter swap @eachStaticInternal ucall
 ];
 
