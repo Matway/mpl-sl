@@ -32,7 +32,7 @@ Spinlock: [{
       [counter MAXIMUM_SPIN_COUNT = ~] "The maximum [Spinlock] spin count has been reached" assert
 
       LOCKED @state ACQUIRE atomicExchange LOCKED = [
-        counter 1 + !counter
+        DEBUG [counter 1 + !counter] [] if
         TRUE
       ] [
         FALSE
