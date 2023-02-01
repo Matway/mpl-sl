@@ -12,10 +12,12 @@
 "control.assert"        use
 
 Spinlock: [{
+  SCHEMA_NAME: "Spinlock" virtual;
+
   LOCKED:   [1n8];
   UNLOCKED: [0n8];
 
-  MAXIMUM_SPIN_COUNT: [1000000];
+  MAXIMUM_SPIN_COUNT: [2000000];
 
   state: UNLOCKED;
 
@@ -23,7 +25,9 @@ Spinlock: [{
     [state UNLOCKED =] "Attempted to destroy a locked [Spinlock]" assert
   ];
 
-  INIT: [UNLOCKED !state];
+  INIT: [
+    UNLOCKED !state
+  ];
 
   lock: [
     DEBUG [counter: 0;] [] uif
