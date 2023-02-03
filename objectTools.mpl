@@ -23,7 +23,7 @@ unwrapField: [
 
 unwrapFields: [
   object:;
-  @object fieldCount [i @object unwrapField] times
+  @object fieldCount [@object i unwrapField] times
 ];
 
 insertField: [
