@@ -1,29 +1,29 @@
-# Copyright (C) 2022 Matway Burkow
+# Copyright (C) 2023 Matway Burkow
 #
 # This repository and all its contents belong to Matway Burkow (referred here and below as "the owner").
 # The content is for demonstration purposes only.
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"Quaternion.*" use
-"Quaternion.@" use
-"Quaternion.Quaternion" use
-"Quaternion.conj" use
+"Quaternion.*"                  use
+"Quaternion.@"                  use
+"Quaternion.Quaternion"         use
+"Quaternion.conj"               use
 "Quaternion.identityQuaternion" use
-"Quaternion.matrix" use
-"Quaternion.nlerp" use
-"Quaternion.quaternion" use
-"algebra.*" use
-"algebra.+" use
-"algebra.-" use
-"algebra.Vector" use
-"algebra.lerp" use
-"algebra.neg" use
-"algebra.trans" use
-"algebra.vector?" use
-"control.Real32" use
-"control.pfunc" use
-"control.when" use
+"Quaternion.matrix"             use
+"Quaternion.nlerp"              use
+"Quaternion.quaternion"         use
+"algebra.*"                     use
+"algebra.+"                     use
+"algebra.-"                     use
+"algebra.Vector"                use
+"algebra.lerp"                  use
+"algebra.neg"                   use
+"algebra.trans"                 use
+"algebra.vector?"               use
+"control.Real32"                use
+"control.pfunc"                 use
+"control.when"                  use
 
 pose: [
   position0: orientation0:;;

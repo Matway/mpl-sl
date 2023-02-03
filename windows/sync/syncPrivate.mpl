@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Matway Burkow
+# Copyright (C) 2023 Matway Burkow
 #
 # This repository and all its contents belong to Matway Burkow (referred here and below as "the owner").
 # The content is for demonstration purposes only.
@@ -6,23 +6,23 @@
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
 "IntrusiveQueue.IntrusiveQueue" use
-"Mref.Mref" use
-"String.printList" use
-"control.Int64" use
-"control.Nat32" use
-"control.Nat64" use
-"control.Natx" use
-"control.Real64" use
-"control.Ref" use
-"control.assert" use
-"control.drop" use
-"control.dup" use
-"control.failProc" use
-"control.isNil" use
-"control.when" use
+"Mref.Mref"                     use
+"String.printList"              use
+"control.Int64"                 use
+"control.Nat32"                 use
+"control.Nat64"                 use
+"control.Natx"                  use
+"control.Real64"                use
+"control.Ref"                   use
+"control.assert"                use
+"control.drop"                  use
+"control.dup"                   use
+"control.failProc"              use
+"control.isNil"                 use
+"control.when"                  use
 
 "kernel32.kernel32" use
-"ws2_32.winsock2" use
+"ws2_32.winsock2"   use
 
 FiberData: [{
   canceled?: [@func isNil];

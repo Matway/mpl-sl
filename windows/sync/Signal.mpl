@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Matway Burkow
+# Copyright (C) 2023 Matway Burkow
 #
 # This repository and all its contents belong to Matway Burkow (referred here and below as "the owner").
 # The content is for demonstration purposes only.
@@ -6,16 +6,16 @@
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
 "IntrusiveQueue.IntrusiveQueue" use
-"control.assert" use
-"control.isNil" use
-"control.when" use
+"control.assert"                use
+"control.isNil"                 use
+"control.when"                  use
 
-"syncPrivate.FiberData" use
-"syncPrivate.canceled?" use
-"syncPrivate.currentFiber" use
+"syncPrivate.FiberData"         use
+"syncPrivate.canceled?"         use
+"syncPrivate.currentFiber"      use
 "syncPrivate.defaultCancelFunc" use
-"syncPrivate.dispatch" use
-"syncPrivate.resumingFibers" use
+"syncPrivate.dispatch"          use
+"syncPrivate.resumingFibers"    use
 
 Signal: [{
   INIT: [];

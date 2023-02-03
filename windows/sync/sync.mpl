@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Matway Burkow
+# Copyright (C) 2023 Matway Burkow
 #
 # This repository and all its contents belong to Matway Burkow (referred here and below as "the owner").
 # The content is for demonstration purposes only.
@@ -6,22 +6,22 @@
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
 "String.assembleString" use
-"control.Ref" use
-"control.assert" use
-"control.dup" use
-"control.isNil" use
-"control.when" use
+"control.Ref"           use
+"control.assert"        use
+"control.dup"           use
+"control.isNil"         use
+"control.when"          use
 
-"Context.makeContext" use
-"TcpAcceptor.makeTcpAcceptor" use
+"Context.makeContext"             use
+"TcpAcceptor.makeTcpAcceptor"     use
 "TcpConnection.makeTcpConnection" use
-"syncPrivate.TimerData" use
-"syncPrivate.currentFiber" use
-"syncPrivate.defaultCancelFunc" use
-"syncPrivate.dispatch" use
-"syncPrivate.getTimePrivate" use
-"syncPrivate.resumingFibers" use
-"syncPrivate.timers" use
+"syncPrivate.TimerData"           use
+"syncPrivate.currentFiber"        use
+"syncPrivate.defaultCancelFunc"   use
+"syncPrivate.dispatch"            use
+"syncPrivate.getTimePrivate"      use
+"syncPrivate.resumingFibers"      use
+"syncPrivate.timers"              use
 
 # Test if current context was canceled
 # in:

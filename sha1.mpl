@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Matway Burkow
+# Copyright (C) 2023 Matway Burkow
 #
 # This repository and all its contents belong to Matway Burkow (referred here and below as "the owner").
 # The content is for demonstration purposes only.
@@ -6,22 +6,22 @@
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
 "Array.makeArrayRange" use
-"Array.makeSubRange" use
-"control.!" use
-"control.&&" use
-"control.@" use
-"control.Int32" use
-"control.Nat32" use
-"control.Nat64" use
-"control.Nat8" use
-"control.Natx" use
-"control.drop" use
-"control.min" use
-"control.times" use
-"control.when" use
-"control.while" use
-"memory.memcpy" use
-"memory.memset" use
+"Array.makeSubRange"   use
+"control.!"            use
+"control.&&"           use
+"control.@"            use
+"control.Int32"        use
+"control.Nat32"        use
+"control.Nat64"        use
+"control.Nat8"         use
+"control.Natx"         use
+"control.drop"         use
+"control.min"          use
+"control.times"        use
+"control.when"         use
+"control.while"        use
+"memory.memcpy"        use
+"memory.memset"        use
 
 Sha1Internal: {
   rol: [

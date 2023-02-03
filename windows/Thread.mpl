@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Matway Burkow
+# Copyright (C) 2023 Matway Burkow
 #
 # This repository and all its contents belong to Matway Burkow (referred here and below as "the owner").
 # The content is for demonstration purposes only.
@@ -6,13 +6,14 @@
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
 "String.assembleString" use
-"String.print" use
-"control.Nat32" use
-"control.Ref" use
-"control.assert" use
-"control.drop" use
-"control.exit" use
-"control.when" use
+"String.print"          use
+"control.Nat32"         use
+"control.Ref"           use
+"control.assert"        use
+"control.drop"          use
+"control.exit"          use
+"control.when"          use
+
 "kernel32.kernel32" use
 
 Thread: [{

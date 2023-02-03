@@ -1,17 +1,18 @@
-# Copyright (C) 2022 Matway Burkow
+# Copyright (C) 2023 Matway Burkow
 #
 # This repository and all its contents belong to Matway Burkow (referred here and below as "the owner").
 # The content is for demonstration purposes only.
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"Spinlock.Spinlock" use
-"control.Int64" use
-"control.Nat64" use
-"control.Real64" use
-"control.drop" use
-"kernel32.kernel32" use
+"Spinlock.Spinlock"   use
+"control.Int64"       use
+"control.Nat64"       use
+"control.Real64"      use
+"control.drop"        use
 "lockGuard.lockGuard" use
+
+"kernel32.kernel32" use
 
 runningTimeInternal: {
   init: [
