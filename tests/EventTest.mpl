@@ -5,13 +5,13 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"control.ensure" use
-"control.isCopyable" use
-"control.when" use
+"control.copyable?" use
+"control.ensure"    use
+"control.when"      use
 
 "sync/Event.Event" use
-"sync/sync.spawn" use
-"sync/sync.yield" use
+"sync/sync.spawn"  use
+"sync/sync.yield"  use
 
 EventTest: [];
 
@@ -35,7 +35,7 @@ EventTest: [];
 # Test that Event is not copyable
 [
   event: Event;
-  event isCopyable ["Event is copyable" raiseStaticError] [] uif
+  event copyable? ["Event is copyable" raiseStaticError] [] uif
 ] call
 
 # Test that Event.clear clears the state

@@ -22,24 +22,24 @@
 "control.Nat64"           use
 "control.Nat8"            use
 "control.Natx"            use
+"control.Real32"          use
 "control.Text"            use
 "control.assert"          use
 "control.between"         use
 "control.drop"            use
 "control.dup"             use
 "control.hasSchemaName"   use
-"control.isInt"           use
-"control.isNat"           use
-"control.isReal"          use
+"control.int?"            use
+"control.nat?"            use
 "control.pfunc"           use
 "control.printf"          use
+"control.real?"           use
 "control.times"           use
 "control.when"            use
 "control.while"           use
 "control.within"          use
 "control.||"              use
 "conventions.cdecl"       use
-"memory.memcmp"           use
 "memory.memcpy"           use
 
 hasLogs: [
@@ -322,7 +322,7 @@ String: [{
           maxDigits: 6 dynamic;
           maxOrder: 8 dynamic;
 
-          number 0.0r32 same [
+          number Real32 same [
             5 dynamic @maxDigits set
             7 dynamic @maxOrder set
           ] when
@@ -383,9 +383,9 @@ String: [{
   catBy3NZ: [
     arg:;
     @arg (
-      [isInt ] [@arg TRUE catIntNZ  ]
-      [isNat ] [@arg TRUE catNatNZ  ]
-      [isReal] [@arg TRUE catFloatNZ]
+      [int? ] [@arg TRUE catIntNZ  ]
+      [nat? ] [@arg TRUE catNatNZ  ]
+      [real?] [@arg TRUE catFloatNZ]
       [
         @arg printStack
         "object is not supported for string concatenation" raiseStaticError
@@ -405,11 +405,11 @@ String: [{
     arg:;
     @arg (
       [Char same] [@arg catCharNZ]
-      ["" same [@arg StringView same [@arg "SCHEMA_NAME" has [@arg.SCHEMA_NAME "String" =] &&] ||] ||] [@arg catStringNZ]
-      [TRUE same] [@arg catCondNZ]
-      [isInt ] [@arg FALSE catIntNZ  ]
-      [isNat ] [@arg FALSE catNatNZ  ]
-      [isReal] [@arg FALSE catFloatNZ]
+      [Text same [@arg StringView same [@arg "SCHEMA_NAME" has [@arg.SCHEMA_NAME "String" =] &&] ||] ||] [@arg catStringNZ]
+      [Cond same] [@arg catCondNZ]
+      [int? ] [@arg FALSE catIntNZ  ]
+      [nat? ] [@arg FALSE catNatNZ  ]
+      [real?] [@arg FALSE catFloatNZ]
       [
         @arg printStack
         "object is not supported for string concatenation" raiseStaticError
@@ -606,7 +606,7 @@ decode: ["TextIter"   hasSchemaName] [Utf8DecoderMode.TRUST decodeUtf8] pfunc;
 decode: ["StringView" hasSchemaName] [Utf8DecoderMode.TRUST decodeUtf8] pfunc;
 decode: ["String"     hasSchemaName] [Utf8DecoderMode.TRUST decodeUtf8] pfunc;
 
-hash: ["" same] [makeStringView.hash] pfunc;
+hash: [Text same] [makeStringView.hash] pfunc;
 
 makeStringView: [object:; @object "SCHEMA_NAME" has [@object.SCHEMA_NAME "String" =] &&] [
   string:;
@@ -618,7 +618,7 @@ makeStringViewByAddress: [
   (address Nat8 addressToReference const address strlen Int32 cast) toStringView
 ];
 
-print: ["" same ~] [toString print] pfunc;
+print: [Text same ~] [toString print] pfunc;
 
 print: [object:; @object "SCHEMA_NAME" has [@object.SCHEMA_NAME "String" =] &&] [
   string: addTerminator;

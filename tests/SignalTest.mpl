@@ -5,20 +5,20 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"control.ensure" use
-"control.isCopyable" use
-"control.when" use
+"control.copyable?" use
+"control.ensure"    use
+"control.when"      use
 
 "sync/Signal.Signal" use
-"sync/sync.spawn" use
-"sync/sync.yield" use
+"sync/sync.spawn"    use
+"sync/sync.yield"    use
 
 SignalTest: [];
 
 # Test that Signal is not copyable
 [
   signal: Signal;
-  signal isCopyable ["Signal is copyable" raiseStaticError] [] uif
+  signal copyable? ["Signal is copyable" raiseStaticError] [] uif
 ] call
 
 # Test that Signal.wait does not block in canceled contexts

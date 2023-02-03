@@ -10,9 +10,8 @@
 "control.Nat8"            use
 "control.Natx"            use
 "control.Ref"             use
+"control.copyable?"       use
 "control.drop"            use
-"control.isCodeRef"       use
-"control.isCopyable"      use
 "control.when"            use
 "control.||"              use
 "objectTools.insertField" use
@@ -50,7 +49,7 @@ Function: [{
     ] [
       release
 
-      @context0 isCodeRef [
+      @context0 codeRef? [
         context: @contextData storageAddress Natx addressToReference;
         @context0 storageAddress @context set
       ] [
@@ -87,7 +86,7 @@ Function: [{
 
     [
       functionIndex:;
-      @contextType isCodeRef contextIsCodeRef:;
+      @contextType codeRef? contextIsCodeRef:;
       functionIndex (
         CALL_FUNC [
           f: @CALL_FUNC_SCHEMA Ref;
@@ -113,7 +112,7 @@ Function: [{
 
         ASSIGN_FUNC [
           f: @ASSIGN_FUNC_SCHEMA Ref;
-          @contextType isCopyable [
+          @contextType copyable? [
             @contextType storageSize 0nx static > [
               [
                 this: @contextType addressToReference;

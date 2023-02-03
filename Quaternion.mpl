@@ -9,7 +9,6 @@
 "algebra.*"             use
 "algebra.+"             use
 "algebra.acos"          use
-"algebra.dot"           use
 "algebra.getColCount"   use
 "algebra.getRowCount"   use
 "algebra.length"        use
@@ -21,8 +20,8 @@
 "algebra.unit"          use
 "algorithm.each"        use
 "control.Ref"           use
-"control.isReal"        use
 "control.pfunc"         use
+"control.real?"         use
 "control.sqr"           use
 "control.times"         use
 "control.when"          use
@@ -126,7 +125,7 @@ rotationQuaternion: [
   rotation 1.0e-12 rotationQuaternion
 ];
 
-rotationQuaternion: [rotation: threshold:;; threshold isReal] [
+rotationQuaternion: [rotation: threshold:;; threshold real?] [
   rotation: threshold:;;
   threshold: threshold 0 rotation @ cast;
   rotation squaredLength threshold sqr < [

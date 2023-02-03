@@ -5,13 +5,12 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"control.Natx" use
-"control.Ref" use
-"control.drop" use
-"control.dup" use
-"control.isVirtual" use
+"control.Natx"  use
+"control.Ref"   use
+"control.drop"  use
+"control.dup"   use
 "control.pfunc" use
-"control.when" use
+"control.when"  use
 "control.while" use
 
 fieldIsRef: [drop drop FALSE];
@@ -24,7 +23,7 @@ cloneField: [
 ];
 
 interface: [
-  virtual methods: call dup isVirtual ~ [Ref] when;
+  virtual methods: call dup virtual? ~ [Ref] when;
   index: 0;
   inputIndex: 0;
 

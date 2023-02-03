@@ -5,18 +5,18 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"control.&&" use
-"control.Int32" use
-"control.ensure" use
-"control.isCopyable" use
+"control.&&"        use
+"control.Int32"     use
+"control.copyable?" use
+"control.ensure"    use
 
 "sync/ContextGroup.ContextGroup" use
-"sync/sync.canceled?" use
-"sync/sync.spawn" use
-"sync/sync.yield" use
+"sync/sync.canceled?"            use
+"sync/sync.spawn"                use
+"sync/sync.yield"                use
 
 initCount: Int32;
-dieCount: Int32;
+dieCount:  Int32;
 
 # Test that ContextGroup.DIE yields
 [
@@ -35,7 +35,7 @@ dieCount: Int32;
 # Test that ContextGroup is not copyable
 [
   group: ContextGroup;
-  group isCopyable ["ContextGroup is copyable" raiseStaticError] [] uif
+  group copyable? ["ContextGroup is copyable" raiseStaticError] [] uif
 ] call
 
 # Test that ContextGroup.cancel sets the canceled state

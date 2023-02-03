@@ -5,23 +5,22 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"control.Natx" use
-"control.Ref" use
+"control.Natx"   use
+"control.Ref"    use
 "control.assert" use
-"control.dup" use
-"control.isNil" use
-"control.isVirtual" use
-"control.when" use
+"control.dup"    use
+"control.nil?"   use
+"control.when"   use
 
-"syncPrivate.FiberData" use
-"syncPrivate.canceled?" use
-"syncPrivate.currentFiber" use
+"syncPrivate.FiberData"         use
+"syncPrivate.canceled?"         use
+"syncPrivate.currentFiber"      use
 "syncPrivate.defaultCancelFunc" use
-"syncPrivate.dispatch" use
-"syncPrivate.emptyCancelFunc" use
-"syncPrivate.resumingFibers" use
-"syncPrivate.reusableFibers" use
-"syncPrivate.spawnFiber" use
+"syncPrivate.dispatch"          use
+"syncPrivate.emptyCancelFunc"   use
+"syncPrivate.resumingFibers"    use
+"syncPrivate.reusableFibers"    use
+"syncPrivate.spawnFiber"        use
 
 Context: [{
   INIT: [
@@ -31,7 +30,7 @@ Context: [{
   DIE: [
     valid? [
       wait
-      @Out isVirtual ~ [
+      @Out virtual? ~ [
         data.out @Out addressToReference manuallyDestroyVariable
         data.out @Out addressToReference manuallyInitVariable
       ] when
@@ -41,7 +40,7 @@ Context: [{
   ];
 
   valid?: [
-    data isNil ~
+    data nil? ~
   ];
 
   done?: [
@@ -57,13 +56,13 @@ Context: [{
   get: [
     wait
     @Out () same ~ [
-      @Out isVirtual [@Out] [data.out @Out addressToReference] if
+      @Out virtual? [@Out] [data.out @Out addressToReference] if
     ] when
   ];
 
   wait: [
     done? ~ [
-      [data.waitedBy isNil] "multiple attempts to wait on the same fiber" assert
+      [data.waitedBy nil?] "multiple attempts to wait on the same fiber" assert
       @currentFiber @data.!waitedBy
       canceled? [
         cancel
@@ -84,12 +83,12 @@ Context: [{
     out: Natx;
   }];
 
-  virtual Out: dup isVirtual ~ [Ref] when;
+  virtual Out: dup virtual? ~ [Ref] when;
   data: Data Ref;
 }];
 
 makeContext: [
-  in: virtual Out: dup isVirtual ~ [Ref] when;;
+  in: virtual Out: dup virtual? ~ [Ref] when;;
   contextFunc: [
     creationData: @creationData addressToReference;
     data: @Out Context.Data;
@@ -115,7 +114,7 @@ makeContext: [
     ] [
       out:;
       @out @Out same ~ ["context return schema mismatch" raiseStaticError] when
-      @out isVirtual [1nx] [@out storageAddress] if
+      @out virtual? [1nx] [@out storageAddress] if
     ] uif
 
     @data.!out
@@ -125,7 +124,7 @@ makeContext: [
       @emptyCancelFunc @data.@fiber.!func
     ] when
 
-    data.waitedBy isNil [
+    data.waitedBy nil? [
       dispatch
     ] [
       @data.@waitedBy.switchTo

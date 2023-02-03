@@ -5,8 +5,7 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"conventions.cdecl"      use
-"conventions.stdcall"    use
+"conventions.cdecl" use
 
 Cond:   [v: FALSE  dynamic; @v];
 Int8:   [v: 0i8    dynamic; @v];
@@ -25,6 +24,156 @@ Text:   [v: ""; @v];
 
 {format: Text;} Int32 {variadic: TRUE; convention: cdecl;} "printf" importFunction # need for assert
 {result: 0;} () {convention: cdecl;} "exit" importFunction
+
+# Object traits
+
+assignable?: [
+  v:;
+  assignable?: [v:; FALSE];
+  assignable?: {PRE: [v:; 1nx @v const addressToReference 1nx @v addressToReference set TRUE]; CALL: [v:; TRUE];};
+  assignable?: {PRE: [v:; @v const @v set TRUE]; CALL: [v:; TRUE];};
+  @v assignable?
+];
+
+automatic?: [
+  v:;
+  @v isCombined ~ [FALSE] [
+    @v "DIE" has [TRUE] [
+      i: 0; [
+        i @v fieldCount = [FALSE FALSE] [
+          @v i fieldIsRef ~ [@v i fieldRead automatic?] && [TRUE FALSE] [
+            i 1 + !i
+            TRUE
+          ] if
+        ] if
+      ] loop
+    ] if
+  ] if
+];
+
+callable?: [
+  v:;
+  @v isCombined [
+    @v "CALL" has
+  ] [
+    @v code? [TRUE] [
+      @v codeRef?
+    ] if
+  ] if
+];
+
+compilable?: [
+  v:;
+  compilable?: [v:; FALSE];
+  compilable?: {PRE: [call TRUE]; CALL: [v:; TRUE];};
+  @v compilable?
+];
+
+copyable?: [
+  v:;
+  copyable?: [v:; FALSE];
+  copyable?: {PRE: [v:; 1nx @v const addressToReference new TRUE]; CALL: [v:; TRUE];};
+  copyable?: {PRE: [const new TRUE]; CALL: [v:; TRUE];};
+  @v copyable?
+];
+
+creatable?: [
+  v:;
+  creatable?: [v:; FALSE];
+  creatable?: {PRE: [newVarOfTheSameType TRUE]; CALL: [v:; TRUE];};
+  @v creatable?
+];
+
+initializable?: [
+  v:;
+  initializable?: [v:; FALSE];
+  initializable?: {PRE: [manuallyInitVariable TRUE]; CALL: [v:; TRUE];};
+  @v initializable?
+];
+
+int?: [
+  v:;
+  @v 0i8 same [TRUE] [
+    @v 0i16 same [TRUE] [
+      @v 0i32 same [TRUE] [
+        @v 0i64 same [TRUE] [
+          @v 0ix same
+        ] if
+      ] if
+    ] if
+  ] if
+];
+
+movable?: [
+  v:;
+  @v isConst [FALSE] [
+    movable?: [v:; FALSE];
+    movable?: {PRE: [v:; 1nx @v addressToReference new TRUE]; CALL: [v:; TRUE];};
+    movable?: {PRE: [new TRUE]; CALL: [v:; TRUE];};
+    @v movable?
+  ] if
+];
+
+nat?: [
+  v:;
+  @v 0n8 same [TRUE] [
+    @v 0n16 same [TRUE] [
+      @v 0n32 same [TRUE] [
+        @v 0n64 same [TRUE] [
+          @v 0nx same
+        ] if
+      ] if
+    ] if
+  ] if
+];
+
+nil?: [storageAddress 0nx =];
+
+nilStatic?: [
+  v: storageAddress 0nx =;
+  v isStatic [v] &&
+];
+
+number?: [
+  v:;
+  @v int? [TRUE] [
+    @v nat? [TRUE] [
+      @v real?
+    ] if
+  ] if
+];
+
+real?: [
+  v:;
+  @v 0.0r32 same [TRUE] [
+    @v 0.0r64 same
+  ] if
+];
+
+ref?: [ # Should be ucall'ed to work
+  isRef v0:; v1:; v0 [TRUE] [FALSE] if
+];
+
+sized?: [
+  v:;
+  @v isCombined [TRUE] [
+    @v TRUE same [TRUE] [
+      @v number? [TRUE] [
+        @v code?
+      ] if
+    ] if
+  ] if
+];
+
+virtualizable?: [
+  v:;
+  virtualizable?: [v:; FALSE];
+  virtualizable?: {PRE: [v:; 0nx @v addressToReference virtual v:; TRUE]; CALL: [v:; TRUE];};
+  virtualizable?: {PRE: [virtual v:; TRUE]; CALL: [v:; TRUE];};
+  @v virtualizable?
+];
+
+#
 
 overload failProc: [
   print
@@ -48,60 +197,8 @@ pfunc: [{
   virtual PRE:;
 }];
 
-isInt: [
-  v:;
-  @v 0i8 same [TRUE] [
-    @v 0i16 same [TRUE] [
-      @v 0i32 same [TRUE] [
-        @v 0i64 same [TRUE] [
-          @v 0ix same
-        ] if
-      ] if
-    ] if
-  ] if
-];
-
-isNat: [
-  v:;
-  @v 0n8 same [TRUE] [
-    @v 0n16 same [TRUE] [
-      @v 0n32 same [TRUE] [
-        @v 0n64 same [TRUE] [
-          @v 0nx same
-        ] if
-      ] if
-    ] if
-  ] if
-];
-
-isNumber: [
-  v:;
-  @v isInt [TRUE] [
-    @v isNat [TRUE] [
-      @v isReal
-    ] if
-  ] if
-];
-
-isReal: {CALL: [
-  v:;
-  @v 0.0r32 same [TRUE] [
-    @v 0.0r64 same
-  ] if
-];};
-
-
-isCodeRef: [drop TRUE];
-isCodeRef: [storageSize TRUE] [drop FALSE] pfunc;
-
-isCopyable: [drop FALSE];
-isCopyable: [x:; @x storageSize 0nx > [Natx @x addressToReference] [@x] uif copyOld TRUE] [drop TRUE] pfunc;
-
 isDynamicText: [drop TRUE];
 isDynamicText: ["" & TRUE] [drop FALSE] pfunc;
-
-isVirtual: [drop TRUE];
-isVirtual: [Ref TRUE] [drop FALSE] pfunc;
 
 <: [drop "greater" has] [swap .greater] pfunc;
 <: [     "less"    has] [     .less   ] pfunc;
@@ -125,8 +222,8 @@ print: ["" same] [
   ] if
 ] pfunc;
 
-Ref: [v:; 0nx @v addressToReference]; # for signatures
-Cref: [v:; 0nx v addressToReference]; # for signatures
+Ref:  [v:; 0nx @v       addressToReference]; # for signatures
+Cref: [v:; 0nx @v const addressToReference]; # for signatures
 AsRef: [{data:;}]; # for Ref Array
 
 forceConst: [v:; @v const];
@@ -185,8 +282,6 @@ assert: [
     assert
   ] if
 ];
-
-unconst: [v:; @v storageAddress @v newVarOfTheSameType addressToReference];
 
 &&: [[FALSE] if];
 
@@ -251,15 +346,15 @@ within: [
 isNil: [storageAddress 0nx =];
 
 bind: [{
-  bindBody:  dup isCodeRef ~ [new] when;
-  bindValue: dup isCodeRef ~ [new] when;
+  bindBody:  dup isConst [dup copyable?] [dup movable?] if [new] when;
+  bindValue: dup isConst [dup copyable?] [dup movable?] if [new] when;
 
   CALL: [@bindValue @bindBody call];
 }];
 
 compose: [{
-  composeBody1: dup isCodeRef ~ [new] when;
-  composeBody0: dup isCodeRef ~ [new] when;
+  composeBody1: dup isConst [dup copyable?] [dup movable?] if [new] when;
+  composeBody0: dup isConst [dup copyable?] [dup movable?] if [new] when;
 
   CALL: [@composeBody0 call @composeBody1 call];
 }];

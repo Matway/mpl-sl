@@ -5,21 +5,21 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"control.&&" use
-"control.Int32" use
-"control.Ref" use
-"control.drop" use
-"control.ensure" use
-"control.isCopyable" use
-"control.when" use
+"control.&&"        use
+"control.Int32"     use
+"control.Ref"       use
+"control.copyable?" use
+"control.drop"      use
+"control.ensure"    use
+"control.when"      use
 
 "sync/Context.Context" use
-"sync/sync.canceled?" use
-"sync/sync.spawn" use
-"sync/sync.yield" use
+"sync/sync.canceled?"  use
+"sync/sync.spawn"      use
+"sync/sync.yield"      use
 
 initCount: Int32;
-dieCount: Int32;
+dieCount:  Int32;
 
 # Test that spawn creates a valid, non-canceled context
 [
@@ -121,7 +121,7 @@ dieCount: Int32;
 # Test that Context is not copyable
 [
   context: () Context;
-  context isCopyable ["Context is copyable" raiseStaticError] [] uif
+  context copyable? ["Context is copyable" raiseStaticError] [] uif
 ] call
 
 # Test that Context.cancel sets the canceled state
