@@ -276,7 +276,7 @@ toIter: [
   source:;
   @source Text same [(source storageAddress Nat8 Cref addressToReference source textSize Int32 cast) toTextIter] [
     @source isBuiltinTuple [@source 0 @source fieldCount makeTupleIter] [
-      @source isIter [@source dup "DIE" has ~ [new] when] [
+      @source isIter [@source @source copyable? [new] when] [
         @source "iter" has [@source.iter] [
           "Built-in text, tuple, Iter, or Iterable expected" raiseStaticError
         ] if
@@ -316,9 +316,9 @@ makeObjectIter: [{
   size: [@object fieldCount offset -];
 }];
 
-objectFields: [[object: offset:;; {key: @object offset fieldName; value: offset @object @;}] makeObjectIter];
-objectKeys:   [[object: offset:;; @object offset fieldName                                 ] makeObjectIter];
-objectValues: [[object: offset:;; offset @object @                                         ] makeObjectIter];
+objectFields: [[object: offset:;; {key: @object offset fieldName; value: @object offset fieldRead;}] makeObjectIter];
+objectKeys:   [[object: offset:;; @object offset fieldName                                         ] makeObjectIter];
+objectValues: [[object: offset:;; @object offset fieldRead                                         ] makeObjectIter];
 
 # Comparison algorithms
 =: [
@@ -430,10 +430,10 @@ cond: [
     key descriptors fieldCount 1 - = [
       key @descriptors @ call
     ] [
-      value key @descriptors @ call [
+      @value key @descriptors @ call [
         key 1 + @descriptors @ call
       ] [
-        value @descriptors key 2 + condInternal
+        @value @descriptors key 2 + condInternal
       ] if
     ] if
   ];
