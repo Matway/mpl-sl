@@ -5,8 +5,12 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
+"control.Cref"           use
+"control.Int32"          use
+"control.Nat8"           use
 "control.Natx"           use
 "control.Ref"            use
+"control.Text"           use
 "control.assert"         use
 "control.between"        use
 "control.dup"            use
@@ -23,6 +27,11 @@ Span: [
 toSpan: [isBuiltinTuple] [
   tuple:;
   0 dynamic @tuple @ @tuple fieldCount toSpan2 # [dynamic] is used to check for non-homogeneous tuples
+] pfunc;
+
+toSpan: [Text same] [
+  text:;
+  text storageAddress Nat8 Cref addressToReference text textSize Int32 cast toSpan2
 ] pfunc;
 
 toSpan2: [
