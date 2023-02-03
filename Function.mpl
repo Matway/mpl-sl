@@ -6,175 +6,89 @@
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
 "algorithm.case"          use
-"control.&&"              use
-"control.Nat8"            use
-"control.Natx"            use
-"control.Ref"             use
-"control.copyable?"       use
-"control.drop"            use
-"control.when"            use
-"control.||"              use
 "objectTools.insertField" use
 "objectTools.unwrapField" use
 
-addContextToSignature: [
-  signature:;
-  args:    0 static @signature @;
-  options: 2 static @signature @;
+"control" use # failProc does not work with separate [use]s
 
-  (Natx) 0 static "context" @args insertField
-  1 static @signature unwrapField
-  options codeRef
-];
+FUNCTION_ASSIGN_KEY:  [0];
+FUNCTION_CALL_KEY:    [1];
+FUNCTION_DIE_KEY:     [2];
+FUNCTION_INIT_KEY:    [3];
+FUNCTION_INVALID_KEY: [4];
 
-CALL_FUNC: [0nx];
-DIE_FUNC: [1nx];
-ASSIGN_FUNC: [2nx];
-INIT_FUNC: [3nx];
+Function2: [{
+  SCHEMA_NAME: "Function" virtual;
 
-Function: [{
-  CONTEXT_SIZE: [32 static];
-  virtual CALL_FUNC_SCHEMA: addContextToSignature Ref;
-  virtual DIE_FUNC_SCHEMA: {this: Natx;} {} {} codeRef Ref;
-  virtual ASSIGN_FUNC_SCHEMA: {this: Natx; other: Natx;} {} {} codeRef Ref;
-  virtual INIT_FUNC_SCHEMA: {this: Natx;} {} {} codeRef Ref;
+  DATA_SIZE: new virtual;
+  [DATA_SIZE 8 < ~] "The [Function] data size is less than 8 bytes" assert
 
-  contextData: Nat8 CONTEXT_SIZE array;
-  vtable: {functionIndex: Natx;} Natx {} codeRef;
+  Signature: dup dup virtual? [] [Ref virtual] uif;
 
-  assign: [
-    context0:;
-    @context0 @self same [
-      @context0 @self set
-    ] [
-      release
+  [ # Add context to the callable signature
+    signature:;
+    inputs:  0 @signature @;
+    options: 2 @signature @;
+    @inputs (Natx) "context" 0 insertField
+    @signature 1 unwrapField
+    options codeRef
+  ] call
 
-      @context0 codeRef? [
-        context: @contextData storageAddress Natx addressToReference;
-        @context0 storageAddress @context set
-      ] [
-        @context0 storageSize CONTEXT_SIZE Natx cast > [
-          "The object is too large to be encapsulated in a Function" raiseStaticError
-        ] when
+  ASSIGN_CODE: {this: Natx; other: Natx;} {} {} codeRef virtual;
+  CALL_CODE:   virtual;
+  DIE_CODE:    {this: Natx;} {} {} codeRef virtual;
+  INIT_CODE:   {this: Natx;} {} {} codeRef virtual;
 
-        @context0 storageSize 0nx > [
-          context: contextData storageAddress @context0 addressToReference;
-          @context manuallyInitVariable
-          @context0 @context set
-        ] when
-      ] if
+  data:   Nat64; # Beginning of data, Nat64 is used to force 8-byte alignment
+  pad:    Nat8 DATA_SIZE 8 - array; # Remaining data
+  vtable: {functionKey: Int32;} Natx {} codeRef; # Special function used to dynamically dispatch the polymorphic operations
 
-      contextType: @context0 storageSize 0nx = [@context0] [@context0 Ref] uif virtual;
-      updateVtable
-    ] if
+  ASSIGN: [
+    other:;
+    @other.@vtable @vtable is ~ [
+      data storageAddress FUNCTION_DIE_KEY vtable @DIE_CODE addressToReference call
+      @other.@vtable !vtable
+      data storageAddress FUNCTION_INIT_KEY vtable @INIT_CODE addressToReference call
+    ] when
+
+    @other.data storageAddress data storageAddress FUNCTION_ASSIGN_KEY vtable @ASSIGN_CODE addressToReference call
   ];
 
-  hasContext: [
-    CALL_FUNC vtable 0nx = ~
+  CALL: [
+    data storageAddress FUNCTION_CALL_KEY vtable @CALL_CODE addressToReference call
   ];
 
-  release: [
-    @contextData storageAddress DIE_FUNC vtable @DIE_FUNC_SCHEMA addressToReference call
-    makeEmptyVtable
+  DIE: [
+    data storageAddress FUNCTION_DIE_KEY vtable @DIE_CODE addressToReference call
   ];
 
-  updateVtable: [
-    virtual CALL_FUNC_SCHEMA: @CALL_FUNC_SCHEMA Ref;
-    virtual DIE_FUNC_SCHEMA: @DIE_FUNC_SCHEMA Ref;
-    virtual ASSIGN_FUNC_SCHEMA: @ASSIGN_FUNC_SCHEMA Ref;
-    virtual INIT_FUNC_SCHEMA: @INIT_FUNC_SCHEMA Ref;
-
-    [
-      functionIndex:;
-      @contextType codeRef? contextIsCodeRef:;
-      functionIndex (
-        CALL_FUNC [
-          f: @CALL_FUNC_SCHEMA Ref;
-          contextIsCodeRef [@contextType storageSize 0nx static >] || [
-            [@contextType addressToReference call] !f
-          ] [
-            [drop @contextType call] !f
-          ] if
-
-          @f storageAddress
-        ]
-
-        DIE_FUNC [
-          f: @DIE_FUNC_SCHEMA Ref;
-          contextIsCodeRef ~ [@contextType storageSize 0nx static >] && [
-            [@contextType addressToReference manuallyDestroyVariable] !f
-          ] [
-            [drop] !f
-          ] if
-
-          @f storageAddress
-        ]
-
-        ASSIGN_FUNC [
-          f: @ASSIGN_FUNC_SCHEMA Ref;
-          @contextType copyable? [
-            @contextType storageSize 0nx static > [
-              [
-                this: @contextType addressToReference;
-                other: @contextType addressToReference;
-                @other const @this set
-              ] !f
-            ] [
-              [drop drop] !f
-            ] if
-          ] [
-            contextIsCodeRef [
-              [
-                this: Natx addressToReference;
-                other: Natx addressToReference;
-                @other @this set
-              ] !f
-            ] when
-          ] if
-
-          @f storageAddress
-        ]
-
-        INIT_FUNC [
-          f: @INIT_FUNC_SCHEMA Ref;
-          contextIsCodeRef ~ [@contextType storageSize 0nx static >] && [
-            [@contextType addressToReference manuallyInitVariable] !f
-          ] [
-            [drop] !f
-          ] if
-
-          @f storageAddress
-        ]
-
-        [0nx]
-      ) case
-    ] !vtable
-  ];
-
-  makeEmptyVtable: [
-    virtual CALL_FUNC_SCHEMA: @CALL_FUNC_SCHEMA Ref;
-    virtual DIE_FUNC_SCHEMA: @DIE_FUNC_SCHEMA Ref;
-    virtual ASSIGN_FUNC_SCHEMA: @ASSIGN_FUNC_SCHEMA Ref;
-    virtual INIT_FUNC_SCHEMA: @INIT_FUNC_SCHEMA Ref;
-
+  INIT: [
     [
       (
-        CALL_FUNC [0nx]
-
-        DIE_FUNC [
-          f: @DIE_FUNC_SCHEMA Ref;
-          [drop] !f
-          @f storageAddress
-        ]
-
-        ASSIGN_FUNC [
-          f: @ASSIGN_FUNC_SCHEMA Ref;
+        FUNCTION_ASSIGN_KEY [
+          f: @ASSIGN_CODE;
           [drop drop] !f
           @f storageAddress
         ]
 
-        INIT_FUNC [
-          f: @INIT_FUNC_SCHEMA Ref;
+        FUNCTION_CALL_KEY [
+          f: @CALL_CODE;
+          [
+            0 Signature @ fieldCount 1 + [drop] times
+            "Invalid function called" failProc
+            1 Signature @ {} same ~ [@Signature 1 @unwrapField ucall] when
+          ] !f
+          @f storageAddress
+        ]
+
+        FUNCTION_DIE_KEY [
+          f: @DIE_CODE;
+          [drop] !f
+          @f storageAddress
+        ]
+
+        FUNCTION_INIT_KEY [
+          f: @INIT_CODE;
           [drop] !f
           @f storageAddress
         ]
@@ -184,28 +98,143 @@ Function: [{
     ] !vtable
   ];
 
-  CALL: [
-    @contextData storageAddress CALL_FUNC vtable @CALL_FUNC_SCHEMA addressToReference call
+  assign: [
+    callable0:;
+    @callable0 @self same [
+      @callable0 @self set
+    ] [
+      updateVtable: [
+        [
+          (
+            FUNCTION_ASSIGN_KEY [
+              f: @ASSIGN_CODE;
+              @Callable sized? [
+                @Callable virtual? [
+                  [drop drop] !f
+                ] [
+                  @Callable assignable? [
+                    [
+                      this:  @Callable addressToReference;
+                      other: @Callable const addressToReference;
+                      @other @this set
+                    ] !f
+                  ] [
+                    [drop drop "Non-assignable callable" failProc] !f
+                  ] if
+                ] if
+              ] [
+                [
+                  this:  @Callable AsRef addressToReference;
+                  other: @Callable AsRef addressToReference const;
+                  @other @this set
+                ] !f
+              ] if
+
+              @f storageAddress
+            ]
+
+            FUNCTION_CALL_KEY [
+              f: @CALL_CODE;
+              @Callable sized? [
+                @Callable virtual? [
+                  [drop @Callable call] !f
+                ] [
+                  [@Callable addressToReference call] !f
+                ] if
+              ] [
+                [@Callable AsRef addressToReference .@data call] !f
+              ] if
+
+              @f storageAddress
+            ]
+
+            FUNCTION_DIE_KEY [
+              f: @DIE_CODE;
+              @Callable sized? [
+                @Callable virtual? [
+                  [drop @Callable manuallyDestroyVariable] !f
+                ] [
+                  [@Callable addressToReference manuallyDestroyVariable] !f
+                ] if
+              ] [
+                [drop] !f
+              ] if
+
+              @f storageAddress
+            ]
+
+            FUNCTION_INIT_KEY [
+              f: @INIT_CODE;
+              @Callable sized? [
+                @Callable virtual? [
+                  @Callable initializable? [
+                    [drop @Callable manuallyInitVariable] !f
+                  ] [
+                    [drop] !f
+                  ] if
+                ] [
+                  [@Callable addressToReference manuallyInitVariable] !f
+                ] if
+              ] [
+                [drop] !f
+              ] if
+
+              @f storageAddress
+            ]
+
+            [1nx]
+          ) case
+        ] !vtable
+      ];
+
+      oldVtable: @vtable;
+      Callable: @callable0 @callable0 virtual? [] [Ref unconst virtual] uif;
+      updateVtable
+
+      @vtable @oldVtable is ~ [
+        data storageAddress FUNCTION_DIE_KEY oldVtable @DIE_CODE addressToReference call
+
+        @Callable sized? [
+          @Callable virtual? [
+            @Callable initializable? [
+              @Callable manuallyInitVariable
+            ] when
+          ] [
+            data storageAddress @Callable addressToReference manuallyInitVariable
+          ] if
+        ] when
+      ] when
+
+      @Callable sized? [
+        [@Callable storageSize DATA_SIZE Natx cast > ~] "The object is too large to be encapsulated in a [Function]" assert
+        @Callable virtual? ~ [
+          @callable0 data storageAddress @Callable addressToReference set
+        ] when
+      ] [
+        @callable0 AsRef data storageAddress @Callable AsRef addressToReference set
+      ] if
+    ] if
   ];
 
-  INIT: [makeEmptyVtable];
-
-  ASSIGN: [
-    other:;
-    release
-    @other.@vtable @closure.!vtable
-    @closure.@contextData storageAddress @INIT_FUNC vtable @INIT_FUNC_SCHEMA addressToReference call
-    @other.@contextData storageAddress @closure.@contextData storageAddress ASSIGN_FUNC vtable @ASSIGN_FUNC_SCHEMA addressToReference call
+  hasContext: [
+    FUNCTION_INVALID_KEY vtable 0nx = ~
   ];
 
-  DIE: [release];
+  release: [
+    data storageAddress FUNCTION_DIE_KEY vtable @DIE_CODE addressToReference call
+    INIT
+  ];
 
-  makeEmptyVtable
+  INIT
 }];
 
+Function: [
+  32 Function2
+];
+
 makeFunction: [
-  context: signature:;;
+  callable: signature:;;
   function: @signature Function;
-  @context @function.assign
+  @callable @function.assign
   @function
 ];
