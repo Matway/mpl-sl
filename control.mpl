@@ -7,20 +7,20 @@
 
 "conventions.cdecl" use
 
-Cond:   [v: FALSE  dynamic; @v];
-Int8:   [v: 0i8    dynamic; @v];
-Int16:  [v: 0i16   dynamic; @v];
-Int32:  [v: 0i32   dynamic; @v];
-Int64:  [v: 0i64   dynamic; @v];
-Intx:   [v: 0ix    dynamic; @v];
-Nat8:   [v: 0n8    dynamic; @v];
-Nat16:  [v: 0n16   dynamic; @v];
-Nat32:  [v: 0n32   dynamic; @v];
-Nat64:  [v: 0n64   dynamic; @v];
-Natx:   [v: 0nx    dynamic; @v];
-Real32: [v: 0.0r32 dynamic; @v];
-Real64: [v: 0.0r64 dynamic; @v];
-Text:   [v: ""; @v];
+Cond:   [FALSE  v:; @v];
+Int8:   [0i8    v:; @v];
+Int16:  [0i16   v:; @v];
+Int32:  [0      v:; @v];
+Int64:  [0i64   v:; @v];
+Intx:   [0ix    v:; @v];
+Nat8:   [0n8    v:; @v];
+Nat16:  [0n16   v:; @v];
+Nat32:  [0n32   v:; @v];
+Nat64:  [0n64   v:; @v];
+Natx:   [0nx    v:; @v];
+Real32: [0.0r32 v:; @v];
+Real64: [0.0    v:; @v];
+Text:   [""];
 
 {format: Text;} Int32 {variadic: TRUE; convention: cdecl;} "printf" importFunction # need for assert
 {result: 0;} () {convention: cdecl;} "exit" importFunction
