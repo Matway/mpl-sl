@@ -25,6 +25,8 @@ Text:   [v: ""; @v];
 {format: Text;} Int32 {variadic: TRUE; convention: cdecl;} "printf" importFunction # need for assert
 {result: 0;} () {convention: cdecl;} "exit" importFunction
 
+REF_SIZE: [Natx storageSize Int32 cast];
+
 # Object traits
 
 assignable?: [
@@ -151,7 +153,7 @@ real?: [
 ];
 
 ref?: [ # Should be ucall'ed to work
-  isRef v0:; v1:; v0 [TRUE] [FALSE] if
+  isRef [v0:; v1:; v0 [TRUE] [FALSE] if] call
 ];
 
 sized?: [
@@ -162,6 +164,20 @@ sized?: [
         @v code?
       ] if
     ] if
+  ] if
+];
+
+tuple?: [
+  v:;
+  @v isCombined ~ [FALSE] [
+    i: 0; [
+      i @v fieldCount = [TRUE FALSE] [
+        @v i fieldName "" = ~ [FALSE FALSE] [
+          i 1 + !i
+          TRUE
+        ] if
+      ] if
+    ] loop
   ] if
 ];
 
