@@ -213,9 +213,6 @@ pfunc: [{
   virtual PRE:;
 }];
 
-isDynamicText: [drop TRUE];
-isDynamicText: ["" & TRUE] [drop FALSE] pfunc;
-
 <: [drop "greater" has] [swap .greater] pfunc;
 <: [     "less"    has] [     .less   ] pfunc;
 =: [drop "equal"   has] [swap .equal  ] pfunc;
@@ -225,16 +222,16 @@ isDynamicText: ["" & TRUE] [drop FALSE] pfunc;
 
 print: ["" same] [
   text:;
-  text isDynamicText [
-    i: 0nx dynamic; [
+  text isStatic [
+    (text "\00" &) "%s\00" printf drop
+  ] [
+    i: 0nx; [
       i text textSize = [FALSE] [
         (text storageAddress i + Nat8 addressToReference new) "%c\00" printf drop
         i 1nx + !i
         TRUE
       ] if
     ] loop
-  ] [
-    (text "\00" &) "%s\00" printf drop
   ] if
 ] pfunc;
 
@@ -255,28 +252,28 @@ over: [v0: v1:;; @v0 @v1 @v0];
 when: [[] if];
 
 while: [
-  whileBody:;
-  whileCondition:;
+  condition: callable:;;
 
   [
-    @whileCondition call [
-      @whileBody call
+    @condition ucall [
+      @callable ucall
       TRUE
-    ] &&
+    ] [
+      FALSE
+    ] if
   ] loop
 ];
 
 times: [
-  timesBody:; 0 cast timesCount:;
-  overload i: timesCount timesCount -;
-  i timesCount <
-  [
+  count: callable:;;
+  overload i: 0;
+  i count = [] [
     [
-      @timesBody call
-      i 1 + @i set
-      i timesCount <
+      @callable ucall
+      i 1 + !i
+      i count = ~
     ] loop
-  ] when
+  ] if
 ];
 
 ensure: [
@@ -333,13 +330,13 @@ sqr: [
 ];
 
 max: [
-  a:b:;;
-  a b > [a][b] if
+  a: b:;;
+  b a < [a] [b] if
 ];
 
 min: [
-  a:b:;;
-  a b < [a][b] if
+  a: b:;;
+  a b < [a] [b] if
 ];
 
 clamp: [
@@ -362,15 +359,15 @@ within: [
 isNil: [storageAddress 0nx =];
 
 bind: [{
-  bindBody:  dup isConst [dup copyable?] [dup movable?] if [new] when;
-  bindValue: dup isConst [dup copyable?] [dup movable?] if [new] when;
+  bindBody:  dup dup isConst [copyable?] [movable?] if [new] when;
+  bindValue: dup dup isConst [copyable?] [movable?] if [new] when;
 
   CALL: [@bindValue @bindBody call];
 }];
 
 compose: [{
-  composeBody1: dup isConst [dup copyable?] [dup movable?] if [new] when;
-  composeBody0: dup isConst [dup copyable?] [dup movable?] if [new] when;
+  composeBody1: dup dup isConst [copyable?] [movable?] if [new] when;
+  composeBody0: dup dup isConst [copyable?] [movable?] if [new] when;
 
   CALL: [@composeBody0 call @composeBody1 call];
 }];
@@ -393,17 +390,20 @@ for: [
   ] loop
 ];
 
-sequenceImpl: [
-  sequenceIndex:;
-  sequenceList:;
-  sequenceIndex sequenceList fieldCount < [0 static @sequenceList @ call] && [
-    sequenceIndex @sequenceList @ ucall
-    @sequenceList sequenceIndex 1 + sequenceImpl
-  ] when
-];
-
 sequence: [
-  1 static sequenceImpl
+  callables:;
+  iterate: [
+    i callables fieldCount = [] [
+      0 callables @ ucall ~ [] [
+        i callables @ ucall
+        i 1 + !i
+        @iterate ucall
+      ] if
+    ] uif
+  ];
+
+  i: 1;
+  @iterate ucall
 ];
 
 keep: [

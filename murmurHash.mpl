@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Matway Burkow
+# Copyright (C) 2023 Matway Burkow
 #
 # This repository and all its contents belong to Matway Burkow (referred here and below as "the owner").
 # The content is for demonstration purposes only.
@@ -6,9 +6,9 @@
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
 "control.Nat32" use
-"control.Nat8" use
+"control.Nat8"  use
 "control.times" use
-"control.when" use
+"control.when"  use
 
 murmur32Scramble: [
   k: 0xCC9E2D51n32 *;
@@ -16,8 +16,8 @@ murmur32Scramble: [
 ];
 
 murmur3_32: [
-  key: size: seed:;; copy;
-  h: seed copy;
+  key: size: seed:;; new;
+  h: seed new;
   size Nat32 cast 2n32 rshift [
     h key Nat32 addressToReference murmur32Scramble xor !h
     key 4nx + !key

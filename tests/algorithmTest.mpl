@@ -235,7 +235,7 @@ testView: [
 # toIter
 [
   text: "BCEGKMQS";
-  text toIter TRUE TRUE TRUE FALSE FALSE (text textSize [text storageAddress i Natx cast + Nat8 Cref addressToReference] times) 0 text textSize Int32 cast testIter
+  text toIter TRUE TRUE TRUE FALSE FALSE (text textSize Int32 cast [text storageAddress i Natx cast + Nat8 Cref addressToReference] times) 0 text textSize Int32 cast testIter
 
   tuple: (2 3.0 5 7.0 11 13.0 17 19.0);
   @tuple toIter TRUE FALSE TRUE FALSE FALSE @tuple 0 tuple fieldCount testIter
@@ -273,7 +273,7 @@ testView: [
 # toView
 [
   text: "BCEGKMQS";
-  text toView TRUE FALSE FALSE (text textSize [text storageAddress i Natx cast + Nat8 Cref addressToReference] times) 0 text textSize Int32 cast testView
+  text toView TRUE FALSE FALSE (text textSize Int32 cast [text storageAddress i Natx cast + Nat8 Cref addressToReference] times) 0 text textSize Int32 cast testView
 
   tuple: (2 3.0 5 7.0 11 13.0 17 19.0);
   @tuple toView FALSE FALSE TRUE @tuple 0 tuple fieldCount testView
