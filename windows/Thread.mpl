@@ -5,55 +5,68 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"String.assembleString" use
-"String.print"          use
-"control.Nat32"         use
-"control.Ref"           use
-"control.assert"        use
-"control.drop"          use
-"control.exit"          use
-"control.when"          use
+"String.printList" use
+"control.Nat32"    use
+"control.Natx"     use
+"control.Ref"      use
+"control.assert"   use
+"control.drop"     use
+"control.exit"     use
+"control.when"     use
 
 "kernel32.kernel32" use
 
 Thread: [{
-  INIT: [0nx !handle];
+  SCHEMA_NAME: "Thread" virtual;
 
-  DIE: [handle 0nx = ~ [join drop] when];
-
-  isRunning: [handle 0nx = ~];
-
-  init: [
-    context: function:;;
-    Nat32 Ref 0n32 context @function 4096nx kernel32.SECURITY_ATTRIBUTES Ref kernel32.CreateThread !handle handle 0nx = [
-      ("CreateThread failed, result=" kernel32.GetLastError LF) assembleString print 1 exit # there is no good way to handle this, report and abort
+  DIE: [
+    isRunning [
+      join drop
     ] when
+  ];
+
+  INIT: [
+    0nx !handle
+  ];
+
+  create: [
+    code: context: stackSize:;;;
+    [isRunning ~] "Attempted to initialize a Thread that is already running" assert
+    Nat32 Ref 0n32 context @code stackSize Natx cast kernel32.SECURITY_ATTRIBUTES Ref kernel32.CreateThread !handle handle 0nx = [
+      ("CreateThread failed, result=" kernel32.GetLastError LF) printList 1 exit # There is no good way to handle this, report and abort
+    ] when
+  ];
+
+  isRunning: [
+    handle 0nx = ~
   ];
 
   join: [
-    [handle 0nx = ~] "attempted to join a not running Thread" assert
+    [isRunning] "Attempted to join a Thread that is not running" assert
     kernel32.INFINITE handle kernel32.WaitForSingleObject kernel32.WAIT_OBJECT_0 = ~ [
-      ("WaitForSingleObject failed, result=" kernel32.GetLastError LF) assembleString print 1 exit # there is no good way to handle this, report and abort
+      ("WaitForSingleObject failed, result=" kernel32.GetLastError LF) printList 1 exit # There is no good way to handle this, report and abort
     ] when
 
-    code: Nat32;
-    @code handle kernel32.GetExitCodeThread 1 = ~ [
-      ("GetExitCodeThread failed, result=" kernel32.GetLastError LF) assembleString print 1 exit # there is no good way to handle this, report and abort
+    result: Nat32;
+    @result handle kernel32.GetExitCodeThread 1 = ~ [
+      ("GetExitCodeThread failed, result=" kernel32.GetLastError LF) printList 1 exit # There is no good way to handle this, report and abort
     ] when
 
     handle kernel32.CloseHandle 1 = ~ [
-      ("CloseHandle failed, result=" kernel32.GetLastError LF) assembleString print 1 exit # there is no good way to handle this, just report
+      ("CloseHandle failed, result=" kernel32.GetLastError LF) printList # There is no good way to handle this, just report
     ] when
 
     0nx !handle
-    code
+    result
   ];
+
+  # Private
 
   handle: 0nx;
 }];
 
-thread: [
+toThread3: [
   thread: Thread;
-  @thread.init
+  @thread.create
   @thread
 ];
