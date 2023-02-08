@@ -5,6 +5,7 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
+"control.Cond"        use
 "control.Cref"        use
 "control.Int32"       use
 "control.Int64"       use
@@ -24,6 +25,11 @@ LPFIBER_START_ROUTINE: [{
 LPTHREAD_START_ROUTINE: [{
   lpThreadParameter: Natx;
 } Nat32 {convention: stdcall;} codeRef];
+
+CONDITION_VARIABLE: [{
+  SCHEMA_NAME: "CONDITION_VARIABLE" virtual;
+  Ptr:         0nx;
+}];
 
 CRITICAL_SECTION: [{
   DebugInfo:      Natx;
@@ -65,6 +71,19 @@ SECURITY_ATTRIBUTES: [{
   lpSecurityDescriptor: Natx;
   bInheritHandle:       Int32;
 }];
+
+SRWLOCK: [{
+  SCHEMA_NAME: "SRWLOCK" virtual;
+  Ptr:         0nx;
+}];
+
+{
+  SRWLock: SRWLOCK Ref;
+} {} {convention: stdcall;} "AcquireSRWLockExclusive" importFunction
+
+{
+  SRWLock: SRWLOCK Ref;
+} {} {convention: stdcall;} "AcquireSRWLockShared" importFunction
 
 {
   hFile:        Natx;
@@ -217,17 +236,48 @@ SECURITY_ATTRIBUTES: [{
 } Int32 {convention: stdcall;} "ReadFile" importFunction
 
 {
+  SRWLock: SRWLOCK Ref;
+} {} {convention: stdcall;} "ReleaseSRWLockExclusive" importFunction
+
+{
+  SRWLock: SRWLOCK Ref;
+} {} {convention: stdcall;} "ReleaseSRWLockShared" importFunction
+
+{
   dwMilliseconds: Nat32;
 } {} {convention: stdcall;} "Sleep" importFunction
+
+{
+  ConditionVariable: CONDITION_VARIABLE Ref;
+  SRWLock:           SRWLOCK Ref;
+  dwMilliseconds:    Nat32;
+  Flags:             Nat32;
+} Int32 {convention: stdcall;} "SleepConditionVariableSRW" importFunction
 
 {
   lpFiber: Natx;
 } {} {convention: stdcall;} "SwitchToFiber" importFunction
 
 {
+  SRWLock: SRWLOCK Ref;
+} Cond {convention: stdcall;} "TryAcquireSRWLockExclusive" importFunction
+
+{
+  SRWLock: SRWLOCK Ref;
+} Cond {convention: stdcall;} "TryAcquireSRWLockShared" importFunction
+
+{
   hHandle:        Natx;
   dwMilliseconds: Nat32;
 } Nat32 {convention: stdcall;} "WaitForSingleObject" importFunction
+
+{
+  ConditionVariable: CONDITION_VARIABLE Ref;
+} {} {convention: stdcall;} "WakeAllConditionVariable" importFunction
+
+{
+  ConditionVariable: CONDITION_VARIABLE Ref;
+} {} {convention: stdcall;} "WakeConditionVariable" importFunction
 
 {
   hFile:                  Natx;

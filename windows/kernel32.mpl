@@ -19,6 +19,8 @@ kernel32: {
   OPEN_ALWAYS:       [4];
   TRUNCATE_EXISTING: [5];
 
+  CONDITION_VARIABLE_LOCKMODE_SHARED: [0x1n32];
+
   ERROR_FILE_NOT_FOUND:    [2n32];
   ERROR_PATH_NOT_FOUND:    [3n32];
   ERROR_ALREADY_EXISTS:    [183n32];
@@ -44,6 +46,8 @@ kernel32: {
   WAIT_OBJECT_0: [0n32];
   WAIT_TIMEOUT:  [258n32];
 
+  CONDITION_VARIABLE: @CONDITION_VARIABLE;
+
   CRITICAL_SECTION: @CRITICAL_SECTION;
 
   HINSTANCE: @HINSTANCE;
@@ -56,7 +60,11 @@ kernel32: {
 
   SECURITY_ATTRIBUTES: @SECURITY_ATTRIBUTES;
 
+  SRWLOCK: @SRWLOCK;
+
   # kernel32.Lib should be included for these functions
+  AcquireSRWLockExclusive:               @AcquireSRWLockExclusive               virtual;
+  AcquireSRWLockShared:                  @AcquireSRWLockShared                  virtual;
   CancelIoEx:                            @CancelIoEx                            virtual;
   CloseHandle:                           @CloseHandle                           virtual;
   ConvertThreadToFiber:                  @ConvertThreadToFiber                  virtual;
@@ -84,8 +92,15 @@ kernel32: {
   QueryPerformanceCounter:               @QueryPerformanceCounter               virtual;
   QueryPerformanceFrequency:             @QueryPerformanceFrequency             virtual;
   ReadFile:                              @ReadFile                              virtual;
+  ReleaseSRWLockExclusive:               @ReleaseSRWLockExclusive               virtual;
+  ReleaseSRWLockShared:                  @ReleaseSRWLockShared                  virtual;
   Sleep:                                 @Sleep                                 virtual;
+  SleepConditionVariableSRW:             @SleepConditionVariableSRW             virtual;
   SwitchToFiber:                         @SwitchToFiber                         virtual;
+  TryAcquireSRWLockExclusive:            @TryAcquireSRWLockExclusive            virtual;
+  TryAcquireSRWLockShared:               @TryAcquireSRWLockShared               virtual;
   WaitForSingleObject:                   @WaitForSingleObject                   virtual;
+  WakeAllConditionVariable:              @WakeAllConditionVariable              virtual;
+  WakeConditionVariable:                 @WakeConditionVariable                 virtual;
   WriteFile:                             @WriteFile                             virtual;
 };
