@@ -10,6 +10,7 @@
 "control.Int32"       use
 "control.Int64"       use
 "control.Intx"        use
+"control.Nat16"       use
 "control.Nat32"       use
 "control.Nat64"       use
 "control.Natx"        use
@@ -75,6 +76,20 @@ SECURITY_ATTRIBUTES: [{
 SRWLOCK: [{
   SCHEMA_NAME: "SRWLOCK" virtual;
   Ptr:         0nx;
+}];
+
+SYSTEM_INFO: [{
+  wProcessorArchitecture:      Nat16;
+  wReserved:                   Nat16;
+  dwPageSize:                  Nat32;
+  lpMinimumApplicationAddress: Natx;
+  lpMaximumApplicationAddress: Natx;
+  dwActiveProcessorMask:       Natx;
+  dwNumberOfProcessors:        Nat32;
+  dwProcessorType:             Nat32;
+  dwAllocationGranularity:     Nat32;
+  wProcessorLevel:             Nat16;
+  wProcessorRevision:          Nat16;
 }];
 
 {
@@ -191,6 +206,11 @@ SRWLOCK: [{
   dwMilliseconds:          Nat32;
   fAlertable:              Int32;
 } Int32 {convention: stdcall;} "GetQueuedCompletionStatusEx" importFunction
+
+
+{
+  lpSystemInfo: SYSTEM_INFO Ref;
+} {} {convention: stdcall;} "GetSystemInfo" importFunction
 
 {} Nat32 {convention: stdcall;} "GetTickCount64" importFunction
 

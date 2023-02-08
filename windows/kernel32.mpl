@@ -63,6 +63,8 @@ kernel32: {
 
   SRWLOCK: @SRWLOCK;
 
+  SYSTEM_INFO: @SYSTEM_INFO;
+
   # kernel32.Lib should be included for these functions
   AcquireSRWLockExclusive:               @AcquireSRWLockExclusive               virtual;
   AcquireSRWLockShared:                  @AcquireSRWLockShared                  virtual;
@@ -85,6 +87,7 @@ kernel32: {
   GetProcAddress:                        @GetProcAddress                        virtual;
   GetQueuedCompletionStatus:             @GetQueuedCompletionStatus             virtual;
   GetQueuedCompletionStatusEx:           @GetQueuedCompletionStatusEx           virtual;
+  GetSystemInfo:                         @GetSystemInfo                         virtual;
   GetTickCount64:                        @GetTickCount64                        virtual;
   InitializeCriticalSectionAndSpinCount: @InitializeCriticalSectionAndSpinCount virtual;
   LeaveCriticalSection:                  @LeaveCriticalSection                  virtual;
