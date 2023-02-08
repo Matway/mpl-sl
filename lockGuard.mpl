@@ -5,30 +5,42 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-lockGuard: [
-  guard: {
-    object:;
+lockGuard: [{
+  object:;
 
-    DIE: [
-      @object.unlock
-    ];
-  };
+  DIE: [
+    @object.unlock
+  ];
 
-  @guard.@object.lock
+  @object.lock
+}];
 
-  guard
-];
+lockSharedGuard: [{
+  object:;
 
-unlockGuard: [
-  guard: {
-    object:;
+  DIE: [
+    @object.unlockShared
+  ];
 
-    DIE: [
-      @object.lock
-    ];
-  };
+  @object.lockShared
+}];
 
-  @guard.@object.unlock
+unlockGuard: [{
+  object:;
 
-  guard
-];
+  DIE: [
+    @object.lock
+  ];
+
+  @object.unlock
+}];
+
+unlockSharedGuard: [{
+  object:;
+
+  DIE: [
+    @object.lockShared
+  ];
+
+  @object.unlockShared
+}];
