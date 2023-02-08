@@ -9,46 +9,44 @@
 
 "user32Private" use
 
-user32Internal: {
-  HBRUSH: @HBRUSH;
-  HCURSOR: @HCURSOR;
-  HDC: @HDC;
-  HGLRC: @HGLRC;
-  HICON: @HICON;
-  HMENU: @HMENU;
+user32: {
+  HBRUSH:   @HBRUSH;
+  HCURSOR:  @HCURSOR;
+  HDC:      @HDC;
+  HGLRC:    @HGLRC;
+  HICON:    @HICON;
+  HMENU:    @HMENU;
   HMONITOR: @HMONITOR;
-  HWND: @HWND;
+  HWND:     @HWND;
 
-  MONITORINFO: @MONITORINFO;
-  MSG: @MSG;
-  POINT: @POINT;
-  RECT: @RECT;
+  MONITORINFO:     @MONITORINFO;
+  MSG:             @MSG;
+  POINT:           @POINT;
+  RECT:            @RECT;
   WINDOWPLACEMENT: @WINDOWPLACEMENT;
-  WNDCLASSW: @WNDCLASSW;
+  WNDCLASSW:       @WNDCLASSW;
 
   # User32.Lib should be included for these functions
-  ClientToScreen: @ClientToScreen;
-  CreateWindowExW: @CreateWindowExW;
-  DefWindowProcW: @DefWindowProcW;
-  DestroyWindow: @DestroyWindow;
-  DispatchMessageW: @DispatchMessageW;
-  GetDC: @GetDC;
-  GetMonitorInfoW: @GetMonitorInfoW;
-  GetWindowLongPtrW: Natx storageSize 8nx = [@GetWindowLongPtrW] [@GetWindowLongW] if;
-  GetWindowPlacement: @GetWindowPlacement;
-  LoadCursorW: @LoadCursorW;
-  MonitorFromWindow: @MonitorFromWindow;
-  PeekMessageW: @PeekMessageW;
-  RegisterClassW: @RegisterClassW;
-  ReleaseCapture: @ReleaseCapture;
-  SetCapture: @SetCapture;
-  SetCursorPos: @SetCursorPos;
-  SetWindowLongPtrW: Natx storageSize 8nx = [@SetWindowLongPtrW] [@SetWindowLongW] if;
-  SetWindowPlacement: @SetWindowPlacement;
-  SetWindowPos: @SetWindowPos;
-  ShowCursor: @ShowCursor;
-  ShowWindow: @ShowWindow;
-  TranslateMessage: @TranslateMessage;
+  ClientToScreen:     @ClientToScreen                                                  virtual;
+  CreateWindowExW:    @CreateWindowExW                                                 virtual;
+  DefWindowProcW:     @DefWindowProcW                                                  virtual;
+  DestroyWindow:      @DestroyWindow                                                   virtual;
+  DispatchMessageW:   @DispatchMessageW                                                virtual;
+  GetDC:              @GetDC                                                           virtual;
+  GetMonitorInfoW:    @GetMonitorInfoW                                                 virtual;
+  GetWindowLongPtrW:  Natx storageSize 8nx = [@GetWindowLongPtrW] [@GetWindowLongW] if virtual;
+  GetWindowPlacement: @GetWindowPlacement                                              virtual;
+  LoadCursorW:        @LoadCursorW                                                     virtual;
+  MonitorFromWindow:  @MonitorFromWindow                                               virtual;
+  PeekMessageW:       @PeekMessageW                                                    virtual;
+  RegisterClassW:     @RegisterClassW                                                  virtual;
+  ReleaseCapture:     @ReleaseCapture                                                  virtual;
+  SetCapture:         @SetCapture                                                      virtual;
+  SetCursorPos:       @SetCursorPos                                                    virtual;
+  SetWindowLongPtrW:  Natx storageSize 8nx = [@SetWindowLongPtrW] [@SetWindowLongW] if virtual;
+  SetWindowPlacement: @SetWindowPlacement                                              virtual;
+  SetWindowPos:       @SetWindowPos                                                    virtual;
+  ShowCursor:         @ShowCursor                                                      virtual;
+  ShowWindow:         @ShowWindow                                                      virtual;
+  TranslateMessage:   @TranslateMessage                                                virtual;
 };
-
-user32: [user32Internal];

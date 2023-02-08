@@ -7,11 +7,9 @@
 
 "winmmPrivate" use
 
-winmmInternal: {
+winmm: {
   JOYINFOEX: @JOYINFOEX;
 
-  # winmm.Lib should be included for these functions 
-  joyGetPosEx: @joyGetPosEx;
+  # WinMM.Lib should be included for these functions 
+  joyGetPosEx: @joyGetPosEx virtual;
 };
-
-winmm: [winmmInternal];

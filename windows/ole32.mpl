@@ -7,10 +7,8 @@
 
 "ole32Private" use
 
-ole32Internal: {
+ole32: {
   # Ole32.Lib should be included for these functions
-  CoInitialize: @CoInitialize;
-  CoUninitialize: @CoUninitialize;
+  CoInitialize:   @CoInitialize   virtual;
+  CoUninitialize: @CoUninitialize virtual;
 };
-
-ole32: [ole32Internal];

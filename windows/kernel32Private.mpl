@@ -15,8 +15,7 @@
 "control.Ref"         use
 "conventions.stdcall" use
 
-FARPROC: [{
-} Intx {convention: stdcall;} codeRef];
+FARPROC: [{} Intx {convention: stdcall;} codeRef];
 
 LPFIBER_START_ROUTINE: [{
   lpFiberParameter: Natx;
@@ -27,12 +26,12 @@ LPTHREAD_START_ROUTINE: [{
 } Nat32 {convention: stdcall;} codeRef];
 
 CRITICAL_SECTION: [{
-  DebugInfo: Natx;
-  LockCount: Int32;
+  DebugInfo:      Natx;
+  LockCount:      Int32;
   RecursionCount: Int32;
-  OwningThread: Natx;
-  LockSemaphore: Natx;
-  SpinCount: Natx;
+  OwningThread:   Natx;
+  LockSemaphore:  Natx;
+  SpinCount:      Natx;
 }];
 
 HINSTANCE: [{
@@ -43,32 +42,32 @@ HINSTANCE: [{
 HMODULE: [HINSTANCE];
 
 LARGE_INTEGER: [{
-  LowPart: Nat32;
+  LowPart:  Nat32;
   HighPart: Int32;
 }];
 
 OVERLAPPED: [{
-  Internal: Natx;
-  InternalHigh: Natx;
+  Internal:       Natx;
+  InternalHigh:   Natx;
   DUMMYUNIONNAME: Nat64;
-  hEvent: Natx;
+  hEvent:         Natx;
 }];
 
 OVERLAPPED_ENTRY: [{
-  lpCompletionKey: Natx;
-  lpOverlapped: OVERLAPPED Ref;
-  Internal: Natx;
+  lpCompletionKey:            Natx;
+  lpOverlapped:               OVERLAPPED Ref;
+  Internal:                   Natx;
   dwNumberOfBytesTransferred: Nat32;
 }];
 
 SECURITY_ATTRIBUTES: [{
-  nLength: Nat32;
+  nLength:              Nat32;
   lpSecurityDescriptor: Natx;
-  bInheritHandle: Int32;
+  bInheritHandle:       Int32;
 }];
 
 {
-  hFile: Natx;
+  hFile:        Natx;
   lpOverlapped: OVERLAPPED Ref;
 } Int32 {convention: stdcall;} "CancelIoEx" importFunction
 
@@ -81,40 +80,40 @@ SECURITY_ATTRIBUTES: [{
 } Natx {convention: stdcall;} "ConvertThreadToFiber" importFunction
 
 {
-  lpPathName: Natx;
+  lpPathName:           Natx;
   lpSecurityAttributes: SECURITY_ATTRIBUTES Ref;
 } Int32 {convention: stdcall;} "CreateDirectoryW" importFunction
 
 {
-  dwStackSize: Natx;
+  dwStackSize:    Natx;
   lpStartAddress: LPFIBER_START_ROUTINE;
-  lpParameter: Natx;
+  lpParameter:    Natx;
 } Natx {convention: stdcall;} "CreateFiber" importFunction
 
 {
-  lpFileName: Natx;
-  dwDesiredAccess: Nat32;
-  dwShareMode: Nat32;
-  lpSecurityAttributes: SECURITY_ATTRIBUTES Ref;
+  lpFileName:            Natx;
+  dwDesiredAccess:       Nat32;
+  dwShareMode:           Nat32;
+  lpSecurityAttributes:  SECURITY_ATTRIBUTES Ref;
   dwCreationDisposition: Nat32;
-  dwFlagsAndAttributes: Nat32;
-  hTemplateFile: Natx;
+  dwFlagsAndAttributes:  Nat32;
+  hTemplateFile:         Natx;
 } Natx {convention: stdcall;} "CreateFileW" importFunction
 
 {
-  FileHandle: Natx;
-  ExistingCompletionPort: Natx;
-  CompletionKey: Natx;
+  FileHandle:                Natx;
+  ExistingCompletionPort:    Natx;
+  CompletionKey:             Natx;
   NumberOfConcurrentThreads: Nat32;
 } Natx {convention: stdcall;} "CreateIoCompletionPort" importFunction
 
 {
   lpThreadAttributes: SECURITY_ATTRIBUTES Ref;
-  dwStackSize: Natx;
-  lpStartAddress: LPTHREAD_START_ROUTINE;
-  lpParameter: Natx;
-  dwCreationFlags: Nat32;
-  lpThreadId: Nat32 Ref;
+  dwStackSize:        Natx;
+  lpStartAddress:     LPTHREAD_START_ROUTINE;
+  lpParameter:        Natx;
+  dwCreationFlags:    Nat32;
+  lpThreadId:         Nat32 Ref;
 } Natx {convention: stdcall;} "CreateThread" importFunction
 
 {
@@ -126,7 +125,7 @@ SECURITY_ATTRIBUTES: [{
 } {} {convention: stdcall;} "EnterCriticalSection" importFunction
 
 {
-  hThread: Natx;
+  hThread:    Natx;
   lpExitCode: Nat32 Ref;
 } Int32 {convention: stdcall;} "GetExitCodeThread" importFunction
 
@@ -135,52 +134,50 @@ SECURITY_ATTRIBUTES: [{
 } Nat32 {convention: stdcall;} "GetFileAttributesW" importFunction
 
 {
-  hFile: Natx;
+  hFile:      Natx;
   lpFileSize: LARGE_INTEGER Ref;
 } Int32 {convention: stdcall;} "GetFileSizeEx" importFunction
 
-{
-} Nat32 {convention: stdcall;} "GetLastError" importFunction
+{} Nat32 {convention: stdcall;} "GetLastError" importFunction
 
 {
   lpModuleName: Natx;
 } HMODULE {convention: stdcall;} "GetModuleHandleW" importFunction
 
 {
-  hFile: Natx;
-  lpOverlapped: OVERLAPPED Ref;
+  hFile:                      Natx;
+  lpOverlapped:               OVERLAPPED Ref;
   lpNumberOfBytesTransferred: Nat32 Ref;
-  bWait: Int32;
+  bWait:                      Int32;
 } Int32 {convention: stdcall;} "GetOverlappedResult" importFunction
 
 {
-  hModule: HMODULE;
+  hModule:    HMODULE;
   lpProcName: Natx;
 } FARPROC {convention: stdcall;} "GetProcAddress" importFunction
 
 {
-  CompletionPort: Natx;
+  CompletionPort:             Natx;
   lpNumberOfBytesTransferred: Nat32 Ref;
-  lpCompletionKey: Natx Ref;
-  lpOverlapped: (OVERLAPPED Ref) Ref;
-  dwMilliseconds: Nat32;
+  lpCompletionKey:            Natx Ref;
+  lpOverlapped:               (OVERLAPPED Ref) Ref;
+  dwMilliseconds:             Nat32;
 } Int32 {convention: stdcall;} "GetQueuedCompletionStatus" importFunction
 
 {
-  CompletionPort: Natx;
+  CompletionPort:          Natx;
   lpCompletionPortEntries: OVERLAPPED_ENTRY Ref;
-  ulCount: Nat32;
-  ulNumEntriesRemoved: Nat32 Ref;
-  dwMilliseconds: Nat32;
-  fAlertable: Int32;
+  ulCount:                 Nat32;
+  ulNumEntriesRemoved:     Nat32 Ref;
+  dwMilliseconds:          Nat32;
+  fAlertable:              Int32;
 } Int32 {convention: stdcall;} "GetQueuedCompletionStatusEx" importFunction
 
-{
-} Nat32 {convention: stdcall;} "GetTickCount64" importFunction
+{} Nat32 {convention: stdcall;} "GetTickCount64" importFunction
 
 {
   lpCriticalSection: CRITICAL_SECTION Ref;
-  dwSpinCount: Nat32;
+  dwSpinCount:       Nat32;
 } Int32 {convention: stdcall;} "InitializeCriticalSectionAndSpinCount" importFunction
 
 {
@@ -188,19 +185,19 @@ SECURITY_ATTRIBUTES: [{
 } {} {convention: stdcall;} "LeaveCriticalSection" importFunction
 
 {
-  CodePage: Nat32;
-  dwFlags: Nat32;
+  CodePage:       Nat32;
+  dwFlags:        Nat32;
   lpMultiByteStr: Natx;
-  cbMultiByte: Int32;
-  lpWideCharStr: Natx;
-  cchWideChar: Int32;
+  cbMultiByte:    Int32;
+  lpWideCharStr:  Natx;
+  cchWideChar:    Int32;
 } Int32 {convention: stdcall;} "MultiByteToWideChar" importFunction
 
 {
-  CompletionPort: Natx;
+  CompletionPort:             Natx;
   dwNumberOfBytesTransferred: Nat32;
-  dwCompletionKey: Natx;
-  lpOverlapped: OVERLAPPED Ref;
+  dwCompletionKey:            Natx;
+  lpOverlapped:               OVERLAPPED Ref;
 } Int32 {convention: stdcall;} "PostQueuedCompletionStatus" importFunction
 
 {
@@ -212,11 +209,11 @@ SECURITY_ATTRIBUTES: [{
 } Int32 {convention: stdcall;} "QueryPerformanceFrequency" importFunction
 
 {
-  hFile: Natx;
-  lpBuffer: Natx;
+  hFile:                Natx;
+  lpBuffer:             Natx;
   nNumberOfBytesToRead: Nat32;
-  lpNumberOfBytesRead: Nat32 Ref;
-  lpOverlapped: OVERLAPPED Ref;
+  lpNumberOfBytesRead:  Nat32 Ref;
+  lpOverlapped:         OVERLAPPED Ref;
 } Int32 {convention: stdcall;} "ReadFile" importFunction
 
 {
@@ -228,14 +225,14 @@ SECURITY_ATTRIBUTES: [{
 } {} {convention: stdcall;} "SwitchToFiber" importFunction
 
 {
-  hHandle: Natx;
+  hHandle:        Natx;
   dwMilliseconds: Nat32;
 } Nat32 {convention: stdcall;} "WaitForSingleObject" importFunction
 
 {
-  hFile: Natx;
-  lpBuffer: Natx;
-  nNumberOfBytesToWrite: Nat32;
+  hFile:                  Natx;
+  lpBuffer:               Natx;
+  nNumberOfBytesToWrite:  Nat32;
   lpNumberOfBytesWritten: Nat32 Ref;
-  lpOverlapped: OVERLAPPED Ref;
+  lpOverlapped:           OVERLAPPED Ref;
 } Int32 {convention: stdcall;} "WriteFile" importFunction

@@ -17,8 +17,8 @@
 "kernel32.kernel32" use
 
 WNDPROC: [{
-  hwnd: HWND;
-  uMsg: Nat32;
+  hwnd:   HWND;
+  uMsg:   Nat32;
   wParam: Natx;
   lParam: Intx;
 } Intx {convention: stdcall;} codeRef];
@@ -61,19 +61,19 @@ HWND: [{
 } Cref];
 
 MONITORINFO: [{
-  cbSize: Nat32;
+  cbSize:    Nat32;
   rcMonitor: RECT;
-  rcWork: RECT;
-  dwFlags: Nat32;
+  rcWork:    RECT;
+  dwFlags:   Nat32;
 }];
 
 MSG: [{
-  hwnd: HWND;
+  hwnd:    HWND;
   message: Nat32;
-  wParam: Natx;
-  lParam: Intx;
-  time: Nat32;
-  pt: POINT;
+  wParam:  Natx;
+  lParam:  Intx;
+  time:    Nat32;
+  pt:      POINT;
 }];
 
 POINT: [{
@@ -82,58 +82,58 @@ POINT: [{
 }];
 
 RECT: [{
-  left: Int32;
-  top: Int32;
-  right: Int32;
+  left:   Int32;
+  top:    Int32;
+  right:  Int32;
   bottom: Int32;
 }];
 
 WINDOWPLACEMENT: [{
-  length: Nat32;
-  flags: Nat32;
-  showCmd: Nat32;
-  ptMinPosition: POINT;
-  ptMaxPosition: POINT;
+  length:           Nat32;
+  flags:            Nat32;
+  showCmd:          Nat32;
+  ptMinPosition:    POINT;
+  ptMaxPosition:    POINT;
   rcNormalPosition: RECT;
-  rcDevice: RECT;
+  rcDevice:         RECT;
 }];
 
 WNDCLASSW: [{
-  style: Nat32;
-  lpfnWndProc: WNDPROC;
-  cbClsExtra: Int32;
-  cbWndExtra: Int32;
-  hInstance: kernel32.HINSTANCE;
-  hIcon: HICON;
-  hCursor: HCURSOR;
+  style:         Nat32;
+  lpfnWndProc:   WNDPROC;
+  cbClsExtra:    Int32;
+  cbWndExtra:    Int32;
+  hInstance:     kernel32.HINSTANCE;
+  hIcon:         HICON;
+  hCursor:       HCURSOR;
   hbrBackground: HBRUSH;
-  lpszMenuName: Natx;
+  lpszMenuName:  Natx;
   lpszClassName: Natx;
 }];
 
 {
-  hWnd: HWND;
+  hWnd:    HWND;
   lpPoint: POINT Ref;
 } Int32 {convention: stdcall;} "ClientToScreen" importFunction
 
 {
-  dwExStyle: Nat32;
-  lpClassName: Natx;
+  dwExStyle:    Nat32;
+  lpClassName:  Natx;
   lpWindowName: Natx;
-  dwStyle: Nat32;
-  X: Int32;
-  Y: Int32;
-  nWidth: Int32;
-  nHeight: Int32;
-  hWndParent: HWND;
-  hMenu: HMENU;
-  hInstance: kernel32.HINSTANCE;
-  lpParam: Natx;
+  dwStyle:      Nat32;
+  X:            Int32;
+  Y:            Int32;
+  nWidth:       Int32;
+  nHeight:      Int32;
+  hWndParent:   HWND;
+  hMenu:        HMENU;
+  hInstance:    kernel32.HINSTANCE;
+  lpParam:      Natx;
 } HWND {convention: stdcall;} "CreateWindowExW" importFunction
 
 {
-  hWnd: HWND;
-  Msg: Nat32;
+  hWnd:   HWND;
+  Msg:    Nat32;
   wParam: Natx;
   lParam: Intx;
 } Intx {convention: stdcall;} "DefWindowProcW" importFunction
@@ -152,50 +152,49 @@ WNDCLASSW: [{
 
 {
   hMonitor: HMONITOR;
-  lpmi: MONITORINFO Ref;
+  lpmi:     MONITORINFO Ref;
 } Int32 {convention: stdcall;} "GetMonitorInfoW" importFunction
 
 Natx storageSize 8nx = [
   {
-    hWnd: HWND;
+    hWnd:   HWND;
     nIndex: Int32;
   } Intx {convention: stdcall;} "GetWindowLongPtrW" importFunction
 ] [
   {
-    hWnd: HWND;
+    hWnd:   HWND;
     nIndex: Int32;
   } Intx {convention: stdcall;} "GetWindowLongW" importFunction
 ] uif
 
 {
-  hWnd: HWND;
+  hWnd:    HWND;
   lpwndpl: WINDOWPLACEMENT Ref;
 } Int32 {convention: stdcall;} "GetWindowPlacement" importFunction
 
 {
-  hInstance: kernel32.HINSTANCE;
+  hInstance:    kernel32.HINSTANCE;
   lpCursorName: Natx;
 } HCURSOR {convention: stdcall;} "LoadCursorW" importFunction
 
 {
-  hwnd: HWND;
+  hwnd:    HWND;
   dwFlags: Nat32;
 } HMONITOR {convention: stdcall;} "MonitorFromWindow" importFunction
 
 {
-  lpMsg: MSG Ref;
-  hWnd: HWND;
+  lpMsg:         MSG Ref;
+  hWnd:          HWND;
   wMsgFilterMin: Nat32;
   wMsgFilterMax: Nat32;
-  wRemoveMsg: Nat32;
+  wRemoveMsg:    Nat32;
 } Int32 {convention: stdcall;} "PeekMessageW" importFunction
 
 {
   lpWndClass: WNDCLASSW Cref;
 } Nat16 {convention: stdcall;} "RegisterClassW" importFunction
 
-{
-} Int32 {convention: stdcall;} "ReleaseCapture" importFunction
+{} Int32 {convention: stdcall;} "ReleaseCapture" importFunction
 
 {
   hWnd: HWND;
@@ -208,31 +207,31 @@ Natx storageSize 8nx = [
 
 Natx storageSize 8nx = [
   {
-    hWnd: HWND;
-    nIndex: Int32;
+    hWnd:      HWND;
+    nIndex:    Int32;
     dwNewLong: Intx;
   } Intx {convention: stdcall;} "SetWindowLongPtrW" importFunction
 ] [
   {
-    hWnd: HWND;
-    nIndex: Int32;
+    hWnd:      HWND;
+    nIndex:    Int32;
     dwNewLong: Intx;
   } Intx {convention: stdcall;} "SetWindowLongW" importFunction
 ] uif
 
 {
-  hWnd: HWND;
+  hWnd:    HWND;
   lpwndpl: WINDOWPLACEMENT Cref;
 } Int32 {convention: stdcall;} "SetWindowPlacement" importFunction
 
 {
-  hWnd: HWND;
+  hWnd:            HWND;
   hWndInsertAfter: HWND;
-  X: Int32;
-  Y: Int32;
-  cx: Int32;
-  cy: Int32;
-  uFlags: Nat32;
+  X:               Int32;
+  Y:               Int32;
+  cx:              Int32;
+  cy:              Int32;
+  uFlags:          Nat32;
 } Int32 {convention: stdcall;} "SetWindowPos" importFunction
 
 {
@@ -240,7 +239,7 @@ Natx storageSize 8nx = [
 } Int32 {convention: stdcall;} "ShowCursor" importFunction
 
 {
-  hWnd: HWND;
+  hWnd:     HWND;
   nCmdShow: Int32;
 } Int32 {convention: stdcall;} "ShowWindow" importFunction
 

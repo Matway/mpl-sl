@@ -10,22 +10,22 @@
 "conventions.stdcall" use
 
 JOYINFOEX: [{
-  dwSize: Nat32;
-  dwFlags: Nat32;
-  dwXpos: Nat32;
-  dwYpos: Nat32;
-  dwZpos: Nat32;
-  dwRpos: Nat32;
-  dwUpos: Nat32;
-  dwVpos: Nat32;
-  dwButtons: Nat32;
+  dwSize:         Nat32;
+  dwFlags:        Nat32;
+  dwXpos:         Nat32;
+  dwYpos:         Nat32;
+  dwZpos:         Nat32;
+  dwRpos:         Nat32;
+  dwUpos:         Nat32;
+  dwVpos:         Nat32;
+  dwButtons:      Nat32;
   dwButtonNumber: Nat32;
-  dwPOV: Nat32;
-  dwReserved1: Nat32;
-  dwReserved2: Nat32;
+  dwPOV:          Nat32;
+  dwReserved1:    Nat32;
+  dwReserved2:    Nat32;
 }];
 
 {
   uJoyID: Nat32;
-  pji: JOYINFOEX Ref;
+  pji:    JOYINFOEX Ref;
 } Nat32 {convention: stdcall;} "joyGetPosEx" importFunction

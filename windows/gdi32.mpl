@@ -7,13 +7,11 @@
 
 "gdi32Private" use
 
-gdi32Internal: {
+gdi32: {
   PIXELFORMATDESCRIPTOR: @PIXELFORMATDESCRIPTOR;
 
   # Gdi32.Lib should be included for these functions
-  ChoosePixelFormat: @ChoosePixelFormat;
-  SetPixelFormat: @SetPixelFormat;
-  SwapBuffers: @SwapBuffers;
+  ChoosePixelFormat: @ChoosePixelFormat virtual;
+  SetPixelFormat:    @SetPixelFormat    virtual;
+  SwapBuffers:       @SwapBuffers       virtual;
 };
-
-gdi32: [gdi32Internal];
