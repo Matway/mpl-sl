@@ -268,11 +268,14 @@ makeArrayObject: [{
     newSize:;
     [newSize dataSize > ~] "Shrinked size is bigger than the old size!" assert
 
-    i: dataSize new dynamic;
-    [i newSize >] [
-      i 1 - @i set
-      i at manuallyDestroyVariable
-    ] while
+    @elementType isCombined [
+      i: dataSize new dynamic;
+      [i newSize >] [
+        i 1 - @i set
+        i at manuallyDestroyVariable
+      ] while
+    ] when
+
     newSize @dataSize set
   ];
 
@@ -297,10 +300,12 @@ makeArrayObject: [{
 
     i: dataSize new;
     newSize @dataSize set
-    [i dataSize <] [
-      i at manuallyInitVariable
-      i 1 + @i set
-    ] while
+    @elementType isCombined [
+      [i dataSize <] [
+        i at manuallyInitVariable
+        i 1 + @i set
+      ] while
+    ] when
   ];
 
   resize: [
