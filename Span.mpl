@@ -41,6 +41,16 @@ toSpan2: [
     data: @data;
     size: size new;
 
+    ASSIGN: [
+      other:;
+      @other.@data   !data
+      other.size new !size
+    ];
+
+    DIE: [];
+
+    INIT: [];
+
     assign: [
       span:;
       @span.@data !data
@@ -95,6 +105,10 @@ toSpan2: [
     toArrayRange: [
       "Array.makeArrayRangeRaw" use
       size data makeArrayRangeRaw
+    ];
+
+    toSpan: [
+      @data size toSpan2
     ];
 
     toStaticSpan: [
