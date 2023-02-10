@@ -265,7 +265,7 @@ while: [
 ];
 
 times: [
-  count: callable:;;
+  count: callable:; new;
   overload i: 0;
   i count = [] [
     [
