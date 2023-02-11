@@ -18,47 +18,45 @@
 "control.when"    use
 "control.within"  use
 
-Span: [
-  data:;
-  @data Ref 0 toSpan2
+SpanStatic: [
+  data: size:;;
+  @data Ref size toSpanStatic2
 ];
 
-toSpan: [Text same] [
+toSpanStatic: [Text same] [
   text:;
-  text storageAddress Nat8 Cref addressToReference text textSize Int32 cast toSpan2
+  text storageAddress Nat8 Cref addressToReference text textSize Int32 cast toSpanStatic2
 ] pfunc;
 
-toSpan: [isCombined] [
+toSpanStatic: [isCombined] [
   struct:;
-  0 dynamic @struct @ struct fieldCount toSpan2 # [dynamic] is used to check for non-homogeneous tuples
+  0 dynamic @struct @ struct fieldCount toSpanStatic2 # [dynamic] is used to check for non-homogeneous tuples
 ] pfunc;
 
-toSpan: ["toSpan" has] [.toSpan] pfunc;
+toSpanStatic: ["toSpanStatic" has] [.toSpanStatic] pfunc;
 
-toSpan: [.SCHEMA_NAME "Span" =] [] pfunc;
+toSpanStatic: [.SCHEMA_NAME "SpanStatic" =] [] pfunc;
 
-toSpan2: [
+toSpanStatic2: [
   spanData: spanSize:;;
   {
-    SCHEMA_NAME: "Span" virtual;
+    SCHEMA_NAME: "SpanStatic" virtual;
 
     ASSIGN: [
       other:;
-      other.@spanData    !spanData
-      other.spanSize new !spanSize
+      other.@spanData !spanData
     ];
 
     DIE: [];
 
     INIT: [
       @spanData Ref !spanData
-      0             !spanSize
     ];
 
     assign: [
       other:;
+      [other.size spanSize =] "Inconsistent sizes" assert
       @other.data !spanData
-      other.size  !spanSize
     ];
 
     at: [
@@ -73,9 +71,9 @@ toSpan2: [
 
     iter: [
       {
-        SCHEMA_NAME: "SpanIter" virtual;
+        SCHEMA_NAME: "SpanStaticIter" virtual;
         data: @spanData;
-        size: spanSize new;
+        size: spanSize;
 
         next: [
           @data
@@ -89,9 +87,9 @@ toSpan2: [
 
     iterReverse: [
       {
-        SCHEMA_NAME: "SpanIterReverse" virtual;
+        SCHEMA_NAME: "SpanStaticIterReverse" virtual;
         data: @spanData storageAddress @spanData storageSize spanSize Natx cast * + @spanData storageSize - @spanData addressToReference;
-        size: spanSize new;
+        size: spanSize;
 
         next: [
           @data
@@ -104,14 +102,14 @@ toSpan2: [
     ];
 
     size: [
-      spanSize new
+      spanSize
     ];
 
     slice: [
       offset: size:;;
       [offset 0 spanSize          between] "Offset is out of bounds" assert
       [size   0 spanSize offset - between] "Size is out of bounds"   assert
-      @spanData storageAddress @spanData storageSize offset Natx cast * + @spanData addressToReference size toSpan2
+      @spanData storageAddress @spanData storageSize offset Natx cast * + @spanData addressToReference size toSpanStatic2
     ];
 
     toArrayRange: [
@@ -120,22 +118,22 @@ toSpan2: [
     ];
 
     toSpan: [
+      "Span.toSpan2" use
       @spanData spanSize toSpan2
     ];
 
     toSpanStatic: [
-      "SpanStatic.toSpanStatic2" use
       @spanData spanSize toSpanStatic2
     ];
 
     toStringView: [
       "String.toStringView" use
-      (spanData spanSize new) toStringView
+      (spanData spanSize) toStringView
     ];
 
     # Private
 
     spanData: @spanData;
-    spanSize: spanSize new;
+    spanSize: spanSize new virtual;
   }
 ];
