@@ -6,6 +6,7 @@
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
 "Array.Array"             use
+"Span.Span"               use
 "Span.toSpan2"            use
 "algorithm.cond"          use
 "algorithm.countIter"     use
@@ -136,6 +137,10 @@ toStringView: [
     slice: [
       index: size:;;
       (data storageAddress index Natx cast + Nat8 addressToReference const size new) toStringView
+    ];
+
+    toSpan: [
+      stringData stringSize toSpan2
     ];
   }
 ];
@@ -407,6 +412,8 @@ String: [{
       [Char same] [@arg catCharNZ]
       [Text same [@arg StringView same [@arg "SCHEMA_NAME" has [@arg.SCHEMA_NAME "String" =] &&] ||] ||] [@arg catStringNZ]
       [Cond same] [@arg catCondNZ]
+      [Nat8      Span same] [arg.toStringView catStringNZ]
+      [Nat8 Cref Span same] [arg.toStringView catStringNZ]
       [int? ] [@arg FALSE catIntNZ  ]
       [nat? ] [@arg FALSE catNatNZ  ]
       [real?] [@arg FALSE catFloatNZ]
