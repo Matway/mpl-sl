@@ -101,8 +101,8 @@ TcpAcceptor: [{
         localAddress: winsock2.sockaddr AsRef;
         remoteAddress: winsock2.sockaddr AsRef;
         Int32 @remoteAddress Int32 @localAddress winsock2.sockaddr_in storageSize Nat32 cast 16n32 + dup 0n32 addresses storageAddress GetAcceptExSockaddrs
-        localAddressIn: localAddress.data storageAddress winsock2.sockaddr_in addressToReference;
-        remoteAddressIn: remoteAddress.data storageAddress winsock2.sockaddr_in addressToReference;
+        localAddressIn: localAddress storageAddress winsock2.sockaddr_in addressToReference;
+        remoteAddressIn: remoteAddress storageAddress winsock2.sockaddr_in addressToReference;
         remoteAddressIn.sin_addr winsock2.ntohl !address
       ]
     ) sequence
@@ -140,15 +140,15 @@ makeTcpAcceptor: [
     ] [
       @AcceptEx isNil [
         acceptEx: winsock2.FN_ACCEPTEXRef AsRef;
-        winsock2.WSAOVERLAPPED_COMPLETION_ROUTINERef kernel32.OVERLAPPED Ref Nat32 acceptEx storageSize Nat32 cast acceptEx storageAddress winsock2.WSAID_ACCEPTEX storageSize Nat32 cast winsock2.WSAID_ACCEPTEX storageAddress winsock2.SIO_GET_EXTENSION_FUNCTION_POINTER acceptor.acceptor winsock2.WSAIoctl 0 = ~ [
+        winsock2.WSAOVERLAPPED_COMPLETION_ROUTINERef kernel32.OVERLAPPED Ref Nat32 @acceptEx storageSize Nat32 cast @acceptEx storageAddress winsock2.WSAID_ACCEPTEX storageSize Nat32 cast winsock2.WSAID_ACCEPTEX storageAddress winsock2.SIO_GET_EXTENSION_FUNCTION_POINTER acceptor.acceptor winsock2.WSAIoctl 0 = ~ [
           TRUE [("WSAIoctl failed, result=" winsock2.WSAGetLastError) @result.catMany] when
         ] [
           getAcceptExSockaddrs: winsock2.FN_GETACCEPTEXSOCKADDRSRef AsRef;
-          winsock2.WSAOVERLAPPED_COMPLETION_ROUTINERef kernel32.OVERLAPPED Ref Nat32 getAcceptExSockaddrs storageSize Nat32 cast getAcceptExSockaddrs storageAddress winsock2.WSAID_GETACCEPTEXSOCKADDRS storageSize Nat32 cast winsock2.WSAID_GETACCEPTEXSOCKADDRS storageAddress winsock2.SIO_GET_EXTENSION_FUNCTION_POINTER acceptor.acceptor winsock2.WSAIoctl 0 = ~ [
+          winsock2.WSAOVERLAPPED_COMPLETION_ROUTINERef kernel32.OVERLAPPED Ref Nat32 @getAcceptExSockaddrs storageSize Nat32 cast @getAcceptExSockaddrs storageAddress winsock2.WSAID_GETACCEPTEXSOCKADDRS storageSize Nat32 cast winsock2.WSAID_GETACCEPTEXSOCKADDRS storageAddress winsock2.SIO_GET_EXTENSION_FUNCTION_POINTER acceptor.acceptor winsock2.WSAIoctl 0 = ~ [
             TRUE [("WSAIoctl failed, result=" winsock2.WSAGetLastError) @result.catMany] when
           ] [
-            acceptEx.@data !AcceptEx
-            getAcceptExSockaddrs.@data !GetAcceptExSockaddrs
+            @acceptEx.@data !AcceptEx
+            @getAcceptExSockaddrs.@data !GetAcceptExSockaddrs
           ] if
         ] if
       ] when

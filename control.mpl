@@ -237,7 +237,11 @@ print: ["" same] [
 
 Ref:  [v:; 0nx @v       addressToReference]; # for signatures
 Cref: [v:; 0nx @v const addressToReference]; # for signatures
-AsRef: [{data:;}]; # for Ref Array
+
+AsRef: [{
+  data:;
+  CALL: @data callable? [[data]] [[@data]] if;
+}];
 
 forceConst: [v:; @v const];
 

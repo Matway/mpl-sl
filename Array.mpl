@@ -185,6 +185,10 @@ makeArrayObject: [{
     }
   ];
 
+  data: [
+    dataBegin
+  ];
+
   size: [
     dataSize new
   ];

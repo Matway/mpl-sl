@@ -195,10 +195,10 @@ makeTcpConnection: [
     ] [
       @ConnectEx isNil [
         connectEx: winsock2.FN_CONNECTEXRef AsRef;
-        winsock2.WSAOVERLAPPED_COMPLETION_ROUTINERef kernel32.OVERLAPPED Ref Nat32 connectEx storageSize Nat32 cast connectEx storageAddress winsock2.WSAID_CONNECTEX storageSize Nat32 cast winsock2.WSAID_CONNECTEX storageAddress winsock2.SIO_GET_EXTENSION_FUNCTION_POINTER connection.connection winsock2.WSAIoctl 0 = ~ [
+        winsock2.WSAOVERLAPPED_COMPLETION_ROUTINERef kernel32.OVERLAPPED Ref Nat32 @connectEx storageSize Nat32 cast @connectEx storageAddress winsock2.WSAID_CONNECTEX storageSize Nat32 cast winsock2.WSAID_CONNECTEX storageAddress winsock2.SIO_GET_EXTENSION_FUNCTION_POINTER connection.connection winsock2.WSAIoctl 0 = ~ [
           TRUE [("WSAIoctl failed, result=" winsock2.WSAGetLastError) @result.catMany] when
         ] [
-          connectEx.@data !ConnectEx
+          @connectEx.@data !ConnectEx
         ] if
       ] when
     ] [
