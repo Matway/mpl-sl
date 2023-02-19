@@ -43,14 +43,6 @@
 "conventions.cdecl"       use
 "memory.memcpy"           use
 
-hasLogs: [
-  hasLogsImpl: [FALSE];
-  hasLogsImpl: [@HAS_LOGS TRUE] ["Invalid value for HAS_LOGS" raiseStaticError] pfunc;
-  hasLogsImpl: [HAS_LOGS Cond same] [HAS_LOGS] pfunc;
-  hasLogsImpl: [HAS_LOGS () same] [TRUE] pfunc;
-  hasLogsImpl
-];
-
 {arg: 0nx;} 0nx {convention: cdecl;} "strlen" importFunction
 
 Char: [{
@@ -583,14 +575,6 @@ By3: [{
 Hex: [{
   virtual HEX: ();
 }];
-
-addLog: [
-  hasLogs [
-    printList LF print
-  ] [
-    list:;
-  ] if
-];
 
 addTerminator: [
   source:;
