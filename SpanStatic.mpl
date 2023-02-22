@@ -35,8 +35,6 @@ toSpanStatic: [isCombined] [
 
 toSpanStatic: ["toSpanStatic" has] [.toSpanStatic] pfunc;
 
-toSpanStatic: [.SCHEMA_NAME "SpanStatic" =] [] pfunc;
-
 toSpanStatic2: [
   spanData: spanSize:;;
   {
