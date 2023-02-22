@@ -34,8 +34,8 @@ SpanStaticTest: [];
   Object: [{value: 0; CALL: [INVALID];}];
   span0:  Object 2 SpanStatic;
   span1:  @span0 toSpanStatic;
-  [@span1 isConst ~] "[toSpanStatic] lost mutability"                   ensure
-  [span1 span0 is  ] "[toSpanStatic] did not pass a SpanStatic through" ensure
+  [@span1 isConst ~] "[toSpanStatic] lost mutability"             ensure
+  [span1 span0 is ~] "[toSpanStatic] passed a SpanStatic through" ensure
 ] call
 
 [

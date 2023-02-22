@@ -35,8 +35,6 @@ toSpan: [isCombined] [
 
 toSpan: ["toSpan" has] [.toSpan] pfunc;
 
-toSpan: [.SCHEMA_NAME "Span" =] [] pfunc;
-
 toSpan2: [
   spanData: spanSize:;;
   {
