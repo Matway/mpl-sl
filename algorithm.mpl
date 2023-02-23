@@ -216,7 +216,7 @@ makeTupleIter: [
         offset0 isDynamic [
           @tuple storageAddress
           @tuple 0 fieldIsRef [
-            REF_SIZE Natx cast offset0 Natx cast * + 0 @tuple @ AsRef addressToReference .data
+            REF_SIZE Natx cast offset0 Natx cast * + 0 @tuple @ AsRef addressToReference .@data
           ] [
             0 dynamic @tuple @ storageSize offset0 Natx cast * + 0 @tuple @ addressToReference
           ] if
