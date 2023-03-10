@@ -5,6 +5,7 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
+"control.Int32" use
 "control.Nat32" use
 "control.Nat8"  use
 "control.times" use
@@ -18,7 +19,7 @@ murmur32Scramble: [
 murmur3_32: [
   key: size: seed:;; new;
   h: seed new;
-  size Nat32 cast 2n32 rshift [
+  size Nat32 cast 2n32 rshift Int32 cast [
     h key Nat32 addressToReference murmur32Scramble xor !h
     key 4nx + !key
     h 13n32 lshift h 19n32 rshift or 5n32 * 0xE6546B64n32 + !h
