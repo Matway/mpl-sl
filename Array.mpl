@@ -19,6 +19,7 @@
 "control.Natx"             use
 "control.Ref"              use
 "control.assert"           use
+"control.automatic?"       use
 "control.compose"          use
 "control.drop"             use
 "control.pfunc"            use
@@ -186,7 +187,7 @@ makeArrayObject: [{
   ];
 
   data: [
-    dataBegin
+    @dataBegin
   ];
 
   size: [
@@ -272,7 +273,7 @@ makeArrayObject: [{
     newSize:;
     [newSize dataSize > ~] "Shrinked size is bigger than the old size!" assert
 
-    @elementType isCombined [
+    @elementType automatic? [
       i: dataSize new dynamic;
       [i newSize >] [
         i 1 - @i set
@@ -304,7 +305,7 @@ makeArrayObject: [{
 
     i: dataSize new;
     newSize @dataSize set
-    @elementType isCombined [
+    @elementType automatic? [
       [i dataSize <] [
         i at manuallyInitVariable
         i 1 + @i set
