@@ -5,10 +5,12 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
+"control.&&"        use
 "control.Nat8"      use
 "control.Natx"      use
 "control.Real32"    use
 "control.Real64"    use
+"control.number?"   use
 "control.pfunc"     use
 "control.sqr"       use
 "control.times"     use
@@ -178,7 +180,7 @@ cosSin: [
 
 *: [
   vector:value:;;
-  vector vector?
+  vector vector? [value number?] &&
 ] [
   vector:value:;;
   (vector fieldCount [i vector @ value *] times)
