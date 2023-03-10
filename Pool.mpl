@@ -51,6 +51,8 @@ Pool: [
       index elementAt
     ];
 
+    size: [dataSize new];
+
     getAddressByIndex: [
       Natx cast entrySize * @data storageAddress +
     ];
