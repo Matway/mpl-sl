@@ -13,88 +13,96 @@
 "Quaternion.matrix"             use
 "Quaternion.nlerp"              use
 "Quaternion.quaternion"         use
+"Quaternion.quaternionCast"     use
 "algebra.*"                     use
 "algebra.+"                     use
-"algebra.-"                     use
 "algebra.Vector"                use
+"algebra.cast"                  use
 "algebra.lerp"                  use
 "algebra.neg"                   use
 "algebra.trans"                 use
 "algebra.vector?"               use
+"control.&&"                    use
 "control.Real32"                use
+"control.Ref"                   use
+"control.dup"                   use
+"control.hasSchemaName"         use
 "control.pfunc"                 use
-"control.when"                  use
-
-pose: [
-  position0: orientation0:;;
-
-  {
-    virtual POSE: ();
-    position: position0 new;
-    orientation: orientation0 new;
-
-    getMatrix: [orientation matrix];
-    translate: [position + !position];
-  }
-];
 
 Pose: [
   Real32 3 Vector Real32 Quaternion pose
 ];
 
+*: [
+  pose0: pose1:;;
+  pose0 "Pose" hasSchemaName [pose1 "Pose" hasSchemaName] &&
+] [
+  pose0: pose1:;;
+  pose0.position    pose1.orientation 0 pose0.position    @ quaternionCast matrix * pose1.position pose0.position cast +
+  pose0.orientation pose1.orientation 0 pose0.orientation @ quaternionCast * pose
+] pfunc;
+
+*: [
+  vector: pose:;;
+  vector vector? [pose "Pose" hasSchemaName] &&
+] [
+  vector: pose:;;
+  vector pose.orientation 0 vector @ quaternionCast matrix * pose.position vector cast +
+] pfunc;
+
 identityPose: [
   (0.0r32 0.0r32 0.0r32) Real32 identityQuaternion pose
 ];
 
-*: [
-  p0: p1:;;
-  p0 "POSE" has
-  p1 "POSE" has and
-] [
-  p0: p1:;;
-  p0.position p1.getMatrix * p1.position +
-  p0.orientation p1.orientation * pose
-] pfunc;
-
-*: [
-  v: p:;;
-  v vector?
-  p "POSE" has and
-] [
-  v: p:;;
-  v p.getMatrix * p.position +
-] pfunc;
-
-inverse: ["POSE" has] [
-  p:;
-  p.position neg p.getMatrix trans *
-  p.orientation conj pose
-] pfunc;
-
 interpolate: [
-  p0: p1: f:;;;
-  p0 "POSE" has
-  p1 "POSE" has and
+  pose0: pose1: blend:;;;
+  pose0 "Pose" hasSchemaName [pose1 "Pose" hasSchemaName] &&
 ] [
-  p0:p1:f:;;;
-  p0.position p1.position f lerp
-  p0.orientation p1.orientation f nlerp pose
+  pose0: pose1: blend:;;;
+  pose0.position    pose1.position    pose0.position cast                  blend 0 pose0.position    @ cast lerp
+  pose0.orientation pose1.orientation 0 pose0.orientation @ quaternionCast blend 0 pose0.orientation @ cast nlerp pose
+] pfunc;
+
+inverse: ["Pose" hasSchemaName] [
+  pose0:;
+  pose0.position neg pose0.orientation 0 pose0.position @ quaternionCast matrix trans *
+  pose0.orientation conj pose
 ] pfunc;
 
 mirrorVertically: [
-  p: m:;;
-  p "POSE" has
+  pose: z:;;
+  pose "Pose" hasSchemaName
 ] [
-  p: m:;;
+  pose0: z:;;
   (
-    0 p.position @ new
-    1 p.position @ new
-    m 2 p.position @ -
+    0 pose0.position @ new
+    1 pose0.position @ new
+    z 0 pose0.position @ cast dup 2 pose0.position @ - +
   )
   (
-    0 p.orientation @ neg
-    1 p.orientation @ neg
-    2 p.orientation @ new
-    3 p.orientation @ new
+    0 pose0.orientation @ neg
+    1 pose0.orientation @ neg
+    2 pose0.orientation @ new
+    3 pose0.orientation @ new
   ) quaternion pose
 ] pfunc;
+
+pose: [
+  position0: orientation0:;;
+
+  {
+    position:    position0    new;
+    orientation: orientation0 new;
+
+    getMatrix: [orientation matrix];
+    scale:     [0 position @ cast position * !position];
+    translate: [  position   cast position + !position];
+
+    SCHEMA_NAME: "Pose" virtual;
+  }
+];
+
+poseCast: [
+  pose0: Schema: Ref virtual;;
+  pose0.position @Schema newVarOfTheSameType 3 Vector cast pose0.orientation @Schema quaternionCast pose
+];
