@@ -144,7 +144,62 @@ formatIntegerStatic: [
 
 formatRealStatic: [
   real: options:;;
-  real Real32 same ["Real32"] ["Real64"] if
+  real isStatic [
+    DIGITS: ("0" "1" "2" "3" "4" "5" "6" "7" "8" "9");
+    real: real new;
+    zero: 0 real cast;
+    one:  1 real cast;
+    ten: 10 real cast;
+    tenInverse: one ten /;
+    real zero < [
+      real neg !real
+      "-"
+    ] [
+      ""
+    ] if
+
+    image: zero new;
+    slide: one  new;
+    [slide ten * real <] [
+      slide ten * !slide
+    ] while
+
+    [
+      i: 9;
+      [
+        image slide i real cast * + real > ~ [FALSE] [
+          i 1 - !i
+          TRUE
+        ] if
+      ] loop
+
+      DIGITS i fieldRead &
+      image slide i real cast * + !image
+      slide tenInverse * !slide
+      slide 0.5 real cast >
+    ] loop
+
+    "." &
+
+    [
+      i: 9;
+      [
+        image slide i real cast * + real > ~ [FALSE] [
+          i 1 - !i
+          TRUE
+        ] if
+      ] loop
+
+      DIGITS i fieldRead &
+      image slide i real cast * + !image
+      slide tenInverse * !slide
+      image real = ~
+    ] loop
+
+    real Real32 same ["r32" &] when
+  ] [
+    real Real32 same ["Real32"] ["Real64"] if
+  ] if
 ];
 
 formatStructStatic: [

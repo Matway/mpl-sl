@@ -142,8 +142,12 @@ TRUE dynamic {}                     "Cond"                    testFormatting
 0n32 dynamic {}                     "Nat32"                   testFormatting
 0n64 dynamic {}                     "Nat64"                   testFormatting
 0n8  dynamic {}                     "Nat8"                    testFormatting
-0.0r32 {}                           "Real32"                  testFormatting
-0.0r64 {}                           "Real64"                  testFormatting
+0.0r32              {}              "0.0r32"                  testFormatting
+-1000.0r32 3.0r32 / {}              "-333.3333333333333r32"   testFormatting
+0.0r32 dynamic      {}              "Real32"                  testFormatting
+0.0                 {}              "0.0"                     testFormatting
+-1000.0 3.0 /       {}              "-333.3333333333333"      testFormatting
+0.0 dynamic         {}              "Real64"                  testFormatting
 "Test" {}                           "\"Test\""                testFormatting
 "Test" dynamic {}                   "Text"                    testFormatting
 REF_SIZE 4 = [
