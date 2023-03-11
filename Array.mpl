@@ -15,7 +15,6 @@
 "algorithm.toIter"         use
 "algorithm.unhead"         use
 "control.&&"               use
-"control.@"                use
 "control.Natx"             use
 "control.Ref"              use
 "control.assert"           use
@@ -28,128 +27,6 @@
 "control.while"            use
 "memory.mplFree"           use
 "memory.mplRealloc"        use
-
-makeArrayRangeRaw: [{
-  virtual RANGE: ();
-  virtual ARRAY_RANGE: ();
-  dataBegin:;
-  dataSize: new;
-  virtual elementType: @dataBegin Ref;
-  virtual elementSize: @dataBegin storageSize;
-  @dataBegin storageAddress @elementType addressToReference !dataBegin #dynamize
-
-  getBufferBegin: [
-    @dataBegin storageAddress
-  ];
-
-  at: [
-    index:;
-    index 0i32 same ~ [0 .ONLY_I32_ALLOWED] when
-    [index 0 < ~ [index dataSize <] &&] "Index is out of range!" assert
-    getBufferBegin index Natx cast elementSize * + @elementType addressToReference
-  ];
-
-  iter: [@dataBegin dataSize makeArrayIter];
-
-  size: [
-    dataSize
-  ];
-
-  view: [
-    newIndex: newSize:;;
-    {
-      virtual elementType: @elementType Ref;
-      getBufferBegin: getBufferBegin elementType storageSize newIndex Natx cast * +;
-      size: newSize new;
-
-      at: [Natx cast elementType storageSize * getBufferBegin + @elementType addressToReference];
-
-      view: @view;
-    }
-  ];
-
-  getSize: [
-    dataSize new
-  ];
-
-  heapSortWithComparator: [
-    comparator:;
-
-    swap: [
-      i1:; i2:;
-      i1ref: i1 at;
-      i2ref: i2 at;
-      tmp: @i1ref new;
-      @i2ref @i1ref set
-      @tmp @i2ref set
-    ];
-
-    pushDown: [
-      index: new;
-      [
-        left: index 2 * 1 +;
-        right: left 1 +;
-
-        max: index new;
-        left  heapSize < [max at left  at @comparator call] && [left  @max set] when
-        right heapSize < [max at right at @comparator call] && [right @max set] when
-        max index = ~ [
-          max index swap
-          max @index set TRUE
-        ] &&
-      ] loop
-    ];
-
-    heapSize: dataSize new;
-    i: dataSize 1 + 2 /;
-    [i 0 >] [
-      i 1 - @i set
-      i pushDown
-    ] while
-
-    i: dataSize new;
-    [i 1 >] [
-      i 1 - @i set
-      i 0 swap
-      heapSize 1 - @heapSize set
-      0 dynamic pushDown
-    ] while
-  ];
-
-  heapSort: [
-    [<] heapSortWithComparator
-  ];
-}];
-
-ArrayRange: [
-  element:;
-  0 @element Ref makeArrayRangeRaw
-];
-
-makeArrayRange: [
-  list:;
-  virtual listSchema: @list Ref;
-  virtual elementSchema: 0 dynamic @listSchema @ Ref;
-  list fieldCount 0 dynamic list @ storageAddress @elementSchema addressToReference makeArrayRangeRaw
-];
-
-makeArrayRange: ["ARRAY_RANGE" has] [
-  new
-] pfunc;
-
-makeArrayRange: ["ARRAY" has] [
-  .getArrayRange
-] pfunc;
-
-makeSubRange: [
-  makeArrayRange arg:;
-  rangeEndIndex:;
-  rangeBeginIndex:;
-  [0 rangeBeginIndex > ~] "Invalid subrange, 0>begin!" assert
-  [rangeBeginIndex rangeEndIndex > ~] "Invalid subrange, begin>end!" assert
-  [rangeEndIndex arg.dataSize > ~] "Invalid subrange, end>size!" assert
-  rangeEndIndex rangeBeginIndex - arg.getBufferBegin arg.elementSize rangeBeginIndex Natx cast * + @arg.@elementType addressToReference makeArrayRangeRaw
-];
 
 makeArrayObject: [{
   virtual memoryDebugObject: new;
@@ -222,10 +99,6 @@ makeArrayObject: [{
   ];
 
   getSize: [dataSize new];
-
-  getArrayRange: [
-    dataSize @dataBegin storageAddress @elementType addressToReference makeArrayRangeRaw
-  ];
 
   getNextReserve: [
     dataReserve dataReserve 4 / + 4 +
@@ -379,11 +252,11 @@ MemoryDebugArray: [TRUE makeArrayObject];
 makeArray: [
   indexable: toIndex;
   [indexable.size 0 >] "List is empty!" assert
-  result: 0 @indexable @ newVarOfTheSameType Array;
+  result: 0 @indexable.at newVarOfTheSameType Array;
   i: 0 dynamic;
   [
     i indexable.size < [
-      i @indexable @ @result.append
+      i @indexable.at @result.append
       i 1 + @i set TRUE
     ] &&
   ] loop

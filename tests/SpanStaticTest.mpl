@@ -171,16 +171,6 @@ SpanStaticTest: [];
 ] call
 
 [
-  Object:     [{value: 0; CALL: [INVALID];}];
-  dict:       {a: Object; b: Object;};
-  arrayRange: @dict toSpanStatic.toArrayRange;
-  [arrayRange "ARRAY_RANGE" has    ] "[SpanStatic.toArrayRange] produced a wrong object"    ensure
-  [@arrayRange.@dataBegin isConst ~] "[SpanStatic.toArrayRange] lost mutability"            ensure
-  [arrayRange.@dataBegin dict.@a is] "[SpanStatic.toArrayRange] produced a wrong reference" ensure
-  [arrayRange.size 2 =             ] "[SpanStatic.toArrayRange] produced a wrong size"      ensure
-] call
-
-[
   Object: [{value: 0; CALL: [INVALID];}];
   dict:   {a: Object; b: Object;};
   span:   @dict toSpanStatic.toSpan;

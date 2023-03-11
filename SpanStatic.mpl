@@ -110,11 +110,6 @@ toSpanStatic2: [
       @spanData storageAddress @spanData storageSize offset Natx cast * + @spanData addressToReference size toSpanStatic2
     ];
 
-    toArrayRange: [
-      "Array.makeArrayRangeRaw" use
-      spanSize @spanData makeArrayRangeRaw
-    ];
-
     toSpan: [
       "Span.toSpan2" use
       @spanData spanSize toSpan2

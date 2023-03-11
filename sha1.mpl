@@ -5,23 +5,23 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"Array.makeArrayRange" use
-"Array.makeSubRange"   use
-"control.!"            use
-"control.&&"           use
-"control.@"            use
-"control.Int32"        use
-"control.Nat32"        use
-"control.Nat64"        use
-"control.Nat8"         use
-"control.Natx"         use
-"control.drop"         use
-"control.min"          use
-"control.times"        use
-"control.when"         use
-"control.while"        use
-"memory.memcpy"        use
-"memory.memset"        use
+"Span.toSpan"      use
+"algorithm.unhead" use
+"control.!"        use
+"control.&&"       use
+"control.@"        use
+"control.Int32"    use
+"control.Nat32"    use
+"control.Nat64"    use
+"control.Nat8"     use
+"control.Natx"     use
+"control.drop"     use
+"control.min"      use
+"control.times"    use
+"control.when"     use
+"control.while"    use
+"memory.memcpy"    use
+"memory.memset"    use
 
 Sha1Internal: {
   rol: [
@@ -54,12 +54,12 @@ Sha1Internal: {
 
   m: [
     x:i:;;
-    b: i 0x0fn32 and Int32 cast @x.at;
+    b: i 0x0fn32 and Int32 cast @x @;
 
     b
-    i 2n32 + 0x0fn32 and Int32 cast x.at xor
-    i 8n32 + 0x0fn32 and Int32 cast x.at xor
-    i 13n32 + 0x0fn32 and Int32 cast x.at xor 1n32 rol @b set
+    i 2n32 + 0x0fn32 and Int32 cast x @ xor
+    i 8n32 + 0x0fn32 and Int32 cast x @ xor
+    i 13n32 + 0x0fn32 and Int32 cast x @ xor 1n32 rol @b set
     b new
   ];
 
@@ -71,7 +71,7 @@ Sha1Internal: {
 
   transform: [
     state:buf:;;
-    x: Nat32 16 array makeArrayRange;
+    x: Nat32 16 array;
     16 [
       i 4 * 0 + buf @ Nat32 cast 24n32 lshift
       i 4 * 1 + buf @ Nat32 cast 16n32 lshift or
@@ -86,22 +86,22 @@ Sha1Internal: {
     d: 3 state @ new;
     e: 4 state @ new;
 
-    a @b c d @e @f1  0 x.at r
-    e @a b c @d @f1  1 x.at r
-    d @e a b @c @f1  2 x.at r
-    c @d e a @b @f1  3 x.at r
-    b @c d e @a @f1  4 x.at r
-    a @b c d @e @f1  5 x.at r
-    e @a b c @d @f1  6 x.at r
-    d @e a b @c @f1  7 x.at r
-    c @d e a @b @f1  8 x.at r
-    b @c d e @a @f1  9 x.at r
-    a @b c d @e @f1 10 x.at r
-    e @a b c @d @f1 11 x.at r
-    d @e a b @c @f1 12 x.at r
-    c @d e a @b @f1 13 x.at r
-    b @c d e @a @f1 14 x.at r
-    a @b c d @e @f1 15 x.at r
+    a @b c d @e @f1  0 x @ r
+    e @a b c @d @f1  1 x @ r
+    d @e a b @c @f1  2 x @ r
+    c @d e a @b @f1  3 x @ r
+    b @c d e @a @f1  4 x @ r
+    a @b c d @e @f1  5 x @ r
+    e @a b c @d @f1  6 x @ r
+    d @e a b @c @f1  7 x @ r
+    c @d e a @b @f1  8 x @ r
+    b @c d e @a @f1  9 x @ r
+    a @b c d @e @f1 10 x @ r
+    e @a b c @d @f1 11 x @ r
+    d @e a b @c @f1 12 x @ r
+    c @d e a @b @f1 13 x @ r
+    b @c d e @a @f1 14 x @ r
+    a @b c d @e @f1 15 x @ r
 
     e @a b c @d @f1 @x 16n32 m r
     d @e a b @c @f1 @x 17n32 m r
@@ -182,14 +182,14 @@ ShaCounter: [{
   bitSize: Nat64;
 
   appendData: [
-    source: makeArrayRange;
+    source: toSpan;
     source.getSize Nat64 cast 8n64 * bitSize + !bitSize
     [
       sz: 64 internalBufferProcessed - source.getSize min;
       sz Natx cast
       source.getBufferBegin
       internalBuffer storageAddress internalBufferProcessed Natx cast + memcpy drop
-      sz source.getSize source makeSubRange !source
+      @source sz unhead !source
       internalBufferProcessed sz + !internalBufferProcessed
 
       internalBufferProcessed 64 = [
@@ -241,43 +241,43 @@ ShaCounter: [{
 }];
 
 sha1: [
-  source: makeArrayRange;
+  source: toSpan;
   state: (0x67452301n32 0xEFCDAB89n32 0x98BADCFEn32 0x10325476n32 0xC3D2E1F0n32);
-  bitSize: source.getSize Nat64 cast 3n32 lshift;
-  [source.getSize 64 < ~] [
+  bitSize: source.size Nat64 cast 3n32 lshift;
+  [source.size 64 < ~] [
     @state source Sha1Internal.transform
-    64 source.getSize source makeSubRange !source
+    @source 64 unhead !source
   ] while
 
-  buf: Nat8 64 array makeArrayRange;
-  count: source.getSize;
+  buf: Nat8 64 array;
+  count: source.size;
 
   count Natx cast
-  source.getBufferBegin
-  buf.getBufferBegin memcpy drop
+  source.data storageAddress
+  buf storageAddress memcpy drop
 
-  0x80n8 count @buf.at set
+  0x80n8 count @buf @ set
   count 1 + !count
   count 56 > [
     64 count - Natx cast
     0
-    buf.getBufferBegin count Natx cast + memset drop
+    buf storageAddress count Natx cast + memset drop
     @state buf Sha1Internal.transform
     0 !count
   ] when
 
   56 count - Natx cast
   0
-  buf.getBufferBegin count Natx cast + memset drop
+  buf storageAddress count Natx cast + memset drop
 
-  bitSize 56n32 rshift Nat8 cast 56 @buf.at set
-  bitSize 48n32 rshift Nat8 cast 57 @buf.at set
-  bitSize 40n32 rshift Nat8 cast 58 @buf.at set
-  bitSize 32n32 rshift Nat8 cast 59 @buf.at set
-  bitSize 24n32 rshift Nat8 cast 60 @buf.at set
-  bitSize 16n32 rshift Nat8 cast 61 @buf.at set
-  bitSize  8n32 rshift Nat8 cast 62 @buf.at set
-  bitSize              Nat8 cast 63 @buf.at set
+  bitSize 56n32 rshift Nat8 cast 56 @buf @ set
+  bitSize 48n32 rshift Nat8 cast 57 @buf @ set
+  bitSize 40n32 rshift Nat8 cast 58 @buf @ set
+  bitSize 32n32 rshift Nat8 cast 59 @buf @ set
+  bitSize 24n32 rshift Nat8 cast 60 @buf @ set
+  bitSize 16n32 rshift Nat8 cast 61 @buf @ set
+  bitSize  8n32 rshift Nat8 cast 62 @buf @ set
+  bitSize              Nat8 cast 63 @buf @ set
 
   @state buf Sha1Internal.transform
 
