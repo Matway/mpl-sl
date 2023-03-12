@@ -62,7 +62,7 @@ loadFile: [
       size: file ftell Natx cast;
       size Int32 cast @result.@data.resize
       SEEK_SET 0 file fseek drop
-      file size 1nx result.data.getBufferBegin fread size = ~
+      file size 1nx result.data.data storageAddress fread size = ~
     ] [("fread failed, " file ferror getErrnoText) assembleString @result.!result]
     [
       file fclose drop
@@ -83,8 +83,8 @@ saveFile: [
     ] [("fopen failed, " error getErrnoText) assembleString]
     [
       drop
-      size: data.getSize Natx cast;
-      file size 1nx data.getBufferBegin fwrite size = ~
+      size: data.size Natx cast;
+      file size 1nx data.data storageAddress fwrite size = ~
     ] [("fwrite failed, " file ferror getErrnoText) assembleString]
     [
       file fclose drop
