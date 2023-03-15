@@ -41,7 +41,7 @@ SpanTest: [];
 [
   Object: [{value: 0; CALL: [INVALID];}];
   span0:  Object Span;
-  object: {toSpan: [@span0];};
+  object: {span: [@span0];};
   span1:  object toSpan;
   [@span1 isConst ~] "[toSpan] lost mutability"                  ensure
   [span1 span0 is  ] "[toSpan] did not call [.toSpan] correctly" ensure
@@ -167,11 +167,11 @@ SpanTest: [];
 [
   Object: [{value: 0; CALL: [INVALID];}];
   dict:   {a: Object; b: Object;};
-  span:   @dict toSpan.toSpan;
-  [span.SCHEMA_NAME "Span" =] "[Span.toSpan] produced a wrong object"    ensure
-  [@span.data isConst ~     ] "[Span.toSpan] lost mutability"            ensure
-  [span.data dict.@a is     ] "[Span.toSpan] produced a wrong reference" ensure
-  [span.size 2 =            ] "[Span.toSpan] produced a wrong size"      ensure
+  span:   @dict toSpan.span;
+  [span.SCHEMA_NAME "Span" =] "[Span.span] produced a wrong object"    ensure
+  [@span.data isConst ~     ] "[Span.span] lost mutability"            ensure
+  [span.data dict.@a is     ] "[Span.span] produced a wrong reference" ensure
+  [span.size 2 =            ] "[Span.span] produced a wrong size"      ensure
 ] call
 
 [

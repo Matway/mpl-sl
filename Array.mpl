@@ -5,6 +5,7 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
+"Span.toSpan2"             use
 "algorithm.each"           use
 "algorithm.filter"         use
 "algorithm.findOrdinal"    use
@@ -71,7 +72,7 @@ makeArrayObject: [{
     dataSize new
   ];
 
-  slice: [@dataBegin dataSize makeArrayView .slice];
+  slice: [span.slice];
 
   erase: [
     index:;
@@ -212,8 +213,7 @@ makeArrayObject: [{
     0 @dataReserve set
   ];
 
-  toSpan: [
-    "Span.toSpan2" use
+  span: [
     @dataBegin dataSize toSpan2
   ];
 

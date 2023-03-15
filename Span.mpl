@@ -33,7 +33,7 @@ toSpan: [isCombined] [
   0 dynamic @struct @ struct fieldCount toSpan2 # [dynamic] is used to check for non-homogeneous tuples
 ] pfunc;
 
-toSpan: ["toSpan" has] [.toSpan] pfunc;
+toSpan: ["span" has] [.span] pfunc;
 
 toSpan2: [
   spanData: spanSize:;;
@@ -112,7 +112,7 @@ toSpan2: [
       @spanData storageAddress @spanData storageSize offset Natx cast * + @spanData addressToReference size toSpan2
     ];
 
-    toSpan: [
+    span: [
       @spanData spanSize toSpan2
     ];
 

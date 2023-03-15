@@ -131,7 +131,7 @@ toStringView: [
       (data storageAddress index Natx cast + Nat8 addressToReference const size new) toStringView
     ];
 
-    toSpan: [
+    span: [
       stringData stringSize toSpan2
     ];
   }
@@ -475,7 +475,7 @@ String: [{
     ] if
   ];
 
-  toSpan: [
+  span: [
     data size toSpan2
   ];
 }];
