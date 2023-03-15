@@ -106,5 +106,6 @@ kernel32: {
   WaitForSingleObject:                   @WaitForSingleObject                   virtual;
   WakeAllConditionVariable:              @WakeAllConditionVariable              virtual;
   WakeConditionVariable:                 @WakeConditionVariable                 virtual;
+  WideCharToMultiByte:                   @WideCharToMultiByte                   virtual;
   WriteFile:                             @WriteFile                             virtual;
 };
