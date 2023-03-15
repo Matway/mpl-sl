@@ -300,6 +300,17 @@ SYSTEM_INFO: [{
 } {} {convention: stdcall;} "WakeConditionVariable" importFunction
 
 {
+  CodePage:          Nat32;
+  dwFlags:           Nat32;
+  lpWideCharStr:     Natx;
+  cchWideChar:       Int32;
+  lpMultiByteStr:    Natx;
+  cbMultiByte:       Int32;
+  lpDefaultChar:     Natx;
+  lpUsedDefaultChar: Natx;
+} Int32 {convention: stdcall;} "WideCharToMultiByte" importFunction
+
+{
   hFile:                  Natx;
   lpBuffer:               Natx;
   nNumberOfBytesToWrite:  Nat32;
