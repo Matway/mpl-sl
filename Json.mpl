@@ -174,7 +174,7 @@ jsonInternalFillPositionChars: [
   pos:;
   chars:;
 
-  pos.offset chars.getSize < [
+  pos.offset chars.size < [
     pos.offset chars.at @pos.@currentSymbol set
     pos.currentSymbol.data Nat32 cast @pos.@currentCode set
   ] [
@@ -192,7 +192,7 @@ parseStringToJSON: [
 
     @mainResult.@json @mainResult splittedString.chars @position parseJSONNode
 
-    position.offset splittedString.chars.getSize < [
+    position.offset splittedString.chars.size < [
       FALSE @mainResult.@finished set
       position @mainResult.@errorInfo.@position set
     ] when

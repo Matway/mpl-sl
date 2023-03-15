@@ -158,17 +158,17 @@ String: [{
 
   INIT: [];
 
-  data: [@chars.@dataBegin];
+  data: [@chars.data];
 
   hash: [(data const size) toStringView .hash];
 
   iter: [data size makeArrayIter];
 
   size: [
-    chars.getSize 0 = [
+    chars.size 0 = [
       0
     ] [
-      chars.getSize 1 -
+      chars.size 1 -
     ] if
   ];
 
@@ -214,7 +214,7 @@ String: [{
   catStringNZ: [
     string: makeStringView;
     string.size 0 = ~ [
-      index: chars.getSize;
+      index: chars.size;
       index string.size + @chars.enlarge
       string.size Natx cast string.data storageAddress chars.getBufferBegin index Natx cast + memcpy drop
     ] when
@@ -447,11 +447,11 @@ String: [{
   ];
 
   makeNZ: [
-    chars.getSize 0 > [@chars.popBack] when #end zero
+    chars.size 0 > [@chars.popBack] when #end zero
   ];
 
   makeZ: [
-    chars.getSize 0 > [0n8 @chars.append] when #end zero
+    chars.size 0 > [0n8 @chars.append] when #end zero
   ];
 
   resize: [
@@ -468,10 +468,10 @@ String: [{
   ];
 
   getStringView: [
-    chars.getSize 0 = [
+    chars.size 0 = [
       StringView
     ] [
-      (chars.dataBegin chars.dataSize 1 -) toStringView
+      (chars.data chars.dataSize 1 -) toStringView
     ] if
   ];
 

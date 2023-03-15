@@ -43,7 +43,7 @@ HashTable: [
     keys:   [self .data  [.key                                                 ] makeIter];
     values: [@self.@data [.@value                                              ] makeIter];
 
-    getSize: [dataSize new];
+    size: [dataSize new];
 
     at: [
       result: find;

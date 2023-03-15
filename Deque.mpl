@@ -36,9 +36,7 @@ Deque: [{
     }
   ];
 
-  size: [getSize];
-
-  getSize: [head.getSize tail.getSize +];
+  size: [head.size tail.size +];
 
   pushBack: [@tail.append];
 
@@ -72,19 +70,19 @@ Deque: [{
 
   at: [
     index:;
-    index head.getSize < [
-      head.getSize index - 1 - @head.at
+    index head.size < [
+      head.size index - 1 - @head.at
     ] [
-      index head.getSize - @tail.at
+      index head.size - @tail.at
     ] if
   ];
 
   swapBuffers: [
     from:to:;;
 
-    swapCount: from.getSize 1 + 2 /;
+    swapCount: from.size 1 + 2 /;
 
-    [to.getSize 0 =] "Destination must be empty!" assert
+    [to.size 0 =] "Destination must be empty!" assert
     swapCount @to.resize
 
     swapCount [
@@ -92,12 +90,12 @@ Deque: [{
       swapCount 1 - i - @to.at set
     ] times
 
-    from.getSize swapCount - [
+    from.size swapCount - [
       i swapCount + @from.at
       i @from.at set
     ] times
 
-    from.getSize swapCount - @from.shrink
+    from.size swapCount - @from.shrink
   ];
 
   clear: [

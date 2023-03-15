@@ -78,7 +78,7 @@ makeArrayObject: [{
     index 0i32 same ~ [0 .ONLY_I32_ALLOWED] when
     [index 0 < ~ [index dataSize <] &&] "Index is out of range!" assert
 
-    index getSize 1 - < [
+    index size 1 - < [
       last index at set
     ] when
 
@@ -97,8 +97,6 @@ makeArrayObject: [{
       key shrink
     ] when
   ];
-
-  getSize: [dataSize new];
 
   getNextReserve: [
     dataReserve dataReserve 4 / + 4 +
@@ -269,7 +267,7 @@ getHeapUsedSize: ["ARRAY" has] [
   result: arg.elementType storageSize arg.dataReserve Natx cast *;
   i: 0 dynamic;
   [
-    i arg.getSize < [
+    i arg.size < [
       result i arg.at getHeapUsedSize + @result set
       i 1 + @i set TRUE
     ] &&
