@@ -7,7 +7,9 @@
 
 "control.Ref"      use
 "control.assert"   use
+"control.over"     use
 "control.pfunc"    use
+"control.swap"     use
 "control.when"     use
 "memory.mplFree"   use
 "memory.mplMalloc" use
@@ -17,7 +19,7 @@ objectSize: ["SIZE" has] [.SIZE] pfunc;
 
 OwnerWithDestructor: [{
   virtual OWNER: ();
-  virtual SCHEMA_NAME: "Owner";
+  virtual SCHEMA_NAME: over "Owner<" swap schemaName & ">" &;
   destructor:;
   virtual elementType: Ref;
   memory: @elementType Ref;
