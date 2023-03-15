@@ -5,6 +5,7 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
+"Span.toSpan"              use
 "Span.toSpan2"             use
 "algorithm.each"           use
 "algorithm.filter"         use
@@ -22,10 +23,13 @@
 "control.automatic?"       use
 "control.compose"          use
 "control.drop"             use
+"control.dup"              use
 "control.pfunc"            use
+"control.swap"             use
 "control.times"            use
 "control.when"             use
 "control.while"            use
+"memory.memcpy"            use
 "memory.mplFree"           use
 "memory.mplRealloc"        use
 
@@ -34,10 +38,10 @@ makeArrayObject: [{
 
   virtual CONTAINER: ();
   virtual ARRAY: ();
-  virtual SCHEMA_NAME: "Array";
+  virtual SCHEMA_NAME: dup "Array<" swap schemaName & ">" &;
   virtual elementType: Ref;
-  dataBegin: @elementType Ref;
-  dataSize: 0;
+  dataBegin:   @elementType private;
+  dataSize:    0            private;
   dataReserve: 0;
   virtual elementSize: @elementType storageSize;
 
@@ -141,6 +145,43 @@ makeArrayObject: [{
 
   appendEach: [[append] each];
 
+  assign: [
+    assign: ["Invalid source schema" raiseStaticError];
+
+    assign: [toIter TRUE] [
+      iter: toIter;
+      @iter "size" has [
+        @iter.size resize
+        @iter.size [
+          @iter.next drop
+          @dataBegin storageAddress @dataBegin storageSize i Natx cast * + @dataBegin addressToReference set
+        ] times
+      ] [
+        clear
+        [@iter.next] [append] while
+        drop
+      ] if
+    ] pfunc;
+
+    assign: [toSpan TRUE] [
+      span: toSpan;
+      span.size resize
+      @dataBegin automatic? [
+        span.size [
+          span.data  storageAddress @dataBegin storageSize i Natx cast * + @span.data addressToReference
+          @dataBegin storageAddress @dataBegin storageSize i Natx cast * + @dataBegin addressToReference set
+        ] times
+      ] [
+        [span.data @dataBegin same] "Inconsistent schemas" assert
+        @dataBegin storageSize span.size Natx cast * span.data storageAddress @dataBegin storageAddress memcpy drop
+      ] if
+    ] pfunc;
+
+    assign: [self same] [@self set] pfunc;
+
+    assign
+  ];
+
   shrink: [
     newSize:;
     [newSize dataSize > ~] "Shrinked size is bigger than the old size!" assert
@@ -225,7 +266,7 @@ makeArrayObject: [{
 
   ASSIGN: [
     other:;
-    other.dataSize resize
+    other.size resize
 
     i: 0 dynamic;
     [i dataSize <] [

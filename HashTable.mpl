@@ -61,12 +61,12 @@ HashTable: [
         };
 
         dataSize 0 = ~ [
-          bucketIndex: keyHash data.dataSize 1 - 0n32 cast and 0 cast;
+          bucketIndex: keyHash data.size 1 - 0n32 cast and 0 cast;
           curBucket: bucketIndex @data.at;
 
           i: 0 dynamic;
           [
-            i curBucket.dataSize < [
+            i curBucket.size < [
               node: i @curBucket.at;
               node.key key = [
                 {
@@ -90,12 +90,12 @@ HashTable: [
       keyHash: @key hash dynamic;
       [
         dataSize 0 = ~ [
-          bucketIndex: keyHash data.dataSize 1 - 0n32 cast and 0 cast;
+          bucketIndex: keyHash data.size 1 - 0n32 cast and 0 cast;
           curBucket: bucketIndex @data.at;
 
           i: 0 dynamic;
           [
-            i curBucket.dataSize < [
+            i curBucket.size < [
               node: i @curBucket.at;
               node.key key = [
                 i @curBucket.erase
@@ -131,12 +131,12 @@ HashTable: [
       keyHash: key hash dynamic;
 
       [
-        dataSize data.dataSize = [
+        dataSize data.size = [
           newBucketSize: dataSize 0 = [16][dataSize 2 *] if;
           newBucketSize rebuild
         ] when
 
-        bucketIndex: keyHash data.dataSize 1 - 0n32 cast and 0 cast;
+        bucketIndex: keyHash data.size 1 - 0n32 cast and 0 cast;
 
         {
           key: @key new;
@@ -182,11 +182,11 @@ HashTable: [
 
       newBucketSize @data.resize
       b: 0 dynamic;
-      [b data.dataSize <] [
+      [b data.size <] [
         current: b @data.at;
         i: 0 dynamic;
         j: 0 dynamic;
-        [i current.dataSize <] [
+        [i current.size <] [
           h: i current.at.@key hash;
           newB: h newBucketSize 1 - 0n32 cast and 0i32 cast;
 

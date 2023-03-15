@@ -471,7 +471,7 @@ String: [{
     chars.size 0 = [
       StringView
     ] [
-      (chars.data chars.dataSize 1 -) toStringView
+      (chars.data chars.size 1 -) toStringView
     ] if
   ];
 
