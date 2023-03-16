@@ -5,7 +5,13 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"kernel32.kernel32" use
+"kernel32.AcquireSRWLockExclusive"    use
+"kernel32.AcquireSRWLockShared"       use
+"kernel32.ReleaseSRWLockExclusive"    use
+"kernel32.ReleaseSRWLockShared"       use
+"kernel32.SRWLOCK"                    use
+"kernel32.TryAcquireSRWLockExclusive" use
+"kernel32.TryAcquireSRWLockShared"    use
 
 Mutex: [{
   SCHEMA_NAME: "Mutex" virtual;
@@ -18,30 +24,30 @@ Mutex: [{
   ];
 
   lock: [
-    @srwLock kernel32.AcquireSRWLockExclusive
+    @srwLock AcquireSRWLockExclusive
   ];
 
   lockShared: [
-    @srwLock kernel32.AcquireSRWLockShared
+    @srwLock AcquireSRWLockShared
   ];
 
   tryLock: [
-    @srwLock kernel32.TryAcquireSRWLockExclusive
+    @srwLock TryAcquireSRWLockExclusive
   ];
 
   tryLockShared: [
-    @srwLock kernel32.TryAcquireSRWLockShared
+    @srwLock TryAcquireSRWLockShared
   ];
 
   unlock: [
-    @srwLock kernel32.ReleaseSRWLockExclusive
+    @srwLock ReleaseSRWLockExclusive
   ];
 
   unlockShared: [
-    @srwLock kernel32.ReleaseSRWLockShared
+    @srwLock ReleaseSRWLockShared
   ];
 
   # Private
 
-  srwLock: kernel32.SRWLOCK;
+  srwLock: SRWLOCK;
 }];

@@ -32,8 +32,8 @@
 "kernel32.OVERLAPPED"                        use
 "ws2_32.AF_INET"                             use
 "ws2_32.FN_CONNECTEXRef"                     use
-"ws2_32.INVALID_SOCKET"                      use
 "ws2_32.INADDR_ANY"                          use
+"ws2_32.INVALID_SOCKET"                      use
 "ws2_32.IPPROTO_TCP"                         use
 "ws2_32.SD_SEND"                             use
 "ws2_32.SIO_GET_EXTENSION_FUNCTION_POINTER"  use
@@ -46,8 +46,8 @@
 "ws2_32.WSAID_CONNECTEX"                     use
 "ws2_32.WSAIoctl"                            use
 "ws2_32.WSAOVERLAPPED_COMPLETION_ROUTINERef" use
-"ws2_32.WSASend"                             use
 "ws2_32.WSARecv"                             use
+"ws2_32.WSASend"                             use
 "ws2_32.WSA_IO_PENDING"                      use
 "ws2_32.bind"                                use
 "ws2_32.closesocket"                         use

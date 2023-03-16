@@ -31,8 +31,8 @@
 "control.||"            use
 
 "kernel32.CreateIoCompletionPort"            use
-"kernel32.GetLastError"                      use
 "kernel32.ERROR_OPERATION_ABORTED"           use
+"kernel32.GetLastError"                      use
 "kernel32.OVERLAPPED"                        use
 "ws2_32.AF_INET"                             use
 "ws2_32.FN_CONNECTEXRef"                     use
@@ -53,9 +53,9 @@
 "ws2_32.WSASend"                             use
 "ws2_32.WSA_IO_PENDING"                      use
 "ws2_32.bind"                                use
+"ws2_32.closesocket"                         use
 "ws2_32.htonl"                               use
 "ws2_32.htons"                               use
-"ws2_32.closesocket"                         use
 "ws2_32.setsockopt"                          use
 "ws2_32.sockaddr_in"                         use
 "ws2_32.socket"                              use

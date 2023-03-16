@@ -11,7 +11,13 @@
 "control.when"     use
 "control.||"       use
 
-"kernel32.kernel32" use
+"kernel32.CONDITION_VARIABLE"        use
+"kernel32.ERROR_TIMEOUT"             use
+"kernel32.GetLastError"              use
+"kernel32.INFINITE"                  use
+"kernel32.SleepConditionVariableSRW" use
+"kernel32.WakeAllConditionVariable"  use
+"kernel32.WakeConditionVariable"     use
 
 ConditionVariable: [{
   SCHEMA_NAME: "ConditionVariable" virtual;
@@ -25,13 +31,13 @@ ConditionVariable: [{
 
   wait: [
     srwLock: time: shared:;;;
-    shared [kernel32.CONDITION_VARIABLE_LOCKMODE_SHARED] [0n32] if
-    time -1 = [kernel32.INFINITE] [time Nat32 cast] if
+    shared [CONDITION_VARIABLE_LOCKMODE_SHARED] [0n32] if
+    time -1 = [INFINITE] [time Nat32 cast] if
     @srwLock.@srwLock
     @conditionVariable
-    kernel32.SleepConditionVariableSRW 1 = [TRUE] [
-      error: kernel32.GetLastError;
-      error kernel32.ERROR_TIMEOUT = ~ [time -1 =] || [
+    SleepConditionVariableSRW 1 = [TRUE] [
+      error: GetLastError;
+      error ERROR_TIMEOUT = ~ [time -1 =] || [
         ("SleepConditionVariableSRW failed, result=" error LF) printList 1 exit # There is no good way to handle this, report and abort
       ] when
 
@@ -40,14 +46,14 @@ ConditionVariable: [{
   ];
 
   wakeAll: [
-    @conditionVariable kernel32.WakeAllConditionVariable
+    @conditionVariable WakeAllConditionVariable
   ];
 
   wakeOne: [
-    @conditionVariable kernel32.WakeConditionVariable
+    @conditionVariable WakeConditionVariable
   ];
 
   # Private
 
-  conditionVariable: kernel32.CONDITION_VARIABLE;
+  conditionVariable: CONDITION_VARIABLE;
 }];

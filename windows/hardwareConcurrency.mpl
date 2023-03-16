@@ -7,10 +7,11 @@
 
 "control.Int32" use
 
-"kernel32.kernel32" use
+"kernel32.GetSystemInfo" use
+"kernel32.SYSTEM_INFO"   use
 
 getHardwareConcurrency: [
-  information: kernel32.SYSTEM_INFO;
-  @information kernel32.GetSystemInfo
+  information: SYSTEM_INFO;
+  @information GetSystemInfo
   information.dwNumberOfProcessors Int32 cast
 ];

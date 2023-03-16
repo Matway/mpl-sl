@@ -14,7 +14,14 @@
 "control.exit"     use
 "control.when"     use
 
-"kernel32.kernel32" use
+"kernel32.CloseHandle"         use
+"kernel32.CreateThread"        use
+"kernel32.GetExitCodeThread"   use
+"kernel32.GetLastError"        use
+"kernel32.INFINITE"            use
+"kernel32.SECURITY_ATTRIBUTES" use
+"kernel32.WAIT_OBJECT_0"       use
+"kernel32.WaitForSingleObject" use
 
 Thread: [{
   SCHEMA_NAME: "Thread" virtual;
@@ -32,8 +39,8 @@ Thread: [{
   create: [
     code: context: stackSize:;;;
     [isRunning ~] "Attempted to initialize a Thread that is already running" assert
-    Nat32 Ref 0n32 context @code stackSize Natx cast kernel32.SECURITY_ATTRIBUTES Ref kernel32.CreateThread !handle handle 0nx = [
-      ("CreateThread failed, result=" kernel32.GetLastError LF) printList 1 exit # There is no good way to handle this, report and abort
+    Nat32 Ref 0n32 context @code stackSize Natx cast SECURITY_ATTRIBUTES Ref CreateThread !handle handle 0nx = [
+      ("CreateThread failed, result=" GetLastError LF) printList 1 exit # There is no good way to handle this, report and abort
     ] when
   ];
 
@@ -43,17 +50,17 @@ Thread: [{
 
   join: [
     [isRunning] "Attempted to join a Thread that is not running" assert
-    kernel32.INFINITE handle kernel32.WaitForSingleObject kernel32.WAIT_OBJECT_0 = ~ [
-      ("WaitForSingleObject failed, result=" kernel32.GetLastError LF) printList 1 exit # There is no good way to handle this, report and abort
+    INFINITE handle WaitForSingleObject WAIT_OBJECT_0 = ~ [
+      ("WaitForSingleObject failed, result=" GetLastError LF) printList 1 exit # There is no good way to handle this, report and abort
     ] when
 
     result: Nat32;
-    @result handle kernel32.GetExitCodeThread 1 = ~ [
-      ("GetExitCodeThread failed, result=" kernel32.GetLastError LF) printList 1 exit # There is no good way to handle this, report and abort
+    @result handle GetExitCodeThread 1 = ~ [
+      ("GetExitCodeThread failed, result=" GetLastError LF) printList 1 exit # There is no good way to handle this, report and abort
     ] when
 
-    handle kernel32.CloseHandle 1 = ~ [
-      ("CloseHandle failed, result=" kernel32.GetLastError LF) printList # There is no good way to handle this, just report
+    handle CloseHandle 1 = ~ [
+      ("CloseHandle failed, result=" GetLastError LF) printList # There is no good way to handle this, just report
     ] when
 
     0nx !handle
