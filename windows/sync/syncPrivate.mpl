@@ -21,8 +21,21 @@
 "control.isNil"                 use
 "control.when"                  use
 
-"kernel32.kernel32" use
-"ws2_32.winsock2"   use
+"kernel32.ConvertThreadToFiber"        use
+"kernel32.CreateFiber"                 use
+"kernel32.CreateIoCompletionPort"      use
+"kernel32.GetLastError"                use
+"kernel32.GetQueuedCompletionStatusEx" use
+"kernel32.INFINITE"                    use
+"kernel32.INVALID_HANDLE_VALUE"        use
+"kernel32.OVERLAPPED"                  use
+"kernel32.OVERLAPPED_ENTRY"            use
+"kernel32.QueryPerformanceCounter"     use
+"kernel32.QueryPerformanceFrequency"   use
+"kernel32.SwitchToFiber"               use
+"kernel32.WAIT_TIMEOUT"                use
+"ws2_32.WSADATA"                       use
+"ws2_32.WSAStartup"                    use
 
 FiberData: [{
   canceled?: [@func isNil];
@@ -42,7 +55,7 @@ FiberData: [{
   switchTo: [
     [self currentFiber is ~] "attempted to resume current fiber" assert
     @self !currentFiber
-    nativeFiber kernel32.SwitchToFiber
+    nativeFiber SwitchToFiber
   ];
 
   nativeFiber: Natx;
@@ -69,7 +82,7 @@ dispatch: [
   fiber: FiberData Ref;
 
   [
-    timeout: kernel32.INFINITE;
+    timeout: INFINITE;
     timers.empty? ~ [
       time: getTimePrivate;
 
@@ -86,17 +99,17 @@ dispatch: [
     ] when
 
     resumingFibers.empty? [
-      entry: kernel32.OVERLAPPED_ENTRY;
+      entry: OVERLAPPED_ENTRY;
       actual: Nat32;
-      1 timeout @actual 1n32 @entry completionPort kernel32.GetQueuedCompletionStatusEx 1 = ~ dup [
-        lastError: kernel32.GetLastError;
-        lastError kernel32.WAIT_TIMEOUT = ~ [("FATAL: GetQueuedCompletionStatusEx failed, result=" lastError LF) printList "" failProc] when
+      1 timeout @actual 1n32 @entry completionPort GetQueuedCompletionStatusEx 1 = ~ dup [
+        lastError: GetLastError;
+        lastError WAIT_TIMEOUT = ~ [("FATAL: GetQueuedCompletionStatusEx failed, result=" lastError LF) printList "" failProc] when
       ] [
         [actual 1n32 =] "unexpected actual entry count" assert
         [entry.dwNumberOfBytesTransferred entry.lpOverlapped.InternalHigh Nat32 cast =] "unexpected transferred size" assert
 
         SyncOverlapped: [{
-          overlapped: kernel32.OVERLAPPED;
+          overlapped: OVERLAPPED;
           fiber: FiberData Ref;
         }];
 
@@ -120,7 +133,7 @@ emptyCancelFunc: {data: Natx;} {} {} codeRef; [
 
 getTimePrivate: [
   previousCounter0: timePreviousCounter new;
-  @timePreviousCounter storageAddress Int64 addressToReference kernel32.QueryPerformanceCounter drop
+  @timePreviousCounter storageAddress Int64 addressToReference QueryPerformanceCounter drop
   timePreviousCounter previousCounter0 - Real64 cast timeMultiplier * timePreviousTime + !timePreviousTime
   timePreviousTime new
 ];
@@ -145,8 +158,8 @@ spawnFiber: [
     ];
 
     creationData: {nativeFiber: Natx; func: @func; funcData: funcData;};
-    creationData storageAddress @fiberFunc 4096nx kernel32.CreateFiber @creationData.!nativeFiber creationData.nativeFiber 0nx = [("FATAL: CreateFiber failed, result=" kernel32.GetLastError LF) printList "" failProc] when
-    creationData.nativeFiber kernel32.SwitchToFiber
+    creationData storageAddress @fiberFunc 4096nx CreateFiber @creationData.!nativeFiber creationData.nativeFiber 0nx = [("FATAL: CreateFiber failed, result=" GetLastError LF) printList "" failProc] when
+    creationData.nativeFiber SwitchToFiber
   ] [
     fiber: @reusableFibers.popFirst;
     funcData @func @fiber.setFunc
@@ -165,15 +178,15 @@ resumingFibers: FiberData IntrusiveQueue;
 timers: TimerData IntrusiveQueue;
 
 [
-  0nx kernel32.ConvertThreadToFiber @rootFiber.!nativeFiber rootFiber.nativeFiber 0nx = [("FATAL: ConvertThreadToFiber failed, result=" kernel32.GetLastError LF) printList "" failProc] when
+  0nx ConvertThreadToFiber @rootFiber.!nativeFiber rootFiber.nativeFiber 0nx = [("FATAL: ConvertThreadToFiber failed, result=" GetLastError LF) printList "" failProc] when
   @defaultCancelFunc @rootFiber.!func
-  0n32 0nx 0nx kernel32.INVALID_HANDLE_VALUE kernel32.CreateIoCompletionPort !completionPort completionPort 0nx = [("FATAL: CreateIoCompletionPort failed, result=" kernel32.GetLastError LF) printList "" failProc] when
-  result: winsock2.WSADATA 0x0202n16 winsock2.WSAStartup; result 0 = ~ [("FATAL: WSAStartup failed, result=" result LF) printList "" failProc] when
+  0n32 0nx 0nx INVALID_HANDLE_VALUE CreateIoCompletionPort !completionPort completionPort 0nx = [("FATAL: CreateIoCompletionPort failed, result=" GetLastError LF) printList "" failProc] when
+  result: WSADATA 0x0202n16 WSAStartup; result 0 = ~ [("FATAL: WSAStartup failed, result=" result LF) printList "" failProc] when
 
   frequency: Int64;
-  @frequency kernel32.QueryPerformanceFrequency drop
+  @frequency QueryPerformanceFrequency drop
   1.0 frequency Real64 cast / !timeMultiplier
-  @timePreviousCounter storageAddress Int64 addressToReference kernel32.QueryPerformanceCounter drop
+  @timePreviousCounter storageAddress Int64 addressToReference QueryPerformanceCounter drop
   0.0 !timePreviousTime
 
   @rootFiber !currentFiber

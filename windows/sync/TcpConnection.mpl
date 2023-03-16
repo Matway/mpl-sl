@@ -25,8 +25,37 @@
 "control.sequence"      use
 "control.when"          use
 
-"kernel32.kernel32" use
-"ws2_32.winsock2"   use
+"kernel32.CancelIoEx"                        use
+"kernel32.CreateIoCompletionPort"            use
+"kernel32.ERROR_NOT_FOUND"                   use
+"kernel32.GetLastError"                      use
+"kernel32.OVERLAPPED"                        use
+"ws2_32.AF_INET"                             use
+"ws2_32.FN_CONNECTEXRef"                     use
+"ws2_32.INVALID_SOCKET"                      use
+"ws2_32.INADDR_ANY"                          use
+"ws2_32.IPPROTO_TCP"                         use
+"ws2_32.SD_SEND"                             use
+"ws2_32.SIO_GET_EXTENSION_FUNCTION_POINTER"  use
+"ws2_32.SOCK_STREAM"                         use
+"ws2_32.SOL_SOCKET"                          use
+"ws2_32.SO_UPDATE_CONNECT_CONTEXT"           use
+"ws2_32.TCP_NODELAY"                         use
+"ws2_32.WSAGetLastError"                     use
+"ws2_32.WSAGetOverlappedResult"              use
+"ws2_32.WSAID_CONNECTEX"                     use
+"ws2_32.WSAIoctl"                            use
+"ws2_32.WSAOVERLAPPED_COMPLETION_ROUTINERef" use
+"ws2_32.WSASend"                             use
+"ws2_32.WSARecv"                             use
+"ws2_32.WSA_IO_PENDING"                      use
+"ws2_32.bind"                                use
+"ws2_32.closesocket"                         use
+"ws2_32.htonl"                               use
+"ws2_32.htons"                               use
+"ws2_32.setsockopt"                          use
+"ws2_32.sockaddr_in"                         use
+"ws2_32.socket"                              use
 
 "syncPrivate.FiberData"         use
 "syncPrivate.canceled?"         use
@@ -36,15 +65,15 @@
 "syncPrivate.dispatch"          use
 
 TcpConnection: [{
-  INIT: [winsock2.INVALID_SOCKET !connection];
+  INIT: [INVALID_SOCKET !connection];
 
   DIE: [
     valid? [
-      connection winsock2.closesocket 0 = ~ [("FATAL: closesocket failed, result=" winsock2.WSAGetLastError LF) printList "" failProc] when
+      connection closesocket 0 = ~ [("FATAL: closesocket failed, result=" WSAGetLastError LF) printList "" failProc] when
     ] when
   ];
 
-  valid?: [connection winsock2.INVALID_SOCKET = ~];
+  valid?: [connection INVALID_SOCKET = ~];
 
   # Read data
   # in:
@@ -65,23 +94,23 @@ TcpConnection: [{
         canceled? ["canceled" @result.cat] when
       ] [
         context: {
-          overlapped: kernel32.OVERLAPPED;
+          overlapped: OVERLAPPED;
           fiber: FiberData Ref;
           connection: Natx;
         };
 
-        winsock2.WSAOVERLAPPED_COMPLETION_ROUTINERef @context.@overlapped Nat32 Nat32 Ref 1n32 {len: dataSize Nat32 cast; buf: data storageAddress;} connection winsock2.WSARecv 0 = ~ [
-          lastError: winsock2.WSAGetLastError;
-          lastError winsock2.WSA_IO_PENDING = ~ [("WSARecv failed, result=" lastError) @result.catMany] when
+        WSAOVERLAPPED_COMPLETION_ROUTINERef @context.@overlapped Nat32 Nat32 Ref 1n32 {len: dataSize Nat32 cast; buf: data storageAddress;} connection WSARecv 0 = ~ [
+          lastError: WSAGetLastError;
+          lastError WSA_IO_PENDING = ~ [("WSARecv failed, result=" lastError) @result.catMany] when
         ] when
       ] [
         @currentFiber @context.!fiber
         connection new @context.!connection
         context storageAddress [
           context: @context addressToReference;
-          @context.@overlapped context.connection kernel32.CancelIoEx 1 = ~ [
-            lastError: kernel32.GetLastError;
-            lastError kernel32.ERROR_NOT_FOUND = ~ [("FATAL: CancelIoEx failed, result=" lastError LF) printList "" failProc] when
+          @context.@overlapped context.connection CancelIoEx 1 = ~ [
+            lastError: GetLastError;
+            lastError ERROR_NOT_FOUND = ~ [("FATAL: CancelIoEx failed, result=" lastError LF) printList "" failProc] when
           ] when
         ] @currentFiber.setFunc
 
@@ -90,7 +119,7 @@ TcpConnection: [{
       ] [
         @defaultCancelFunc @currentFiber.!func
         transferred: 0n32;
-        Nat32 0 @transferred @context.@overlapped connection winsock2.WSAGetOverlappedResult 1 = ~ [("WSARecv failed, result=" winsock2.WSAGetLastError) @result.catMany] when
+        Nat32 0 @transferred @context.@overlapped connection WSAGetOverlappedResult 1 = ~ [("WSARecv failed, result=" WSAGetLastError) @result.catMany] when
       ] [
         transferred 0n32 = ["closed" @result.cat] when
       ] [
@@ -110,7 +139,8 @@ TcpConnection: [{
 
   shutdown: [
     [valid?] "invalid TcpConnection" assert
-    winsock2.SD_SEND connection winsock2.shutdown 0 = [String] [("shutdown failed, result=" winsock2.WSAGetLastError) assembleString] if
+    "ws2_32.shutdown" use
+    SD_SEND connection shutdown 0 = [String] [("shutdown failed, result=" WSAGetLastError) assembleString] if
   ];
 
   # Write data
@@ -130,23 +160,23 @@ TcpConnection: [{
         canceled? ["canceled" @result.cat] when
       ] [
         context: {
-          overlapped: kernel32.OVERLAPPED;
+          overlapped: OVERLAPPED;
           fiber: FiberData Ref;
           connection: Natx;
         };
 
-        winsock2.WSAOVERLAPPED_COMPLETION_ROUTINERef @context.@overlapped 0n32 Nat32 1n32 {len: size Nat32 cast; buf: data storageAddress;} connection winsock2.WSASend 0 = ~ [
-          lastError: winsock2.WSAGetLastError;
-          lastError winsock2.WSA_IO_PENDING = ~ [("WSASend failed, result=" lastError) @result.catMany] when
+        WSAOVERLAPPED_COMPLETION_ROUTINERef @context.@overlapped 0n32 Nat32 1n32 {len: size Nat32 cast; buf: data storageAddress;} connection WSASend 0 = ~ [
+          lastError: WSAGetLastError;
+          lastError WSA_IO_PENDING = ~ [("WSASend failed, result=" lastError) @result.catMany] when
         ] when
       ] [
         @currentFiber @context.!fiber
         connection new @context.!connection
         context storageAddress [
           context: @context addressToReference;
-          @context.@overlapped context.connection kernel32.CancelIoEx 1 = ~ [
-            lastError: kernel32.GetLastError;
-            lastError kernel32.ERROR_NOT_FOUND = ~ [("FATAL: CancelIoEx failed, result=" lastError LF) printList "" failProc] when
+          @context.@overlapped context.connection CancelIoEx 1 = ~ [
+            lastError: GetLastError;
+            lastError ERROR_NOT_FOUND = ~ [("FATAL: CancelIoEx failed, result=" lastError LF) printList "" failProc] when
           ] when
         ] @currentFiber.setFunc
 
@@ -155,7 +185,7 @@ TcpConnection: [{
       ] [
         @defaultCancelFunc @currentFiber.!func
         transferred: 0n32;
-        Nat32 0 @transferred @context.@overlapped connection winsock2.WSAGetOverlappedResult 1 = ~ [("WSASend failed, result=" winsock2.WSAGetLastError) @result.catMany] when
+        Nat32 0 @transferred @context.@overlapped connection WSAGetOverlappedResult 1 = ~ [("WSASend failed, result=" WSAGetLastError) @result.catMany] when
       ] [
         [transferred Int32 cast size =] "wrong transferred size" assert
       ]
@@ -170,7 +200,7 @@ TcpConnection: [{
     string.data string.size write
   ];
 
-  connection: winsock2.INVALID_SOCKET;
+  connection: INVALID_SOCKET;
 }];
 
 makeTcpConnection: [
@@ -182,50 +212,50 @@ makeTcpConnection: [
     [result "" =] [
       canceled? ["canceled" @result.cat] when
     ] [
-      winsock2.IPPROTO_TCP winsock2.SOCK_STREAM winsock2.AF_INET winsock2.socket @connection.!connection connection.valid? ~ [("socket failed, result=" winsock2.WSAGetLastError) @result.catMany] when
+      IPPROTO_TCP SOCK_STREAM AF_INET socket @connection.!connection connection.valid? ~ [("socket failed, result=" WSAGetLastError) @result.catMany] when
     ] [
       nodelay: 1;
-      nodelay storageSize Int32 cast nodelay storageAddress winsock2.TCP_NODELAY winsock2.IPPROTO_TCP connection.connection winsock2.setsockopt 0 = ~ [("setsockopt failed, result=" winsock2.WSAGetLastError) @result.catMany] when
+      nodelay storageSize Int32 cast nodelay storageAddress TCP_NODELAY IPPROTO_TCP connection.connection setsockopt 0 = ~ [("setsockopt failed, result=" WSAGetLastError) @result.catMany] when
     ] [
-      bindAddress: winsock2.sockaddr_in;
-      winsock2.AF_INET Nat16 cast @bindAddress.!sin_family
+      bindAddress: sockaddr_in;
+      AF_INET Nat16 cast @bindAddress.!sin_family
       0n16 @bindAddress.!sin_port
-      winsock2.INADDR_ANY @bindAddress.!sin_addr
-      bindAddress storageSize Int32 cast bindAddress storageAddress connection.connection winsock2.bind 0 = ~ [("bind failed, result=" winsock2.WSAGetLastError) @result.catMany] when
+      INADDR_ANY @bindAddress.!sin_addr
+      bindAddress storageSize Int32 cast bindAddress storageAddress connection.connection bind 0 = ~ [("bind failed, result=" WSAGetLastError) @result.catMany] when
     ] [
       @ConnectEx isNil [
-        connectEx: winsock2.FN_CONNECTEXRef AsRef;
-        winsock2.WSAOVERLAPPED_COMPLETION_ROUTINERef kernel32.OVERLAPPED Ref Nat32 @connectEx storageSize Nat32 cast @connectEx storageAddress winsock2.WSAID_CONNECTEX storageSize Nat32 cast winsock2.WSAID_CONNECTEX storageAddress winsock2.SIO_GET_EXTENSION_FUNCTION_POINTER connection.connection winsock2.WSAIoctl 0 = ~ [
-          TRUE [("WSAIoctl failed, result=" winsock2.WSAGetLastError) @result.catMany] when
+        connectEx: FN_CONNECTEXRef AsRef;
+        WSAOVERLAPPED_COMPLETION_ROUTINERef OVERLAPPED Ref Nat32 @connectEx storageSize Nat32 cast @connectEx storageAddress WSAID_CONNECTEX storageSize Nat32 cast WSAID_CONNECTEX storageAddress SIO_GET_EXTENSION_FUNCTION_POINTER connection.connection WSAIoctl 0 = ~ [
+          TRUE [("WSAIoctl failed, result=" WSAGetLastError) @result.catMany] when
         ] [
           @connectEx.@data !ConnectEx
         ] if
       ] when
     ] [
-      0n32 0nx completionPort connection.connection kernel32.CreateIoCompletionPort completionPort = ~ [("CreateIoCompletionPort failed, result=" kernel32.GetLastError) @result.catMany] when
+      0n32 0nx completionPort connection.connection CreateIoCompletionPort completionPort = ~ [("CreateIoCompletionPort failed, result=" GetLastError) @result.catMany] when
     ] [
-      addressData: winsock2.sockaddr_in;
-      winsock2.AF_INET Nat16 cast @addressData.!sin_family
-      port winsock2.htons @addressData.!sin_port
-      address winsock2.htonl @addressData.!sin_addr
+      addressData: sockaddr_in;
+      AF_INET Nat16 cast @addressData.!sin_family
+      port    htons @addressData.!sin_port
+      address htonl @addressData.!sin_addr
       context: {
-        overlapped: kernel32.OVERLAPPED;
+        overlapped: OVERLAPPED;
         fiber: FiberData Ref;
         connection: Natx;
       };
 
       @context.@overlapped Nat32 Ref 0n32 0nx addressData storageSize Int32 cast addressData storageAddress connection.connection ConnectEx 0 = ~ [("ConnectEx returned immediately") @result.catMany] when
     ] [
-      lastError: winsock2.WSAGetLastError;
-      lastError winsock2.WSA_IO_PENDING = ~ [("ConnectEx failed, result=" lastError) @result.catMany] when
+      lastError: WSAGetLastError;
+      lastError WSA_IO_PENDING = ~ [("ConnectEx failed, result=" lastError) @result.catMany] when
     ] [
       @currentFiber @context.!fiber
       connection.connection new @context.!connection
       context storageAddress [
         context: @context addressToReference;
-        @context.@overlapped context.connection kernel32.CancelIoEx 1 = ~ [
-          lastError: kernel32.GetLastError;
-          lastError kernel32.ERROR_NOT_FOUND = ~ [("FATAL: CancelIoEx failed, result=" lastError LF) printList "" failProc] when
+        @context.@overlapped context.connection CancelIoEx 1 = ~ [
+          lastError: GetLastError;
+          lastError ERROR_NOT_FOUND = ~ [("FATAL: CancelIoEx failed, result=" lastError LF) printList "" failProc] when
         ] when
       ] @currentFiber.setFunc
 
@@ -233,9 +263,9 @@ makeTcpConnection: [
       canceled? ["canceled" @result.cat] when
     ] [
       @defaultCancelFunc @currentFiber.!func
-      Nat32 0 Nat32 @context.@overlapped connection.connection winsock2.WSAGetOverlappedResult 1 = ~ [("ConnectEx failed, result=" winsock2.WSAGetLastError) @result.catMany] when
+      Nat32 0 Nat32 @context.@overlapped connection.connection WSAGetOverlappedResult 1 = ~ [("ConnectEx failed, result=" WSAGetLastError) @result.catMany] when
     ] [
-      value: 1n32; value storageSize Int32 cast value storageAddress winsock2.SO_UPDATE_CONNECT_CONTEXT winsock2.SOL_SOCKET connection.connection winsock2.setsockopt 0 = ~ [("setsockopt failed, result=" winsock2.WSAGetLastError) @result.catMany] when
+      value: 1n32; value storageSize Int32 cast value storageAddress SO_UPDATE_CONNECT_CONTEXT SOL_SOCKET connection.connection setsockopt 0 = ~ [("setsockopt failed, result=" WSAGetLastError) @result.catMany] when
     ]
   ) sequence
 
@@ -243,4 +273,4 @@ makeTcpConnection: [
   @connection @result
 ];
 
-ConnectEx: winsock2.FN_CONNECTEXRef;
+ConnectEx: FN_CONNECTEXRef;

@@ -5,11 +5,29 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"winmmPrivate" use
+"control.Nat32"       use
+"control.Ref"         use
+"conventions.stdcall" use
 
-winmm: {
-  JOYINFOEX: @JOYINFOEX;
+JOYINFOEX: [{
+  dwSize:         Nat32;
+  dwFlags:        Nat32;
+  dwXpos:         Nat32;
+  dwYpos:         Nat32;
+  dwZpos:         Nat32;
+  dwRpos:         Nat32;
+  dwUpos:         Nat32;
+  dwVpos:         Nat32;
+  dwButtons:      Nat32;
+  dwButtonNumber: Nat32;
+  dwPOV:          Nat32;
+  dwReserved1:    Nat32;
+  dwReserved2:    Nat32;
+}];
 
-  # WinMM.Lib should be included for these functions 
-  joyGetPosEx: @joyGetPosEx virtual;
-};
+# WinMM.Lib should be included for these functions
+
+{
+  uJoyID: Nat32;
+  pji:    JOYINFOEX Ref;
+} Nat32 {convention: stdcall;} "joyGetPosEx" importFunction

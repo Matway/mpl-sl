@@ -5,10 +5,14 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"ole32Private" use
+"control.Int32"       use
+"control.Natx"        use
+"conventions.stdcall" use
 
-ole32: {
-  # Ole32.Lib should be included for these functions
-  CoInitialize:   @CoInitialize   virtual;
-  CoUninitialize: @CoUninitialize virtual;
-};
+# Ole32.Lib should be included for these functions
+
+{
+  pvReserved: Natx;
+} Int32 {convention: stdcall;} "CoInitialize" importFunction
+
+{} {} {convention: stdcall;} "CoUninitialize" importFunction

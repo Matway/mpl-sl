@@ -5,13 +5,57 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"gdi32Private" use
+"control.Cref"        use
+"control.Int32"       use
+"control.Nat16"       use
+"control.Nat32"       use
+"control.Nat8"        use
+"conventions.stdcall" use
 
-gdi32: {
-  PIXELFORMATDESCRIPTOR: @PIXELFORMATDESCRIPTOR;
+"user32.HDC" use
 
-  # Gdi32.Lib should be included for these functions
-  ChoosePixelFormat: @ChoosePixelFormat virtual;
-  SetPixelFormat:    @SetPixelFormat    virtual;
-  SwapBuffers:       @SwapBuffers       virtual;
-};
+PIXELFORMATDESCRIPTOR: [{
+  nSize:           Nat16;
+  nVersion:        Nat16;
+  dwFlags:         Nat32;
+  iPixelType:      Nat8;
+  cColorBits:      Nat8;
+  cRedBits:        Nat8;
+  cRedShift:       Nat8;
+  cGreenBits:      Nat8;
+  cGreenShift:     Nat8;
+  cBlueBits:       Nat8;
+  cBlueShift:      Nat8;
+  cAlphaBits:      Nat8;
+  cAlphaShift:     Nat8;
+  cAccumBits:      Nat8;
+  cAccumRedBits:   Nat8;
+  cAccumGreenBits: Nat8;
+  cAccumBlueBits:  Nat8;
+  cAccumAlphaBits: Nat8;
+  cDepthBits:      Nat8;
+  cStencilBits:    Nat8;
+  cAuxBuffers:     Nat8;
+  iLayerType:      Nat8;
+  bReserved:       Nat8;
+  dwLayerMask:     Nat32;
+  dwVisibleMask:   Nat32;
+  dwDamageMask:    Nat32;
+}];
+
+# Gdi32.Lib should be included for these functions
+
+{
+  hdc:  HDC;
+  ppfd: PIXELFORMATDESCRIPTOR Cref;
+} Int32 {convention: stdcall;} "ChoosePixelFormat" importFunction
+
+{
+  hdc:    HDC;
+  format: Int32;
+  ppfd:   PIXELFORMATDESCRIPTOR Cref;
+} Int32 {convention: stdcall;} "SetPixelFormat" importFunction
+
+{
+  Arg1: HDC;
+} Int32 {convention: stdcall;} "SwapBuffers" importFunction

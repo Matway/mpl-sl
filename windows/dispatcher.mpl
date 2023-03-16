@@ -14,39 +14,50 @@
 "control.isNil"         use
 "control.when"          use
 
-"kernel32.kernel32" use
-"ws2_32.winsock2"   use
+"kernel32.CloseHandle"                 use
+"kernel32.CreateIoCompletionPort"      use
+"kernel32.GetLastError"                use
+"kernel32.GetQueuedCompletionStatusEx" use
+"kernel32.INVALID_HANDLE_VALUE"        use
+"kernel32.OVERLAPPED"                  use
+"kernel32.OVERLAPPED_ENTRY"            use
+"kernel32.PostQueuedCompletionStatus"  use
+"kernel32.WAIT_TIMEOUT"                use
+"ws2_32.WSACleanup"                    use
+"ws2_32.WSADATA"                       use
+"ws2_32.WSAGetLastError"               use
+"ws2_32.WSAStartup"                    use
 
 dispatcherInternal: {
   OnCallback: [{context: Natx;} {} {} codeRef];
   OnEventRef: [{context: Natx; numberOfBytesTransferred: Nat32; error: Nat32;} {} {} codeRef];
 
   Context: [{
-    overlapped: kernel32.OVERLAPPED;
+    overlapped: OVERLAPPED;
     onEvent: OnEventRef;
     context: Natx;
   }];
 
   DIE: [
-    winsock2.WSACleanup 0 = ~ [("LEAK: WSACleanup failed, result=" winsock2.WSAGetLastError LF) assembleString print] when
-    completionPort kernel32.CloseHandle 1 = ~ [("LEAK: CloseHandle failed, result=" kernel32.GetLastError LF) assembleString print] when
+    WSACleanup 0 = ~ [("LEAK: WSACleanup failed, result=" WSAGetLastError LF) assembleString print] when
+    completionPort CloseHandle 1 = ~ [("LEAK: CloseHandle failed, result=" GetLastError LF) assembleString print] when
   ];
 
   init: [
-    0n32 0nx 0nx kernel32.INVALID_HANDLE_VALUE kernel32.CreateIoCompletionPort !completionPort completionPort 0nx = [
-      ("FATAL: CreateIoCompletionPort failed, result=" kernel32.GetLastError LF) assembleString print 1 exit
+    0n32 0nx 0nx INVALID_HANDLE_VALUE CreateIoCompletionPort !completionPort completionPort 0nx = [
+      ("FATAL: CreateIoCompletionPort failed, result=" GetLastError LF) assembleString print 1 exit
     ] when
 
-    wsaData: winsock2.WSADATA; result: @wsaData 0x0202n16 winsock2.WSAStartup; result 0 = ~ [
+    wsaData: WSADATA; result: @wsaData 0x0202n16 WSAStartup; result 0 = ~ [
       ("FATAL: WSAStartup failed, result=" result LF) assembleString print 1 exit
     ] when
   ];
 
   dispatch: [
-    entry: kernel32.OVERLAPPED_ENTRY;
+    entry: OVERLAPPED_ENTRY;
     actual: Nat32;
-    1 kernel32.INFINITE @actual 1n32 @entry completionPort kernel32.GetQueuedCompletionStatusEx 1 = ~ [
-      error: kernel32.GetLastError;
+    1 INFINITE @actual 1n32 @entry completionPort GetQueuedCompletionStatusEx 1 = ~ [
+      error: GetLastError;
       ("FATAL: GetQueuedCompletionStatusEx failed, result=" error LF) assembleString print 1 exit
     ] [
       [actual 1n32 =] "unexpected actual entry count" assert
@@ -61,11 +72,11 @@ dispatcherInternal: {
   ];
 
   tryDispatch: [
-    entry: kernel32.OVERLAPPED_ENTRY;
+    entry: OVERLAPPED_ENTRY;
     actual: Nat32;
-    1 0n32 @actual 1n32 @entry completionPort kernel32.GetQueuedCompletionStatusEx 1 = ~ [
-      error: kernel32.GetLastError;
-      error kernel32.WAIT_TIMEOUT = ~ [
+    1 0n32 @actual 1n32 @entry completionPort GetQueuedCompletionStatusEx 1 = ~ [
+      error: GetLastError;
+      error WAIT_TIMEOUT = ~ [
         ("FATAL: GetQueuedCompletionStatusEx failed, result=" error LF) assembleString print 1 exit
       ] when
 
@@ -87,8 +98,8 @@ dispatcherInternal: {
   post: [
     context: callback:;;
     [@callback isNil ~] "dispatcher.post: invalid callback" assert
-    context kernel32.OVERLAPPED addressToReference @callback storageAddress 0n32 completionPort kernel32.PostQueuedCompletionStatus 1 = ~ [
-      ("FATAL: PostQueuedCompletionStatus failed, result=" kernel32.GetLastError LF) assembleString print 1 exit
+    context OVERLAPPED addressToReference @callback storageAddress 0n32 completionPort PostQueuedCompletionStatus 1 = ~ [
+      ("FATAL: PostQueuedCompletionStatus failed, result=" GetLastError LF) assembleString print 1 exit
     ] when
   ];
 

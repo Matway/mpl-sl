@@ -6,6 +6,7 @@
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
 "control.AsRef"       use
+"control.Cref"        use
 "control.Int32"       use
 "control.Nat16"       use
 "control.Nat32"       use
@@ -14,126 +15,287 @@
 "control.Ref"         use
 "conventions.stdcall" use
 
-"kernel32.kernel32" use
+"kernel32.OVERLAPPED" use
 
-"ws2_32Private" use
+FN_ACCEPTEXRef: [{
+  sListenSocket:         Natx;
+  sAcceptSocket:         Natx;
+  lpOutputBuffer:        Natx;
+  dwReceiveDataLength:   Nat32;
+  dwLocalAddressLength:  Nat32;
+  dwRemoteAddressLength: Nat32;
+  lpdwBytesReceived:     Nat32 Ref;
+  lpOverlapped:          OVERLAPPED Ref;
+} Int32 {convention: stdcall;} codeRef];
 
-winsock2: {
-  FN_ACCEPTEXRef: [{
-    sListenSocket:         Natx;
-    sAcceptSocket:         Natx;
-    lpOutputBuffer:        Natx;
-    dwReceiveDataLength:   Nat32;
-    dwLocalAddressLength:  Nat32;
-    dwRemoteAddressLength: Nat32;
-    lpdwBytesReceived:     Nat32 Ref;
-    lpOverlapped:          kernel32.OVERLAPPED Ref;
-  } Int32 {convention: stdcall;} codeRef];
+FN_CONNECTEXRef: [{
+  s:                Natx;
+  name:             Natx;
+  namelen:          Int32;
+  lpSendBuffer:     Natx;
+  dwSendDataLength: Nat32;
+  lpdwBytesSent:    Nat32 Ref;
+  lpOverlapped:     OVERLAPPED Ref;
+} Int32 {convention: stdcall;} codeRef];
 
-  FN_CONNECTEXRef: [{
-    s:                Natx;
-    name:             Natx;
-    namelen:          Int32;
-    lpSendBuffer:     Natx;
-    dwSendDataLength: Nat32;
-    lpdwBytesSent:    Nat32 Ref;
-    lpOverlapped:     kernel32.OVERLAPPED Ref;
-  } Int32 {convention: stdcall;} codeRef];
+FN_GETACCEPTEXSOCKADDRSRef: [{
+  lpOutputBuffer:        Natx;
+  dwReceiveDataLength:   Nat32;
+  dwLocalAddressLength:  Nat32;
+  dwRemoteAddressLength: Nat32;
+  LocalSockaddr:         sockaddr AsRef Ref;
+  LocalSockaddrLength:   Int32 Ref;
+  RemoteSockaddr:        sockaddr AsRef Ref;
+  RemoteSockaddrLength:  Int32 Ref;
+} {} {convention: stdcall;} codeRef];
 
-  FN_GETACCEPTEXSOCKADDRSRef: [{
-    lpOutputBuffer:        Natx;
-    dwReceiveDataLength:   Nat32;
-    dwLocalAddressLength:  Nat32;
-    dwRemoteAddressLength: Nat32;
-    LocalSockaddr:         sockaddr AsRef Ref;
-    LocalSockaddrLength:   Int32 Ref;
-    RemoteSockaddr:        sockaddr AsRef Ref;
-    RemoteSockaddrLength:  Int32 Ref;
-  } {} {convention: stdcall;} codeRef];
+WSAOVERLAPPED_COMPLETION_ROUTINERef: [{
+  dwError:       Nat32;
+  cbTransferred: Nat32;
+  lpOverlapped:  OVERLAPPED Ref;
+  dwFlags:       Nat32;
+} {} {convention: stdcall;} codeRef];
 
-  WSAOVERLAPPED_COMPLETION_ROUTINERef: @WSAOVERLAPPED_COMPLETION_ROUTINERef;
+AF_INET: [2];
 
-  AF_INET: [2];
+FIONBIO: [-2147195266];
 
-  FIONBIO: [-2147195266];
+INADDR_ANY: [0x00000000n32];
 
-  INADDR_ANY: [0x00000000n32];
+INVALID_SOCKET: [0nx 1nx -];
 
-  INVALID_SOCKET: [0nx 1nx -];
+IPPROTO_TCP: [6];
 
-  IPPROTO_TCP: [6];
+SD_RECEIVE: [0];
+SD_SEND:    [1];
+SD_BOTH:    [2];
 
-  SD_RECEIVE: [0];
-  SD_SEND:    [1];
-  SD_BOTH:    [2];
+SIO_GET_EXTENSION_FUNCTION_POINTER: [0x80000000n32 0x40000000n32 or 0x08000000n32 or 6n32 or];
 
-  SIO_GET_EXTENSION_FUNCTION_POINTER: [0x80000000n32 0x40000000n32 or 0x08000000n32 or 6n32 or];
+SOCK_STREAM: [1];
 
-  SOCK_STREAM: [1];
+SOL_SOCKET: [0xffff];
 
-  SOL_SOCKET: [0xffff];
+SOMAXCONN: [0x7fffffff];
 
-  SOMAXCONN: [0x7fffffff];
+SO_UPDATE_ACCEPT_CONTEXT:  [0x700B];
+SO_UPDATE_CONNECT_CONTEXT: [0x7010];
 
-  SO_UPDATE_ACCEPT_CONTEXT:  [0x700B];
-  SO_UPDATE_CONNECT_CONTEXT: [0x7010];
+TCP_NODELAY: [1];
 
-  TCP_NODELAY: [1];
+WSAEWOULDBLOCK: [10035];
 
-  WSAEWOULDBLOCK: [10035];
+WSAID_ACCEPTEX:             [(0xB5367DF1n32 0xCBACn16 0x11CFn16 (0x95n8 0xCAn8 0x00n8 0x80n8 0x5Fn8 0x48n8 0xA1n8 0x92n8))];
+WSAID_CONNECTEX:            [(0x25A207B9n32 0xDDF3n16 0x4660n16 (0x8En8 0xE9n8 0x76n8 0xE5n8 0x8Cn8 0x74n8 0x06n8 0x3En8))];
+WSAID_GETACCEPTEXSOCKADDRS: [(0xB5367DF2n32 0xCBACn16 0x11CFn16 (0x95n8 0xCAn8 0x00n8 0x80n8 0x5Fn8 0x48n8 0xA1n8 0x92n8))];
 
-  WSAID_ACCEPTEX:             [(0xB5367DF1n32 0xCBACn16 0x11CFn16 (0x95n8 0xCAn8 0x00n8 0x80n8 0x5Fn8 0x48n8 0xA1n8 0x92n8))];
-  WSAID_CONNECTEX:            [(0x25A207B9n32 0xDDF3n16 0x4660n16 (0x8En8 0xE9n8 0x76n8 0xE5n8 0x8Cn8 0x74n8 0x06n8 0x3En8))];
-  WSAID_GETACCEPTEXSOCKADDRS: [(0xB5367DF2n32 0xCBACn16 0x11CFn16 (0x95n8 0xCAn8 0x00n8 0x80n8 0x5Fn8 0x48n8 0xA1n8 0x92n8))];
+WSA_IO_PENDING: [997];
 
-  WSA_IO_PENDING: [997];
+WSABUF: [{
+  len: Nat32;
+  buf: Natx;
+}];
 
-  WSABUF: @WSABUF;
+WSADESCRIPTION_LEN: [256];
+WSASYS_STATUS_LEN:  [128];
 
-  WSADESCRIPTION_LEN: @WSADESCRIPTION_LEN;
-  WSASYS_STATUS_LEN:  @WSASYS_STATUS_LEN;
+WSADATA: [{
+  wVersion:     Nat16;
+  wHighVersion: Nat16;
+  Natx storageSize 8nx = [
+    iMaxSockets:    Nat16;
+    iMaxUdpDg:      Nat16;
+    lpVendorInfo:   Nat8 Ref;
+    szDescription:  Nat8 WSADESCRIPTION_LEN 1 + array;
+    szSystemStatus: Nat8 WSASYS_STATUS_LEN 1 + array;
+  ] [
+    szDescription:  Nat8 WSADESCRIPTION_LEN 1 + array;
+    szSystemStatus: Nat8 WSASYS_STATUS_LEN 1 + array;
+    iMaxSockets:    Nat16;
+    iMaxUdpDg:      Nat16;
+    lpVendorInfo:   Nat8 Ref;
+  ] uif
+}];
 
-  WSADATA: @WSADATA;
+addrinfo: [{
+  ai_flags:     Int32;
+  ai_family:    Int32;
+  ai_socktype:  Int32;
+  ai_protocol:  Int32;
+  ai_addrlen:   Natx;
+  ai_canonname: Natx;
+  ai_addr:      Natx;
+  ai_next:      Natx;
+}];
 
-  addrinfo: @addrinfo;
+fd_set: [{
+  fd_count: Nat32;
+  fd_array: Natx 64 array;
+}];
 
-  fd_set: @fd_set;
+sockaddr: [{
+  sa_family: Nat16;
+  sa_data:   Nat8 14 array;
+}];
 
-  sockaddr: @sockaddr;
+sockaddr_in: [{
+  sin_family: Nat16;
+  sin_port:   Nat16;
+  sin_addr:   Nat32;
+  sin_zero:   Nat8 8 array;
+}];
 
-  sockaddr_in: [{
-    sin_family: Nat16;
-    sin_port:   Nat16;
-    sin_addr:   Nat32;
-    sin_zero:   Nat8 8 array;
-  }];
+timeval: [{
+  tv_sec:  Int32;
+  tv_usec: Int32;
+}];
 
-  timeval: @timeval;
+# WS2_32.Lib should be included for these functions
 
-  # WS2_32.Lib should be included for these functions
-  WSACleanup:             @WSACleanup             virtual;
-  WSAGetLastError:        @WSAGetLastError        virtual;
-  WSAGetOverlappedResult: @WSAGetOverlappedResult virtual;
-  WSAIoctl:               @WSAIoctl               virtual;
-  WSARecv:                @WSARecv                virtual;
-  WSASend:                @WSASend                virtual;
-  WSASetLastError:        @WSASetLastError        virtual;
-  WSAStartup:             @WSAStartup             virtual;
-  bind:                   @bind                   virtual;
-  closesocket:            @closesocket            virtual;
-  connect:                @connect                virtual;
-  freeaddrinfo:           @freeaddrinfo           virtual;
-  getaddrinfo:            @getaddrinfo            virtual;
-  htonl:                  @htonl                  virtual;
-  htons:                  @htons                  virtual;
-  ioctlsocket:            @ioctlsocket            virtual;
-  listen:                 @listen                 virtual;
-  ntohl:                  @ntohl                  virtual;
-  ntohs:                  @ntohs                  virtual;
-  recv:                   @recv                   virtual;
-  select:                 @select                 virtual;
-  send:                   @send                   virtual;
-  setsockopt:             @setsockopt             virtual;
-  shutdown:               @shutdown               virtual;
-  socket:                 @socket                 virtual;
-};
+{} Int32 {convention: stdcall;} "WSACleanup" importFunction
+
+{} Int32 {convention: stdcall;} "WSAGetLastError" importFunction
+
+{
+  s:            Natx;
+  lpOverlapped: OVERLAPPED Ref;
+  lpcbTransfer: Nat32 Ref;
+  fWait:        Int32;
+  lpdwFlags:    Nat32 Ref;
+} Int32 {convention: stdcall;} "WSAGetOverlappedResult" importFunction
+
+{
+  s:                   Natx;
+  dwIoControlCode:     Nat32;
+  lpvInBuffer:         Natx;
+  cbInBuffer:          Nat32;
+  lpvOutBuffer:        Natx;
+  cbOutBuffer:         Nat32;
+  lpcbBytesReturned:   Nat32 Ref;
+  lpOverlapped:        OVERLAPPED Ref;
+  lpCompletionRoutine: WSAOVERLAPPED_COMPLETION_ROUTINERef;
+} Int32 {convention: stdcall;} "WSAIoctl" importFunction
+
+{
+  s:                    Natx;
+  lpBuffers:            WSABUF Ref;
+  dwBufferCount:        Nat32;
+  lpNumberOfBytesRecvd: Nat32 Ref;
+  lpFlags:              Nat32 Ref;
+  lpOverlapped:         OVERLAPPED Ref;
+  lpCompletionRoutine:  WSAOVERLAPPED_COMPLETION_ROUTINERef;
+} Int32 {convention: stdcall;} "WSARecv" importFunction
+
+{
+  s:                   Natx;
+  lpBuffers:           WSABUF Ref;
+  dwBufferCount:       Nat32;
+  lpNumberOfBytesSent: Nat32 Ref;
+  dwFlags:             Nat32;
+  lpOverlapped:        OVERLAPPED Ref;
+  lpCompletionRoutine: WSAOVERLAPPED_COMPLETION_ROUTINERef;
+} Int32 {convention: stdcall;} "WSASend" importFunction
+
+{
+  iError: Int32;
+} {} {convention: stdcall;} "WSASetLastError" importFunction
+
+{
+  wVersionRequested: Nat16;
+  lpWSAData:         WSADATA Ref;
+} Int32 {convention: stdcall;} "WSAStartup" importFunction
+
+{
+  s:       Natx;
+  name:    Natx;
+  namelen: Int32;
+} Int32 {convention: stdcall;} "bind" importFunction
+
+{
+  s: Natx;
+} Int32 {convention: stdcall;} "closesocket" importFunction
+
+{
+  s:       Natx;
+  name:    sockaddr Ref;
+  nameLen: Int32;
+} Int32 {convention: stdcall;} "connect" importFunction
+
+{
+  pAddrInfo: addrinfo Ref;
+} {} {convention: stdcall;} "freeaddrinfo" importFunction
+
+{
+  pNodeName:    Natx;
+  pServiceName: Natx;
+  pHints:       addrinfo Cref;
+  ppResult:     Natx;
+} Int32 {convention: stdcall;} "getaddrinfo" importFunction
+
+{
+  hostlong: Nat32;
+} Nat32 {convention: stdcall;} "htonl" importFunction
+
+{
+  hostshort: Nat16;
+} Nat16 {convention: stdcall;} "htons" importFunction
+
+{
+  s:    Natx;
+  cmd:  Int32;
+  argp: Natx;
+} Int32 {convention: stdcall;} "ioctlsocket" importFunction
+
+{
+  s:       Natx;
+  backlog: Int32;
+} Int32 {convention: stdcall;} "listen" importFunction
+
+{
+  netlong: Nat32;
+} Nat32 {convention: stdcall;} "ntohl" importFunction
+
+{
+  netshort: Nat16;
+} Nat16 {convention: stdcall;} "ntohs" importFunction
+
+{
+  s:     Natx;
+  buf:   Natx;
+  len:   Int32;
+  flags: Int32;
+} Int32 {convention: stdcall;} "recv" importFunction
+
+{
+  ndfs:      Int32;
+  readfds:   fd_set Ref;
+  writefds:  fd_set Ref;
+  exceptfds: fd_set Ref;
+  timeout:  timeval Ref;
+} Int32 {convention: stdcall;} "select" importFunction
+
+{
+  s:     Natx;
+  buf:   Natx;
+  len:   Int32;
+  flags: Int32;
+} Int32 {convention: stdcall;} "send" importFunction
+
+{
+  s: Natx;
+  level: Int32;
+  optname: Int32;
+  optval: Natx;
+  optlen: Int32;
+} Int32 {convention: stdcall;} "setsockopt" importFunction
+
+{
+  s:   Natx;
+  how: Int32;
+} Int32 {convention: stdcall;} "shutdown" importFunction
+
+{
+  af:       Int32;
+  type:     Int32;
+  protocol: Int32;
+} Natx {convention: stdcall;} "socket" importFunction

@@ -30,8 +30,35 @@
 "control.when"          use
 "control.||"            use
 
-"kernel32.kernel32" use
-"ws2_32.winsock2"   use
+"kernel32.CreateIoCompletionPort"            use
+"kernel32.GetLastError"                      use
+"kernel32.ERROR_OPERATION_ABORTED"           use
+"kernel32.OVERLAPPED"                        use
+"ws2_32.AF_INET"                             use
+"ws2_32.FN_CONNECTEXRef"                     use
+"ws2_32.INADDR_ANY"                          use
+"ws2_32.INVALID_SOCKET"                      use
+"ws2_32.IPPROTO_TCP"                         use
+"ws2_32.SIO_GET_EXTENSION_FUNCTION_POINTER"  use
+"ws2_32.SOCK_STREAM"                         use
+"ws2_32.SOL_SOCKET"                          use
+"ws2_32.SO_UPDATE_CONNECT_CONTEXT"           use
+"ws2_32.TCP_NODELAY"                         use
+"ws2_32.WSAGetLastError"                     use
+"ws2_32.WSAGetOverlappedResult"              use
+"ws2_32.WSAID_CONNECTEX"                     use
+"ws2_32.WSAIoctl"                            use
+"ws2_32.WSAOVERLAPPED_COMPLETION_ROUTINERef" use
+"ws2_32.WSARecv"                             use
+"ws2_32.WSASend"                             use
+"ws2_32.WSA_IO_PENDING"                      use
+"ws2_32.bind"                                use
+"ws2_32.htonl"                               use
+"ws2_32.htons"                               use
+"ws2_32.closesocket"                         use
+"ws2_32.setsockopt"                          use
+"ws2_32.sockaddr_in"                         use
+"ws2_32.socket"                              use
 
 "dispatcher.dispatcher" use
 
@@ -77,33 +104,33 @@ TcpConnection: [{
     address: port: onConnect0:;;;
     old: IN_CONNECT @states ACQUIRE atomicExchange;
     [old 0n32 =] "TcpConnection.connect: invalid state" assert
-    winsock2.IPPROTO_TCP winsock2.SOCK_STREAM winsock2.AF_INET winsock2.socket !connection connection winsock2.INVALID_SOCKET = [("socket failed, result=" winsock2.WSAGetLastError) assembleString] [
+    IPPROTO_TCP SOCK_STREAM AF_INET socket !connection connection INVALID_SOCKET = [("socket failed, result=" WSAGetLastError) assembleString] [
       {} (
-        [drop nodelay: 1; nodelay storageSize Nat32 cast Int32 cast nodelay storageAddress winsock2.TCP_NODELAY winsock2.IPPROTO_TCP connection winsock2.setsockopt 0 = ~] [("setsockopt failed, result=" winsock2.WSAGetLastError) assembleString]
+        [drop nodelay: 1; nodelay storageSize Nat32 cast Int32 cast nodelay storageAddress TCP_NODELAY IPPROTO_TCP connection setsockopt 0 = ~] [("setsockopt failed, result=" WSAGetLastError) assembleString]
         [
           drop
-          bindAddress: winsock2.sockaddr_in;
-          winsock2.AF_INET Nat32 cast Nat16 cast @bindAddress.!sin_family
-          0n16 @bindAddress.!sin_port
-          winsock2.INADDR_ANY @bindAddress.!sin_addr
-          bindAddress storageSize Nat32 cast Int32 cast bindAddress storageAddress connection winsock2.bind 0 = ~
-        ] [("bind failed, result=" winsock2.WSAGetLastError) assembleString]
+          bindAddress: sockaddr_in;
+          AF_INET Nat32 cast Nat16 cast @bindAddress.!sin_family
+          0n16       @bindAddress.!sin_port
+          INADDR_ANY @bindAddress.!sin_addr
+          bindAddress storageSize Nat32 cast Int32 cast bindAddress storageAddress connection bind 0 = ~
+        ] [("bind failed, result=" WSAGetLastError) assembleString]
         [
           drop
           @ConnectEx isNil [
-            connectEx: (winsock2.FN_CONNECTEXRef);
+            connectEx: (FN_CONNECTEXRef);
             read: Nat32;
-            winsock2.WSAOVERLAPPED_COMPLETION_ROUTINERef kernel32.OVERLAPPED Ref @read connectEx storageSize Nat32 cast connectEx storageAddress winsock2.WSAID_CONNECTEX storageSize Nat32 cast winsock2.WSAID_CONNECTEX storageAddress winsock2.SIO_GET_EXTENSION_FUNCTION_POINTER connection winsock2.WSAIoctl 0 = ~
+            WSAOVERLAPPED_COMPLETION_ROUTINERef OVERLAPPED Ref @read connectEx storageSize Nat32 cast connectEx storageAddress WSAID_CONNECTEX storageSize Nat32 cast WSAID_CONNECTEX storageAddress SIO_GET_EXTENSION_FUNCTION_POINTER connection WSAIoctl 0 = ~
             [TRUE] [0 connectEx @ !ConnectEx FALSE] if
           ] &&
-        ] [("WSAIoctl failed, result=" winsock2.WSAGetLastError) assembleString]
-        [drop 0n32 0nx dispatcher.completionPort connection kernel32.CreateIoCompletionPort dispatcher.completionPort = ~] [("CreateIoCompletionPort failed, result=" kernel32.GetLastError) assembleString]
+        ] [("WSAIoctl failed, result=" WSAGetLastError) assembleString]
+        [drop 0n32 0nx dispatcher.completionPort connection CreateIoCompletionPort dispatcher.completionPort = ~] [("CreateIoCompletionPort failed, result=" GetLastError) assembleString]
         [
           drop
-          addressData: winsock2.sockaddr_in;
-          winsock2.AF_INET Nat32 cast Nat16 cast @addressData.!sin_family
-          port winsock2.htons @addressData.!sin_port
-          address winsock2.htonl @addressData.!sin_addr
+          addressData: sockaddr_in;
+          AF_INET Nat32 cast Nat16 cast @addressData.!sin_family
+          port    htons @addressData.!sin_port
+          address htonl @addressData.!sin_addr
           0nx @writeDispatcherContext.@overlapped.!hEvent
           @onConnectEventWrapper @writeDispatcherContext.!onEvent
           self storageAddress @writeDispatcherContext.!context
@@ -113,12 +140,12 @@ TcpConnection: [{
           # It is a caller responsibility to synchronize 'cancelConnect' call with the exit from 'connect'.
           @writeDispatcherContext.@overlapped Nat32 Ref 0n32 0nx addressData storageSize Nat32 cast Int32 cast addressData storageAddress connection ConnectEx 1 =
         ] ["ConnectEx returned immediately" toString]
-        [drop winsock2.WSAGetLastError winsock2.WSA_IO_PENDING = ~] [("ConnectEx failed, result=" winsock2.WSAGetLastError) assembleString]
+        [drop WSAGetLastError WSA_IO_PENDING = ~] [("ConnectEx failed, result=" WSAGetLastError) assembleString]
         ["" toString]
       ) cond
 
       result:; result "" = ~ [
-        connection winsock2.closesocket 0 = ~ [("LEAK: closesocket failed, result=" winsock2.WSAGetLastError LF) assembleString print] when
+        connection closesocket 0 = ~ [("LEAK: closesocket failed, result=" WSAGetLastError LF) assembleString print] when
         0n32 @states RELEASE atomicStore
       ] when
 
@@ -138,8 +165,8 @@ TcpConnection: [{
       FALSE
       IN_CANCEL_CONNECT @states RELEASE atomicXor drop
     ] [
-      @writeDispatcherContext.@overlapped connection kernel32.CancelIoEx 1 = ~ [
-        kernel32.GetLastError kernel32.ERROR_NOT_FOUND = ~ [("CancelIoEx failed, result=" kernel32.GetLastError LF) assembleString print] when # There is no good way to handle this, just report.
+      @writeDispatcherContext.@overlapped connection CancelIoEx 1 = ~ [
+        GetLastError ERROR_NOT_FOUND = ~ [("CancelIoEx failed, result=" GetLastError LF) assembleString print] when # There is no good way to handle this, just report.
         FALSE
       ] [TRUE] if
 
@@ -148,8 +175,8 @@ TcpConnection: [{
       # There is a chance that 'onConnectEvent' was called in the middle of executon of 'cancelConnect' and was not allowed to proceed. In this case, we should restart it.
       old IN_CANCEL_CONNECT IN_ON_CONNECT_EVENT or CONNECTING or = [
         CONNECTING @states RELEASE atomicStore
-        @writeDispatcherContext.@overlapped 0nx writeDispatcherContext.overlapped.InternalHigh Nat32 cast dispatcher.completionPort kernel32.PostQueuedCompletionStatus 1 = ~ [
-          ("FATAL: PostQueuedCompletionStatus failed, result=" kernel32.GetLastError LF) assembleString print 1 exit
+        @writeDispatcherContext.@overlapped 0nx writeDispatcherContext.overlapped.InternalHigh Nat32 cast dispatcher.completionPort PostQueuedCompletionStatus 1 = ~ [
+          ("FATAL: PostQueuedCompletionStatus failed, result=" GetLastError LF) assembleString print 1 exit
         ] when
       ] when
     ] if
@@ -163,7 +190,7 @@ TcpConnection: [{
   disconnect: [
     old: IN_DISCONNECT @states ACQUIRE atomicExchange;
     [old CONNECTED =] "TcpConnection.disconnect: invalid state" assert
-    connection winsock2.closesocket 0 = ~ [("LEAK: closesocket failed, result=" winsock2.WSAGetLastError LF) assembleString print] when
+    connection closesocket 0 = ~ [("LEAK: closesocket failed, result=" WSAGetLastError LF) assembleString print] when
     0n32 @states RELEASE atomicStore
   ];
 
@@ -185,9 +212,9 @@ TcpConnection: [{
     IN_READ READING or @states RELEASE atomicXor drop
     # If 'cancelRead' will be called at this point, it is possible that it will not happen in time co cancel the operation.
     # It is a caller responsibility to synchronize 'cancelRead' call with the exit from 'read'.
-    winsock2.WSAOVERLAPPED_COMPLETION_ROUTINERef @readDispatcherContext.@overlapped @flags Nat32 Ref 1n32 @buf connection winsock2.WSARecv 0 = ~ [
-      winsock2.WSAGetLastError winsock2.WSA_IO_PENDING = ~ [
-        ("WSARecv failed, result=" winsock2.WSAGetLastError) assembleString
+    WSAOVERLAPPED_COMPLETION_ROUTINERef @readDispatcherContext.@overlapped @flags Nat32 Ref 1n32 @buf connection WSARecv 0 = ~ [
+      WSAGetLastError WSA_IO_PENDING = ~ [
+        ("WSARecv failed, result=" WSAGetLastError) assembleString
         READING @states RELEASE atomicXor drop
       ] ["" toString] if
     ] ["" toString] if
@@ -203,8 +230,8 @@ TcpConnection: [{
     [old CONNECTED READING or = [old IN_ON_READ_EVENT CONNECTED or READING or =] || [old CONNECTED =] ||] "TcpConnection.cancelRead: invalid state" assert
     old CONNECTED READING or = ~ [FALSE] [
       # In the unfortunate event when 'onReadEvent' was called at this point, we still call the 'CancelIoEx', but this should not hurt.
-      @readDispatcherContext.@overlapped connection kernel32.CancelIoEx 1 = ~ [
-        kernel32.GetLastError kernel32.ERROR_NOT_FOUND = ~ [("CancelIoEx failed, result=" kernel32.GetLastError LF) assembleString print] when # There is no good way to handle this, just report.
+      @readDispatcherContext.@overlapped connection CancelIoEx 1 = ~ [
+        GetLastError ERROR_NOT_FOUND = ~ [("CancelIoEx failed, result=" GetLastError LF) assembleString print] when # There is no good way to handle this, just report.
         FALSE
       ] [TRUE] if
     ] if
@@ -229,9 +256,9 @@ TcpConnection: [{
     IN_WRITE WRITING or @states RELEASE atomicXor drop
     # If 'cancelWrite' will be called at this point, it is possible that it will not happen in time co cancel the operation.
     # It is a caller responsibility to synchronize 'cancelWrite' call with the exit from 'write'.
-    winsock2.WSAOVERLAPPED_COMPLETION_ROUTINERef @writeDispatcherContext.@overlapped 0n32 Nat32 1n32 @buf connection winsock2.WSASend 0 = ~ [
-      winsock2.WSAGetLastError winsock2.WSA_IO_PENDING = ~ [
-        ("WSASend failed, result=" winsock2.WSAGetLastError) assembleString
+    WSAOVERLAPPED_COMPLETION_ROUTINERef @writeDispatcherContext.@overlapped 0n32 Nat32 1n32 @buf connection WSASend 0 = ~ [
+      WSAGetLastError WSA_IO_PENDING = ~ [
+        ("WSASend failed, result=" WSAGetLastError) assembleString
         WRITING @states RELEASE atomicXor drop
       ] ["" toString] if
     ] ["" toString] if
@@ -247,8 +274,8 @@ TcpConnection: [{
     [old CONNECTED WRITING or = [old IN_ON_WRITE_EVENT CONNECTED or WRITING or =] || [old CONNECTED =] ||] "TcpConnection.cancelWrite: invalid state" assert
     old CONNECTED WRITING or = ~ [FALSE] [
       # In the unfortunate event when 'onWriteEvent' was called at this point, we still call the 'CancelIoEx', but this should not hurt.
-      @writeDispatcherContext.@overlapped connection kernel32.CancelIoEx 1 = ~ [
-        kernel32.GetLastError kernel32.ERROR_NOT_FOUND = ~ [("CancelIoEx failed, result=" kernel32.GetLastError LF) assembleString print] when # There is no good way to handle this, just report.
+      @writeDispatcherContext.@overlapped connection CancelIoEx 1 = ~ [
+        GetLastError ERROR_NOT_FOUND = ~ [("CancelIoEx failed, result=" GetLastError LF) assembleString print] when # There is no good way to handle this, just report.
         FALSE
       ] [TRUE] if
     ] if
@@ -292,16 +319,16 @@ TcpConnection: [{
       result: String;
       transferred: 0n32;
       flags: 0n32;
-      @flags 0 @transferred @writeDispatcherContext.@overlapped connection winsock2.WSAGetOverlappedResult 1 = ~ [winsock2.WSAGetLastError Nat32 cast !error] [0n32 !error] if
+      @flags 0 @transferred @writeDispatcherContext.@overlapped connection WSAGetOverlappedResult 1 = ~ [WSAGetLastError Nat32 cast !error] [0n32 !error] if
       [transferred numberOfBytesTransferred =] "unexpected transferred size" assert
       error 0n32 = ~ [
-        connection winsock2.closesocket 0 = ~ [("LEAK: closesocket failed, result=" winsock2.WSAGetLastError LF) assembleString print] when
-        error kernel32.ERROR_OPERATION_ABORTED = ["canceled" toString !result] [("ConnectEx failed, result=" error) assembleString !result] if
+        connection closesocket 0 = ~ [("LEAK: closesocket failed, result=" WSAGetLastError LF) assembleString print] when
+        error ERROR_OPERATION_ABORTED = ["canceled" toString !result] [("ConnectEx failed, result=" error) assembleString !result] if
         IN_ON_CONNECT_EVENT CONNECTING or
       ] [
-        value: 1n32; value storageSize Nat32 cast Int32 cast value storageAddress winsock2.SO_UPDATE_CONNECT_CONTEXT winsock2.SOL_SOCKET connection winsock2.setsockopt 0 = ~ [
-          ("setsockopt failed, result=" winsock2.WSAGetLastError) assembleString !result
-          connection winsock2.closesocket 0 = ~ [("LEAK: closesocket failed, result=" winsock2.WSAGetLastError LF) assembleString print] when
+        value: 1n32; value storageSize Nat32 cast Int32 cast value storageAddress SO_UPDATE_CONNECT_CONTEXT SOL_SOCKET connection setsockopt 0 = ~ [
+          ("setsockopt failed, result=" WSAGetLastError) assembleString !result
+          connection closesocket 0 = ~ [("LEAK: closesocket failed, result=" WSAGetLastError LF) assembleString print] when
           IN_ON_CONNECT_EVENT CONNECTING or
         ] [
           0nx @readDispatcherContext.@overlapped.!hEvent
@@ -323,10 +350,10 @@ TcpConnection: [{
     result: String;
     transferred: 0n32;
     flags: 0n32;
-    @flags 0 @transferred @readDispatcherContext.@overlapped connection winsock2.WSAGetOverlappedResult 1 = ~ [winsock2.WSAGetLastError Nat32 cast !error] [0n32 !error] if
+    @flags 0 @transferred @readDispatcherContext.@overlapped connection WSAGetOverlappedResult 1 = ~ [WSAGetLastError Nat32 cast !error] [0n32 !error] if
     [transferred numberOfBytesTransferred =] "unexpected transferred size" assert
     error 0n32 = ~ [
-      error kernel32.ERROR_OPERATION_ABORTED = ["canceled" toString !result] [("WSARecv failed, result=" error) assembleString !result] if
+      error ERROR_OPERATION_ABORTED = ["canceled" toString !result] [("WSARecv failed, result=" error) assembleString !result] if
     ] when
 
     IN_ON_READ_EVENT READING or @states RELEASE atomicXor drop
@@ -340,10 +367,10 @@ TcpConnection: [{
     result: String;
     transferred: 0n32;
     flags: 0n32;
-    @flags 0 @transferred @writeDispatcherContext.@overlapped connection winsock2.WSAGetOverlappedResult 1 = ~ [winsock2.WSAGetLastError Nat32 cast !error] [0n32 !error] if
+    @flags 0 @transferred @writeDispatcherContext.@overlapped connection WSAGetOverlappedResult 1 = ~ [WSAGetLastError Nat32 cast !error] [0n32 !error] if
     [transferred numberOfBytesTransferred =] "unexpected transferred size" assert
     error 0n32 = ~ [
-      error kernel32.ERROR_OPERATION_ABORTED = ["canceled" toString !result] [("WSASend failed, result=" error) assembleString !result] if
+      error ERROR_OPERATION_ABORTED = ["canceled" toString !result] [("WSASend failed, result=" error) assembleString !result] if
     ] when
 
     IN_ON_WRITE_EVENT WRITING or @states RELEASE atomicXor drop
@@ -355,4 +382,4 @@ TcpConnection: [{
   onWriteEventWrapper:   [TcpConnection addressToReference .onWriteEvent  ];
 }];
 
-ConnectEx: winsock2.FN_CONNECTEXRef;
+ConnectEx: FN_CONNECTEXRef;
