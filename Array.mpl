@@ -7,6 +7,7 @@
 
 "Span.toSpan"              use
 "Span.toSpan2"             use
+"algorithm.beginsWith"     use
 "algorithm.each"           use
 "algorithm.filter"         use
 "algorithm.findOrdinal"    use
@@ -123,26 +124,48 @@ makeArrayObject: [
     ];
 
     append: [
-      element:;
-      addReserve
-      dataSize 1 + @dataSize set
-      newElement: dataSize 1 - at;
-      @newElement manuallyInitVariable
-      @element @newElement set
-    ];
+      append: ["Invalid source schema" raiseStaticError];
 
-    appendAll: [
-      source: toIter;
-      @source "size" has ~ ["sized Iter expected" raiseStaticError] when
-      offset: size;
-      iterSize: source.size;
-      size iterSize + enlarge
-      iterSize [
-        @source.next drop offset i + at set
-      ] times
-    ];
+      append: [toIter TRUE] [
+        iter: toIter;
+        @iter "size" has [
+          oldSize: dataSize new;
+          oldSize @iter.size + enlarge
+          @iter.size [
+            @iter.next drop oldSize i + at set
+          ] times
+        ] [
+          [
+            @iter.next [append TRUE] [drop FALSE] if
+          ] loop
+        ] if
+      ] pfunc;
 
-    appendEach: [[append] each];
+      append: [toSpan TRUE] [
+        span: toSpan;
+        oldSize: dataSize new;
+        oldSize span.size + enlarge
+        @dataBegin automatic? [
+          span.size [
+            i @span.at oldSize i + at set
+          ] times
+        ] [
+          [span.data @dataBegin same] "Inconsistent schemas" assert
+          @dataBegin storageSize span.size Natx cast * span.data storageAddress oldSize at storageAddress memcpy drop
+        ] if
+      ] pfunc;
+
+      append: [@elementType same] [
+        item:;
+        addReserve
+        dataSize 1 + @dataSize set
+        newItem: dataSize 1 - at;
+        @newItem manuallyInitVariable
+        @item @newItem set
+      ] pfunc;
+
+      append
+    ];
 
     assign: [
       assign: ["Invalid source schema" raiseStaticError];
@@ -152,13 +175,13 @@ makeArrayObject: [
         @iter "size" has [
           @iter.size resize
           @iter.size [
-            @iter.next drop
-            @dataBegin storageAddress @dataBegin storageSize i Natx cast * + @dataBegin addressToReference set
+            @iter.next drop i at set
           ] times
         ] [
           clear
-          [@iter.next] [append] while
-          drop
+          [
+            @iter.next [append TRUE] [drop FALSE] if
+          ] loop
         ] if
       ] pfunc;
 
@@ -167,8 +190,7 @@ makeArrayObject: [
         span.size resize
         @dataBegin automatic? [
           span.size [
-            span.data  storageAddress @dataBegin storageSize i Natx cast * + @span.data addressToReference
-            @dataBegin storageAddress @dataBegin storageSize i Natx cast * + @dataBegin addressToReference set
+            i @span.at i at set
           ] times
         ] [
           [span.data @dataBegin same] "Inconsistent schemas" assert
@@ -288,21 +310,6 @@ makeArrayObject: [
 Array: [FALSE makeArrayObject];
 MemoryDebugArray: [TRUE makeArrayObject];
 
-makeArray: [
-  indexable: toIndex;
-  [indexable.size 0 >] "List is empty!" assert
-  result: 0 @indexable.at newVarOfTheSameType Array;
-  i: 0 dynamic;
-  [
-    i indexable.size < [
-      i @indexable.at @result.append
-      i 1 + @i set TRUE
-    ] &&
-  ] loop
-
-  @result
-];
-
 getHeapUsedSize: ["ARRAY" has] [
   arg:;
   result: arg.elementType storageSize arg.dataReserve Natx cast *;
@@ -317,24 +324,25 @@ getHeapUsedSize: ["ARRAY" has] [
   result
 ] pfunc;
 
-toArray: [
-  source: toIter;
-  first: firstValid: @source.next;;
+toArray: [toIter TRUE] [
+  iter: toIter;
+  first: firstValid: @iter.next;;
   array: @first newVarOfTheSameType Array;
   firstValid [
-    @source "size" has [
-      1 @source.size + @array.resize
-      @first 0 @array.at set
-      @source.size [
-        @source.next drop 1 i + @array.at set
-      ] times
-    ] [
-      @first @array.append
-      [
-        @source.next [@array.append TRUE] [drop FALSE] if
-      ] loop
-    ] if
+    @first @array.append
+    @iter  @array.append
   ] when
 
   @array
-];
+] pfunc;
+
+toArray: [toSpan TRUE] [
+  span: toSpan;
+  array: @span.data newVarOfTheSameType Array;
+  @span @array.assign
+  @array
+] pfunc;
+
+toArray: [.SCHEMA_NAME textSplit "Array<" textSplit beginsWith] [
+  new
+] pfunc;
