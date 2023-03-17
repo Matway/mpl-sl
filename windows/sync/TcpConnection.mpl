@@ -5,6 +5,7 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
+"Span.toSpan"           use
 "String.String"         use
 "String.assembleString" use
 "String.makeStringView" use
@@ -77,15 +78,14 @@ TcpConnection: [{
 
   # Read data
   # in:
-  #   data (Nat8 Ref) - address of the buffer to read data into
-  #   dataSize (Int32) - size of the buffer
+  #   data (Nat8 Span) - buffer to read into
   # out:
   #   size (Int32) - size of the actual data
   #   result (String) - empty on success, error message on failure
   read: [
-    data: dataSize:;;
+    data: toSpan;
     [valid?] "invalid TcpConnection" assert
-    @data AsRef Nat8 AsRef same ~ [@data printStack drop "[TcpConnection.read], invalid argument, [Nat8 Ref] expected" raiseStaticError] when
+    (@data.data) (Nat8 Ref) same ~ [data printStack drop "[TcpConnection.read], invalid argument, [Nat8 Span] expected" raiseStaticError] when
     size: 0;
     result: String;
 
@@ -99,7 +99,7 @@ TcpConnection: [{
           connection: Natx;
         };
 
-        WSAOVERLAPPED_COMPLETION_ROUTINERef @context.@overlapped Nat32 Nat32 Ref 1n32 {len: dataSize Nat32 cast; buf: data storageAddress;} connection WSARecv 0 = ~ [
+        WSAOVERLAPPED_COMPLETION_ROUTINERef @context.@overlapped Nat32 Nat32 Ref 1n32 {len: data.size Nat32 cast; buf: data.data storageAddress;} connection WSARecv 0 = ~ [
           lastError: WSAGetLastError;
           lastError WSA_IO_PENDING = ~ [("WSARecv failed, result=" lastError) @result.catMany] when
         ] when
@@ -133,7 +133,7 @@ TcpConnection: [{
   readString: [
     [valid?] "invalid TcpConnection" assert
     string: String; @string.resize
-    result: @string.data string.size read; @string.resize
+    result: @string read; @string.resize
     @string @result
   ];
 
@@ -145,14 +145,13 @@ TcpConnection: [{
 
   # Write data
   # in:
-  #   data (Nat8 Cref) - address of the buffer to write
-  #   size (Int32) - size of the buffer
+  #   data (Nat8 Cref Span) - buffer to write
   # out:
   #   result (String) - empty on success, error message on failure
   write: [
-    data: size:;;
+    data: toSpan;
     [valid?] "invalid TcpConnection" assert
-    @data AsRef Nat8 Cref AsRef same ~ [@data printStack drop "[TcpConnection.write], invalid argument, [Nat8 Cref] expected" raiseStaticError] when
+    (data.data) (Nat8 Cref) same ~ [data printStack drop "[TcpConnection.write], invalid argument, [Nat8 Cref Span] expected" raiseStaticError] when
     result: String;
 
     (
@@ -165,7 +164,7 @@ TcpConnection: [{
           connection: Natx;
         };
 
-        WSAOVERLAPPED_COMPLETION_ROUTINERef @context.@overlapped 0n32 Nat32 1n32 {len: size Nat32 cast; buf: data storageAddress;} connection WSASend 0 = ~ [
+        WSAOVERLAPPED_COMPLETION_ROUTINERef @context.@overlapped 0n32 Nat32 1n32 {len: data.size Nat32 cast; buf: data.data storageAddress;} connection WSASend 0 = ~ [
           lastError: WSAGetLastError;
           lastError WSA_IO_PENDING = ~ [("WSASend failed, result=" lastError) @result.catMany] when
         ] when
@@ -187,17 +186,11 @@ TcpConnection: [{
         transferred: 0n32;
         Nat32 0 @transferred @context.@overlapped connection WSAGetOverlappedResult 1 = ~ [("WSASend failed, result=" WSAGetLastError) @result.catMany] when
       ] [
-        [transferred Int32 cast size =] "wrong transferred size" assert
+        [transferred Int32 cast data.size =] "wrong transferred size" assert
       ]
     ) sequence
 
     @result
-  ];
-
-  writeString: [
-    [valid?] "invalid TcpConnection" assert
-    string: makeStringView;
-    string.data string.size write
   ];
 
   connection: INVALID_SOCKET;

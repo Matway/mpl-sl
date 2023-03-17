@@ -88,8 +88,8 @@ syncTest: [];
     connection: 0x7F000001n32 6600n16 connectTcp !result;
     result "" = ~ [("connectTcp failed, " result LF) printList "" failProc] when
 
-    "Hello, world!" connection.writeString !result
-    result "" = ~ [("TcpConnection.writeString failed, " result LF) printList "" failProc] when
+    "Hello, world!" connection.write !result
+    result "" = ~ [("TcpConnection.write failed, " result LF) printList "" failProc] when
 
     message: 1024 connection.readString !result;
     result "" = ~ [("TcpConnection.readString failed, " result LF) printList "" failProc] when
@@ -116,8 +116,8 @@ syncTest: [];
     result "" = ~ [("TcpConnection.readString failed, " result LF) printList "" failProc] when
     message "Hello, world!" = ~ [("server received unexpected request, \"" message "\"\n") printList "" failProc] when
 
-    "Reply: Hello, world!" connection.writeString !result
-    result "" = ~ [("TcpConnection.writeString failed, " result LF) printList "" failProc] when
+    "Reply: Hello, world!" connection.write !result
+    result "" = ~ [("TcpConnection.write failed, " result LF) printList "" failProc] when
 
     message: 1024 connection.readString !result;
     result "closed" = ~ [("TcpConnection.readString failed, " result LF) printList "" failProc] when
