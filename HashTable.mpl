@@ -163,7 +163,7 @@ HashTable: [
       item: 0;
 
       next: [
-        bucket -1 = [{key: @data.@elementType.@elementType.@key Ref; value: @data.@elementType.@elementType.@value Ref;} method FALSE] [
+        bucket -1 = [{key: @data.@Item.@Item.@key Ref; value: @data.@Item.@Item.@value Ref;} method FALSE] [
           item bucket @data.at.at method
           item 1 + !item
           item bucket data.at.size = [
