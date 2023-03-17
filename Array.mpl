@@ -5,34 +5,34 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"Span.toSpan"              use
-"Span.toSpan2"             use
-"algorithm.beginsWith"     use
-"algorithm.each"           use
-"algorithm.filter"         use
-"algorithm.findOrdinal"    use
-"algorithm.makeArrayIndex" use
-"algorithm.makeArrayIter"  use
-"algorithm.makeArrayView"  use
-"algorithm.toIndex"        use
-"algorithm.toIter"         use
-"algorithm.unhead"         use
-"control.&&"               use
-"control.Natx"             use
-"control.Ref"              use
-"control.assert"           use
-"control.automatic?"       use
-"control.compose"          use
-"control.drop"             use
-"control.dup"              use
-"control.pfunc"            use
-"control.swap"             use
-"control.times"            use
-"control.when"             use
-"control.while"            use
-"memory.memcpy"            use
-"memory.mplFree"           use
-"memory.mplRealloc"        use
+"Span.toSpan"                    use
+"Span.toSpan2"                   use
+"algorithm.each"                 use
+"algorithm.filter"               use
+"algorithm.findOrdinal"          use
+"algorithm.makeArrayIndex"       use
+"algorithm.makeArrayIter"        use
+"algorithm.makeArrayView"        use
+"algorithm.schemaNameBeginsWith" use
+"algorithm.toIndex"              use
+"algorithm.toIter"               use
+"algorithm.unhead"               use
+"control.&&"                     use
+"control.Natx"                   use
+"control.Ref"                    use
+"control.assert"                 use
+"control.automatic?"             use
+"control.compose"                use
+"control.drop"                   use
+"control.dup"                    use
+"control.pfunc"                  use
+"control.swap"                   use
+"control.times"                  use
+"control.when"                   use
+"control.while"                  use
+"memory.memcpy"                  use
+"memory.mplFree"                 use
+"memory.mplRealloc"              use
 
 makeArrayObject: [
   Item: memoryDebugObject:;;
@@ -41,87 +41,11 @@ makeArrayObject: [
 
     virtual memoryDebugObject: memoryDebugObject new;
 
-    virtual CONTAINER: ();
-    virtual ARRAY: ();
     virtual elementType: @Item Ref;
     dataBegin:   @elementType private;
     dataSize:    0            private;
     dataReserve: 0;
     virtual elementSize: @elementType storageSize;
-
-    at: [
-      index:;
-      index 0i32 same ~ [0 .ONLY_I32_ALLOWED] when
-      [index 0 < ~ [index dataSize <] &&] "Index is out of range!" assert
-      @dataBegin storageAddress index Natx cast elementSize * + @elementType addressToReference
-    ];
-
-    iter: [@dataBegin dataSize makeArrayIter];
-
-    reverseIter: [
-      {
-        index: @dataBegin dataSize makeArrayIndex;
-        key:   dataSize new;
-        get:   [key 1 - @index.at];
-        next:  [key 1 - !key];
-        valid: [key 0 = ~];
-      }
-    ];
-
-    data: [
-      @dataBegin
-    ];
-
-    size: [
-      dataSize new
-    ];
-
-    slice: [span.slice];
-
-    erase: [
-      index:;
-      index 0i32 same ~ [0 .ONLY_I32_ALLOWED] when
-      [index 0 < ~ [index dataSize <] &&] "Index is out of range!" assert
-
-      index size 1 - < [
-        last index at set
-      ] when
-
-      popBack
-    ];
-
-    eraseIf: [
-      eraseIfBody:;
-      key: self @eraseIfBody findOrdinal;
-      key -1 = ~ [
-        @self key 1 + unhead @eraseIfBody [~] compose filter [
-          key at set
-          key 1 + !key
-        ] each
-
-        key shrink
-      ] when
-    ];
-
-    getNextReserve: [
-      dataReserve dataReserve 4 / + 4 +
-    ];
-
-    setReserve: [
-      newReserve:;
-      [newReserve dataReserve < ~] "New reserve is less than old reserve!" assert
-      memoryDebugObject [TRUE !memoryDebugEnabled] when
-      newReserve Natx cast elementSize * dataReserve Natx cast elementSize * @dataBegin storageAddress mplRealloc
-      memoryDebugObject [FALSE !memoryDebugEnabled] when
-      @elementType addressToReference !dataBegin
-      newReserve @dataReserve set
-    ];
-
-    addReserve: [
-      dataSize dataReserve = [
-        getNextReserve setReserve
-      ] when
-    ];
 
     append: [
       append: ["Invalid source schema" raiseStaticError];
@@ -203,28 +127,19 @@ makeArrayObject: [
       assign
     ];
 
-    shrink: [
-      newSize:;
-      [newSize dataSize > ~] "Shrinked size is bigger than the old size!" assert
-
-      @elementType automatic? [
-        i: dataSize new dynamic;
-        [i newSize >] [
-          i 1 - @i set
-          i at manuallyDestroyVariable
-        ] while
-      ] when
-
-      newSize @dataSize set
+    at: [
+      index:;
+      index 0i32 same ~ [0 .ONLY_I32_ALLOWED] when
+      [index 0 < ~ [index dataSize <] &&] "Index is out of range!" assert
+      @dataBegin storageAddress index Natx cast elementSize * + @elementType addressToReference
     ];
 
-    popBack: [
-      [dataSize 0 >] "Pop from empty array!" assert
-      dataSize 1 - shrink
+    clear: [
+      0 shrink
     ];
 
-    last: [
-      dataSize 1 - at
+    data: [
+      @dataBegin
     ];
 
     enlarge: [
@@ -247,20 +162,40 @@ makeArrayObject: [
       ] when
     ];
 
-    resize: [
-      newSize:;
-      newSize dataSize = [
-      ] [
-        newSize dataSize < [
-          newSize shrink
-        ] [
-          newSize enlarge
-        ] if
-      ] if
+    erase: [
+      index:;
+      index 0i32 same ~ [0 .ONLY_I32_ALLOWED] when
+      [index 0 < ~ [index dataSize <] &&] "Index is out of range!" assert
+
+      index size 1 - < [
+        last index at set
+      ] when
+
+      popBack
     ];
 
-    clear: [
-      0 shrink
+    eraseIf: [
+      eraseIfBody:;
+      key: self @eraseIfBody findOrdinal;
+      key -1 = ~ [
+        @self key 1 + unhead @eraseIfBody [~] compose filter [
+          key at set
+          key 1 + !key
+        ] each
+
+        key shrink
+      ] when
+    ];
+
+    iter: [@dataBegin dataSize makeArrayIter];
+
+    last: [
+      dataSize 1 - at
+    ];
+
+    popBack: [
+      [dataSize 0 >] "Pop from empty array!" assert
+      dataSize 1 - shrink
     ];
 
     release: [
@@ -275,17 +210,64 @@ makeArrayObject: [
       0 @dataReserve set
     ];
 
+    resize: [
+      newSize:;
+      newSize dataSize = [
+      ] [
+        newSize dataSize < [
+          newSize shrink
+        ] [
+          newSize enlarge
+        ] if
+      ] if
+    ];
+
+    reverseIter: [
+      {
+        index: @dataBegin dataSize makeArrayIndex;
+        key:   dataSize new;
+        get:   [key 1 - @index.at];
+        next:  [key 1 - !key];
+        valid: [key 0 = ~];
+      }
+    ];
+
+    setReserve: [
+      newReserve:;
+      [newReserve dataReserve < ~] "New reserve is less than old reserve!" assert
+      memoryDebugObject [TRUE !memoryDebugEnabled] when
+      newReserve Natx cast elementSize * dataReserve Natx cast elementSize * @dataBegin storageAddress mplRealloc
+      memoryDebugObject [FALSE !memoryDebugEnabled] when
+      @elementType addressToReference !dataBegin
+      newReserve @dataReserve set
+    ];
+
+    shrink: [
+      newSize:;
+      [newSize dataSize > ~] "Shrinked size is bigger than the old size!" assert
+
+      @elementType automatic? [
+        i: dataSize new dynamic;
+        [i newSize >] [
+          i 1 - @i set
+          i at manuallyDestroyVariable
+        ] while
+      ] when
+
+      newSize @dataSize set
+    ];
+
+    size: [
+      dataSize new
+    ];
+
+    slice: [span.slice];
+
     span: [
       @dataBegin dataSize toSpan2
     ];
 
-    INIT: [
-      @elementType Ref !dataBegin
-      0 @dataSize set
-      0 @dataReserve set
-    ];
-
-    ASSIGN: [
+    private ASSIGN: [
       other:;
       other.size resize
 
@@ -296,13 +278,29 @@ makeArrayObject: [
       ] while
     ];
 
-    DIE: [
+    private DIE: [
       clear
       addr: @dataBegin storageAddress;
       size: dataReserve Natx cast elementSize *;
       memoryDebugObject [TRUE !memoryDebugEnabled] when
       addr 0nx = ~ [size addr mplFree] when
       memoryDebugObject [FALSE !memoryDebugEnabled] when
+    ];
+
+    private INIT: [
+      @elementType Ref !dataBegin
+      0 @dataSize set
+      0 @dataReserve set
+    ];
+
+    private addReserve: [
+      dataSize dataReserve = [
+        getNextReserve setReserve
+      ] when
+    ];
+
+    private getNextReserve: [
+      dataReserve dataReserve 4 / + 4 +
     ];
   }
 ];
@@ -343,6 +341,6 @@ toArray: [toSpan TRUE] [
   @array
 ] pfunc;
 
-toArray: [.SCHEMA_NAME textSplit "Array<" textSplit beginsWith] [
+toArray: ["Array<" schemaNameBeginsWith] [
   new
 ] pfunc;
