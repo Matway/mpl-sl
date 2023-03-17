@@ -69,7 +69,9 @@ makeArrayObject: [
           ] times
         ] [
           [span.data @Item same] "Inconsistent schemas" assert
-          @Item storageSize span.size Natx cast * span.data storageAddress oldSize at storageAddress memcpy drop
+          span.size 0 = ~ [
+            @Item storageSize span.size Natx cast * span.data storageAddress oldSize at storageAddress memcpy drop
+          ] when
         ] if
       ] pfunc;
 
@@ -112,7 +114,9 @@ makeArrayObject: [
           ] times
         ] [
           [span.data @Item same] "Inconsistent schemas" assert
-          @Item storageSize span.size Natx cast * span.data storageAddress @arrayData storageAddress memcpy drop
+          span.size 0 = ~ [
+            @Item storageSize span.size Natx cast * span.data storageAddress @arrayData storageAddress memcpy drop
+          ] when
         ] if
       ] pfunc;
 
