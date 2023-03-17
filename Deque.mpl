@@ -12,99 +12,103 @@
 "control.times"  use
 "control.when"   use
 
-Deque: [{
-  # front: head tail :back
-  virtual CONTAINER: ();
-  virtual DEQUE: ();
-  virtual SCHEMA_NAME: "Deque";
-  virtual elementType: Ref;
-  head: @elementType Array;
-  tail: @elementType Array;
+Deque: [
+  Item:;
+  {
+    SCHEMA_NAME: "Deque<" @Item schemaName & ">" & virtual;
 
-  iter: [
-    {
-      deque: @self;
-      key:   0;
+    # front: head tail :back
+    virtual CONTAINER: ();
+    virtual DEQUE: ();
+    virtual elementType: @Item Ref;
+    head: @elementType Array;
+    tail: @elementType Array;
 
-      next: [
-        key deque.size = [@deque.@elementType FALSE] [
-          key @deque.at
-          key 1 + !key
-          TRUE
-        ] if
-      ];
-    }
-  ];
+    iter: [
+      {
+        deque: @self;
+        key:   0;
 
-  size: [head.size tail.size +];
+        next: [
+          key deque.size = [@deque.@elementType FALSE] [
+            key @deque.at
+            key 1 + !key
+            TRUE
+          ] if
+        ];
+      }
+    ];
 
-  pushBack: [@tail.append];
+    size: [head.size tail.size +];
 
-  pushFront: [@head.append];
+    pushBack: [@tail.append];
 
-  popBack: [
-    tail.size 0 = [@head @tail swapBuffers] when
-    @tail.popBack
-  ];
+    pushFront: [@head.append];
 
-  popFront: [
-    head.size 0 = [@tail @head swapBuffers] when
-    @head.popBack
-  ];
+    popBack: [
+      tail.size 0 = [@head @tail swapBuffers] when
+      @tail.popBack
+    ];
 
-  back: [
-    tail.size 0 = [
-      0 @head.at
-    ] [
-      @tail.last
-    ] if
-  ];
+    popFront: [
+      head.size 0 = [@tail @head swapBuffers] when
+      @head.popBack
+    ];
 
-  front: [
-    head.size 0 = [
-      0 @tail.at
-    ] [
-      @head.last
-    ] if
-  ];
+    back: [
+      tail.size 0 = [
+        0 @head.at
+      ] [
+        @tail.last
+      ] if
+    ];
 
-  at: [
-    index:;
-    index head.size < [
-      head.size index - 1 - @head.at
-    ] [
-      index head.size - @tail.at
-    ] if
-  ];
+    front: [
+      head.size 0 = [
+        0 @tail.at
+      ] [
+        @head.last
+      ] if
+    ];
 
-  swapBuffers: [
-    from:to:;;
+    at: [
+      index:;
+      index head.size < [
+        head.size index - 1 - @head.at
+      ] [
+        index head.size - @tail.at
+      ] if
+    ];
 
-    swapCount: from.size 1 + 2 /;
+    swapBuffers: [
+      from:to:;;
 
-    [to.size 0 =] "Destination must be empty!" assert
-    swapCount @to.resize
+      swapCount: from.size 1 + 2 /;
 
-    swapCount [
-      i @from.at
-      swapCount 1 - i - @to.at set
-    ] times
+      [to.size 0 =] "Destination must be empty!" assert
+      swapCount @to.resize
 
-    from.size swapCount - [
-      i swapCount + @from.at
-      i @from.at set
-    ] times
+      swapCount [
+        i @from.at
+        swapCount 1 - i - @to.at set
+      ] times
 
-    from.size swapCount - @from.shrink
-  ];
+      from.size swapCount - [
+        i swapCount + @from.at
+        i @from.at set
+      ] times
 
-  clear: [
-    @head.clear
-    @tail.clear
-  ];
+      from.size swapCount - @from.shrink
+    ];
 
-  release: [
-    @head.release
-    @tail.release
-  ];
-}];
+    clear: [
+      @head.clear
+      @tail.clear
+    ];
+
+    release: [
+      @head.release
+      @tail.release
+    ];
+  }
+];

@@ -17,84 +17,88 @@
 objectSize: [storageSize];
 objectSize: ["SIZE" has] [.SIZE] pfunc;
 
-OwnerWithDestructor: [{
-  virtual OWNER: ();
-  virtual SCHEMA_NAME: over "Owner<" swap schemaName & ">" &;
-  destructor:;
-  virtual elementType: Ref;
-  memory: @elementType Ref;
+OwnerWithDestructor: [
+  Value: destructor:;;
+  {
+    SCHEMA_NAME: "Owner<" @Value schemaName & ">" & virtual;
 
-  INIT: [
-    @elementType Ref !memory
-  ];
+    virtual OWNER: ();
+    destructor: @destructor;
+    virtual elementType: @Value Ref;
+    memory: @elementType Ref;
 
-  DIE: [
-    valid? [
-      @memory @destructor call @memory storageAddress mplFree
-    ] when
-  ];
-
-  valid?: [
-    addr: @memory storageAddress;
-    addr 0nx = ~
-  ];
-
-  acquire: [
-    element:;
-
-    valid? [
-      @memory @destructor call @memory storageAddress mplFree
-    ] when
-
-    @element !memory
-  ];
-
-  clear: [
-    valid? [
-      @memory @destructor call @memory storageAddress mplFree
+    INIT: [
       @elementType Ref !memory
-    ] when
-  ];
+    ];
 
-  get: [
-    [valid?] "invalid Owner" assert
-    @memory
-  ];
+    DIE: [
+      valid? [
+        @memory @destructor call @memory storageAddress mplFree
+      ] when
+    ];
 
-  lower: [
-    [valid?] "invalid Owner" assert
-    base: @memory.base;
-    @elementType Ref !memory
-    result: @base Owner;
-    @base @result.!memory
-    @result
-  ];
+    valid?: [
+      addr: @memory storageAddress;
+      addr 0nx = ~
+    ];
 
-  init: [
-    [valid? ~] "Owner is already set" assert
-    object:;
-    data: @object storageSize mplMalloc @object addressToReference;
-    @data manuallyInitVariable
-    @object @data set
-    @data !memory
-  ];
+    acquire: [
+      element:;
 
-  initDerived: [
-    [valid? ~] "Owner is already set" assert
-    object:;
-    data: @object storageSize mplMalloc @object addressToReference;
-    @data manuallyInitVariable
-    @object @data set
-    @data storageAddress @elementType addressToReference !memory
-  ];
+      valid? [
+        @memory @destructor call @memory storageAddress mplFree
+      ] when
 
-  release: [
-    [valid?] "invalid Owner" assert
-    result: @memory;
-    @elementType Ref !memory
-    @result
-  ];
-}];
+      @element !memory
+    ];
+
+    clear: [
+      valid? [
+        @memory @destructor call @memory storageAddress mplFree
+        @elementType Ref !memory
+      ] when
+    ];
+
+    get: [
+      [valid?] "invalid Owner" assert
+      @memory
+    ];
+
+    lower: [
+      [valid?] "invalid Owner" assert
+      base: @memory.base;
+      @elementType Ref !memory
+      result: @base Owner;
+      @base @result.!memory
+      @result
+    ];
+
+    init: [
+      [valid? ~] "Owner is already set" assert
+      object:;
+      data: @object storageSize mplMalloc @object addressToReference;
+      @data manuallyInitVariable
+      @object @data set
+      @data !memory
+    ];
+
+    initDerived: [
+      [valid? ~] "Owner is already set" assert
+      object:;
+      data: @object storageSize mplMalloc @object addressToReference;
+      @data manuallyInitVariable
+      @object @data set
+      @data storageAddress @elementType addressToReference !memory
+    ];
+
+    release: [
+      [valid?] "invalid Owner" assert
+      result: @memory;
+      @elementType Ref !memory
+      @result
+    ];
+  }
+];
 
 Owner: [
   [

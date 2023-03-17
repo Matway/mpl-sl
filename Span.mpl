@@ -38,7 +38,7 @@ toSpan: ["span" has] [.span] pfunc;
 toSpan2: [
   spanData: spanSize:;;
   {
-    SCHEMA_NAME: "Span" virtual;
+    SCHEMA_NAME: "Span<" @spanData schemaName & ">" & virtual;
 
     ASSIGN: [
       other:;

@@ -25,14 +25,15 @@
 "memory.mplRealloc" use
 
 Pool: [
-  element:;
+  Item:;
   {
-    virtual POOL: ();
-    virtual SCHEMA_NAME: "Pool";
-    virtual elementSchema: @element Ref;
-    virtual entrySize: (0 @element newVarOfTheSameType) Union storageSize;
+    SCHEMA_NAME: "Pool<" @Item schemaName & ">" & virtual;
 
-    data: @elementSchema Ref;
+    virtual POOL: ();
+    virtual Item: @Item Ref;
+    virtual entrySize: (0 @Item newVarOfTheSameType) Union storageSize;
+
+    data: @Item Ref;
     dataSize: 0 dynamic;
     firstFree: -1 dynamic;
     exactAllocatedMemSize: 0nx dynamic;
@@ -62,7 +63,7 @@ Pool: [
     ];
 
     elementAt: [
-      getAddressByIndex @elementSchema addressToReference
+      getAddressByIndex @Item addressToReference
     ];
 
     nextFreeAt: [
@@ -94,7 +95,7 @@ Pool: [
     erase: [
       index:;
       [index valid] "Pool::erase: element is invalid!" assert
-      index getAddressByIndex @elementSchema addressToReference manuallyDestroyVariable
+      index getAddressByIndex @Item addressToReference manuallyDestroyVariable
       firstFree index nextFreeAt set
 
       position: index 3n32 rshift;
@@ -140,7 +141,7 @@ Pool: [
         dataSize @index set
         dataSize 0 = [
           entrySize 8nx * 1nx + @exactAllocatedMemSize set
-          exactAllocatedMemSize mplMalloc @elementSchema addressToReference !data
+          exactAllocatedMemSize mplMalloc @Item addressToReference !data
           7 [
             i 2 +
             i 1 + nextFreeAt set
@@ -157,7 +158,7 @@ Pool: [
           newTailSize: newDataSize 3n32 rshift;
 
           newExactAllocatedMemSize: entrySize newDataSize Natx cast * newTailSize Natx cast +;
-          newExactAllocatedMemSize exactAllocatedMemSize @data storageAddress mplRealloc @elementSchema addressToReference !data
+          newExactAllocatedMemSize exactAllocatedMemSize @data storageAddress mplRealloc @Item addressToReference !data
           newExactAllocatedMemSize @exactAllocatedMemSize set
 
           getNewTailAddressByIndex: [
@@ -211,7 +212,7 @@ Pool: [
       index: pool.firstValid;
 
       next: [
-        index pool.dataSize = [0 @pool.@elementSchema method FALSE] [
+        index pool.dataSize = [0 @pool.@Item method FALSE] [
           index new index @pool.at method
           index pool.nextValid !index
           TRUE
@@ -220,7 +221,7 @@ Pool: [
     }];
 
     INIT: [
-      @elementSchema Ref !data
+      @Item !data
       0  !dataSize
       -1 !firstFree
     ];

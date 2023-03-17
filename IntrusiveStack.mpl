@@ -14,151 +14,155 @@
 
 # Intrusive singly linked list
 # Requires item objects to have field 'prev' of type '[Item] Mref'
-IntrusiveStack: [{
-  INIT: [clear];
+IntrusiveStack: [
+  Item:;
+  {
+    SCHEMA_NAME: "IntrusiveStack<" @Item schemaName & ">" & virtual;
 
-  DIE: [];
+    INIT: [clear];
 
-  empty?: [@last isNil];
+    DIE: [];
 
-  append: [
-    item:;
-    @last @item.@prev.set
-    @item !last
-  ];
+    empty?: [@last isNil];
 
-  clear: [@Item !last];
+    append: [
+      item:;
+      @last @item.@prev.set
+      @item !last
+    ];
 
-  cutAllIf: [
-    body:;
-    count: 0;
+    clear: [@Item !last];
 
-    empty? ~ [
-      item: @last;
-      skip: FALSE;
-      @item @body call [
-        [
-          count 1 + !count
-          @item.prev !item
-          @item isNil [
-            @Item !last
-            TRUE !skip
-            FALSE
-          ] [
-            @item @body call dup ~ [
-              @item !last
-            ] when
-          ] if
-        ] loop
-      ] when
+    cutAllIf: [
+      body:;
+      count: 0;
 
-      [skip ~] [
-        firstToKeep: @item;
-
-        [
-          @item.prev !item
-          @item isNil [
-            TRUE !skip
-            FALSE
-          ] [
-            @item @body call ~ dup [
-              @item !firstToKeep
-            ] when
-          ] if
-        ] loop
-
-        skip ~ [
+      empty? ~ [
+        item: @last;
+        skip: FALSE;
+        @item @body call [
           [
             count 1 + !count
             @item.prev !item
             @item isNil [
-              @Item @firstToKeep.@prev.set
+              @Item !last
               TRUE !skip
               FALSE
             ] [
               @item @body call dup ~ [
-                @item @firstToKeep.@prev.set
+                @item !last
               ] when
             ] if
           ] loop
         ] when
-      ] while
-    ] when
 
-    count
-  ];
+        [skip ~] [
+          firstToKeep: @item;
 
-  cutLast: [
-    [empty? ~] "stack is empty" assert
-    @last.prev !last
-  ];
+          [
+            @item.prev !item
+            @item isNil [
+              TRUE !skip
+              FALSE
+            ] [
+              @item @body call ~ dup [
+                @item !firstToKeep
+              ] when
+            ] if
+          ] loop
 
-  cutLastIf: [
-    body:;
-    count: 0;
-    empty? ~ [
-      item: @last;
-      @item @body call [
-        1 !count
-        cutLast
-      ] [
-        [
-          next: @item;
-          @item.prev !item
-          @item isNil [FALSE] [
-            @item @body call ~ dup ~ [
-              1 !count
-              @item.prev @next.@prev.set
-            ] when
-          ] if
-        ] loop
-      ] if
-    ] when
-
-    count
-  ];
-
-  popLast: [
-    [empty? ~] "stack is empty" assert
-    @last
-    cutLast
-  ];
-
-  reverse: [
-    empty? ~ [
-      item: @last.prev;
-      @item isNil ~ [
-        next: @last;
-        @Item @next.@prev.set
-
-        [
-          prev: @item.prev;
-          @next @item.@prev.set
-          @prev isNil ~ dup [
-            @item !next
-            @prev !item
+          skip ~ [
+            [
+              count 1 + !count
+              @item.prev !item
+              @item isNil [
+                @Item @firstToKeep.@prev.set
+                TRUE !skip
+                FALSE
+              ] [
+                @item @body call dup ~ [
+                  @item @firstToKeep.@prev.set
+                ] when
+              ] if
+            ] loop
           ] when
-        ] loop
-
-        @item !last
+        ] while
       ] when
-    ] when
-  ];
 
-  reverseIter: [{
-    Item: virtual @Item Ref;
-    item: @last;
-
-    next: [
-      @item isNil [@Item FALSE] [
-        @item
-        @item.prev !item
-        TRUE
-      ] if
+      count
     ];
-  }];
 
-  SCHEMA_NAME: virtual "IntrusiveStack";
-  Item: virtual Ref;
-  last: @Item;
-}];
+    cutLast: [
+      [empty? ~] "stack is empty" assert
+      @last.prev !last
+    ];
+
+    cutLastIf: [
+      body:;
+      count: 0;
+      empty? ~ [
+        item: @last;
+        @item @body call [
+          1 !count
+          cutLast
+        ] [
+          [
+            next: @item;
+            @item.prev !item
+            @item isNil [FALSE] [
+              @item @body call ~ dup ~ [
+                1 !count
+                @item.prev @next.@prev.set
+              ] when
+            ] if
+          ] loop
+        ] if
+      ] when
+
+      count
+    ];
+
+    popLast: [
+      [empty? ~] "stack is empty" assert
+      @last
+      cutLast
+    ];
+
+    reverse: [
+      empty? ~ [
+        item: @last.prev;
+        @item isNil ~ [
+          next: @last;
+          @Item @next.@prev.set
+
+          [
+            prev: @item.prev;
+            @next @item.@prev.set
+            @prev isNil ~ dup [
+              @item !next
+              @prev !item
+            ] when
+          ] loop
+
+          @item !last
+        ] when
+      ] when
+    ];
+
+    reverseIter: [{
+      Item: virtual @Item Ref;
+      item: @last;
+
+      next: [
+        @item isNil [@Item FALSE] [
+          @item
+          @item.prev !item
+          TRUE
+        ] if
+      ];
+    }];
+
+    Item: @Item Ref virtual;
+    last: @Item;
+  }
+];

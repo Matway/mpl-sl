@@ -5,18 +5,19 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"control.Cref"    use
-"control.Int32"   use
-"control.Nat8"    use
-"control.Natx"    use
-"control.Ref"     use
-"control.Text"    use
-"control.assert"  use
-"control.between" use
-"control.dup"     use
-"control.pfunc"   use
-"control.when"    use
-"control.within"  use
+"control.Cref"                   use
+"control.Int32"                  use
+"control.Nat8"                   use
+"control.Natx"                   use
+"control.Ref"                    use
+"control.Text"                   use
+"control.assert"                 use
+"control.between"                use
+"control.dup"                    use
+"control.pfunc"                  use
+"control.when"                   use
+"control.within"                 use
+"objectTools.formatObjectStatic" use
 
 SpanStatic: [
   data: size:;;
@@ -38,7 +39,7 @@ toSpanStatic: ["toSpanStatic" has] [.toSpanStatic] pfunc;
 toSpanStatic2: [
   spanData: spanSize:;;
   {
-    SCHEMA_NAME: "SpanStatic" virtual;
+    SCHEMA_NAME: "SpanStatic<" @spanData schemaName & ", " & spanSize {} formatObjectStatic & ">" & virtual;
 
     ASSIGN: [
       other:;

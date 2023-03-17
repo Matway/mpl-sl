@@ -22,18 +22,17 @@
 "control.while"         use
 
 HashTable: [
-  value:;
-  key:;
-
+  Key: Value:;;
   {
+    SCHEMA_NAME: "HashTable<" @Key schemaName & ", " & @Value schemaName & ">" & virtual;
+
     virtual HASH_TABLE: ();
-    virtual SCHEMA_NAME: "HashTable<" @key schemaName & ", " & @value schemaName & ">" &;
-    virtual keyType: @key Ref;
-    virtual valueType: @value Ref;
+    virtual Key:   @Key   Ref;
+    virtual Value: @Value Ref;
 
     Node: [{
-      key: key newVarOfTheSameType;
-      value: @value newVarOfTheSameType;
+      key:   @Key   newVarOfTheSameType;
+      value: @Value newVarOfTheSameType;
     }];
 
     data: Node Array Array;
@@ -57,7 +56,7 @@ HashTable: [
       [
         result: {
           success: FALSE dynamic;
-          value: 0nx dynamic @valueType addressToReference;
+          value: 0nx dynamic @Value addressToReference;
         };
 
         dataSize 0 = ~ [
