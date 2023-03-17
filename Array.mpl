@@ -45,15 +45,11 @@ makeArrayObject: [{
   dataReserve: 0;
   virtual elementSize: @elementType storageSize;
 
-  getBufferBegin: [
-    @dataBegin storageAddress
-  ];
-
   at: [
     index:;
     index 0i32 same ~ [0 .ONLY_I32_ALLOWED] when
     [index 0 < ~ [index dataSize <] &&] "Index is out of range!" assert
-    getBufferBegin index Natx cast elementSize * + @elementType addressToReference
+    @dataBegin storageAddress index Natx cast elementSize * + @elementType addressToReference
   ];
 
   iter: [@dataBegin dataSize makeArrayIter];
@@ -111,7 +107,7 @@ makeArrayObject: [{
     newReserve:;
     [newReserve dataReserve < ~] "New reserve is less than old reserve!" assert
     memoryDebugObject [TRUE !memoryDebugEnabled] when
-    newReserve Natx cast elementSize * dataReserve Natx cast elementSize * getBufferBegin mplRealloc
+    newReserve Natx cast elementSize * dataReserve Natx cast elementSize * @dataBegin storageAddress mplRealloc
     memoryDebugObject [FALSE !memoryDebugEnabled] when
     @elementType addressToReference !dataBegin
     newReserve @dataReserve set
@@ -244,7 +240,7 @@ makeArrayObject: [{
 
   release: [
     clear
-    addr: getBufferBegin;
+    addr: @dataBegin storageAddress;
     size: dataReserve Natx cast elementSize *;
     memoryDebugObject [TRUE !memoryDebugEnabled] when
     addr 0nx = ~ [size addr mplFree] when
@@ -277,7 +273,7 @@ makeArrayObject: [{
 
   DIE: [
     clear
-    addr: getBufferBegin;
+    addr: @dataBegin storageAddress;
     size: dataReserve Natx cast elementSize *;
     memoryDebugObject [TRUE !memoryDebugEnabled] when
     addr 0nx = ~ [size addr mplFree] when

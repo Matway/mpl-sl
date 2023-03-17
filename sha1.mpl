@@ -187,7 +187,7 @@ ShaCounter: [{
     [
       sz: 64 internalBufferProcessed - source.getSize min;
       sz Natx cast
-      source.getBufferBegin
+      source.data storageAddress
       internalBuffer storageAddress internalBufferProcessed Natx cast + memcpy drop
       @source sz unhead !source
       internalBufferProcessed sz + !internalBufferProcessed

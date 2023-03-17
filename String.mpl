@@ -216,7 +216,7 @@ String: [{
     string.size 0 = ~ [
       index: chars.size;
       index string.size + @chars.enlarge
-      string.size Natx cast string.data storageAddress chars.getBufferBegin index Natx cast + memcpy drop
+      string.size Natx cast string.data storageAddress chars.data storageAddress index Natx cast + memcpy drop
     ] when
   ];
 
