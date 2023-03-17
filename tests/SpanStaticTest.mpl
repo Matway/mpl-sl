@@ -22,12 +22,12 @@ SpanStaticTest: [];
 [
   Object: [{value: 0; CALL: [INVALID];}];
   span:   Object 2 SpanStatic;
-  [span.SCHEMA_NAME "SpanStatic" =                  ] "[SpanStatic] produced a wrong [.SCHEMA_NAME]"       ensure
-  [span span "SCHEMA_NAME" fieldIndex fieldIsVirtual] "[SpanStatic] produced a non-virtual [.SCHEMA_NAME]" ensure
-  [span.data Object same                            ] "[SpanStatic] produced a wrong schema"               ensure
-  [@span.data isConst ~                             ] "[SpanStatic] lost mutability"                       ensure
-  [span.data nil?                                   ] "[SpanStatic] did not erase reference"               ensure
-  [span.size 2 =                                    ] "[SpanStatic] produced a wrong size"                 ensure
+  [span.SCHEMA_NAME "SpanStatic<dict.{value:Int32;CALL:;}, 2>" =] "[SpanStatic] produced a wrong [.SCHEMA_NAME]"       ensure
+  [span span "SCHEMA_NAME" fieldIndex fieldIsVirtual            ] "[SpanStatic] produced a non-virtual [.SCHEMA_NAME]" ensure
+  [span.data Object same                                        ] "[SpanStatic] produced a wrong schema"               ensure
+  [@span.data isConst ~                                         ] "[SpanStatic] lost mutability"                       ensure
+  [span.data nil?                                               ] "[SpanStatic] did not erase reference"               ensure
+  [span.size 2 =                                                ] "[SpanStatic] produced a wrong size"                 ensure
 ] call
 
 [
@@ -164,30 +164,30 @@ SpanStaticTest: [];
   Object: [{value: 0; CALL: [INVALID];}];
   dict:   {a: Object; b: Object; c: Object; d: Object; e: Object;};
   span:   1 3 @dict toSpanStatic.slice;
-  [span.SCHEMA_NAME "SpanStatic" =] "[SpanStatic.slice] produced a wrong object"    ensure
-  [@span.data isConst ~           ] "[SpanStatic.slice] lost mutability"            ensure
-  [span.data dict.@b is           ] "[SpanStatic.slice] produced a wrong reference" ensure
-  [span.size 3 =                  ] "[SpanStatic.slice] produced a wrong size"      ensure
+  [span.SCHEMA_NAME "SpanStatic<dict.{value:Int32;CALL:;}, 3>" =] "[SpanStatic.slice] produced a wrong object"    ensure
+  [@span.data isConst ~                                         ] "[SpanStatic.slice] lost mutability"            ensure
+  [span.data dict.@b is                                         ] "[SpanStatic.slice] produced a wrong reference" ensure
+  [span.size 3 =                                                ] "[SpanStatic.slice] produced a wrong size"      ensure
 ] call
 
 [
   Object: [{value: 0; CALL: [INVALID];}];
   dict:   {a: Object; b: Object;};
   span:   @dict toSpanStatic.toSpan;
-  [span.SCHEMA_NAME "Span" =] "[SpanStatic.toSpan] produced a wrong object"    ensure
-  [@span.data isConst ~     ] "[SpanStatic.toSpan] lost mutability"            ensure
-  [span.data dict.@a is     ] "[SpanStatic.toSpan] produced a wrong reference" ensure
-  [span.size 2 =            ] "[SpanStatic.toSpan] produced a wrong size"      ensure
+  [span.SCHEMA_NAME "Span<dict.{value:Int32;CALL:;}>" =] "[SpanStatic.toSpan] produced a wrong object"    ensure
+  [@span.data isConst ~                                ] "[SpanStatic.toSpan] lost mutability"            ensure
+  [span.data dict.@a is                                ] "[SpanStatic.toSpan] produced a wrong reference" ensure
+  [span.size 2 =                                       ] "[SpanStatic.toSpan] produced a wrong size"      ensure
 ] call
 
 [
   Object: [{value: 0; CALL: [INVALID];}];
   dict:   {a: Object; b: Object;};
   span:   @dict toSpanStatic.toSpanStatic;
-  [span.SCHEMA_NAME "SpanStatic" =] "[SpanStatic.toSpanStatic] produced a wrong object"    ensure
-  [@span.data isConst ~           ] "[SpanStatic.toSpanStatic] lost mutability"            ensure
-  [span.data dict.@a is           ] "[SpanStatic.toSpanStatic] produced a wrong reference" ensure
-  [span.size 2 =                  ] "[SpanStatic.toSpanStatic] produced a wrong size"      ensure
+  [span.SCHEMA_NAME "SpanStatic<dict.{value:Int32;CALL:;}, 2>" =] "[SpanStatic.toSpanStatic] produced a wrong object"    ensure
+  [@span.data isConst ~                                         ] "[SpanStatic.toSpanStatic] lost mutability"            ensure
+  [span.data dict.@a is                                         ] "[SpanStatic.toSpanStatic] produced a wrong reference" ensure
+  [span.size 2 =                                                ] "[SpanStatic.toSpanStatic] produced a wrong size"      ensure
 ] call
 
 [

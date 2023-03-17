@@ -22,12 +22,12 @@ SpanTest: [];
 [
   Object: [{value: 0; CALL: [INVALID];}];
   span:   Object Span;
-  [span.SCHEMA_NAME "Span" =                        ] "[Span] produced a wrong [.SCHEMA_NAME]"       ensure
-  [span span "SCHEMA_NAME" fieldIndex fieldIsVirtual] "[Span] produced a non-virtual [.SCHEMA_NAME]" ensure
-  [span.data Object same                            ] "[Span] produced a wrong schema"               ensure
-  [@span.data isConst ~                             ] "[Span] lost mutability"                       ensure
-  [span.data nil?                                   ] "[Span] did not erase reference"               ensure
-  [span.size 0 =                                    ] "[Span] produced a wrong size"                 ensure
+  [span.SCHEMA_NAME "Span<dict.{value:Int32;CALL:;}>" =] "[Span] produced a wrong [.SCHEMA_NAME]"       ensure
+  [span span "SCHEMA_NAME" fieldIndex fieldIsVirtual   ] "[Span] produced a non-virtual [.SCHEMA_NAME]" ensure
+  [span.data Object same                               ] "[Span] produced a wrong schema"               ensure
+  [@span.data isConst ~                                ] "[Span] lost mutability"                       ensure
+  [span.data nil?                                      ] "[Span] did not erase reference"               ensure
+  [span.size 0 =                                       ] "[Span] produced a wrong size"                 ensure
 ] call
 
 [
@@ -158,30 +158,30 @@ SpanTest: [];
   Object: [{value: 0; CALL: [INVALID];}];
   dict:   {a: Object; b: Object; c: Object; d: Object; e: Object;};
   span:   1 3 @dict toSpan.slice;
-  [span.SCHEMA_NAME "Span" =] "[Span.slice] produced a wrong object"    ensure
-  [@span.data isConst ~     ] "[Span.slice] lost mutability"            ensure
-  [span.data dict.@b is     ] "[Span.slice] produced a wrong reference" ensure
-  [span.size 3 =            ] "[Span.slice] produced a wrong size"      ensure
+  [span.SCHEMA_NAME "Span<dict.{value:Int32;CALL:;}>" =] "[Span.slice] produced a wrong object"    ensure
+  [@span.data isConst ~                                ] "[Span.slice] lost mutability"            ensure
+  [span.data dict.@b is                                ] "[Span.slice] produced a wrong reference" ensure
+  [span.size 3 =                                       ] "[Span.slice] produced a wrong size"      ensure
 ] call
 
 [
   Object: [{value: 0; CALL: [INVALID];}];
   dict:   {a: Object; b: Object;};
   span:   @dict toSpan.span;
-  [span.SCHEMA_NAME "Span" =] "[Span.span] produced a wrong object"    ensure
-  [@span.data isConst ~     ] "[Span.span] lost mutability"            ensure
-  [span.data dict.@a is     ] "[Span.span] produced a wrong reference" ensure
-  [span.size 2 =            ] "[Span.span] produced a wrong size"      ensure
+  [span.SCHEMA_NAME "Span<dict.{value:Int32;CALL:;}>" =] "[Span.span] produced a wrong object"    ensure
+  [@span.data isConst ~                                ] "[Span.span] lost mutability"            ensure
+  [span.data dict.@a is                                ] "[Span.span] produced a wrong reference" ensure
+  [span.size 2 =                                       ] "[Span.span] produced a wrong size"      ensure
 ] call
 
 [
   Object: [{value: 0; CALL: [INVALID];}];
   dict:   {a: Object; b: Object;};
   span:   @dict toSpan.toSpanStatic;
-  [span.SCHEMA_NAME "SpanStatic" =] "[Span.toSpanStatic] produced a wrong object"    ensure
-  [@span.data isConst ~           ] "[Span.toSpanStatic] lost mutability"            ensure
-  [span.data dict.@a is           ] "[Span.toSpanStatic] produced a wrong reference" ensure
-  [span.size 2 =                  ] "[Span.toSpanStatic] produced a wrong size"      ensure
+  [span.SCHEMA_NAME "SpanStatic<dict.{value:Int32;CALL:;}, 2>" =] "[Span.toSpanStatic] produced a wrong object"    ensure
+  [@span.data isConst ~                                         ] "[Span.toSpanStatic] lost mutability"            ensure
+  [span.data dict.@a is                                         ] "[Span.toSpanStatic] produced a wrong reference" ensure
+  [span.size 2 =                                                ] "[Span.toSpanStatic] produced a wrong size"      ensure
 ] call
 
 [
