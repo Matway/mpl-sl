@@ -70,6 +70,11 @@ isView: [
   @object "iter" has [@object "size" has [@object "slice" has] &&] &&
 ];
 
+schemaNameBeginsWith: [
+  object: text:;;
+  @object "SCHEMA_NAME" has [@object.@SCHEMA_NAME textSplit text textSplit beginsWith] &&
+];
+
 # Built-in array, text, and tuple support
 makeArrayIndex: [
   data: size:;;
