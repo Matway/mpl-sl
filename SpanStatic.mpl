@@ -5,6 +5,7 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
+"control.&&"                     use
 "control.Cref"                   use
 "control.Int32"                  use
 "control.Nat8"                   use
@@ -29,7 +30,7 @@ toSpanStatic: [Text same] [
   text storageAddress Nat8 Cref addressToReference text textSize Int32 cast toSpanStatic2
 ] pfunc;
 
-toSpanStatic: [isCombined] [
+toSpanStatic: [object:; @object isCombined [@object 0 fieldIsRef ~] &&] [
   struct:;
   0 dynamic @struct @ struct fieldCount toSpanStatic2 # [dynamic] is used to check for non-homogeneous tuples
 ] pfunc;
