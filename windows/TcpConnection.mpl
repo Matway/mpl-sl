@@ -6,6 +6,7 @@
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
 "Function.Function"     use
+"Span.toSpan"           use
 "String.String"         use
 "String.assembleString" use
 "String.print"          use
@@ -18,9 +19,11 @@
 "atomic.atomicStore"    use
 "atomic.atomicXor"      use
 "control.&&"            use
+"control.Cref"          use
 "control.Int32"         use
 "control.Nat16"         use
 "control.Nat32"         use
+"control.Nat8"          use
 "control.Natx"          use
 "control.Ref"           use
 "control.assert"        use
@@ -196,16 +199,16 @@ TcpConnection: [{
 
   # Initiate read
   # input:
-  #   data (Natx) - address of the buffer to read data into
-  #   size (Int32) - size of the buffer
+  #   data (Nat8 Span) - buffer to read into
   #   onRead (String Ref Int32 -- ) - callback to be called when read completed, failed or canceled
   # output:
   #   result (String) - empty on success, error message on failure
   read: [
-    data: size: onRead0:;;;
+    data: onRead0:; toSpan;
+    (@data.data) (Nat8 Ref) same ~ [data printStack drop "[TcpConnection.read], invalid argument, [Nat8 Span] expected" raiseStaticError] when
     old: IN_READ @states ACQUIRE atomicXor READ_MASK and;
     [old CONNECTED =] "TcpConnection.read: invalid state" assert
-    buf: {len: size Nat32 cast; buf: data new;};
+    buf: {len: data.size Nat32 cast; buf: data.data storageAddress;};
     flags: 0n32;
     self storageAddress @readDispatcherContext.!context
     @onRead0 @onRead.assign
@@ -241,16 +244,16 @@ TcpConnection: [{
 
   # Initiate write
   # input:
-  #   data (Natx) - address of the buffer to write
-  #   size (Int32) - size of the buffer
+  #   data (Nat8 Cref Span) - buffer to write
   #   onWrite (String Ref -- ) - callback to be called when write completed, failed or canceled
   # output:
   #   result (String) - empty on success, error message on failure
   write: [
-    data: size: onWrite0:;;;
+    data: onWrite0:; toSpan;
+    (data.data) (Nat8 Cref) same ~ [data printStack drop "[TcpConnection.write], invalid argument, [Nat8 Cref Span] expected" raiseStaticError] when
     old: IN_WRITE @states ACQUIRE atomicXor WRITE_MASK and;
     [old CONNECTED =] "TcpConnection.write: invalid state" assert
-    buf: {len: size Nat32 cast; buf: data new;};
+    buf: {len: data.size Nat32 cast; buf: data.data storageAddress;};
     self storageAddress @writeDispatcherContext.!context
     @onWrite0 @onWrite.assign
     IN_WRITE WRITING or @states RELEASE atomicXor drop
