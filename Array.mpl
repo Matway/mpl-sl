@@ -10,11 +10,7 @@
 "algorithm.each"                 use
 "algorithm.filter"               use
 "algorithm.findOrdinal"          use
-"algorithm.makeArrayIndex"       use
-"algorithm.makeArrayIter"        use
-"algorithm.makeArrayView"        use
 "algorithm.schemaNameBeginsWith" use
-"algorithm.toIndex"              use
 "algorithm.toIter"               use
 "algorithm.unhead"               use
 "control.&&"                     use
@@ -24,9 +20,7 @@
 "control.automatic?"             use
 "control.compose"                use
 "control.drop"                   use
-"control.dup"                    use
 "control.pfunc"                  use
-"control.swap"                   use
 "control.times"                  use
 "control.when"                   use
 "control.while"                  use
@@ -185,7 +179,9 @@ makeArrayObject: [
       ] when
     ];
 
-    iter: [@arrayData arraySize makeArrayIter];
+    iter: [
+      span
+    ];
 
     last: [
       arraySize 1 - at
@@ -224,16 +220,6 @@ makeArrayObject: [
       ] if
     ];
 
-    reverseIter: [
-      {
-        index: @arrayData arraySize makeArrayIndex;
-        key:   arraySize new;
-        get:   [key 1 - @index.at];
-        next:  [key 1 - !key];
-        valid: [key 0 = ~];
-      }
-    ];
-
     setReserve: [
       newReserve:;
       [newReserve arrayReserve < ~] "New reserve is less than old reserve!" assert
@@ -263,7 +249,9 @@ makeArrayObject: [
       arraySize new
     ];
 
-    slice: [span.slice];
+    slice: [
+      span.slice
+    ];
 
     span: [
       @arrayData arraySize toSpan2
