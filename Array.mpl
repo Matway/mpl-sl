@@ -208,6 +208,10 @@ makeArrayObject: [
       0 !arrayReserve
     ];
 
+    reserve: [
+      arrayReserve new
+    ];
+
     resize: [
       newSize:;
       newSize arraySize = [
