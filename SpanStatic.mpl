@@ -35,23 +35,12 @@ toSpanStatic: [object:; @object isCombined [@object 0 fieldIsRef ~] &&] [
   0 dynamic @struct @ struct fieldCount toSpanStatic2 # [dynamic] is used to check for non-homogeneous tuples
 ] pfunc;
 
-toSpanStatic: ["toSpanStatic" has] [.toSpanStatic] pfunc;
+toSpanStatic: ["spanStatic" has] [.spanStatic] pfunc;
 
 toSpanStatic2: [
   spanData: spanSize:;;
   {
     SCHEMA_NAME: "SpanStatic<" @spanData schemaName & ", " & spanSize {} formatObjectStatic & ">" & virtual;
-
-    ASSIGN: [
-      other:;
-      other.@spanData !spanData
-    ];
-
-    DIE: [];
-
-    INIT: [
-      @spanData Ref !spanData
-    ];
 
     assign: [
       other:;
@@ -70,19 +59,7 @@ toSpanStatic2: [
     ];
 
     iter: [
-      {
-        SCHEMA_NAME: "SpanStaticIter" virtual;
-        data: @spanData;
-        size: spanSize;
-
-        next: [
-          @data
-          size 0 = ~ dup [
-            @data storageAddress @data storageSize + @data addressToReference !data
-            size 1 - !size
-          ] when
-        ];
-      }
+      span
     ];
 
     iterReverse: [
@@ -112,23 +89,21 @@ toSpanStatic2: [
       @spanData storageAddress @spanData storageSize offset Natx cast * + @spanData addressToReference size toSpanStatic2
     ];
 
-    toSpan: [
+    span: [
       "Span.toSpan2" use
       @spanData spanSize toSpan2
     ];
 
-    toSpanStatic: [
+    spanStatic: [
       @spanData spanSize toSpanStatic2
     ];
 
-    toStringView: [
+    stringView: [
       "String.toStringView" use
       (spanData spanSize) toStringView
     ];
 
-    # Private
-
-    spanData: @spanData;
-    spanSize: spanSize new virtual;
+    private spanData: @spanData;
+    private spanSize: spanSize new virtual;
   }
 ];

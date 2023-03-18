@@ -41,19 +41,6 @@ toSpan2: [
   {
     SCHEMA_NAME: "Span<" @spanData schemaName & ">" & virtual;
 
-    ASSIGN: [
-      other:;
-      other.@spanData    !spanData
-      other.spanSize new !spanSize
-    ];
-
-    DIE: [];
-
-    INIT: [
-      @spanData Ref !spanData
-      0             !spanSize
-    ];
-
     assign: [
       other:;
       @other.data !spanData
@@ -71,19 +58,7 @@ toSpan2: [
     ];
 
     iter: [
-      {
-        SCHEMA_NAME: "SpanIter" virtual;
-        data: @spanData;
-        size: spanSize new;
-
-        next: [
-          @data
-          size 0 = ~ dup [
-            @data storageAddress @data storageSize + @data addressToReference !data
-            size 1 - !size
-          ] when
-        ];
-      }
+      span
     ];
 
     iterReverse: [
@@ -102,6 +77,14 @@ toSpan2: [
       }
     ];
 
+    next: [
+      @spanData
+      spanSize 0 = ~ dup [
+        @spanData storageAddress @spanData storageSize + @spanData addressToReference !spanData
+        spanSize 1 - !spanSize
+      ] when
+    ];
+
     size: [
       spanSize new
     ];
@@ -117,19 +100,17 @@ toSpan2: [
       @spanData spanSize toSpan2
     ];
 
-    toSpanStatic: [
+    spanStatic: [
       "SpanStatic.toSpanStatic2" use
       @spanData spanSize toSpanStatic2
     ];
 
-    toStringView: [
+    stringView: [
       "String.toStringView" use
       (spanData spanSize new) toStringView
     ];
 
-    # Private
-
-    spanData: @spanData;
-    spanSize: spanSize new;
+    private spanData: @spanData;
+    private spanSize: spanSize new;
   }
 ];

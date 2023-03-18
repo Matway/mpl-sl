@@ -41,7 +41,7 @@ SpanStaticTest: [];
 [
   Object: [{value: 0; CALL: [INVALID];}];
   span0:  Object 2 SpanStatic;
-  object: {toSpanStatic: [@span0];};
+  object: {spanStatic: [@span0];};
   span1:  object toSpanStatic;
   [@span1 isConst ~] "[toSpanStatic] lost mutability"                        ensure
   [span1 span0 is  ] "[toSpanStatic] did not call [.toSpanStatic] correctly" ensure
@@ -81,7 +81,7 @@ SpanStaticTest: [];
   span2:  span1 new;
   span3:  dict.@a 2 SpanStatic;
   span4:  dict.@a 1 SpanStatic;
-  [[span0 new] compilable? ~       ] "Mutable SpanStatic can be copied"                 ensure
+  #[[span0 new] compilable? ~       ] "Mutable SpanStatic can be copied"                 ensure # Ignore until the compiler supports the feature
   [span2.data dict.@a is           ] "[SpanStatic.ASSIGN] produced a wrong reference"   ensure
   [span2.size 2 =                  ] "[SpanStatic.ASSIGN] changed size"                 ensure
   [[span3 @span1 set] compilable?  ] "SpanStatic of the same size cannot be assigned"   ensure
@@ -93,8 +93,8 @@ SpanStaticTest: [];
   dict:   {a: Object; b: Object;};
   span:   dict toSpanStatic;
   span manuallyInitVariable
-  [span.data nil?] "[SpanStatic.INIT] did not erase reference" ensure
-  [span.size 2 = ] "[SpanStatic.INIT] changed size"            ensure
+  [span.data nil? ~] "[SpanStatic.INIT] erased reference" ensure
+  [span.size 2 =   ] "[SpanStatic.INIT] changed size"     ensure
 ] call
 
 [
@@ -122,8 +122,7 @@ SpanStaticTest: [];
   Object: [{value: 0; CALL: [INVALID];}];
   dict:   {a: Object; b: Object;};
   iter:   @dict toSpanStatic.iter;
-  [iter.SCHEMA_NAME "SpanStaticIter" =              ] "[SpanStatic.iter] produced a wrong [.SCHEMA_NAME]"       ensure
-  [iter iter "SCHEMA_NAME" fieldIndex fieldIsVirtual] "[SpanStatic.iter] produced a non-virtual [.SCHEMA_NAME]" ensure
+  [iter.SCHEMA_NAME "Span<dict.{value:Int32;CALL:;}>" =] "[SpanStatic.iter] produced a wrong object" ensure
   item: cond: @iter.next;;
   [cond TRUE =     ] "[SpanStaticIter.next] returned a wrong condition" ensure
   [@item isConst ~ ] "[SpanStaticIter.next] lost mutability"            ensure
@@ -173,29 +172,29 @@ SpanStaticTest: [];
 [
   Object: [{value: 0; CALL: [INVALID];}];
   dict:   {a: Object; b: Object;};
-  span:   @dict toSpanStatic.toSpan;
-  [span.SCHEMA_NAME "Span<dict.{value:Int32;CALL:;}>" =] "[SpanStatic.toSpan] produced a wrong object"    ensure
-  [@span.data isConst ~                                ] "[SpanStatic.toSpan] lost mutability"            ensure
-  [span.data dict.@a is                                ] "[SpanStatic.toSpan] produced a wrong reference" ensure
-  [span.size 2 =                                       ] "[SpanStatic.toSpan] produced a wrong size"      ensure
+  span:   @dict toSpanStatic.span;
+  [span.SCHEMA_NAME "Span<dict.{value:Int32;CALL:;}>" =] "[SpanStatic.span] produced a wrong object"    ensure
+  [@span.data isConst ~                                ] "[SpanStatic.span] lost mutability"            ensure
+  [span.data dict.@a is                                ] "[SpanStatic.span] produced a wrong reference" ensure
+  [span.size 2 =                                       ] "[SpanStatic.span] produced a wrong size"      ensure
 ] call
 
 [
   Object: [{value: 0; CALL: [INVALID];}];
   dict:   {a: Object; b: Object;};
-  span:   @dict toSpanStatic.toSpanStatic;
-  [span.SCHEMA_NAME "SpanStatic<dict.{value:Int32;CALL:;}, 2>" =] "[SpanStatic.toSpanStatic] produced a wrong object"    ensure
-  [@span.data isConst ~                                         ] "[SpanStatic.toSpanStatic] lost mutability"            ensure
-  [span.data dict.@a is                                         ] "[SpanStatic.toSpanStatic] produced a wrong reference" ensure
-  [span.size 2 =                                                ] "[SpanStatic.toSpanStatic] produced a wrong size"      ensure
+  span:   @dict toSpanStatic.spanStatic;
+  [span.SCHEMA_NAME "SpanStatic<dict.{value:Int32;CALL:;}, 2>" =] "[SpanStatic.spanStatic] produced a wrong object"    ensure
+  [@span.data isConst ~                                         ] "[SpanStatic.spanStatic] lost mutability"            ensure
+  [span.data dict.@a is                                         ] "[SpanStatic.spanStatic] produced a wrong reference" ensure
+  [span.size 2 =                                                ] "[SpanStatic.spanStatic] produced a wrong size"      ensure
 ] call
 
 [
   text: "test";
-  stringView: text toSpanStatic.toStringView;
-  [stringView.SCHEMA_NAME "StringView" =                         ] "[SpanStatic.toStringView] produced a wrong object"    ensure
-  [stringView.data text storageAddress Nat8 addressToReference is] "[SpanStatic.toStringView] produced a wrong reference" ensure
-  [stringView.size 4 =                                           ] "[SpanStatic.toStringView] produced a wrong size"      ensure
+  stringView: text toSpanStatic.stringView;
+  [stringView.SCHEMA_NAME "StringView" =                         ] "[SpanStatic.stringView] produced a wrong object"    ensure
+  [stringView.data text storageAddress Nat8 addressToReference is] "[SpanStatic.stringView] produced a wrong reference" ensure
+  [stringView.size 4 =                                           ] "[SpanStatic.stringView] produced a wrong size"      ensure
 ] call
 
 [TESTS_SILENT] compilable? [TESTS_SILENT] && ~ ["SpanStaticTest passed\n" print] when
