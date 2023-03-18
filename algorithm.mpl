@@ -286,7 +286,7 @@ toIter: [
   source:;
   @source Text same [(source storageAddress Nat8 Cref addressToReference source textSize Int32 cast) toTextIter] [
     @source isBuiltinTuple [@source 0 @source fieldCount makeTupleIter] [
-      @source isIter [@source @source copyable? [new] when] [
+      @source isIter [@source @source @source isConst [copyable?] [movable?] if [new] when] [
         @source "iter" has [@source.iter] [
           "Built-in text, tuple, Iter, or Iterable expected" raiseStaticError
         ] if
