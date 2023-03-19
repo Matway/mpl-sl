@@ -34,9 +34,9 @@ Pool: [
     virtual entrySize: (0 @Item newVarOfTheSameType) Union storageSize;
 
     data: @Item Ref;
-    dataSize: 0 dynamic;
-    firstFree: -1 dynamic;
-    exactAllocatedMemSize: 0nx dynamic;
+    dataSize: 0;
+    firstFree: -1;
+    exactAllocatedMemSize: 0nx;
 
     iter:   [@self [{key: swap new; value:;}] makeIter];
     keys:   [self  [drop                    ] makeIter];
@@ -158,7 +158,12 @@ Pool: [
           newTailSize: newDataSize 3n32 rshift;
 
           newExactAllocatedMemSize: entrySize newDataSize Natx cast * newTailSize Natx cast +;
-          newExactAllocatedMemSize exactAllocatedMemSize @data storageAddress mplRealloc @Item addressToReference !data
+          exactAllocatedMemSize 0nx = [
+            newExactAllocatedMemSize mplMalloc @Item addressToReference !data
+          ] [
+            newExactAllocatedMemSize exactAllocatedMemSize @data storageAddress mplRealloc @Item addressToReference !data
+          ] if
+
           newExactAllocatedMemSize @exactAllocatedMemSize set
 
           getNewTailAddressByIndex: [
