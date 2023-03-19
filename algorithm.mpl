@@ -342,78 +342,152 @@ objectValues: [[object: offset:;; @object offset fieldRead                      
   ] [FALSE] if
 ] [
   iter0: iter1: toIter; toIter;
-  sizeCheckable: @iter0 "size" has [@iter1 "size" has] &&;
-  sizeCheckable ~ [@iter0.size @iter1.size =] || [
-    result: FALSE;
-    [
-      @iter1.next [
-        item:;
-        @iter0.next sizeCheckable [drop TRUE] when [@item =] [drop FALSE] if
-      ] [
-        drop
-        sizeCheckable [@iter0.next swap drop ~] || [TRUE !result] when
-        FALSE
+  result: FALSE;
+  @iter0 "size" has [
+    size0: @iter0.size;
+    @iter1 "size" has [
+      size1: @iter1.size;
+      size0 size1 = ~ [] [
+        [
+          size1 0 = [TRUE !result FALSE] [
+            @iter0.next drop @iter1.next drop = dup [size1 1 - !size1] when
+          ] if
+        ] loop
       ] if
-    ] loop
+    ] [
+      [
+        @iter1.next ~ [
+          drop
+          size0 0 = [TRUE !result] when
+          FALSE
+        ] [
+          size0 0 = [drop FALSE] [
+            @iter0.next drop swap = dup [size0 1 - !size0] when
+          ] if
+        ] if
+      ] loop
+    ] if
+  ] [
+    @iter1 "size" has [
+      size1: @iter1.size;
+      [
+        size1 0 = [
+          @iter0.next ~ [TRUE !result] when
+          drop
+          FALSE
+        ] [
+          @iter0.next ~ [drop FALSE] [
+            @iter1.next drop = dup [size1 1 - !size1] when
+          ] if
+        ] if
+      ] loop
+    ] [
+      [
+        @iter1.next ~ [
+          drop
+          @iter0.next ~ [TRUE !result] when
+          drop
+          FALSE
+        ] [
+          @iter0.next ~ [drop drop FALSE] [swap =] if
+        ] if
+      ] loop
+    ] if
+  ] if
 
-    result
-  ] &&
+  result
 ] pfunc;
 
 beginsWith: [
   iter0: iter1: toIter; toIter;
-  sizeCheckable: @iter0 "size" has [@iter1 "size" has] &&;
-  sizeCheckable ~ [@iter0.size @iter1.size < ~] || [
-    result: FALSE;
-    [
-      @iter1.next [
-        item:;
-        @iter0.next sizeCheckable [drop TRUE] when [@item =] [drop FALSE] if
-      ] [
-        drop
-        TRUE !result
-        FALSE
+  result: FALSE;
+  @iter0 "size" has [
+    size0: @iter0.size;
+    @iter1 "size" has [
+      size1: @iter1.size;
+      size0 size1 < [] [
+        [
+          size1 0 = [TRUE !result FALSE] [
+            @iter0.next drop @iter1.next drop = dup [size1 1 - !size1] when
+          ] if
+        ] loop
       ] if
-    ] loop
+    ] [
+      [
+        @iter1.next ~ [drop TRUE !result FALSE] [
+          size0 0 = [drop FALSE] [
+            @iter0.next drop swap = dup [size0 1 - !size0] when
+          ] if
+        ] if
+      ] loop
+    ] if
+  ] [
+    @iter1 "size" has [
+      size1: @iter1.size;
+      [
+        size1 0 = [TRUE !result FALSE] [
+          @iter0.next ~ [drop FALSE] [
+            @iter1.next drop = dup [size1 1 - !size1] when
+          ] if
+        ] if
+      ] loop
+    ] [
+      [
+        @iter1.next ~ [drop TRUE !result FALSE] [
+          @iter0.next ~ [drop drop FALSE] [swap =] if
+        ] if
+      ] loop
+    ] if
+  ] if
 
-    result
-  ] &&
+  result
 ];
 
 contains: [
-  view0: view1: toView; toView;
+  iter0: iter1:; toIter;
+  size0: @iter0        "size" has [@iter0       .size] [@iter0 new    count] if;
+  size1: @iter1 toIter "size" has [@iter1 toIter.size] [@iter1 toIter count] if;
   result: FALSE;
-  i: 0; [
-    @view0.size i - @view1.size < ~ [
-      iter0: @view0 i unhead toIter;
-      iter1: @view1 toIter;
-      j: 0; [
-        j view1.size = [TRUE !result FALSE] [
-          @iter0.next drop @iter1.next drop = dup [j 1 + !j] when
+  size1 0 = [TRUE !result] [
+    [
+      size0 size1 < [FALSE] [
+        @iter0.next drop
+        iter1: @iter1 toIter;
+        @iter1.next drop = ~ [TRUE] [
+          iter0: @iter0 new;
+          size1: size1 1 -;
+          [
+            size1 0 = [TRUE !result FALSE] [
+              @iter0.next drop @iter1.next drop = dup [size1 1 - !size1] when
+            ] if
+          ] loop
+
+          result ~
         ] if
-      ] loop
+      ] if
 
-      result ~ dup [i 1 + !i] when
-    ] &&
-  ] loop
+      dup [size0 1 - !size0] when
+    ] loop
+  ] if
 
-  @result
+  result
 ];
 
 endsWith: [
-  view0: view1: toView; toView;
-  @view0.size @view1.size < ~ [
-    result: FALSE;
-    iter0: @view0 @view1.size tail toIter;
-    iter1: @view1 toIter;
-    i: 0; [
-      i view1.size = [TRUE !result FALSE] [
-        @iter0.next drop @iter1.next drop = dup [i 1 + !i] when
+  iter0: iter1: toIter; toIter;
+  size0: @iter0 "size" has [@iter0.size] [@iter0 new count] if;
+  size1: @iter1 "size" has [@iter1.size] [@iter1 new count] if;
+  result: FALSE;
+  size0 size1 < [] [
+    size0 size1 - [@iter0.next drop drop] times
+    [
+      size1 0 = [TRUE !result FALSE] [
+        @iter0.next drop @iter1.next drop = dup [size1 1 - !size1] when
       ] if
     ] loop
+  ] if
 
-    result
-  ] &&
+  result
 ];
 
 # Control combinators
@@ -700,6 +774,37 @@ eachStaticInternal: [
 
 eachStatic: [
   swap toIter swap @eachStaticInternal ucall
+];
+
+find: [
+  iter0: iter1:; toIter;
+  size0: @iter0        "size" has [@iter0       .size] [@iter0 new    count] if;
+  size1: @iter1 toIter "size" has [@iter1 toIter.size] [@iter1 toIter count] if;
+  key: 0;
+  size1 0 = [] [
+    [
+      size0 key - size1 < [-1 !key FALSE] [
+        @iter0.next drop
+        iter1: @iter1 toIter;
+        @iter1.next drop = ~ [TRUE] [
+          iter0: @iter0 new;
+          size1: size1 1 -;
+          result: FALSE;
+          [
+            size1 0 = [TRUE !result FALSE] [
+              @iter0.next drop @iter1.next drop = dup [size1 1 - !size1] when
+            ] if
+          ] loop
+
+          result ~
+        ] if
+      ] if
+
+      dup [key 1 + !key] when
+    ] loop
+  ] if
+
+  key
 ];
 
 findOrdinal: [swap toIter swap 0 findOrdinalStatic];

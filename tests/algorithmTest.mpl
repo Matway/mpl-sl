@@ -918,6 +918,50 @@ testView: [
   ] times
 ] call
 
+# find
+[
+  ""    ""   find isRef 0  FALSE FALSE check
+  "0"   ""   find isRef 0  FALSE FALSE check
+
+  ""    "0"  find isRef -1 FALSE FALSE check
+  "0"   "0"  find isRef 0  FALSE TRUE  check
+  "1"   "0"  find isRef -1 FALSE TRUE  check
+  "00"  "0"  find isRef 0  FALSE TRUE  check
+  "10"  "0"  find isRef 1  FALSE TRUE  check
+  "01"  "0"  find isRef 0  FALSE TRUE  check
+  "11"  "0"  find isRef -1 FALSE TRUE  check
+
+  "0"   "00" find isRef -1 FALSE FALSE check
+  "1"   "00" find isRef -1 FALSE FALSE check
+  "00"  "00" find isRef 0  FALSE TRUE  check
+  "10"  "00" find isRef -1 FALSE TRUE  check
+  "01"  "00" find isRef -1 FALSE TRUE  check
+  "11"  "00" find isRef -1 FALSE TRUE  check
+  "000" "00" find isRef 0  FALSE TRUE  check
+  "100" "00" find isRef 1  FALSE TRUE  check
+  "010" "00" find isRef -1 FALSE TRUE  check
+  "110" "00" find isRef -1 FALSE TRUE  check
+  "001" "00" find isRef 0  FALSE TRUE  check
+  "101" "00" find isRef -1 FALSE TRUE  check
+  "011" "00" find isRef -1 FALSE TRUE  check
+  "111" "00" find isRef -1 FALSE TRUE  check
+
+  "0"   "10" find isRef -1 FALSE FALSE check
+  "1"   "10" find isRef -1 FALSE FALSE check
+  "00"  "10" find isRef -1 FALSE TRUE  check
+  "10"  "10" find isRef 0  FALSE TRUE  check
+  "01"  "10" find isRef -1 FALSE TRUE  check
+  "11"  "10" find isRef -1 FALSE TRUE  check
+  "000" "10" find isRef -1 FALSE TRUE  check
+  "100" "10" find isRef 0  FALSE TRUE  check
+  "010" "10" find isRef 1  FALSE TRUE  check
+  "110" "10" find isRef 1  FALSE TRUE  check
+  "001" "10" find isRef -1 FALSE TRUE  check
+  "101" "10" find isRef 0  FALSE TRUE  check
+  "011" "10" find isRef -1 FALSE TRUE  check
+  "111" "10" find isRef -1 FALSE TRUE  check
+] call
+
 # findOrdinal
 [
   () [11 =] findOrdinal isRef -1 FALSE FALSE check
