@@ -230,6 +230,7 @@ makeArrayObject: [
       ] [
         @Item storageSize newReserve Natx cast * @Item storageSize arrayReserve Natx cast * @arrayData storageAddress mplRealloc
       ] if
+
       MEMORY_DEBUG_OBJECT [FALSE !memoryDebugEnabled] when
       @Item addressToReference !arrayData
       newReserve new !arrayReserve
