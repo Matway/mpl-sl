@@ -26,6 +26,7 @@
 "control.while"                  use
 "memory.memcpy"                  use
 "memory.mplFree"                 use
+"memory.mplMalloc"               use
 "memory.mplRealloc"              use
 
 makeArrayObject: [
@@ -224,7 +225,11 @@ makeArrayObject: [
       newReserve:;
       [newReserve arrayReserve < ~] "New reserve is less than old reserve!" assert
       MEMORY_DEBUG_OBJECT [TRUE !memoryDebugEnabled] when
-      @Item storageSize newReserve Natx cast * @Item storageSize arrayReserve Natx cast * @arrayData storageAddress mplRealloc
+      arrayReserve 0 = [
+        @Item storageSize newReserve Natx cast * mplMalloc
+      ] [
+        @Item storageSize newReserve Natx cast * @Item storageSize arrayReserve Natx cast * @arrayData storageAddress mplRealloc
+      ] if
       MEMORY_DEBUG_OBJECT [FALSE !memoryDebugEnabled] when
       @Item addressToReference !arrayData
       newReserve new !arrayReserve
@@ -259,7 +264,7 @@ makeArrayObject: [
 
     private MEMORY_DEBUG_OBJECT: MEMORY_DEBUG_OBJECT new virtual;
 
-    private arrayData:    @Item Ref;
+    private arrayData:    @Item;
     private arraySize:    0;
     private arrayReserve: 0;
 
