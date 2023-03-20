@@ -224,16 +224,19 @@ makeArrayObject: [
     setReserve: [
       newReserve:;
       [newReserve arrayReserve < ~] "New reserve is less than old reserve!" assert
-      MEMORY_DEBUG_OBJECT [TRUE !memoryDebugEnabled] when
-      arrayReserve 0 = [
-        @Item storageSize newReserve Natx cast * mplMalloc
-      ] [
-        @Item storageSize newReserve Natx cast * @Item storageSize arrayReserve Natx cast * @arrayData storageAddress mplRealloc
-      ] if
 
-      MEMORY_DEBUG_OBJECT [FALSE !memoryDebugEnabled] when
-      @Item addressToReference !arrayData
-      newReserve new !arrayReserve
+      newReserve arrayReserve = ~ [
+        MEMORY_DEBUG_OBJECT [TRUE !memoryDebugEnabled] when
+        arrayReserve 0 = [
+          @Item storageSize newReserve Natx cast * mplMalloc
+        ] [
+          @Item storageSize newReserve Natx cast * @Item storageSize arrayReserve Natx cast * @arrayData storageAddress mplRealloc
+        ] if
+
+        MEMORY_DEBUG_OBJECT [FALSE !memoryDebugEnabled] when
+        @Item addressToReference !arrayData
+        newReserve new !arrayReserve
+      ] when
     ];
 
     shrink: [
