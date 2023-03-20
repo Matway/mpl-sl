@@ -331,6 +331,90 @@ objectKeys:   [[object: offset:;; @object offset fieldName                      
 objectValues: [[object: offset:;; @object offset fieldRead                                         ] makeObjectIter];
 
 # Comparison algorithms
+<: [
+  object0: object1:;;
+  @object0 isCombined [
+    @object0 "less" has [FALSE] [@object0 "greater" has ~] if
+  ] [
+    @object0 Text same
+  ] if
+
+  [
+    @object1 isCombined [
+      @object1 "less" has [FALSE] [@object1 "greater" has ~] if
+    ] [
+      @object1 Text same
+    ] if
+  ] [FALSE] if
+] [
+  iter0: iter1: toIter; toIter;
+  result: FALSE;
+  @iter0 "size" has [
+    size0: @iter0.size;
+    @iter1 "size" has [
+      size1: @iter1.size;
+      [
+        size1 0 = [FALSE] [
+          size0 0 = [TRUE !result FALSE] [
+            item0: @iter0.next drop;
+            item1: @iter1.next drop;
+            @item0 @item1 < [TRUE !result FALSE] [
+              @item0 @item1 = ~ [FALSE] [
+                size0 1 - !size0
+                size1 1 - !size1
+                TRUE
+              ] if
+            ] if
+          ] if
+        ] if
+      ] loop
+    ] [
+      [
+        item1: @iter1.next swap; ~ [FALSE] [
+          size0 0 = [TRUE !result FALSE] [
+            item0: @iter0.next drop;
+            @item0 @item1 < [TRUE !result FALSE] [
+              @item0 @item1 = ~ [FALSE] [
+                size0 1 - !size0
+                TRUE
+              ] if
+            ] if
+          ] if
+        ] if
+      ] loop
+    ] if
+  ] [
+    @iter1 "size" has [
+      size1: @iter1.size;
+      [
+        size1 0 = [FALSE] [
+          item0: @iter0.next swap; ~ [TRUE !result FALSE] [
+            item1: @iter1.next drop;
+            @item0 @item1 < [TRUE !result FALSE] [
+              @item0 @item1 = ~ [FALSE] [
+                size1 1 - !size1
+                TRUE
+              ] if
+            ] if
+          ] if
+        ] if
+      ] loop
+    ] [
+      [
+        item1: @iter1.next swap; ~ [FALSE] [
+          item0: @iter0.next swap; ~ [TRUE !result FALSE] [
+            @item0 @item1 < [TRUE !result FALSE] [
+              @item0 @item1 =
+            ] if
+          ] if
+        ] if
+      ] loop
+    ] if
+  ] if
+
+  result
+] pfunc;
+
 =: [
   object0: object1:;;
   @object0 isCombined [TRUE] [@object1 isCombined] if [
@@ -390,6 +474,90 @@ objectValues: [[object: offset:;; @object offset fieldRead                      
           FALSE
         ] [
           @iter0.next ~ [drop drop FALSE] [swap =] if
+        ] if
+      ] loop
+    ] if
+  ] if
+
+  result
+] pfunc;
+
+>: [
+  object0: object1:;;
+  @object0 isCombined [
+    @object0 "less" has [FALSE] [@object0 "greater" has ~] if
+  ] [
+    @object0 Text same
+  ] if
+
+  [
+    @object1 isCombined [
+      @object1 "less" has [FALSE] [@object1 "greater" has ~] if
+    ] [
+      @object1 Text same
+    ] if
+  ] [FALSE] if
+] [
+  iter0: iter1: toIter; toIter;
+  result: FALSE;
+  @iter0 "size" has [
+    size0: @iter0.size;
+    @iter1 "size" has [
+      size1: @iter1.size;
+      [
+        size0 0 = [FALSE] [
+          size1 0 = [TRUE !result FALSE] [
+            item0: @iter0.next drop;
+            item1: @iter1.next drop;
+            @item0 @item1 > [TRUE !result FALSE] [
+              @item0 @item1 = ~ [FALSE] [
+                size0 1 - !size0
+                size1 1 - !size1
+                TRUE
+              ] if
+            ] if
+          ] if
+        ] if
+      ] loop
+    ] [
+      [
+        size0 0 = [FALSE] [
+          item1: @iter1.next swap; ~ [TRUE !result FALSE] [
+            item0: @iter0.next drop;
+            @item0 @item1 > [TRUE !result FALSE] [
+              @item0 @item1 = ~ [FALSE] [
+                size0 1 - !size0
+                TRUE
+              ] if
+            ] if
+          ] if
+        ] if
+      ] loop
+    ] if
+  ] [
+    @iter1 "size" has [
+      size1: @iter1.size;
+      [
+        item0: @iter0.next swap; ~ [FALSE] [
+          size1 0 = [TRUE !result FALSE] [
+            item1: @iter1.next drop;
+            @item0 @item1 > [TRUE !result FALSE] [
+              @item0 @item1 = ~ [FALSE] [
+                size1 1 - !size1
+                TRUE
+              ] if
+            ] if
+          ] if
+        ] if
+      ] loop
+    ] [
+      [
+        item0: @iter0.next swap; ~ [FALSE] [
+          item1: @iter1.next swap; ~ [TRUE !result FALSE] [
+            @item0 @item1 > [TRUE !result FALSE] [
+              @item0 @item1 =
+            ] if
+          ] if
         ] if
       ] loop
     ] if
@@ -783,7 +951,7 @@ find: [
   key: 0;
   size1 0 = [] [
     [
-      size0 key - size1 < [-1 !key FALSE] [
+      size0 key - size1 < [size0 new !key FALSE] [
         @iter0.next drop
         iter1: @iter1 toIter;
         @iter1.next drop = ~ [TRUE] [
@@ -805,6 +973,38 @@ find: [
   ] if
 
   key
+];
+
+findOneOf: [
+  iter0: iter1:; toIter;
+  size0: @iter0        "size" has [@iter0       .size] [@iter0 new    count] if;
+  size1: @iter1 toIter "size" has [@iter1 toIter.size] [@iter1 toIter count] if;
+  result: FALSE;
+  resultSourceKey: size0 new;
+  resultMatchKey: -1;
+  size1 0 = [] [
+    sourceKey: 0; [
+      iter1: @iter1 toIter;
+      matchKey: 0; [
+        @iter0 new @iter1.next drop beginsWith [
+          TRUE !result
+          sourceKey new !resultSourceKey
+          matchKey  new !resultMatchKey
+          FALSE
+        ] [
+          matchKey 1 + !matchKey
+          matchKey size1 = ~
+        ] if
+      ] loop
+
+      result [FALSE] [
+        sourceKey 1 + !sourceKey
+        sourceKey size0 = ~ dup [@iter0.next drop drop] when
+      ] if
+    ] loop
+  ] if
+
+  resultSourceKey resultMatchKey
 ];
 
 findOrdinal: [swap toIter swap 0 findOrdinalStatic];

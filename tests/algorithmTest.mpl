@@ -368,6 +368,50 @@ testView: [
   @values TRUE FALSE TRUE FALSE FALSE @tuple 0 tuple fieldCount testIter
 ] call
 
+# <
+[
+  ""    ""   < isRef FALSE FALSE FALSE check
+  "0"   ""   < isRef FALSE FALSE FALSE check
+
+  ""    "0"  < isRef TRUE  FALSE FALSE check
+  "0"   "0"  < isRef FALSE FALSE TRUE  check
+  "1"   "0"  < isRef FALSE FALSE TRUE  check
+  "00"  "0"  < isRef FALSE FALSE TRUE  check
+  "10"  "0"  < isRef FALSE FALSE TRUE  check
+  "01"  "0"  < isRef FALSE FALSE TRUE  check
+  "11"  "0"  < isRef FALSE FALSE TRUE  check
+
+  "0"   "00" < isRef TRUE  FALSE TRUE  check
+  "1"   "00" < isRef FALSE FALSE TRUE  check
+  "00"  "00" < isRef FALSE FALSE TRUE  check
+  "10"  "00" < isRef FALSE FALSE TRUE  check
+  "01"  "00" < isRef FALSE FALSE TRUE  check
+  "11"  "00" < isRef FALSE FALSE TRUE  check
+  "000" "00" < isRef FALSE FALSE TRUE  check
+  "100" "00" < isRef FALSE FALSE TRUE  check
+  "010" "00" < isRef FALSE FALSE TRUE  check
+  "110" "00" < isRef FALSE FALSE TRUE  check
+  "001" "00" < isRef FALSE FALSE TRUE  check
+  "101" "00" < isRef FALSE FALSE TRUE  check
+  "011" "00" < isRef FALSE FALSE TRUE  check
+  "111" "00" < isRef FALSE FALSE TRUE  check
+
+  "0"   "10" < isRef TRUE  FALSE TRUE  check
+  "1"   "10" < isRef TRUE  FALSE TRUE  check
+  "00"  "10" < isRef TRUE  FALSE TRUE  check
+  "10"  "10" < isRef FALSE FALSE TRUE  check
+  "01"  "10" < isRef TRUE  FALSE TRUE  check
+  "11"  "10" < isRef FALSE FALSE TRUE  check
+  "000" "10" < isRef TRUE  FALSE TRUE  check
+  "100" "10" < isRef FALSE FALSE TRUE  check
+  "010" "10" < isRef TRUE  FALSE TRUE  check
+  "110" "10" < isRef FALSE FALSE TRUE  check
+  "001" "10" < isRef TRUE  FALSE TRUE  check
+  "101" "10" < isRef FALSE FALSE TRUE  check
+  "011" "10" < isRef TRUE  FALSE TRUE  check
+  "111" "10" < isRef FALSE FALSE TRUE  check
+] call
+
 # =
 [
   (     ) (   ) = isRef TRUE  FALSE FALSE check
@@ -410,6 +454,50 @@ testView: [
   (1 0 1) (1 0) = isRef FALSE FALSE FALSE check
   (0 1 1) (1 0) = isRef FALSE FALSE FALSE check
   (1 1 1) (1 0) = isRef FALSE FALSE FALSE check
+] call
+
+# >
+[
+  ""    ""   > isRef FALSE FALSE FALSE check
+  "0"   ""   > isRef TRUE  FALSE FALSE check
+
+  ""    "0"  > isRef FALSE FALSE FALSE check
+  "0"   "0"  > isRef FALSE FALSE TRUE  check
+  "1"   "0"  > isRef TRUE  FALSE TRUE  check
+  "00"  "0"  > isRef TRUE  FALSE TRUE  check
+  "10"  "0"  > isRef TRUE  FALSE TRUE  check
+  "01"  "0"  > isRef TRUE  FALSE TRUE  check
+  "11"  "0"  > isRef TRUE  FALSE TRUE  check
+
+  "0"   "00" > isRef FALSE FALSE TRUE  check
+  "1"   "00" > isRef TRUE  FALSE TRUE  check
+  "00"  "00" > isRef FALSE FALSE TRUE  check
+  "10"  "00" > isRef TRUE  FALSE TRUE  check
+  "01"  "00" > isRef TRUE  FALSE TRUE  check
+  "11"  "00" > isRef TRUE  FALSE TRUE  check
+  "000" "00" > isRef TRUE  FALSE TRUE  check
+  "100" "00" > isRef TRUE  FALSE TRUE  check
+  "010" "00" > isRef TRUE  FALSE TRUE  check
+  "110" "00" > isRef TRUE  FALSE TRUE  check
+  "001" "00" > isRef TRUE  FALSE TRUE  check
+  "101" "00" > isRef TRUE  FALSE TRUE  check
+  "011" "00" > isRef TRUE  FALSE TRUE  check
+  "111" "00" > isRef TRUE  FALSE TRUE  check
+
+  "0"   "10" > isRef FALSE FALSE TRUE  check
+  "1"   "10" > isRef FALSE FALSE TRUE  check
+  "00"  "10" > isRef FALSE FALSE TRUE  check
+  "10"  "10" > isRef FALSE FALSE TRUE  check
+  "01"  "10" > isRef FALSE FALSE TRUE  check
+  "11"  "10" > isRef TRUE  FALSE TRUE  check
+  "000" "10" > isRef FALSE FALSE TRUE  check
+  "100" "10" > isRef TRUE  FALSE TRUE  check
+  "010" "10" > isRef FALSE FALSE TRUE  check
+  "110" "10" > isRef TRUE  FALSE TRUE  check
+  "001" "10" > isRef FALSE FALSE TRUE  check
+  "101" "10" > isRef TRUE  FALSE TRUE  check
+  "011" "10" > isRef FALSE FALSE TRUE  check
+  "111" "10" > isRef TRUE  FALSE TRUE  check
 ] call
 
 # beginsWith
@@ -920,46 +1008,46 @@ testView: [
 
 # find
 [
-  ""    ""   find isRef 0  FALSE FALSE check
-  "0"   ""   find isRef 0  FALSE FALSE check
+  ""    ""   find isRef 0 FALSE FALSE check
+  "0"   ""   find isRef 0 FALSE FALSE check
 
-  ""    "0"  find isRef -1 FALSE FALSE check
-  "0"   "0"  find isRef 0  FALSE TRUE  check
-  "1"   "0"  find isRef -1 FALSE TRUE  check
-  "00"  "0"  find isRef 0  FALSE TRUE  check
-  "10"  "0"  find isRef 1  FALSE TRUE  check
-  "01"  "0"  find isRef 0  FALSE TRUE  check
-  "11"  "0"  find isRef -1 FALSE TRUE  check
+  ""    "0"  find isRef 0 FALSE FALSE check
+  "0"   "0"  find isRef 0 FALSE TRUE  check
+  "1"   "0"  find isRef 1 FALSE TRUE  check
+  "00"  "0"  find isRef 0 FALSE TRUE  check
+  "10"  "0"  find isRef 1 FALSE TRUE  check
+  "01"  "0"  find isRef 0 FALSE TRUE  check
+  "11"  "0"  find isRef 2 FALSE TRUE  check
 
-  "0"   "00" find isRef -1 FALSE FALSE check
-  "1"   "00" find isRef -1 FALSE FALSE check
-  "00"  "00" find isRef 0  FALSE TRUE  check
-  "10"  "00" find isRef -1 FALSE TRUE  check
-  "01"  "00" find isRef -1 FALSE TRUE  check
-  "11"  "00" find isRef -1 FALSE TRUE  check
-  "000" "00" find isRef 0  FALSE TRUE  check
-  "100" "00" find isRef 1  FALSE TRUE  check
-  "010" "00" find isRef -1 FALSE TRUE  check
-  "110" "00" find isRef -1 FALSE TRUE  check
-  "001" "00" find isRef 0  FALSE TRUE  check
-  "101" "00" find isRef -1 FALSE TRUE  check
-  "011" "00" find isRef -1 FALSE TRUE  check
-  "111" "00" find isRef -1 FALSE TRUE  check
+  "0"   "00" find isRef 1 FALSE FALSE check
+  "1"   "00" find isRef 1 FALSE FALSE check
+  "00"  "00" find isRef 0 FALSE TRUE  check
+  "10"  "00" find isRef 2 FALSE TRUE  check
+  "01"  "00" find isRef 2 FALSE TRUE  check
+  "11"  "00" find isRef 2 FALSE TRUE  check
+  "000" "00" find isRef 0 FALSE TRUE  check
+  "100" "00" find isRef 1 FALSE TRUE  check
+  "010" "00" find isRef 3 FALSE TRUE  check
+  "110" "00" find isRef 3 FALSE TRUE  check
+  "001" "00" find isRef 0 FALSE TRUE  check
+  "101" "00" find isRef 3 FALSE TRUE  check
+  "011" "00" find isRef 3 FALSE TRUE  check
+  "111" "00" find isRef 3 FALSE TRUE  check
 
-  "0"   "10" find isRef -1 FALSE FALSE check
-  "1"   "10" find isRef -1 FALSE FALSE check
-  "00"  "10" find isRef -1 FALSE TRUE  check
-  "10"  "10" find isRef 0  FALSE TRUE  check
-  "01"  "10" find isRef -1 FALSE TRUE  check
-  "11"  "10" find isRef -1 FALSE TRUE  check
-  "000" "10" find isRef -1 FALSE TRUE  check
-  "100" "10" find isRef 0  FALSE TRUE  check
-  "010" "10" find isRef 1  FALSE TRUE  check
-  "110" "10" find isRef 1  FALSE TRUE  check
-  "001" "10" find isRef -1 FALSE TRUE  check
-  "101" "10" find isRef 0  FALSE TRUE  check
-  "011" "10" find isRef -1 FALSE TRUE  check
-  "111" "10" find isRef -1 FALSE TRUE  check
+  "0"   "10" find isRef 1 FALSE FALSE check
+  "1"   "10" find isRef 1 FALSE FALSE check
+  "00"  "10" find isRef 2 FALSE TRUE  check
+  "10"  "10" find isRef 0 FALSE TRUE  check
+  "01"  "10" find isRef 2 FALSE TRUE  check
+  "11"  "10" find isRef 2 FALSE TRUE  check
+  "000" "10" find isRef 3 FALSE TRUE  check
+  "100" "10" find isRef 0 FALSE TRUE  check
+  "010" "10" find isRef 1 FALSE TRUE  check
+  "110" "10" find isRef 1 FALSE TRUE  check
+  "001" "10" find isRef 3 FALSE TRUE  check
+  "101" "10" find isRef 0 FALSE TRUE  check
+  "011" "10" find isRef 3 FALSE TRUE  check
+  "111" "10" find isRef 3 FALSE TRUE  check
 ] call
 
 # findOrdinal
