@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
   <Type Name="Array&lt;*&gt;">
-    <DisplayString Condition="dataSize ==  0">()</DisplayString>
-    <DisplayString Condition="dataSize ==  1">({dataBegin[0]})</DisplayString>
-    <DisplayString Condition="dataSize ==  2">({dataBegin[0]} {dataBegin[1]})</DisplayString>
-    <DisplayString Condition="dataSize ==  3">({dataBegin[0]} {dataBegin[1]} {dataBegin[2]})</DisplayString>
-    <DisplayString Condition="dataSize ==  4">({dataBegin[0]} {dataBegin[1]} {dataBegin[2]} {dataBegin[3]})</DisplayString>
-    <DisplayString Condition="dataSize ==  5">({dataBegin[0]} {dataBegin[1]} {dataBegin[2]} {dataBegin[3]} {dataBegin[4]})</DisplayString>
-    <DisplayString Condition="dataSize ==  6">({dataBegin[0]} {dataBegin[1]} {dataBegin[2]} {dataBegin[3]} {dataBegin[4]} {dataBegin[5]})</DisplayString>
-    <DisplayString Condition="dataSize ==  7">({dataBegin[0]} {dataBegin[1]} {dataBegin[2]} {dataBegin[3]} {dataBegin[4]} {dataBegin[5]} {dataBegin[6]})</DisplayString>
-    <DisplayString Condition="dataSize ==  8">({dataBegin[0]} {dataBegin[1]} {dataBegin[2]} {dataBegin[3]} {dataBegin[4]} {dataBegin[5]} {dataBegin[6]} {dataBegin[7]})</DisplayString>
-    <DisplayString Condition="dataSize ==  9">({dataBegin[0]} {dataBegin[1]} {dataBegin[2]} {dataBegin[3]} {dataBegin[4]} {dataBegin[5]} {dataBegin[6]} {dataBegin[7]} {dataBegin[8]})</DisplayString>
-    <DisplayString Condition="dataSize == 10">({dataBegin[0]} {dataBegin[1]} {dataBegin[2]} {dataBegin[3]} {dataBegin[4]} {dataBegin[5]} {dataBegin[6]} {dataBegin[7]} {dataBegin[8]} {dataBegin[9]})</DisplayString>
-    <DisplayString Condition="dataSize == 11">({dataBegin[0]} {dataBegin[1]} {dataBegin[2]} {dataBegin[3]} {dataBegin[4]} {dataBegin[5]} {dataBegin[6]} {dataBegin[7]} {dataBegin[8]} {dataBegin[9]} {dataBegin[10]})</DisplayString>
-    <DisplayString Condition="dataSize == 12">({dataBegin[0]} {dataBegin[1]} {dataBegin[2]} {dataBegin[3]} {dataBegin[4]} {dataBegin[5]} {dataBegin[6]} {dataBegin[7]} {dataBegin[8]} {dataBegin[9]} {dataBegin[10]} {dataBegin[11]})</DisplayString>
-    <DisplayString Condition="dataSize == 13">({dataBegin[0]} {dataBegin[1]} {dataBegin[2]} {dataBegin[3]} {dataBegin[4]} {dataBegin[5]} {dataBegin[6]} {dataBegin[7]} {dataBegin[8]} {dataBegin[9]} {dataBegin[10]} {dataBegin[11]} {dataBegin[12]})</DisplayString>
-    <DisplayString Condition="dataSize == 14">({dataBegin[0]} {dataBegin[1]} {dataBegin[2]} {dataBegin[3]} {dataBegin[4]} {dataBegin[5]} {dataBegin[6]} {dataBegin[7]} {dataBegin[8]} {dataBegin[9]} {dataBegin[10]} {dataBegin[11]} {dataBegin[12]} {dataBegin[13]})</DisplayString>
-    <DisplayString Condition="dataSize == 15">({dataBegin[0]} {dataBegin[1]} {dataBegin[2]} {dataBegin[3]} {dataBegin[4]} {dataBegin[5]} {dataBegin[6]} {dataBegin[7]} {dataBegin[8]} {dataBegin[9]} {dataBegin[10]} {dataBegin[11]} {dataBegin[12]} {dataBegin[13]} {dataBegin[14]})</DisplayString>
-    <DisplayString Condition="dataSize == 16">({dataBegin[0]} {dataBegin[1]} {dataBegin[2]} {dataBegin[3]} {dataBegin[4]} {dataBegin[5]} {dataBegin[6]} {dataBegin[7]} {dataBegin[8]} {dataBegin[9]} {dataBegin[10]} {dataBegin[11]} {dataBegin[12]} {dataBegin[13]} {dataBegin[14]} {dataBegin[15]})</DisplayString>
-    <DisplayString Condition="dataSize >  16">({dataBegin[0]} {dataBegin[1]} {dataBegin[2]} {dataBegin[3]} {dataBegin[4]} {dataBegin[5]} {dataBegin[6]} {dataBegin[7]} {dataBegin[8]} {dataBegin[9]} {dataBegin[10]} {dataBegin[11]} {dataBegin[12]} {dataBegin[13]} {dataBegin[14]} {dataBegin[15]}...</DisplayString>
+    <DisplayString Condition="arraySize ==  0">()</DisplayString>
+    <DisplayString Condition="arraySize ==  1">({arrayData[0]})</DisplayString>
+    <DisplayString Condition="arraySize ==  2">({arrayData[0]} {arrayData[1]})</DisplayString>
+    <DisplayString Condition="arraySize ==  3">({arrayData[0]} {arrayData[1]} {arrayData[2]})</DisplayString>
+    <DisplayString Condition="arraySize ==  4">({arrayData[0]} {arrayData[1]} {arrayData[2]} {arrayData[3]})</DisplayString>
+    <DisplayString Condition="arraySize ==  5">({arrayData[0]} {arrayData[1]} {arrayData[2]} {arrayData[3]} {arrayData[4]})</DisplayString>
+    <DisplayString Condition="arraySize ==  6">({arrayData[0]} {arrayData[1]} {arrayData[2]} {arrayData[3]} {arrayData[4]} {arrayData[5]})</DisplayString>
+    <DisplayString Condition="arraySize ==  7">({arrayData[0]} {arrayData[1]} {arrayData[2]} {arrayData[3]} {arrayData[4]} {arrayData[5]} {arrayData[6]})</DisplayString>
+    <DisplayString Condition="arraySize ==  8">({arrayData[0]} {arrayData[1]} {arrayData[2]} {arrayData[3]} {arrayData[4]} {arrayData[5]} {arrayData[6]} {arrayData[7]})</DisplayString>
+    <DisplayString Condition="arraySize ==  9">({arrayData[0]} {arrayData[1]} {arrayData[2]} {arrayData[3]} {arrayData[4]} {arrayData[5]} {arrayData[6]} {arrayData[7]} {arrayData[8]})</DisplayString>
+    <DisplayString Condition="arraySize == 10">({arrayData[0]} {arrayData[1]} {arrayData[2]} {arrayData[3]} {arrayData[4]} {arrayData[5]} {arrayData[6]} {arrayData[7]} {arrayData[8]} {arrayData[9]})</DisplayString>
+    <DisplayString Condition="arraySize == 11">({arrayData[0]} {arrayData[1]} {arrayData[2]} {arrayData[3]} {arrayData[4]} {arrayData[5]} {arrayData[6]} {arrayData[7]} {arrayData[8]} {arrayData[9]} {arrayData[10]})</DisplayString>
+    <DisplayString Condition="arraySize == 12">({arrayData[0]} {arrayData[1]} {arrayData[2]} {arrayData[3]} {arrayData[4]} {arrayData[5]} {arrayData[6]} {arrayData[7]} {arrayData[8]} {arrayData[9]} {arrayData[10]} {arrayData[11]})</DisplayString>
+    <DisplayString Condition="arraySize == 13">({arrayData[0]} {arrayData[1]} {arrayData[2]} {arrayData[3]} {arrayData[4]} {arrayData[5]} {arrayData[6]} {arrayData[7]} {arrayData[8]} {arrayData[9]} {arrayData[10]} {arrayData[11]} {arrayData[12]})</DisplayString>
+    <DisplayString Condition="arraySize == 14">({arrayData[0]} {arrayData[1]} {arrayData[2]} {arrayData[3]} {arrayData[4]} {arrayData[5]} {arrayData[6]} {arrayData[7]} {arrayData[8]} {arrayData[9]} {arrayData[10]} {arrayData[11]} {arrayData[12]} {arrayData[13]})</DisplayString>
+    <DisplayString Condition="arraySize == 15">({arrayData[0]} {arrayData[1]} {arrayData[2]} {arrayData[3]} {arrayData[4]} {arrayData[5]} {arrayData[6]} {arrayData[7]} {arrayData[8]} {arrayData[9]} {arrayData[10]} {arrayData[11]} {arrayData[12]} {arrayData[13]} {arrayData[14]})</DisplayString>
+    <DisplayString Condition="arraySize == 16">({arrayData[0]} {arrayData[1]} {arrayData[2]} {arrayData[3]} {arrayData[4]} {arrayData[5]} {arrayData[6]} {arrayData[7]} {arrayData[8]} {arrayData[9]} {arrayData[10]} {arrayData[11]} {arrayData[12]} {arrayData[13]} {arrayData[14]} {arrayData[15]})</DisplayString>
+    <DisplayString Condition="arraySize >  16">({arrayData[0]} {arrayData[1]} {arrayData[2]} {arrayData[3]} {arrayData[4]} {arrayData[5]} {arrayData[6]} {arrayData[7]} {arrayData[8]} {arrayData[9]} {arrayData[10]} {arrayData[11]} {arrayData[12]} {arrayData[13]} {arrayData[14]} {arrayData[15]}...</DisplayString>
     <Expand HideRawView="1">
-      <Item IncludeView="full" Name="data">dataBegin, [dataSize]nvo</Item>
-      <Item Name="size">dataSize</Item>
-      <ExpandedItem ExcludeView="full">dataBegin, [dataSize]</ExpandedItem>
-      <Item IncludeView="full" Name="reserve">dataReserve</Item>
+      <Item IncludeView="full" Name="data">arrayData, [arraySize]nvo</Item>
+      <Item Name="size">arraySize</Item>
+      <ExpandedItem ExcludeView="full">arrayData, [arraySize]</ExpandedItem>
+      <Item IncludeView="full" Name="reserve">arrayReserve</Item>
     </Expand>
   </Type>
 
