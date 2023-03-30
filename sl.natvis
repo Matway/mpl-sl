@@ -258,10 +258,10 @@
   </Type>
 
   <Type Name="String">
-    <DisplayString Condition="chars.dataSize == 0">""</DisplayString>
-    <DisplayString Condition="chars.dataSize != 0">{chars.dataBegin, [chars.dataSize - 1]na}</DisplayString>
-    <StringView Condition="chars.dataSize == 0">""</StringView>
-    <StringView Condition="chars.dataSize != 0">chars.dataBegin, [chars.dataSize - 1]na</StringView>
+    <DisplayString Condition="chars.arraySize == 0">""</DisplayString>
+    <DisplayString Condition="chars.arraySize != 0">{chars.arrayData, [chars.arraySize - 1]na}</DisplayString>
+    <StringView Condition="chars.arraySize == 0">""</StringView>
+    <StringView Condition="chars.arraySize != 0">chars.arrayData, [chars.arraySize - 1]na</StringView>
     <Expand HideRawView="1">
       <ExpandedItem ExcludeView="full">chars</ExpandedItem>
       <Item IncludeView="full" Name="chars">chars</Item>
