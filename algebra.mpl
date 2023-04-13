@@ -16,11 +16,11 @@
 "control.times"     use
 "conventions.cdecl" use
 
-PI64: [3.14159265358979324r64];
-PI:   [PI64 Real32 cast];
+PI:   [3.14159265r32];
+PI64: [3.141592653589793r64];
 
-E64: [2.71828182845904524r64];
-E:   [E64 Real32 cast];
+E:    [2.7182818r32];
+E64:  [2.718281828459045r64];
 
 Vector: [array];
 Matrix: [rowCount:; Vector rowCount Vector];
