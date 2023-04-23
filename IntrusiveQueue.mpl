@@ -9,7 +9,7 @@
 "control.assert" use
 "control.dup"    use
 "control.ensure" use
-"control.isNil"  use
+"control.nil?"   use
 "control.when"   use
 "control.while"  use
 
@@ -24,16 +24,16 @@ IntrusiveQueue: [
 
     DIE: [];
 
-    empty?: [@first isNil];
+    empty?: [@first nil?];
 
     append: [
       item:;
       @Item @item.@next.set
-      @last isNil [
-        [@first isNil] "invalid linked list state" assert
+      @last nil? [
+        [@first nil?] "invalid linked list state" assert
         @item !first
       ] [
-        [@last.next isNil] "invalid linked list state" assert
+        [@last.next nil?] "invalid linked list state" assert
         @item @last.@next.set
       ] if
 
@@ -57,7 +57,7 @@ IntrusiveQueue: [
             count 1 + !count
             prev: @item;
             @item.next !item
-            @item isNil [
+            @item nil? [
               @Item !first
               [@last @prev is] "invalid linked list state" assert
               @Item !last
@@ -76,7 +76,7 @@ IntrusiveQueue: [
 
           [
             @item.next !item
-            @item isNil [
+            @item nil? [
               TRUE !skip
               FALSE
             ] [
@@ -91,7 +91,7 @@ IntrusiveQueue: [
               count 1 + !count
               prev: @item;
               @item.next !item
-              @item isNil [
+              @item nil? [
                 @Item @lastToKeep.@next.set
                 [@last @prev is] "invalid linked list state" assert
                 @lastToKeep !last
@@ -114,7 +114,7 @@ IntrusiveQueue: [
       [empty? ~] "queue is empty" assert
       item: @first;
       @item.next !first
-      @first isNil [
+      @first nil? [
         [@last @item is] "invalid linked list state" assert
         @Item !last
       ] when
@@ -132,12 +132,12 @@ IntrusiveQueue: [
           [
             prev: @item;
             @item.next !item
-            @item isNil [FALSE] [
+            @item nil? [FALSE] [
               @item @body call ~ dup ~ [
                 1 !count
                 next: @item.next;
                 @next @prev.@next.set
-                @next isNil [
+                @next nil? [
                   [@last @item is] "invalid linked list state" assert
                   @prev !last
                 ] when
@@ -155,7 +155,7 @@ IntrusiveQueue: [
       item: @first;
 
       next: [
-        @item isNil [@Item FALSE] [
+        @item nil? [@Item FALSE] [
           @item
           @item.next !item
           TRUE
@@ -174,8 +174,8 @@ IntrusiveQueue: [
       next: @first;
       @next @item.@next.set
       @item !first
-      @next isNil [
-        [@last isNil] "invalid linked list state" assert
+      @next nil? [
+        [@last nil?] "invalid linked list state" assert
         @item !last
       ] when
     ];
@@ -183,14 +183,14 @@ IntrusiveQueue: [
     reverse: [
       empty? ~ [
         item: @first.next;
-        @item isNil ~ [
+        @item nil? ~ [
           prev: @first;
           @Item @prev.@next.set
 
           [
             next: @item.next;
             @prev @item.@next.set
-            @next isNil ~ dup [
+            @next nil? ~ dup [
               @item !prev
               @next !item
             ] when
@@ -208,7 +208,7 @@ IntrusiveQueue: [
       DEBUG [
         item: @Item;
         next: @first;
-        [@next isNil ~] [
+        [@next nil? ~] [
           @next !item
           @next.next !next
         ] while

@@ -18,7 +18,7 @@
 "control.drop"                  use
 "control.dup"                   use
 "control.failProc"              use
-"control.isNil"                 use
+"control.nil?"                  use
 "control.when"                  use
 
 "kernel32.ConvertThreadToFiber"        use
@@ -38,7 +38,7 @@
 "ws2_32.WSAStartup"                    use
 
 FiberData: [{
-  canceled?: [@func isNil];
+  canceled?: [@func nil?];
 
   cancel: [
     canceled? ~ [

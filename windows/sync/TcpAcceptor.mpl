@@ -18,7 +18,7 @@
 "control.assert"   use
 "control.dup"      use
 "control.failProc" use
-"control.isNil"    use
+"control.nil?"     use
 "control.sequence" use
 "control.when"     use
 
@@ -169,7 +169,7 @@ makeTcpAcceptor: [
     ] [
       SOMAXCONN acceptor.acceptor listen 0 = ~ [("listen failed, result=" WSAGetLastError) @result.catMany] when
     ] [
-      @AcceptEx isNil [
+      @AcceptEx nil? [
         acceptEx: FN_ACCEPTEXRef AsRef;
         WSAOVERLAPPED_COMPLETION_ROUTINERef OVERLAPPED Ref Nat32 @acceptEx storageSize Nat32 cast @acceptEx storageAddress WSAID_ACCEPTEX storageSize Nat32 cast WSAID_ACCEPTEX storageAddress SIO_GET_EXTENSION_FUNCTION_POINTER acceptor.acceptor WSAIoctl 0 = ~ [
           TRUE [("WSAIoctl failed, result=" WSAGetLastError) @result.catMany] when
