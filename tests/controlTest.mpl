@@ -14,7 +14,6 @@
 "control.ensure"      use
 "control.print"       use
 "control.when"        use
-"control.||"          use
 
 "control.nil?" use
 
