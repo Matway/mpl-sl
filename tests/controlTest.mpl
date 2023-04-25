@@ -22,9 +22,8 @@ controlTest: [];
 # nil?
 [
   check: [
-    source: nilExpected: known: hasToValidateImpurity:;;;;
+    source: nilExpected: known: dirty:;;;;
     nil: ref: @source nil? isRef;;
-    impurnessFound: hasToValidateImpurity [@source isDirty] &&;
 
     do: [
       predicate: message:;;
@@ -32,18 +31,18 @@ controlTest: [];
       @predicate "[nil?] on statically " header " " message & & & ensure
     ];
 
-    [impurnessFound ~    ] "made argument dirty"                                       do
-    [ref ~               ] "produced reference"                                        do
-    [nil isStatic known =] "produced statically " known ["un" &] when "known result" & do
-    [nil nilExpected =   ] "produced wrong result"                                     do
+    [@source isDirty dirty =] "changed argument purity"                                   do
+    [ref ~                  ] "produced reference"                                        do
+    [nil isStatic known =   ] "produced statically " known ["un" &] when "known result" & do
+    [nil nilExpected =      ] "produced wrong result"                                     do
   ];
   abortStatic: {PRE: [Cond dynamic]; CALL: []; placeholder: Cond;};
-  HasToValidateImpurity: IsNil: IsStatic: [TRUE] dup dup;;;
+  IsDirty: IsNil: IsStatic: [TRUE] dup dup;;;
 
-  @abortStatic                 IsNil ~ IsStatic   HasToValidateImpurity   check
-  Cond AsRef dynamic .data     IsNil ~ IsStatic ~ HasToValidateImpurity ~ check
-  Cond Ref                     IsNil   IsStatic   HasToValidateImpurity ~ check
-  Cond Ref AsRef dynamic .data IsNil   IsStatic ~ HasToValidateImpurity ~ check
+  @abortStatic                 IsNil ~ IsStatic   IsDirty ~ check
+  Cond AsRef dynamic .data     IsNil ~ IsStatic ~ IsDirty   check
+  Cond Ref                     IsNil   IsStatic   IsDirty   check
+  Cond Ref AsRef dynamic .data IsNil   IsStatic ~ IsDirty   check
 ] call
 
 [TESTS_SILENT] compilable? [TESTS_SILENT] && ~ ["controlTest passed\n" print] when
