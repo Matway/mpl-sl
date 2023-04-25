@@ -27,11 +27,10 @@ controlTest: [];
 
     do: [
       predicate: message:;;
-      header: known ["known "] ["unknown "] if nilExpected ["Nil"] ["reference"] if &;
-      @predicate "[nil?] on statically " header " " message & & & ensure
+      @predicate "[nil?] on statically " known ["known "] ["unknown "] if nilExpected ["Nil"] ["reference"] if " " message & & & & ensure
     ];
 
-    [@source isDirty dirty =] "changed argument purity"                                   do
+    [@source isDirty dirty =] "changed argument's purity"                                 do
     [ref ~                  ] "produced reference"                                        do
     [nil isStatic known =   ] "produced statically " known ["un" &] when "known result" & do
     [nil nilExpected =      ] "produced wrong result"                                     do

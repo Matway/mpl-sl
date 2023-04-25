@@ -11,7 +11,7 @@
 "control.Natx"          use
 "control.assert"        use
 "control.exit"          use
-"control.isNil"         use
+"control.nil?"          use
 "control.when"          use
 
 "kernel32.CloseHandle"                 use
@@ -97,7 +97,7 @@ dispatcherInternal: {
 
   post: [
     context: callback:;;
-    [@callback isNil ~] "dispatcher.post: invalid callback" assert
+    [@callback nil? ~] "dispatcher.post: invalid callback" assert
     context OVERLAPPED addressToReference @callback storageAddress 0n32 completionPort PostQueuedCompletionStatus 1 = ~ [
       ("FATAL: PostQueuedCompletionStatus failed, result=" GetLastError LF) assembleString print 1 exit
     ] when

@@ -8,7 +8,7 @@
 "control.Ref"    use
 "control.assert" use
 "control.dup"    use
-"control.isNil"  use
+"control.nil?"   use
 "control.when"   use
 "control.while"  use
 
@@ -23,7 +23,7 @@ IntrusiveStack: [
 
     DIE: [];
 
-    empty?: [@last isNil];
+    empty?: [@last nil?];
 
     append: [
       item:;
@@ -44,7 +44,7 @@ IntrusiveStack: [
           [
             count 1 + !count
             @item.prev !item
-            @item isNil [
+            @item nil? [
               @Item !last
               TRUE !skip
               FALSE
@@ -61,7 +61,7 @@ IntrusiveStack: [
 
           [
             @item.prev !item
-            @item isNil [
+            @item nil? [
               TRUE !skip
               FALSE
             ] [
@@ -75,7 +75,7 @@ IntrusiveStack: [
             [
               count 1 + !count
               @item.prev !item
-              @item isNil [
+              @item nil? [
                 @Item @firstToKeep.@prev.set
                 TRUE !skip
                 FALSE
@@ -109,7 +109,7 @@ IntrusiveStack: [
           [
             next: @item;
             @item.prev !item
-            @item isNil [FALSE] [
+            @item nil? [FALSE] [
               @item @body call ~ dup ~ [
                 1 !count
                 @item.prev @next.@prev.set
@@ -131,14 +131,14 @@ IntrusiveStack: [
     reverse: [
       empty? ~ [
         item: @last.prev;
-        @item isNil ~ [
+        @item nil? ~ [
           next: @last;
           @Item @next.@prev.set
 
           [
             prev: @item.prev;
             @next @item.@prev.set
-            @prev isNil ~ dup [
+            @prev nil? ~ dup [
               @item !next
               @prev !item
             ] when
@@ -154,7 +154,7 @@ IntrusiveStack: [
       item: @last;
 
       next: [
-        @item isNil [@Item FALSE] [
+        @item nil? [@Item FALSE] [
           @item
           @item.prev !item
           TRUE

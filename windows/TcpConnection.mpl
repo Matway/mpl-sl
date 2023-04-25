@@ -29,7 +29,7 @@
 "control.assert"        use
 "control.drop"          use
 "control.exit"          use
-"control.isNil"         use
+"control.nil?"          use
 "control.when"          use
 "control.||"            use
 
@@ -120,7 +120,7 @@ TcpConnection: [{
         ] [("bind failed, result=" WSAGetLastError) assembleString]
         [
           drop
-          @ConnectEx isNil [
+          @ConnectEx nil? [
             connectEx: (FN_CONNECTEXRef);
             read: Nat32;
             WSAOVERLAPPED_COMPLETION_ROUTINERef OVERLAPPED Ref @read connectEx storageSize Nat32 cast connectEx storageAddress WSAID_CONNECTEX storageSize Nat32 cast WSAID_CONNECTEX storageAddress SIO_GET_EXTENSION_FUNCTION_POINTER connection WSAIoctl 0 = ~

@@ -15,7 +15,7 @@
 "control.Ref"       use
 "control.assert"    use
 "control.drop"      use
-"control.isNil"     use
+"control.nil?"      use
 "control.swap"      use
 "control.times"     use
 "control.when"      use
@@ -233,7 +233,7 @@ Pool: [
 
     DIE: [
       clear
-      @data isNil ~ [
+      @data nil? ~ [
         exactAllocatedMemSize @data storageAddress mplFree
       ] when
     ];
