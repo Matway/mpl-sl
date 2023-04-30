@@ -9,7 +9,7 @@
 "control.Ref"           use
 "control.assert"        use
 "control.dup"           use
-"control.isNil"         use
+"control.nil?"          use
 "control.when"          use
 
 "Context.makeContext"             use
@@ -95,7 +95,7 @@ sleepUntil: [
     item: @timers.@first;
 
     [
-      item isNil [
+      item nil? [
         @data @timers.append
         FALSE
       ] [
@@ -104,7 +104,7 @@ sleepUntil: [
           @item.next !item
         ] [
           @item @data.@next.set
-          prev isNil [
+          prev nil? [
             @data @timers.!first
           ] [
             @data @prev.@next.set

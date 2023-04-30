@@ -22,7 +22,7 @@
 "control.assert"        use
 "control.drop"          use
 "control.failProc"      use
-"control.isNil"         use
+"control.nil?"          use
 "control.sequence"      use
 "control.when"          use
 
@@ -216,7 +216,7 @@ makeTcpConnection: [
       INADDR_ANY @bindAddress.!sin_addr
       bindAddress storageSize Int32 cast bindAddress storageAddress connection.connection bind 0 = ~ [("bind failed, result=" WSAGetLastError) @result.catMany] when
     ] [
-      @ConnectEx isNil [
+      @ConnectEx nil? [
         connectEx: FN_CONNECTEXRef AsRef;
         WSAOVERLAPPED_COMPLETION_ROUTINERef OVERLAPPED Ref Nat32 @connectEx storageSize Nat32 cast @connectEx storageAddress WSAID_CONNECTEX storageSize Nat32 cast WSAID_CONNECTEX storageAddress SIO_GET_EXTENSION_FUNCTION_POINTER connection.connection WSAIoctl 0 = ~ [
           TRUE [("WSAIoctl failed, result=" WSAGetLastError) @result.catMany] when

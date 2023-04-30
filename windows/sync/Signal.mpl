@@ -7,7 +7,7 @@
 
 "IntrusiveQueue.IntrusiveQueue" use
 "control.assert"                use
-"control.isNil"                 use
+"control.nil?"                  use
 "control.when"                  use
 
 "syncPrivate.FiberData"         use
@@ -42,11 +42,11 @@ Signal: [{
 
   wake: [
     fibers.empty? ~ [
-      resumingFibers.last isNil [
-        [resumingFibers.first isNil] "invalid linked list state" assert
+      resumingFibers.last nil? [
+        [resumingFibers.first nil?] "invalid linked list state" assert
         @fibers.@first @resumingFibers.!first
       ] [
-        [resumingFibers.last.next isNil] "invalid linked list state" assert
+        [resumingFibers.last.next nil?] "invalid linked list state" assert
         @fibers.@first @resumingFibers.@last.@next.set
       ] if
 

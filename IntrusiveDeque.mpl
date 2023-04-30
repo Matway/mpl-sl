@@ -9,7 +9,7 @@
 "control.assert" use
 "control.dup"    use
 "control.ensure" use
-"control.isNil"  use
+"control.nil?"   use
 "control.when"   use
 "control.while"  use
 
@@ -24,17 +24,17 @@ IntrusiveDeque: [
 
     DIE: [];
 
-    empty?: [@first isNil];
+    empty?: [@first nil?];
 
     append: [
       item:;
       @last @item.@prev.set
       @Item @item.@next.set
-      @last isNil [
-        [@first isNil] "invalid linked list state" assert
+      @last nil? [
+        [@first nil?] "invalid linked list state" assert
         @item !first
       ] [
-        [@last.next isNil] "invalid linked list state" assert
+        [@last.next nil?] "invalid linked list state" assert
         @item @last.@next.set
       ] if
 
@@ -44,18 +44,18 @@ IntrusiveDeque: [
     appendAll: [
       other:;
       otherFirst: @other.@first;
-      @otherFirst isNil ~ [
-        @last isNil [
-          [@first isNil] "invalid linked list state" assert
+      @otherFirst nil? ~ [
+        @last nil? [
+          [@first nil?] "invalid linked list state" assert
           @otherFirst !first
         ] [
-          [@otherFirst.prev isNil] "invalid linked list state" assert
+          [@otherFirst.prev nil?] "invalid linked list state" assert
           @last @otherFirst.@prev.set
-          [@last.next isNil] "invalid linked list state" assert
+          [@last.next nil?] "invalid linked list state" assert
           @otherFirst @last.@next.set
         ] if
 
-        [other.@last isNil ~] "invalid linked list state" assert
+        [other.@last nil? ~] "invalid linked list state" assert
         @other.@last !last
         @Item @other.!first
         @Item @other.!last
@@ -71,7 +71,7 @@ IntrusiveDeque: [
       item:;
       prev: @item.prev;
       next: @item.next;
-      @prev isNil [
+      @prev nil? [
         [@first @item is] "invalid linked list state" assert
         @next !first
       ] [
@@ -79,7 +79,7 @@ IntrusiveDeque: [
         @next @prev.@next.set
       ] if
 
-      @next isNil [
+      @next nil? [
         [@last @item is] "invalid linked list state" assert
         @prev !last
       ] [
@@ -100,7 +100,7 @@ IntrusiveDeque: [
             count 1 + !count
             prev: @item;
             @item.next !item
-            @item isNil [
+            @item nil? [
               @Item !first
               [@last @prev is] "invalid linked list state" assert
               @Item !last
@@ -121,7 +121,7 @@ IntrusiveDeque: [
 
           [
             @item.next !item
-            @item isNil [
+            @item nil? [
               TRUE !skip
               FALSE
             ] [
@@ -136,7 +136,7 @@ IntrusiveDeque: [
               count 1 + !count
               prev: @item;
               @item.next !item
-              @item isNil [
+              @item nil? [
                 @Item @lastToKeep.@next.set
                 [@last @prev is] "invalid linked list state" assert
                 @lastToKeep !last
@@ -161,7 +161,7 @@ IntrusiveDeque: [
       [empty? ~] "deque is empty" assert
       item: @first;
       @item.next !first
-      @first isNil [
+      @first nil? [
         [@last @item is] "invalid linked list state" assert
         @Item !last
       ] [
@@ -182,12 +182,12 @@ IntrusiveDeque: [
           [
             prev: @item;
             @item.next !item
-            @item isNil [FALSE] [
+            @item nil? [FALSE] [
               @item @body call ~ dup ~ [
                 1 !count
                 next: @item.next;
                 @next @prev.@next.set
-                @next isNil [
+                @next nil? [
                   [@last @item is] "invalid linked list state" assert
                   @prev !last
                 ] [
@@ -206,7 +206,7 @@ IntrusiveDeque: [
     cutLast: [
       [empty? ~] "deque is empty" assert
       prev: @last.prev;
-      @prev isNil [
+      @prev nil? [
         [@first @last is] "invalid linked list state" assert
         @Item !first
       ] [
@@ -229,11 +229,11 @@ IntrusiveDeque: [
           [
             next: @item;
             @item.prev !item
-            @item isNil [FALSE] [
+            @item nil? [FALSE] [
               @item @body call ~ dup ~ [
                 1 !count
                 prev: @item.prev;
-                @prev isNil [
+                @prev nil? [
                   [@first @item is] "invalid linked list state" assert
                   @next !first
                 ] [
@@ -256,7 +256,7 @@ IntrusiveDeque: [
       item: @first;
 
       next: [
-        @item isNil [@Item FALSE] [
+        @item nil? [@Item FALSE] [
           @item
           @item.next !item
           TRUE
@@ -282,11 +282,11 @@ IntrusiveDeque: [
       @Item @item.@prev.set
       @next @item.@next.set
       @item !first
-      @next isNil [
-        [@last isNil] "invalid linked list state" assert
+      @next nil? [
+        [@last nil?] "invalid linked list state" assert
         @item !last
       ] [
-        [@next.prev isNil] "invalid linked list state" assert
+        [@next.prev nil?] "invalid linked list state" assert
         @item @next.@prev.set
       ] if
     ];
@@ -294,7 +294,7 @@ IntrusiveDeque: [
     reverse: [
       empty? ~ [
         item: @first.next;
-        @item isNil ~ [
+        @item nil? ~ [
           prev: @first;
           [@prev.prev @Item is] "invalid linked list state" assert
           @item @prev.@prev.set
@@ -305,7 +305,7 @@ IntrusiveDeque: [
             [@item.prev @prev is] "invalid linked list state" assert
             @next @item.@prev.set
             @prev @item.@next.set
-            @next isNil ~ dup [
+            @next nil? ~ dup [
               @item !prev
               @next !item
             ] when
@@ -324,7 +324,7 @@ IntrusiveDeque: [
       item: @last;
 
       next: [
-        @item isNil [@Item FALSE] [
+        @item nil? [@Item FALSE] [
           @item
           @item.prev !item
           TRUE
@@ -336,7 +336,7 @@ IntrusiveDeque: [
       DEBUG [
         item: @Item;
         next: @first;
-        [@next isNil ~] [
+        [@next nil? ~] [
           [@next.prev @item is] "invalid linked list state" ensure
           @next !item
           @next.next !next

@@ -11,7 +11,7 @@
 "control.Ref"                   use
 "control.assert"                use
 "control.dup"                   use
-"control.isNil"                 use
+"control.nil?"                  use
 "control.when"                  use
 "control.while"                 use
 
@@ -62,7 +62,7 @@ ContextGroup: [{
 
       @data @group.@fibers.cut
       @currentFiber @reusableFibers.prepend
-      data.waitedBy isNil [
+      data.waitedBy nil? [
         dispatch
       ] [
         @data.@waitedBy.switchTo
@@ -79,7 +79,7 @@ ContextGroup: [{
     ] when
 
     [fibers.empty? ~] [
-      [fibers.first.waitedBy isNil] "multiple attempts to wait on the same fiber" assert
+      [fibers.first.waitedBy nil?] "multiple attempts to wait on the same fiber" assert
       @currentFiber @fibers.@first.!waitedBy
       canceled? ~ [
         [currentFiber.@func @defaultCancelFunc is] "invalid cancelation function" assert

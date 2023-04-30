@@ -129,12 +129,7 @@ nat?: [
   ] if
 ];
 
-nil?: [storageAddress 0nx =];
-
-nilStatic?: [
-  v: storageAddress 0nx =;
-  v isStatic [v] &&
-];
+nil?: [dup Ref is];
 
 number?: [
   v:;
@@ -359,8 +354,6 @@ within: [
   value: lower: upper:;;;
   value lower < ~ [value upper <] &&
 ];
-
-isNil: [storageAddress 0nx =];
 
 bind: [{
   bindBody:  dup dup isConst [copyable?] [movable?] if [new] when;

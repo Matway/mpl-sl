@@ -25,7 +25,7 @@
 "control.Ref"           use
 "control.assert"        use
 "control.drop"          use
-"control.isNil"         use
+"control.nil?"          use
 "control.print"         use
 "control.when"          use
 "control.||"            use
@@ -69,7 +69,7 @@ TcpAcceptor: [{
         [drop SOMAXCONN listener listen 0 = ~] [("listen failed, result=" WSAGetLastError) assembleString]
         [
           drop
-          @AcceptEx isNil [
+          @AcceptEx nil? [
             acceptEx: (FN_ACCEPTEXRef);
             read: Nat32;
             WSAOVERLAPPED_COMPLETION_ROUTINERef kernel32.OVERLAPPED Ref @read acceptEx storageSize Nat32 cast acceptEx storageAddress WSAID_ACCEPTEX storageSize Nat32 cast WSAID_ACCEPTEX storageAddress SIO_GET_EXTENSION_FUNCTION_POINTER listener WSAIoctl 0 = ~
