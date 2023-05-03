@@ -39,7 +39,7 @@ PriorityQueue: [{
 
   push: [
     @data.append
-    data.getSize 1 - lift
+    data.size 1 - lift
   ];
 
   top: [0 @data.at];
@@ -49,8 +49,8 @@ PriorityQueue: [{
     [
       l: i lchild;
       r: i rchild;
-      l data.getSize < [
-        r data.getSize < [
+      l data.size < [
+        r data.size < [
           c: r data.at l data.at < [l copy] [r copy] if;
           i c swap
           c @i set
@@ -60,8 +60,8 @@ PriorityQueue: [{
           FALSE
         ] if
       ] [
-        i data.getSize 1 - < [
-          i data.getSize 1 - swap
+        i data.size 1 - < [
+          i data.size 1 - swap
           i lift
         ] when
         FALSE
@@ -71,6 +71,6 @@ PriorityQueue: [{
     @data.popBack
   ];
 
-  getSize: [data.getSize];
-  empty: [data.getSize 0 =];
+  getSize: [data.size];
+  empty: [data.size 0 =];
 }];
