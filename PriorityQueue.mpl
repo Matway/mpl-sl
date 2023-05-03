@@ -6,17 +6,18 @@
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
 "Array.Array" use
+"control.&&" use
 
 PriorityQueue: [{
   data: Array;
 
   swap: [
-    copy i1:; copy i2:;
+    new i1:; new i2:;
     i1ref: i1 @data.at;
     i2ref: i2 @data.at;
-    tmp: @i1ref move copy;
-    @i2ref move @i1ref set
-    @tmp move @i2ref set
+    tmp: @i1ref new;
+    @i2ref @i1ref set
+    @tmp @i2ref set
   ];
 
   parent: [1 - 2 /];
@@ -24,7 +25,7 @@ PriorityQueue: [{
   rchild: [2 * 2 +];
 
   lift: [
-    copy i:;
+    new i:;
     [
       i 0 > [
         p: i parent;
