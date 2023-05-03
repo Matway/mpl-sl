@@ -6,17 +6,18 @@
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
 "Array.Array" use
+"control.&&" use
 
 PriorityQueue: [{
   data: Array;
 
   swap: [
-    copy i1:; copy i2:;
+    new i1:; new i2:;
     i1ref: i1 @data.at;
     i2ref: i2 @data.at;
-    tmp: @i1ref move copy;
-    @i2ref move @i1ref set
-    @tmp move @i2ref set
+    tmp: @i1ref new;
+    @i2ref @i1ref set
+    @tmp @i2ref set
   ];
 
   parent: [1 - 2 /];
@@ -24,7 +25,7 @@ PriorityQueue: [{
   rchild: [2 * 2 +];
 
   lift: [
-    copy i:;
+    new i:;
     [
       i 0 > [
         p: i parent;
@@ -39,7 +40,7 @@ PriorityQueue: [{
 
   push: [
     @data.append
-    data.getSize 1 - lift
+    data.size 1 - lift
   ];
 
   top: [0 @data.at];
@@ -49,8 +50,8 @@ PriorityQueue: [{
     [
       l: i lchild;
       r: i rchild;
-      l data.getSize < [
-        r data.getSize < [
+      l data.size < [
+        r data.size < [
           c: r data.at l data.at < [l copy] [r copy] if;
           i c swap
           c @i set
@@ -60,8 +61,8 @@ PriorityQueue: [{
           FALSE
         ] if
       ] [
-        i data.getSize 1 - < [
-          i data.getSize 1 - swap
+        i data.size 1 - < [
+          i data.size 1 - swap
           i lift
         ] when
         FALSE
@@ -71,6 +72,6 @@ PriorityQueue: [{
     @data.popBack
   ];
 
-  getSize: [data.getSize];
-  empty: [data.getSize 0 =];
+  getSize: [data.size];
+  empty: [data.size 0 =];
 }];
