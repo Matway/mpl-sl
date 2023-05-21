@@ -10,8 +10,6 @@
 "control.Ref"       use
 "conventions.cdecl" use
 
-long: [Intx];
-
 # time
 
 CLOCK_MONOTONIC: [1];
@@ -22,7 +20,7 @@ clockid_t: [Int32];
 
 timespec: [{
   tv_sec:  time_t;
-  tv_nsec: long;
+  tv_nsec: Intx;
 }];
 
 {
