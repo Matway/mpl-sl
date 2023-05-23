@@ -13,13 +13,9 @@
 "control.when"  use
 "control.while" use
 
-fieldIsRef: [drop drop FALSE];
-fieldIsRef: [index: object:;; index @object @ Ref index @object ! TRUE] [drop drop TRUE] pfunc;
-fieldIsref: [isConst] [0 .ERROR_CAN_ONLY_HANDLE_MUTABLE_OBJECTS] pfunc;
-
 cloneField: [
   index: object:;;
-  index @object @ index @object fieldIsRef [Ref] [newVarOfTheSameType] if
+  index @object @ @object index fieldIsRef [Ref] [newVarOfTheSameType] if
 ];
 
 interface: [
@@ -99,7 +95,7 @@ implement: [
     CALL: [
       moveFields: [
         index @object fieldCount = [] [
-          index @object @ index @object fieldIsRef ~ [new] when @object index fieldName def
+          index @object @ @object index fieldIsRef ~ [new] when @object index fieldName def
           index 1 + !index
           @moveFields ucall
         ] uif

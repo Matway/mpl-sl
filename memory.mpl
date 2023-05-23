@@ -109,7 +109,7 @@ getHeapUsedSize: [isCombined] [
   result: 0nx;
   [
     i @arg fieldCount < [
-      i @arg fieldIsRef ~ [
+      @arg i fieldIsRef ~ [
         result i @arg @ getHeapUsedSize + @result set
       ] when
 
