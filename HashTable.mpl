@@ -94,17 +94,13 @@ HashTable: [
 
           i: 0 dynamic;
           [
-            i curBucket.size < [
-              node: i @curBucket.at;
-              node.key key = [
-                i @curBucket.erase
-                FALSE
-              ] [
-                i 1 + @i set TRUE
-              ] if
-            ] [
-              "Erasing unexisting element!" failProc
+            [i curBucket.size <] "Key doesn't present" assert
+            node: i @curBucket.at;
+            node.key key = [
+              i @curBucket.erase
               FALSE
+            ] [
+              i 1 + @i set TRUE
             ] if
           ] loop
 

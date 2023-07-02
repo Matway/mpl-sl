@@ -19,7 +19,11 @@
 "algebra.trans"         use
 "algebra.unit"          use
 "algorithm.each"        use
+"control.&&"            use
 "control.Ref"           use
+"control.compilable?"   use
+"control.drop"          use
+"control.getUnchecked"  use
 "control.pfunc"         use
 "control.real?"         use
 "control.sqr"           use
@@ -96,21 +100,21 @@ quaternion: [
   ] [
     next: (1 2 0);
     i: 1 1 m @ @ 0 0 m @ @ > [1] [0] if;
-    2 2 m @ @ i i m @ @ > [
+    2 2 m @ @ i i m getUnchecked getUnchecked > [
       2 !i
     ] when
 
-    j: i next @;
-    k: j next @;
+    j: i next getUnchecked;
+    k: j next getUnchecked;
 
     q: trace Quaternion;
-    qi: i i m @ @ j j m @ @ - k k m @ @ - 1 trace cast + sqrt 0.5 trace cast *;
+    qi: i i m getUnchecked getUnchecked j j m getUnchecked getUnchecked - k k m getUnchecked getUnchecked - 1 trace cast + sqrt 0.5 trace cast *;
     fr: 0.25 qi cast qi /;
 
-    qi                         i @q @ set
-    i j m @ @ j i m @ @ + fr * j @q @ set
-    i k m @ @ k i m @ @ + fr * k @q @ set
-    j k m @ @ k j m @ @ - fr * 3 @q @ set
+    qi                                                                     i @q getUnchecked set
+    i j m getUnchecked getUnchecked j i m getUnchecked getUnchecked + fr * j @q getUnchecked set
+    i k m getUnchecked getUnchecked k i m getUnchecked getUnchecked + fr * k @q getUnchecked set
+    j k m getUnchecked getUnchecked k j m getUnchecked getUnchecked - fr * 3 @q @ set
     q
   ] if
 ] pfunc;
@@ -146,6 +150,16 @@ vector: ["QUATERNION" has] [
 ] pfunc;
 
 @: ["QUATERNION" has] [.@entries @] pfunc;
+
+@: ["QUATERNION" has [new isDynamic] &&] [
+  [0 dynamic (0) @] compilable? ~ ["Component key doesn't known at compile-time. Depending on the input either provide [failProc], use [getUnchecked] from Quaternion.mpl, or disable bounds check" raiseStaticError] when
+  .@entries @
+] pfunc;
+
+getUnchecked: ["QUATERNION" has] [
+  failProc: [drop];
+  @
+] pfunc;
 
 fieldCount: ["QUATERNION" has] [.entries fieldCount] pfunc;
 

@@ -5,23 +5,24 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"Span.toSpan"      use
-"algorithm.unhead" use
-"control.!"        use
-"control.&&"       use
-"control.@"        use
-"control.Int32"    use
-"control.Nat32"    use
-"control.Nat64"    use
-"control.Nat8"     use
-"control.Natx"     use
-"control.drop"     use
-"control.min"      use
-"control.times"    use
-"control.when"     use
-"control.while"    use
-"memory.memcpy"    use
-"memory.memset"    use
+"Span.toSpan"          use
+"algorithm.unhead"     use
+"control.!"            use
+"control.&&"           use
+"control.@"            use
+"control.Int32"        use
+"control.Nat32"        use
+"control.Nat64"        use
+"control.Nat8"         use
+"control.Natx"         use
+"control.drop"         use
+"control.getUnchecked" use
+"control.min"          use
+"control.times"        use
+"control.when"         use
+"control.while"        use
+"memory.memcpy"        use
+"memory.memset"        use
 
 Sha1Internal: {
   rol: [
@@ -256,7 +257,7 @@ sha1: [
   source.data storageAddress
   buf storageAddress memcpy drop
 
-  0x80n8 count @buf @ set
+  0x80n8 count @buf getUnchecked set
   count 1 + !count
   count 56 > [
     64 count - Natx cast
