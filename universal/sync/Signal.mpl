@@ -10,12 +10,12 @@
 "control.nil?"                  use
 "control.when"                  use
 
-"syncPrivate.FiberData"         use
-"syncPrivate.canceled?"         use
-"syncPrivate.currentFiber"      use
-"syncPrivate.defaultCancelFunc" use
-"syncPrivate.dispatch"          use
-"syncPrivate.resumingFibers"    use
+"sync/syncPrivate.FiberData"         use
+"sync/syncPrivate.canceled?"         use
+"sync/syncPrivate.currentFiber"      use
+"sync/syncPrivate.defaultCancelFunc" use
+"sync/syncPrivate.dispatch"          use
+"sync/syncPrivate.resumingFibers"    use
 
 Signal: [{
   INIT: [];

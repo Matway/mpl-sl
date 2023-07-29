@@ -26,7 +26,7 @@
 "linux.epoll_event"     use
 "linux.timerfd_settime" use
 
-"Context.makeContext"             use
+"sync/Context.makeContext"        use
 "TcpAcceptor.makeTcpAcceptor"     use
 "TcpConnection.makeTcpConnection" use
 "syncPrivate.FiberData"           use

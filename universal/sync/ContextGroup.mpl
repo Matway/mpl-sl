@@ -15,15 +15,15 @@
 "control.when"                  use
 "control.while"                 use
 
-"syncPrivate.FiberData"         use
-"syncPrivate.canceled?"         use
-"syncPrivate.currentFiber"      use
-"syncPrivate.defaultCancelFunc" use
-"syncPrivate.dispatch"          use
-"syncPrivate.emptyCancelFunc"   use
-"syncPrivate.resumingFibers"    use
-"syncPrivate.reusableFibers"    use
-"syncPrivate.spawnFiber"        use
+"sync/syncPrivate.FiberData"         use
+"sync/syncPrivate.canceled?"         use
+"sync/syncPrivate.currentFiber"      use
+"sync/syncPrivate.defaultCancelFunc" use
+"sync/syncPrivate.dispatch"          use
+"sync/syncPrivate.emptyCancelFunc"   use
+"sync/syncPrivate.resumingFibers"    use
+"sync/syncPrivate.reusableFibers"    use
+"sync/syncPrivate.spawnFiber"        use
 
 ContextGroup: [{
   INIT: [
