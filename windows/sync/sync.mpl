@@ -12,7 +12,7 @@
 "control.nil?"          use
 "control.when"          use
 
-"Context.makeContext"             use
+"sync/Context.makeContext"        use
 "TcpAcceptor.makeTcpAcceptor"     use
 "TcpConnection.makeTcpConnection" use
 "syncPrivate.TimerData"           use
