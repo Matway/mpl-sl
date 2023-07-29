@@ -92,9 +92,10 @@ dispatch: [
 
   [
     resumingFibers.empty? [
+      event: epoll_event;
+
       INFINITE_TIMEOUT: [-1];
       MAX_EVENT_COUNT:  [1];
-      event:            epoll_event;
 
       INFINITE_TIMEOUT MAX_EVENT_COUNT event storageAddress epoll_fd epoll_wait MAX_EVENT_COUNT = [
         fiberPair: event.ptr FiberPair addressToReference;

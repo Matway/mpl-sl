@@ -78,9 +78,9 @@ Context: [{
   ];
 
   Data: [{
-    fiber: FiberData Ref;
+    fiber:    FiberData Ref;
     waitedBy: FiberData Ref;
-    out: Natx;
+    out:      Natx;
   }];
 
   virtual Out: dup virtual? ~ [Ref] when;
@@ -89,7 +89,6 @@ Context: [{
 
 makeContext: [
   in: virtual Out: dup virtual? ~ [Ref] when;;
-
   contextFunc: [
     creationData: @creationData addressToReference;
     data:         @Out Context.Data;

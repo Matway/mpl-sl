@@ -41,8 +41,8 @@ ContextGroup: [{
     in:;
     contextGroupFunc: [
       creationData: @creationData addressToReference;
-      group: @creationData.@group;
-      data: Data;
+      group:        @creationData.@group;
+      data:         Data;
       @currentFiber @data.!fiber
       @data @group.@fibers.append
 
@@ -92,9 +92,9 @@ ContextGroup: [{
   ];
 
   Data: [{
-    fiber: FiberData Ref;
-    prev: [Data] Mref;
-    next: [Data] Mref;
+    fiber:    FiberData Ref;
+    prev:     [Data] Mref;
+    next:     [Data] Mref;
     waitedBy: FiberData Ref;
   }];
 

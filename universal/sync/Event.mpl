@@ -43,6 +43,6 @@ Event: [{
     @signal.wakeOne
   ];
 
-  state: FALSE;
+  state:  FALSE;
   signal: Signal;
 }];
