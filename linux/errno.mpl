@@ -5,44 +5,10 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"control.when" use
+"control.Int32"     use
+"control.Ref"       use
+"conventions.cdecl" use
 
-"Signal.Signal" use
+errno: [__errno_location];
 
-Event: [{
-  INIT: [
-    FALSE !state
-  ];
-
-  DIE: [];
-
-  get: [
-    state new
-  ];
-
-  clear: [
-    FALSE !state
-  ];
-
-  set: [
-    TRUE !state
-    @signal.wake
-  ];
-
-  wait: [
-    state ~ [
-      @signal.wait
-    ] when
-  ];
-
-  wake: [
-    @signal.wake
-  ];
-
-  wakeOne: [
-    @signal.wakeOne
-  ];
-
-  state: FALSE;
-  signal: Signal;
-}];
+{} Int32 Ref {convention: cdecl;} "__errno_location" importFunction # Link with libpthread.a

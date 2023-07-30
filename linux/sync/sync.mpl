@@ -6,20 +6,37 @@
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
 "String.assembleString" use
+"String.printList"      use
+"control.&&"            use
+"control.Intx"          use
+"control.Nat32"         use
+"control.Real64"        use
 "control.Ref"           use
 "control.assert"        use
-"control.dup"           use
-"control.nil?"          use
+"control.failProc"      use
 "control.when"          use
+
+"posix.itimerspec" use
+
+"errno"                 use
+"linux.EPOLLIN"         use
+"linux.EPOLLONESHOT"    use
+"linux.EPOLL_CTL_MOD"   use
+"linux.epoll_ctl"       use
+"linux.epoll_event"     use
+"linux.timerfd_settime" use
 
 "TcpAcceptor.makeTcpAcceptor"     use
 "TcpConnection.makeTcpConnection" use
-"syncPrivate.TimerData"           use
 "sync/Context.makeContext"        use
+"syncPrivate.FiberData"           use
+"syncPrivate.FiberPair"           use
 "syncPrivate.currentFiber"        use
 "syncPrivate.defaultCancelFunc"   use
 "syncPrivate.dispatch"            use
+"syncPrivate.epoll_fd"            use
 "syncPrivate.getTimePrivate"      use
+"syncPrivate.getTimerFd"          use
 "syncPrivate.resumingFibers"      use
 "syncPrivate.timers"              use
 
@@ -74,7 +91,53 @@ listenTcp: [makeTcpAcceptor];
 #   NONE
 sleepFor: [
   duration:;
-  getTime duration + sleepUntil
+
+  SECONDS_TO_NANOSECONDS_MULTIPLIER: [1000000000.0r64];
+
+  seconds:     duration Intx cast;
+  nanoseconds: duration seconds Real64 cast - SECONDS_TO_NANOSECONDS_MULTIPLIER * Intx cast;
+  canceled? ~ [
+    seconds 0ix = [nanoseconds 0ix =] && [yield] [
+      [currentFiber.@func @defaultCancelFunc is] "invalid cancelation function" assert
+
+      expirationTime: itimerspec;
+      0ix             @expirationTime.@it_interval.!tv_sec
+      0ix             @expirationTime.@it_interval.!tv_nsec
+      seconds     new @expirationTime.@it_value.!tv_sec
+      nanoseconds new @expirationTime.@it_value.!tv_nsec
+
+      timer_fd: getTimerFd;
+      itimerspec Ref @expirationTime 0 timer_fd timerfd_settime -1 = [("FATAL: timerfd_settime failed, result=" errno LF) printList "" failProc] when
+
+      fiberPair: FiberPair;
+      FiberData Ref @fiberPair.!writeFiber
+      @currentFiber @fiberPair.!readFiber
+
+      timerEvent: epoll_event;
+      EPOLLIN EPOLLONESHOT or  @timerEvent.!events
+      fiberPair storageAddress @timerEvent.ptr set
+
+      @timerEvent timer_fd EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("FATAL: epoll_ctl failed, result=" errno LF) printList "" failProc] when
+
+      context: {
+        fiber:    @currentFiber;
+        timer_fd: timer_fd new;
+      };
+
+      context storageAddress [
+        context: @context addressToReference;
+
+        epoll_event context.timer_fd EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("FATAL: epoll_ctl failed, result=" errno LF) printList "" failProc] when
+
+        @context.@fiber @resumingFibers.append
+      ] @currentFiber.setFunc
+
+      dispatch
+
+      canceled? ~ [@defaultCancelFunc @currentFiber.!func] when
+      timer_fd @timers.append
+    ] if
+  ] when
 ];
 
 # Schedule current context not earlier than 'time'
@@ -84,45 +147,7 @@ sleepFor: [
 #   NONE
 sleepUntil: [
   time:;
-  canceled? ~ [
-    [currentFiber.@func @defaultCancelFunc is] "invalid cancelation function" assert
-    data: TimerData;
-    @currentFiber @data.!fiber
-    time new @data.!time
-
-    # TODO: Improve complexity, it is O(n) currently
-    prev: TimerData Ref;
-    item: @timers.@first;
-
-    [
-      item nil? [
-        @data @timers.append
-        FALSE
-      ] [
-        item.time data.time > ~ dup [
-          @item !prev
-          @item.next !item
-        ] [
-          @item @data.@next.set
-          prev nil? [
-            @data @timers.!first
-          ] [
-            @data @prev.@next.set
-          ] if
-        ] if
-      ] if
-    ] loop
-
-    data storageAddress [
-      data: @data addressToReference;
-      # Cancelation is considered a rare operation, so O(n) complexity is not a problem here
-      # It is possible that the current fiber was already removed from the linked list by dispatch
-      [data is] @timers.cutIf 1 = [@data.@fiber @resumingFibers.append] when
-    ] @currentFiber.setFunc
-
-    dispatch
-    canceled? ~ [@defaultCancelFunc @currentFiber.!func] when
-  ] when
+  time getTime - sleepFor
 ];
 
 # Create and schedule a new context

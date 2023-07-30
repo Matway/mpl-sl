@@ -12,15 +12,15 @@
 "control.nil?"   use
 "control.when"   use
 
-"syncPrivate.FiberData"         use
-"syncPrivate.canceled?"         use
-"syncPrivate.currentFiber"      use
-"syncPrivate.defaultCancelFunc" use
-"syncPrivate.dispatch"          use
-"syncPrivate.emptyCancelFunc"   use
-"syncPrivate.resumingFibers"    use
-"syncPrivate.reusableFibers"    use
-"syncPrivate.spawnFiber"        use
+"sync/syncPrivate.FiberData"         use
+"sync/syncPrivate.canceled?"         use
+"sync/syncPrivate.currentFiber"      use
+"sync/syncPrivate.defaultCancelFunc" use
+"sync/syncPrivate.dispatch"          use
+"sync/syncPrivate.emptyCancelFunc"   use
+"sync/syncPrivate.resumingFibers"    use
+"sync/syncPrivate.reusableFibers"    use
+"sync/syncPrivate.spawnFiber"        use
 
 Context: [{
   INIT: [
@@ -78,9 +78,9 @@ Context: [{
   ];
 
   Data: [{
-    fiber: FiberData Ref;
+    fiber:    FiberData Ref;
     waitedBy: FiberData Ref;
-    out: Natx;
+    out:      Natx;
   }];
 
   virtual Out: dup virtual? ~ [Ref] when;
@@ -91,7 +91,8 @@ makeContext: [
   in: virtual Out: dup virtual? ~ [Ref] when;;
   contextFunc: [
     creationData: @creationData addressToReference;
-    data: @Out Context.Data;
+    data:         @Out Context.Data;
+
     @currentFiber @data.!fiber
     @data @creationData.!data
 
