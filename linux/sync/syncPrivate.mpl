@@ -32,7 +32,7 @@
 "posix.timespec"        use
 "posix.ucontext_t"      use
 
-"errno"                use
+"errno.errno"          use
 "linux.EPOLLIN"        use
 "linux.EPOLLOUT"       use
 "linux.EPOLL_CTL_ADD"  use

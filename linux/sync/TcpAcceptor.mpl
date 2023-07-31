@@ -41,7 +41,7 @@
 "socket.socket"         use
 "socket.socklen_t"      use
 
-"errno"               use
+"errno.errno"         use
 "linux.EPOLLIN"       use
 "linux.EPOLLONESHOT"  use
 "linux.EPOLL_CTL_ADD" use
