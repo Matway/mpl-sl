@@ -23,11 +23,12 @@
 "control.||"                     use
 "conventions.cdecl"              use
 
+"errno.errno" use
+
 {stream: Natx;} Int32                                       {convention: cdecl;} "fclose"   importFunction
 {stream: Natx;} Int32                                       {convention: cdecl;} "ferror"   importFunction
 {stream: Natx;} Int32                                       {convention: cdecl;} "fflush"   importFunction
 {filename: Text; mode: Text;} Natx                          {convention: cdecl;} "fopen"    importFunction
-{streamptr: Natx Ref; filename: Text; mode: Text;} Int32    {convention: cdecl;} "fopen_s"  importFunction
 {buffer: Natx; size: Natx; count: Natx; stream: Natx;} Natx {convention: cdecl;} "fread"    importFunction
 {stream: Natx; offset: Int32; origin: Int32;} Int32         {convention: cdecl;} "fseek"    importFunction
 {stream: Natx;} Int32                                       {convention: cdecl;} "ftell"    importFunction
@@ -50,12 +51,12 @@ loadFile: [
   };
 
   file: Natx;
-  error: Int32;
   () (
     [
       drop
-      "rb\00" name.data storageAddress Text addressToReference @file fopen_s !error error 0 = ~
-    ] [("fopen failed, " error getErrnoText) assembleString @result.!result]
+      "rb\00" name.data storageAddress Text addressToReference fopen @file set
+      file 0nx =
+    ] [("fopen failed, " errno new getErrnoText) assembleString @result.!result]
     [
       drop
       SEEK_END 0 file fseek drop
@@ -75,12 +76,12 @@ loadFile: [
 saveFile: [
   data: name: addTerminator makeStringView;;
   file: Natx;
-  error: Int32;
   () (
     [
       drop
-      "wb\00" name.data storageAddress Text addressToReference @file fopen_s !error error 0 = ~
-    ] [("fopen failed, " error getErrnoText) assembleString]
+      "wb\00" name.data storageAddress Text addressToReference fopen @file set
+      file 0nx =
+    ] [("fopen failed, " errno new getErrnoText) assembleString]
     [
       drop
       size: data.size Natx cast;
