@@ -20,7 +20,6 @@
 "control.Ref"                    use
 "control.Text"                   use
 "control.drop"                   use
-"control.nil?"                   use
 "control.||"                     use
 "conventions.cdecl"              use
 
@@ -56,7 +55,7 @@ loadFile: [
     [
       drop
       "rb\00" name.data storageAddress Text addressToReference fopen @file set
-      file Natx addressToReference nil?
+      file 0nx =
     ] [("fopen failed, " errno new getErrnoText) assembleString @result.!result]
     [
       drop
@@ -81,7 +80,7 @@ saveFile: [
     [
       drop
       "wb\00" name.data storageAddress Text addressToReference fopen @file set
-      file Natx addressToReference nil?
+      file 0nx =
     ] [("fopen failed, " errno new getErrnoText) assembleString]
     [
       drop
