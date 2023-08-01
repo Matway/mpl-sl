@@ -21,7 +21,7 @@
 "posix.EWOULDBLOCK" use
 "socket.send"       use
 
-"errno" use
+"errno.errno" use
 
 "sync/TcpConnection"     use
 "sync/sync.canceled?"    use

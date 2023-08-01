@@ -18,7 +18,7 @@
 
 "posix.itimerspec" use
 
-"errno"                 use
+"errno.errno"           use
 "linux.EPOLLIN"         use
 "linux.EPOLLONESHOT"    use
 "linux.EPOLL_CTL_MOD"   use
