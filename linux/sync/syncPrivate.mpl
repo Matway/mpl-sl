@@ -12,6 +12,7 @@
 "algorithm.cond"                use
 "control.&&"                    use
 "control.Int32"                 use
+"control.Nat64"                 use
 "control.Natx"                  use
 "control.Real64"                use
 "control.Ref"                   use
@@ -19,7 +20,9 @@
 "control.drop"                  use
 "control.failProc"              use
 "control.nil?"                  use
+"control.pfunc"                 use
 "control.when"                  use
+"control.||"                    use
 "conventions.cdecl"             use
 "memory.malloc"                 use
 
@@ -42,6 +45,21 @@
 "linux.epoll_event"    use
 "linux.epoll_wait"     use
 "linux.timerfd_create" use
+
+UNDER_VALGRIND: [FALSE];
+UNDER_VALGRIND: [SL_SYNC_UNDER_VALGRIND TRUE] [
+  SL_SYNC_UNDER_VALGRIND {} same [SL_SYNC_UNDER_VALGRIND] ||
+] pfunc;
+
+{
+  default: Nat64;
+  request: Nat64;
+  arg1:    Nat64;
+  arg2:    Nat64;
+  arg3:    Nat64;
+  arg4:    Nat64;
+  arg5:    Nat64;
+} Nat64 {} "valgrind_client_request" importFunction
 
 FiberData: [{
   canceled?: [@func nil?];
@@ -168,6 +186,13 @@ createFiber: [
   stackPtr:   STACK_SIZE malloc;
   stackPtr new @newContext.@uc_stack.!ss_sp
   STACK_SIZE   @newContext.@uc_stack.!ss_size
+
+  UNDER_VALGRIND [
+    VALGRIND_STACK_REGISTER: [0x1501n64];
+    offset0: stackPtr Nat64 cast;
+    offset1: STACK_SIZE Nat64 cast offset0 +;
+    0n64 0n64 0n64 offset1 offset0 VALGRIND_STACK_REGISTER 0n64 valgrind_client_request drop
+  ] when
 
   {data: creationDataPtr new;} 1 @fiberFunc storageAddress @newContext makecontext
 
