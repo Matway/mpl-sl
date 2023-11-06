@@ -233,6 +233,11 @@ print: ["" same] [
 Ref:  [v:; 0nx @v       addressToReference]; # for signatures
 Cref: [v:; 0nx @v const addressToReference]; # for signatures
 
+reinterpret: [
+  ref: Value:;;
+  @ref storageAddress @Value @ref isConst [const] when addressToReference
+];
+
 AsRef: [{
   data:;
   CALL: @data callable? [[data]] [[@data]] if;
