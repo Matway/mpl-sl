@@ -282,10 +282,10 @@ times: [
 
 ensure: [
   message:;
-  call ~ dup isDynamic [
-    [message failProc] when
-  ] [
+  call ~ dup isStatic [
     [message raiseStaticError] when
+  ] [
+    [message failProc] when
   ] if
 ];
 
@@ -295,7 +295,7 @@ assert: [
   ] [
     predicate: message:;;
     assert: [];
-    assert: [@predicate call dup isDynamic [drop FALSE] [~] if] [message raiseStaticError] pfunc;
+    assert: [@predicate call dup isStatic [~] [drop FALSE] if] [message raiseStaticError] pfunc;
     assert
   ] if
 ];
