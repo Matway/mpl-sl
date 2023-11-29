@@ -17,13 +17,10 @@
 "control.Int32"                  use
 "control.Nat8"                   use
 "control.Natx"                   use
-"control.Ref"                    use
 "control.Text"                   use
 "control.drop"                   use
 "control.||"                     use
 "conventions.cdecl"              use
-
-"errno.errno" use
 
 {stream: Natx;} Int32                                       {convention: cdecl;} "fclose"   importFunction
 {stream: Natx;} Int32                                       {convention: cdecl;} "ferror"   importFunction
@@ -38,6 +35,11 @@
 SEEK_SET: [0i32];
 SEEK_CUR: [1i32];
 SEEK_END: [2i32];
+
+private errno: [
+  "errno.errno" use
+  errno
+];
 
 getErrnoText: [
   strerror makeStringViewByAddress
