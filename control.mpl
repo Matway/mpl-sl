@@ -186,7 +186,7 @@ virtualizable?: [
 
 #
 
-overload failProc: [
+failProc: [
   print
 
   trace: getCallTrace;
@@ -437,6 +437,12 @@ enum: [
 !: ["at" has] [.at set] pfunc;
 
 @: ["at" has] [.at] pfunc;
+
+getUnchecked: ["at" has ~] [
+  key: object:;;
+  failProc: [drop];
+  key @object @
+] pfunc;
 
 isBuiltinTuple: [
   object:;

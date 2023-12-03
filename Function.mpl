@@ -6,10 +6,23 @@
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
 "algorithm.case"          use
+"control.AsRef"           use
+"control.Int32"           use
+"control.Nat64"           use
+"control.Nat8"            use
+"control.Natx"            use
+"control.Ref"             use
+"control.assert"          use
+"control.assignable?"     use
+"control.drop"            use
+"control.dup"             use
+"control.failProc"        use
+"control.initializable?"  use
+"control.sized?"          use
+"control.times"           use
+"control.when"            use
 "objectTools.insertField" use
 "objectTools.unwrapField" use
-
-"control" use # failProc does not work with separate [use]s
 
 FUNCTION_ASSIGN_KEY:  [0];
 FUNCTION_CALL_KEY:    [1];

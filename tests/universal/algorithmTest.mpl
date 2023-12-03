@@ -15,6 +15,7 @@
 "control.drop"           use
 "control.dup"            use
 "control.ensure"         use
+"control.getUnchecked"   use
 "control.isBuiltinTuple" use
 "control.pfunc"          use
 "control.times"          use
@@ -762,7 +763,7 @@ testView: [
 
       next: [
         offset tuple fieldCount = [Int32 Ref FALSE] [
-          offset @tuple @
+          offset @tuple getUnchecked
           offset 1 + !offset
           TRUE
         ] if
@@ -915,7 +916,7 @@ testView: [
 
       next: [
         offset tuple fieldCount = [Int32 Ref FALSE] [
-          offset @tuple @
+          offset @tuple getUnchecked
           offset 1 + !offset
           TRUE
         ] if

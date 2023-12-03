@@ -47,7 +47,33 @@
 # Trying to create a new View that goes beyond the current one is undefined behavior.
 # A View itself does not provide access to items, but other interfaces such as Index or Iterable can provide it.
 
-"control" use
+"control.&&"             use
+"control.<"              use
+"control.="              use
+"control.>"              use
+"control.AsRef"          use
+"control.Cref"           use
+"control.Int32"          use
+"control.Nat8"           use
+"control.Natx"           use
+"control.Text"           use
+"control.assert"         use
+"control.between"        use
+"control.copyable?"      use
+"control.drop"           use
+"control.dup"            use
+"control.getUnchecked"   use
+"control.isBuiltinTuple" use
+"control.min"            use
+"control.movable?"       use
+"control.over"           use
+"control.pfunc"          use
+"control.swap"           use
+"control.times"          use
+"control.unwrap"         use
+"control.when"           use
+"control.within"         use
+"control.||"             use
 
 isDirtyOrDynamic: [
   object:;
@@ -188,7 +214,7 @@ makeTupleIndex: [
   tuple: offset: size:;;;
   [offset 0 @tuple fieldCount between] "offset is out of bounds" assert
   [size 0 @tuple fieldCount offset - between] "size is out of bounds" assert
-  offset isDynamic [@tuple storageAddress 0 dynamic @tuple @ storageSize offset Natx cast * + 0 @tuple @ addressToReference size makeArrayIndex] [
+  offset isDynamic [@tuple storageAddress 0 dynamic @tuple getUnchecked storageSize offset Natx cast * + 0 @tuple @ addressToReference size makeArrayIndex] [
     {
       SCHEMA_NAME: virtual "TupleIndex";
       tuple: @tuple;
@@ -210,7 +236,7 @@ makeTupleIter: [
   tuple: offset: size:;;;
   [offset 0 @tuple fieldCount between] "offset is out of bounds" assert
   [size 0 @tuple fieldCount offset - between] "size is out of bounds" assert
-  offset isDynamic [@tuple storageAddress 0 dynamic @tuple @ storageSize offset Natx cast * + 0 @tuple @ addressToReference size makeArrayIter] [
+  offset isDynamic [@tuple storageAddress 0 dynamic @tuple getUnchecked storageSize offset Natx cast * + 0 @tuple @ addressToReference size makeArrayIter] [
     {
       SCHEMA_NAME: virtual "TupleIter";
       tuple: @tuple;
@@ -223,7 +249,7 @@ makeTupleIter: [
           @tuple 0 fieldIsRef [
             REF_SIZE Natx cast offset0 Natx cast * + 0 @tuple @ AsRef addressToReference .@data
           ] [
-            0 dynamic @tuple @ storageSize offset0 Natx cast * + 0 @tuple @ addressToReference
+            0 dynamic @tuple getUnchecked storageSize offset0 Natx cast * + 0 @tuple @ addressToReference
           ] if
         ] [
           offset0 @tuple fieldCount < [offset0 @tuple @] [()] if
@@ -242,7 +268,7 @@ makeTupleView: [
   tuple: offset: size:;;;
   [offset 0 @tuple fieldCount between] "offset is out of bounds" assert
   [size 0 @tuple fieldCount offset - between] "size is out of bounds" assert
-  offset isDynamic [@tuple storageAddress 0 dynamic @tuple @ storageSize offset Natx cast * + 0 @tuple @ addressToReference size makeArrayView] [
+  offset isDynamic [@tuple storageAddress 0 dynamic @tuple getUnchecked storageSize offset Natx cast * + 0 @tuple @ addressToReference size makeArrayView] [
     {
       SCHEMA_NAME: virtual "TupleView";
       tuple: @tuple;

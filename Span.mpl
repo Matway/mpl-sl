@@ -5,19 +5,20 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"control.&&"      use
-"control.Cref"    use
-"control.Int32"   use
-"control.Nat8"    use
-"control.Natx"    use
-"control.Ref"     use
-"control.Text"    use
-"control.assert"  use
-"control.between" use
-"control.dup"     use
-"control.pfunc"   use
-"control.when"    use
-"control.within"  use
+"control.&&"           use
+"control.Cref"         use
+"control.Int32"        use
+"control.Nat8"         use
+"control.Natx"         use
+"control.Ref"          use
+"control.Text"         use
+"control.assert"       use
+"control.between"      use
+"control.dup"          use
+"control.getUnchecked" use
+"control.pfunc"        use
+"control.when"         use
+"control.within"       use
 
 Span: [
   data:;
@@ -31,7 +32,7 @@ toSpan: [Text same] [
 
 toSpan: [object:; @object isCombined [@object 0 fieldIsRef ~] &&] [
   struct:;
-  0 dynamic @struct @ struct fieldCount toSpan2 # [dynamic] is used to check for non-homogeneous tuples
+  0 dynamic @struct getUnchecked struct fieldCount toSpan2 # [dynamic] is used to check for non-homogeneous tuples
 ] pfunc;
 
 toSpan: ["span" has] [.span] pfunc;

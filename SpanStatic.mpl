@@ -15,6 +15,7 @@
 "control.assert"                 use
 "control.between"                use
 "control.dup"                    use
+"control.getUnchecked"           use
 "control.pfunc"                  use
 "control.when"                   use
 "control.within"                 use
@@ -32,7 +33,7 @@ toSpanStatic: [Text same] [
 
 toSpanStatic: [object:; @object isCombined [@object 0 fieldIsRef ~] &&] [
   struct:;
-  0 dynamic @struct @ struct fieldCount toSpanStatic2 # [dynamic] is used to check for non-homogeneous tuples
+  0 dynamic @struct getUnchecked struct fieldCount toSpanStatic2 # [dynamic] is used to check for non-homogeneous tuples
 ] pfunc;
 
 toSpanStatic: ["spanStatic" has] [.spanStatic] pfunc;
