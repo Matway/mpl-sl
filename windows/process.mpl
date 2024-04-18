@@ -88,10 +88,10 @@ Process: [{
 startProcess: [
   command:;
   {
-    process:            Process;
-    command:            command utf16;
-    operationErrorCode: Nat32;
-    toBeClosed:         Cond;
+    process:                    Process;
+    private command:            command utf16;
+    private operationErrorCode: Nat32;
+    private toBeClosed:         Cond;
 
     operationError: [operationErrorCode new];
 
