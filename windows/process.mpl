@@ -55,7 +55,7 @@ Process: [{
     result
   ];
 
-  tillActive: [INFINITE processInformation.hProcess WaitForSingleObject WAIT_OBJECT_0 =];
+  wait: [INFINITE processInformation.hProcess WaitForSingleObject WAIT_OBJECT_0 =];
 
   close: [
     processInformation.hProcess CloseHandle 0 = ~ [processInformation.hThread CloseHandle 0 = ~] &&
@@ -75,19 +75,16 @@ Process: [{
 #   process
 #
 # Examples:
-#   1) "program" startProcess.closeInactive
+#   1) "program" startProcess drop
 #
-#   2) "program programArgument" startProcess.closeInactive
+#   2) "program programArgument" startProcess drop
 #
 #   3) program: "program" startProcess;
-#      program.operationSucceed [program.closeInactive] [
-#        ("Failed to start program: " program.operationError) printList
-#      ] if
+#      program.operationSucceed ~ [("Failed to start program: " program.operationError) printList] when
 #
 #   4) program: "program" startProcess;
-#      program.tillActive
+#      program.wait
 #      exitCode: program.exitCode;
-#      program.close
 startProcess: [
   command:;
   {
@@ -107,20 +104,15 @@ startProcess: [
 
     doNotClose: [FALSE !toBeClosed];
 
-    tillActive: [process.tillActive updateOperationError];
-
-    closeInactive: [
-      tillActive
-      operationSucceed [close] when
-    ];
+    wait: [process.wait updateOperationError];
 
     close: [
       process.close updateOperationError
       operationSucceed [doNotClose] when
     ];
 
-    # NOTE: There is a corner case. If process did exit with status code 259, the function will report that the process is active
-    stillActive: [exitCode STILL_ACTIVE =];
+    # NOTE: There is a corner case. If process did exit with status code 259, the function will report that the process is still active
+    isActive: [exitCode STILL_ACTIVE =];
 
     exitCode: [
       status: Nat32;
@@ -131,7 +123,7 @@ startProcess: [
     INIT: [];
 
     DIE: [
-      [toBeClosed ~] "Handles are not closed" ensure
+      toBeClosed [close] when
     ];
 
     [
