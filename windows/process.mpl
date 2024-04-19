@@ -80,7 +80,7 @@ Process: [{
 #   2) "program programArgument" startProcess drop
 #
 #   3) program: "program" startProcess;
-#      program.operationSucceed ~ [("Failed to start program: " program.operationError) printList] when
+#      program.isSuccessfulOperation ~ [("Failed to start program: " program.operationError) printList] when
 #
 #   4) program: "program" startProcess;
 #      program.wait
@@ -95,20 +95,18 @@ startProcess: [
 
     operationError: [operationErrorCode new];
 
-    operationSucceed: [operationError 0n32 =];
+    isSuccessfulOperation: [operationError 0n32 =];
 
     updateOperationError: [
       determiner:;
       determiner ~ [GetLastError !operationErrorCode] when
     ];
 
-    doNotClose: [FALSE !toBeClosed];
-
     wait: [process.wait updateOperationError];
 
     close: [
       process.close updateOperationError
-      operationSucceed [doNotClose] when
+      isSuccessfulOperation [FALSE !toBeClosed] when
     ];
 
     # NOTE: There is a corner case. If process did exit with status code 259, the function will report that the process is still active
@@ -129,7 +127,7 @@ startProcess: [
     [
       @process.init
       @command @process.start updateOperationError
-      operationSucceed !toBeClosed
+      isSuccessfulOperation !toBeClosed
     ] call
   }
 ];
