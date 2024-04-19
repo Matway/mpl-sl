@@ -9,7 +9,7 @@
 "control.Cond"          use
 "control.Cref"          use
 "control.Nat32"         use
-"control.ensure"        use
+"control.assert"        use
 "control.when"          use
 
 "kernel32.CloseHandle"         use
@@ -88,25 +88,17 @@ Process: [{
 startProcess: [
   command:;
   {
-    process:                    Process;
-    private command:            command utf16;
-    private operationErrorCode: Nat32;
-    private toBeClosed:         Cond;
+    process: Process;
 
     operationError: [operationErrorCode new];
 
     isSuccessfulOperation: [operationError 0n32 =];
 
-    updateOperationError: [
-      determiner:;
-      determiner ~ [GetLastError !operationErrorCode] when
-    ];
-
     wait: [process.wait updateOperationError];
 
     close: [
       process.close updateOperationError
-      isSuccessfulOperation [FALSE !toBeClosed] when
+      FALSE !toBeClosed
     ];
 
     # NOTE: There is a corner case. If process did exit with status code 259, the function will report that the process is still active
@@ -114,14 +106,23 @@ startProcess: [
 
     exitCode: [
       status: Nat32;
-      [@status process.exitCode] "[exitCode] failed" ensure
+      [@status process.exitCode] "[exitCode] failed" assert
       status
     ];
 
-    INIT: [];
+    private command:            command utf16;
+    private operationErrorCode: Nat32;
+    private toBeClosed:         Cond;
 
-    DIE: [
+    private DIE: [
       toBeClosed [close] when
+    ];
+
+    private INIT: [FALSE !toBeClosed];
+
+    private updateOperationError: [
+      determiner:;
+      determiner ~ [GetLastError !operationErrorCode] when
     ];
 
     [
