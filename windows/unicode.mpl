@@ -1,4 +1,4 @@
-# Copyright (C) 2023 Matway Burkow
+# Copyright (C) Matway Burkow
 #
 # This repository and all its contents belong to Matway Burkow (referred here and below as "the owner").
 # The content is for demonstration purposes only.
@@ -10,13 +10,11 @@
 "control.Nat16"   use
 "control.assert"  use
 
-"kernel32.MultiByteToWideChar" use
+"kernel32.CP_UTF8"              use
+"kernel32.MB_ERR_INVALID_CHARS" use
+"kernel32.MultiByteToWideChar"  use
 
-MB_ERR_INVALID_CHARS: [8n32];
-
-CP_UTF8: [65001n32];
-
-toUtf16: [
+utf16: [
   source: toString;
   destSize:
     0
@@ -24,24 +22,26 @@ toUtf16: [
     source.size
     source.data storageAddress
     MB_ERR_INVALID_CHARS
-    CP_UTF8 MultiByteToWideChar;
+    CP_UTF8 MultiByteToWideChar
+  ;
 
   [destSize 0 = ~] "MultiByteToWideChar failed" assert
 
-  dest: Nat16 Array;
-  destSize @dest.resize
+  result: Nat16 Array;
+  destSize @result.resize
 
   writtenWChars:
     destSize
-    dest.data storageAddress
+    result.data storageAddress
     source.size
     source.data storageAddress
     MB_ERR_INVALID_CHARS
-    CP_UTF8 MultiByteToWideChar;
+    CP_UTF8 MultiByteToWideChar
+  ;
 
   [writtenWChars destSize =] "MultiByteToWideChar failed" assert
 
-  0n16 @dest.append
+  0n16 @result.append
 
-  @dest
+  result
 ];

@@ -1,4 +1,4 @@
-# Copyright (C) 2023 Matway Burkow
+# Copyright (C) Matway Burkow
 #
 # This repository and all its contents belong to Matway Burkow (referred here and below as "the owner").
 # The content is for demonstration purposes only.
@@ -35,6 +35,8 @@ TRUNCATE_EXISTING: [5];
 
 CONDITION_VARIABLE_LOCKMODE_SHARED: [0x1n32];
 
+CP_UTF8: [65001n32];
+
 ERROR_ALREADY_EXISTS:    [183n32 ];
 ERROR_FILE_NOT_FOUND:    [2n32   ];
 ERROR_NOT_FOUND:         [1168n32];
@@ -57,6 +59,10 @@ INVALID_FILE_SIZE:        [0xFFFFFFFFn32];
 INVALID_SET_FILE_POINTER: [0n32 1n32 -];
 INVALID_FILE_ATTRIBUTES:  [0n32 1n32 -];
 INVALID_HANDLE_VALUE:     [0nx 1nx -];
+
+MB_ERR_INVALID_CHARS: [8n32];
+
+STILL_ACTIVE: [259n32];
 
 WAIT_OBJECT_0: [0n32];
 WAIT_TIMEOUT:  [258n32];
@@ -101,6 +107,13 @@ OVERLAPPED_ENTRY: [{
   dwNumberOfBytesTransferred: Nat32;
 }];
 
+PROCESS_INFORMATION: [{
+  hProcess:    Natx;
+  hThread:     Natx;
+  dwProcessId: Nat32;
+  dwThreadId:  Nat32;
+}];
+
 SECURITY_ATTRIBUTES: [{
   nLength:              Nat32;
   lpSecurityDescriptor: Natx;
@@ -110,6 +123,27 @@ SECURITY_ATTRIBUTES: [{
 SRWLOCK: [{
   SCHEMA_NAME: "SRWLOCK" virtual;
   Ptr:         0nx;
+}];
+
+STARTUPINFOW: [{
+  cb:              Nat32;
+  lpReserved:      Natx;
+  lpDesktop:       Natx;
+  lpTitle:         Natx;
+  dwX:             Nat32;
+  dwY:             Nat32;
+  dwXSize:         Nat32;
+  dwYSize:         Nat32;
+  dwXCountChars:   Nat32;
+  dwYCountChars:   Nat32;
+  dwFillAttribute: Nat32;
+  dwFlags:         Nat32;
+  wShowWindow:     Nat16;
+  cbReserved2:     Nat16;
+  lpReserved2:     Natx;
+  hStdInput:       Natx;
+  hStdOutput:      Natx;
+  hStdError:       Natx;
 }];
 
 SYSTEM_INFO: [{
@@ -178,6 +212,19 @@ SYSTEM_INFO: [{
 } Natx {convention: stdcall;} "CreateIoCompletionPort" importFunction
 
 {
+  lpApplicationName:    Natx;
+  lpCommandLine:        Natx;
+  lpProcessAttributes:  SECURITY_ATTRIBUTES Cref;
+  lpThreadAttributes:   SECURITY_ATTRIBUTES Cref;
+  bInheritHandles:      Int32;
+  dwCreationFlags:      Nat32;
+  lpEnvironment:        Natx;
+  lpCurrentDirectory:   Natx;
+  lpStartupInfo:        STARTUPINFOW Cref;
+  lpProcessInformation: PROCESS_INFORMATION Ref;
+} Int32 {convention: stdcall;} "CreateProcessW" importFunction
+
+{
   lpThreadAttributes: SECURITY_ATTRIBUTES Ref;
   dwStackSize:        Natx;
   lpStartAddress:     LPTHREAD_START_ROUTINE;
@@ -193,6 +240,11 @@ SYSTEM_INFO: [{
 {
   lpCriticalSection: CRITICAL_SECTION Ref;
 } {} {convention: stdcall;} "EnterCriticalSection" importFunction
+
+{
+  hProcess:   Natx;
+  lpExitCode: Nat32 Ref;
+} Int32 {convention: stdcall;} "GetExitCodeProcess" importFunction
 
 {
   hThread:    Natx;

@@ -1,4 +1,4 @@
-# Copyright (C) 2023 Matway Burkow
+# Copyright (C) Matway Burkow
 #
 # This repository and all its contents belong to Matway Burkow (referred here and below as "the owner").
 # The content is for demonstration purposes only.
@@ -404,8 +404,8 @@ String: [{
       [Char same] [@arg catCharNZ]
       [Text same [@arg StringView same [@arg "SCHEMA_NAME" has [@arg.SCHEMA_NAME "String" =] &&] ||] ||] [@arg catStringNZ]
       [Cond same] [@arg catCondNZ]
-      [Nat8      Span same] [arg.toStringView catStringNZ]
-      [Nat8 Cref Span same] [arg.toStringView catStringNZ]
+      [Nat8      Span same] [arg.stringView catStringNZ]
+      [Nat8 Cref Span same] [arg.stringView catStringNZ]
       [int? ] [@arg FALSE catIntNZ  ]
       [nat? ] [@arg FALSE catNatNZ  ]
       [real?] [@arg FALSE catFloatNZ]
