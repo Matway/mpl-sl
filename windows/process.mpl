@@ -102,11 +102,13 @@ startProcess: [
     ];
 
     # NOTE: There is a corner case. If process did exit with status code 259, the function will report that the process is still active
-    isActive: [exitCode STILL_ACTIVE =];
+    isRunning: [exitCode STILL_ACTIVE =];
 
     exitCode: [
       status: Nat32;
-      [@status process.exitCode] "[exitCode] failed" assert
+      success: @status process.exitCode;
+      [success] "[exitCode] failed" assert
+
       status
     ];
 
