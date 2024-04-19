@@ -5,12 +5,12 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"control.&&"            use
-"control.Cond"          use
-"control.Cref"          use
-"control.Nat32"         use
-"control.assert"        use
-"control.when"          use
+"control.&&"     use
+"control.Cond"   use
+"control.Cref"   use
+"control.Nat32"  use
+"control.assert" use
+"control.when"   use
 
 "kernel32.CloseHandle"         use
 "kernel32.CreateProcessW"      use
