@@ -17,8 +17,8 @@
 CommandLine: [Natx 0 toCommandLine2];
 
 toCommandLine2: [
-  argv: argc:;;
-  argv Natx addressToReference argc toSpan2 @makeStringViewByAddress @StringView map
+  argumentAddress: argumentCount:;;
+  argumentAddress Natx addressToReference argumentCount toSpan2 @makeStringViewByAddress @StringView map
 ];
 
 printCommandLine: [
