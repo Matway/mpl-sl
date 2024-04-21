@@ -838,6 +838,10 @@ map: [
       value: result: @source.next;; result [@value transform TRUE] [end FALSE] if
     ];
 
+    @source "at" has [
+      at: [@source.at transform];
+    ] [] uif
+
     @source "size" has [
       size: [@source.size];
     ] [] uif
