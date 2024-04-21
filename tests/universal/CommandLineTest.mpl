@@ -31,10 +31,10 @@ testConstructor: [
   address: size Natx cast;
   commands: ref: address size ctor isRef;;
 
-  [ref ~                                       ] "Produced reference" ensure
-  [@commands callable? ~                       ] "Produced callable" ensure
+  [ref ~                                       ] "Produced reference"   ensure
+  [@commands callable? ~                       ] "Produced callable"    ensure
   [commands storageSize Natx Span storageSize =] "Produced huge object" ensure
-  [commands.size size =                        ] "Produced wrong size" ensure
+  [commands.size size =                        ] "Produced wrong size"  ensure
 ];
 
 [
@@ -55,8 +55,8 @@ testConstructor: [
     address: size Natx cast;
     command: commandIsRef: valid: validIsRef: address size toCommandLine2.next isRef;; isRef;;
 
-    [commandIsRef ~          ] "Produced reference" ensure
-    [validIsRef ~            ] "Produced reference" ensure
+    [commandIsRef ~          ] "Produced reference"    ensure
+    [validIsRef ~            ] "Produced reference"    ensure
 
     [@command StringView same] "Produced wrong result" ensure
     [@valid   Cond same      ] "Produced wrong result" ensure
@@ -88,8 +88,8 @@ testConstructor: [
   commands1: commands0 new;
 
   [commands0.source.data commands1.source.data =] "Produced wrong source" ensure
-  [commands0.source.size commands1.source.size =] "Produced wrong size" ensure
-  [commands0.size argc =                        ] "Produced wrong size" ensure
+  [commands0.source.size commands1.source.size =] "Produced wrong size"   ensure
+  [commands0.size argc =                        ] "Produced wrong size"   ensure
 
   argc [
     check: [
