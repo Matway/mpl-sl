@@ -27,9 +27,9 @@
 ] call
 
 testConstructor: [
-  size: ctor:;;
+  size: constructor:;;
   address: size Natx cast;
-  commands: ref: address size ctor isRef;;
+  commands: ref: address size constructor isRef;;
 
   [ref ~                                       ] "Produced reference"   ensure
   [@commands callable? ~                       ] "Produced callable"    ensure
@@ -69,7 +69,7 @@ testConstructor: [
 ] call
 
 [
-  strzs: (
+  strings: (
     "\00"
     "a\00"
     "aa\00"
@@ -79,19 +79,19 @@ testConstructor: [
     "aaabbb\00"
   );
 
-  argvs: (strzs [storageAddress] each);
+  arguments: (strings [storageAddress] each);
 
-  argv: argvs storageAddress;
-  argc: argvs fieldCount;
+  argumentAddress: arguments storageAddress;
+  argumentCount:   arguments fieldCount;
 
-  commands0: argv argc toCommandLine2;
+  commands0: argumentAddress argumentCount toCommandLine2;
   commands1: commands0 new;
 
   [commands0.source.data commands1.source.data =] "Produced wrong source" ensure
   [commands0.source.size commands1.source.size =] "Produced wrong size"   ensure
-  [commands0.size argc =                        ] "Produced wrong size"   ensure
+  [commands0.size argumentCount =               ] "Produced wrong size"   ensure
 
-  argc [
+  argumentCount [
     check: [
       view: text:;;
       [view.data storageAddress text storageAddress =     ] "Produced wrong source" ensure
@@ -99,16 +99,16 @@ testConstructor: [
     ];
 
     command0:                i commands0.at;
-    strz:                    i strzs @;
+    string:                  i strings @;
     command1: command1Valid: @commands1.next;;
 
     [command1Valid] "Produced invalid result" ensure
-    command0 strz check
-    command1 strz check
+    command0 string check
+    command1 string check
   ] times
 
-  [commands0.size argc =] "Produced wrong size" ensure
-  [commands1.size 0 =   ] "Produced wrong size" ensure
+  [commands0.size argumentCount =] "Produced wrong size" ensure
+  [commands1.size 0 =            ] "Produced wrong size" ensure
 
   command1: valid: @commands1.next;;
   [valid ~          ] "Produced wrong result" ensure
