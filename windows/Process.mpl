@@ -22,6 +22,7 @@
 "kernel32.SECURITY_ATTRIBUTES" use
 "kernel32.STARTUPINFOW"        use
 "kernel32.STILL_ACTIVE"        use
+"kernel32.TerminateProcess"    use
 "kernel32.WAIT_OBJECT_0"       use
 "kernel32.WaitForSingleObject" use
 
@@ -40,6 +41,7 @@ Process: [{
 
   create: [
     command:;
+    [handle 0nx =] "Attempted to initialize process twice" assert
     processInformation: PROCESS_INFORMATION;
     startupInfo:        STARTUPINFOW;
     startupInfo storageSize Nat32 cast @startupInfo.!cb
@@ -81,6 +83,13 @@ Process: [{
     statusCode STILL_ACTIVE = opExitCodeError
   ];
 
+  terminate: [
+    exitStatus:;
+    "terminate" validateDebug
+    success: exitStatus handle TerminateProcess 0 = ~;
+    success "TerminateProcess" getErrorTrait
+  ];
+
   wait: [
     "wait" validateDebug
     success: INFINITE handle WaitForSingleObject WAIT_OBJECT_0 =;
@@ -90,16 +99,17 @@ Process: [{
   private DIE: [
     handle 0nx = ~ [
       succeed?: [.size 0 =];
+
       active: opRunningError: running;;
       opRunningError succeed? [
         active [
           opWaitError: wait;
           opWaitError succeed? ~ [opWaitError justReport] when
-
-          opCloseError: close;
-          opCloseError succeed? ~ [opCloseError justReport] when
         ] when
       ] [opRunningError justReport] if
+
+      opCloseError: close;
+      opCloseError succeed? ~ [opCloseError justReport] when
     ] when
   ];
 

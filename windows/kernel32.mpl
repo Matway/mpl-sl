@@ -328,6 +328,11 @@ SYSTEM_INFO: [{
 } Int32 {convention: stdcall;} "PostQueuedCompletionStatus" importFunction
 
 {
+  hProcess:  Natx;
+  uExitCode: Nat32;
+} Int32 {convention: stdcall;} "TerminateProcess" importFunction
+
+{
   lpPerformanceCount: Int64 Ref;
 } Int32 {convention: stdcall;} "QueryPerformanceCounter" importFunction
 
