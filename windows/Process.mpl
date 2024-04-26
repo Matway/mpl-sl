@@ -165,5 +165,5 @@ Process: [{
 toProcess: [
   process: Process;
   result: @process.create;
-  process result
+  @process @result
 ];
