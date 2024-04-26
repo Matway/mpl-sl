@@ -123,7 +123,7 @@ Process: [{
   private INIT: [0nx !handle];
 
   private getErrorMessage: [
-    success: operationName:;;
+    success: functionName:;;
     success [String] [
       (operationName " failed, result=" GetLastError LF) assembleString
     ] if
