@@ -43,5 +43,5 @@ utf16: [
 
   0n16 @result.append
 
-  result
+  @result
 ];
