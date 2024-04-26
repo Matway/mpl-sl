@@ -141,7 +141,7 @@ Process: [{
   private getErrorMessage: [
     success: functionName:;;
     success [String] [
-      (operationName " failed, result=" GetLastError LF) assembleString
+      (functionName " failed, result=" GetLastError LF) assembleString
     ] if
   ];
 
