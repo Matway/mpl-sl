@@ -32,7 +32,7 @@ Process: [{
   SCHEMA_NAME: "Process" virtual;
 
   close: [
-    "close" validateDebug
+    "close" assertCreated
     success: handle CloseHandle 0 = ~;
     success [0nx !handle] when
 
@@ -73,7 +73,7 @@ Process: [{
   ];
 
   exitCode: [
-    "get exit status of" validateDebug
+    "get exit status of" assertCreated
     out: Nat32;
     success: @out handle GetExitCodeProcess 0 = ~;
     out success "GetExitCodeProcess" getErrorMessage
@@ -85,20 +85,20 @@ Process: [{
 
   # NOTE: There is a corner case. If process did exit with status code 259, the function will report that the process is still active
   running: [
-    "get running status of" validateDebug
+    "get running status of" assertCreated
     statusCode: opExitCodeError: exitCode;;
     statusCode STILL_ACTIVE = opExitCodeError
   ];
 
   terminate: [
     exitStatus:;
-    "terminate" validateDebug
+    "terminate" assertCreated
     success: exitStatus handle TerminateProcess 0 = ~;
     success "TerminateProcess" getErrorMessage
   ];
 
   wait: [
-    "wait" validateDebug
+    "wait" assertCreated
     success: INFINITE handle WaitForSingleObject WAIT_OBJECT_0 =;
     success "WaitForSingleObject" getErrorMessage
   ];
@@ -134,7 +134,7 @@ Process: [{
     (message LF) printList
   ];
 
-  private validateDebug: [
+  private assertCreated: [
     operationName:;
     [isCreated] "Attempted to " operationName & " a process that is not initialized" & assert
   ];
