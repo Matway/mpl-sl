@@ -11,6 +11,7 @@
 "control.Cref"          use
 "control.Nat32"         use
 "control.assert"        use
+"control.exit"          use
 "control.when"          use
 
 "kernel32.CloseHandle"         use
@@ -31,17 +32,9 @@
 Process: [{
   SCHEMA_NAME: "Process" virtual;
 
-  close: [
-    "close" assertCreated
-    success: handle CloseHandle 0 = ~;
-    success [0nx !handle] when
-
-    success "CloseHandle" getErrorMessage
-  ];
-
   create: [
     command:;
-    [isCreated ~] "Attempted to initialize process twice" assert
+    [isCreated ~] "Attempted to initialize a process twice" assert
 
     processInformation: PROCESS_INFORMATION;
     startupInfo:        STARTUPINFOW;
@@ -65,22 +58,35 @@ Process: [{
       processInformation.hProcess new !handle
 
       processInformation.hThread CloseHandle 0 = [
-        FALSE "CloseHandle" getErrorMessage reportError
+        "CloseHandle" reportError
       ] when
     ] when
 
-    success "CreateProcessW" getErrorMessage
+    success [String] ["CreateProcessW" getErrorMessage] if
   ];
 
   exitCode: [
-    "get exit status of" assertCreated
-    out: Nat32;
-    success: @out handle GetExitCodeProcess 0 = ~;
-    out success "GetExitCodeProcess" getErrorMessage
+    "get exit code of" assertCreated
+
+    result: Nat32;
+
+    @result handle GetExitCodeProcess 0 = [
+      "GetExitCodeProcess" reportError
+      1 exit
+    ] when
+
+    result
   ];
 
   isCreated: [
     handle 0nx = ~
+  ];
+
+  # NOTE: There is a corner case. If process did exit with status code 259, the
+  # function will report that the process is still active.
+  isRunning: [
+    "get running status of" assertCreated
+    exitCode STILL_ACTIVE =
   ];
 
   kill: [
@@ -88,71 +94,60 @@ Process: [{
     "kill" assertCreated
 
     exitCode handle TerminateProcess 0 = [
-      FALSE "TerminateProcess" getErrorMessage reportError
+      "TerminateProcess" reportError
+      1 exit
     ] when
 
-    handle CloseHandle 0 = [
-      FALSE "CloseHandle" getErrorMessage reportError
-    ] when
-
-    0nx !handle
-  ];
-
-  # NOTE: There is a corner case. If process did exit with status code 259, the
-  # function will report that the process is still active.
-  running: [
-    "get running status of" assertCreated
-    statusCode: opExitCodeError: exitCode;;
-    statusCode STILL_ACTIVE = opExitCodeError
-  ];
-
-  terminate: [
-    exitStatus:;
-    "terminate" assertCreated
-    success: exitStatus handle TerminateProcess 0 = ~;
-    success "TerminateProcess" getErrorMessage
+    closeHandle
   ];
 
   wait: [
+    needExitCode:;
+    [needExitCode isStatic] "[needExitCode] must be static" assert
+
     "wait" assertCreated
-    success: INFINITE handle WaitForSingleObject WAIT_OBJECT_0 =;
-    success "WaitForSingleObject" getErrorMessage
+
+    INFINITE handle WaitForSingleObject WAIT_OBJECT_0 = ~ [
+      "WaitForSingleObject" reportError
+      1 exit
+    ] when
+
+    needExitCode [exitCode] when
+
+    closeHandle
   ];
 
   private DIE: [
     isCreated [
-      succeed?: [.size 0 =];
-
-      active: opRunningError: running;;
-      opRunningError succeed? [
-        active [
-          opWaitError: wait;
-          opWaitError succeed? ~ [opWaitError reportError] when
-        ] when
-      ] [opRunningError reportError] if
-
-      opCloseError: close;
-      opCloseError succeed? ~ [opCloseError reportError] when
+      FALSE wait
     ] when
   ];
 
-  private INIT: [0nx !handle];
-
-  private getErrorMessage: [
-    success: functionName:;;
-    success [String] [
-      (functionName " failed, result=" GetLastError LF) assembleString
-    ] if
-  ];
-
-  private reportError: [
-    message:;
-    (message LF) printList
+  private INIT: [
+    0nx !handle
   ];
 
   private assertCreated: [
     operationName:;
     [isCreated] "Attempted to " operationName & " a process that is not initialized" & assert
+  ];
+
+  private closeHandle: [
+    handle CloseHandle 0 = [
+      "CloseHandle" reportError
+    ] when
+
+    0nx !handle
+  ];
+
+  private getErrorMessage: [
+    functionName:;
+    (functionName " failed, result=" GetLastError LF) assembleString
+  ];
+
+  private reportError: [
+    functionName:;
+    (functionName getErrorMessage LF) printList
   ];
 
   private handle: 0nx;
