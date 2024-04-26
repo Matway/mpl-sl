@@ -36,7 +36,7 @@ Process: [{
     success: handle CloseHandle 0 = ~;
     success [0nx !handle] when
 
-    success "CloseHandle" getErrorTrait
+    success "CloseHandle" getErrorMessage
   ];
 
   create: [
@@ -63,17 +63,17 @@ Process: [{
     success [
       processInformation.hProcess new !handle
       succeed: processInformation.hThread CloseHandle 0 = ~;
-      succeed ~ [FALSE "CloseHandle" getErrorTrait justReport] when
+      succeed ~ [FALSE "CloseHandle" getErrorMessage justReport] when
     ] when
 
-    success "CreateProcessW" getErrorTrait
+    success "CreateProcessW" getErrorMessage
   ];
 
   exitCode: [
     "get exit status of" validateDebug
     out: Nat32;
     success: @out handle GetExitCodeProcess 0 = ~;
-    out success "GetExitCodeProcess" getErrorTrait
+    out success "GetExitCodeProcess" getErrorMessage
   ];
 
   # NOTE: There is a corner case. If process did exit with status code 259, the function will report that the process is still active
@@ -87,13 +87,13 @@ Process: [{
     exitStatus:;
     "terminate" validateDebug
     success: exitStatus handle TerminateProcess 0 = ~;
-    success "TerminateProcess" getErrorTrait
+    success "TerminateProcess" getErrorMessage
   ];
 
   wait: [
     "wait" validateDebug
     success: INFINITE handle WaitForSingleObject WAIT_OBJECT_0 =;
-    success "WaitForSingleObject" getErrorTrait
+    success "WaitForSingleObject" getErrorMessage
   ];
 
   private DIE: [
@@ -115,9 +115,11 @@ Process: [{
 
   private INIT: [0nx !handle];
 
-  private getErrorTrait: [
-    determiner: functionName:;;
-    determiner [String] [(functionName " failed, result=" GetLastError LF) assembleString] if
+  private getErrorMessage: [
+    success: operationName:;;
+    success [String] [
+      (operationName " failed, result=" GetLastError LF) assembleString
+    ] if
   ];
 
   private justReport: [print]; # There is no good way to handle that, just report
