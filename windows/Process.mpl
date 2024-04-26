@@ -61,9 +61,11 @@ Process: [{
       processInformation.hThread CloseHandle 0 = [
         "CloseHandle" reportError
       ] when
-    ] when
 
-    success [String] ["CreateProcessW" getErrorMessage] if
+      String
+    ] [
+      "CreateProcessW" getErrorMessage
+    ] if
   ];
 
   exitCode: [
