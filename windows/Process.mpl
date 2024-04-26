@@ -24,6 +24,7 @@
 "kernel32.STARTUPINFOW"        use
 "kernel32.STILL_ACTIVE"        use
 "kernel32.TerminateProcess"    use
+"kernel32.WAIT_FAILED"         use
 "kernel32.WAIT_OBJECT_0"       use
 "kernel32.WaitForSingleObject" use
 
@@ -82,11 +83,17 @@ Process: [{
     handle 0nx = ~
   ];
 
-  # NOTE: There is a corner case. If process did exit with status code 259, the
-  # function will report that the process is still active.
   isRunning: [
     "get running status of" assertCreated
-    exitCode STILL_ACTIVE =
+
+    waitResult: 0n32 handle WaitForSingleObject;
+
+    waitResult WAIT_FAILED = [
+      "WaitForSingleObject" reportError
+      1 exit
+    ] when
+
+    waitResult WAIT_OBJECT_0 = ~
   ];
 
   kill: [
