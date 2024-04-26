@@ -83,6 +83,21 @@ Process: [{
     handle 0nx = ~
   ];
 
+  kill: [
+    exitCode:;
+    "kill" assertCreated
+
+    exitCode handle TerminateProcess 0 = [
+      FALSE "TerminateProcess" getErrorMessage reportError
+    ] when
+
+    handle CloseHandle 0 = [
+      FALSE "CloseHandle" getErrorMessage reportError
+    ] when
+
+    0nx !handle
+  ];
+
   # NOTE: There is a corner case. If process did exit with status code 259, the
   # function will report that the process is still active.
   running: [
