@@ -160,6 +160,6 @@ Process: [{
 
 toProcess: [
   process: Process;
-  result: @process.create; # Consumes command from the stack, returns result String
+  result: @process.create;
   process result
 ];
