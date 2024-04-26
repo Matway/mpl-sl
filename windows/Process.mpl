@@ -7,7 +7,7 @@
 
 "String.String"         use
 "String.assembleString" use
-"String.print"          use
+"String.printList"      use
 "control.Cref"          use
 "control.Nat32"         use
 "control.assert"        use
@@ -63,7 +63,7 @@ Process: [{
     success [
       processInformation.hProcess new !handle
       succeed: processInformation.hThread CloseHandle 0 = ~;
-      succeed ~ [FALSE "CloseHandle" getErrorMessage justReport] when
+      succeed ~ [FALSE "CloseHandle" getErrorMessage reportError] when
     ] when
 
     success "CreateProcessW" getErrorMessage
@@ -108,12 +108,12 @@ Process: [{
       opRunningError succeed? [
         active [
           opWaitError: wait;
-          opWaitError succeed? ~ [opWaitError justReport] when
+          opWaitError succeed? ~ [opWaitError reportError] when
         ] when
-      ] [opRunningError justReport] if
+      ] [opRunningError reportError] if
 
       opCloseError: close;
-      opCloseError succeed? ~ [opCloseError justReport] when
+      opCloseError succeed? ~ [opCloseError reportError] when
     ] when
   ];
 
@@ -126,7 +126,10 @@ Process: [{
     ] if
   ];
 
-  private justReport: [print]; # There is no good way to handle that, just report
+  private reportError: [
+    message:;
+    (message LF) printList
+  ];
 
   private validateDebug: [
     operationName:;
