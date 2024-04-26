@@ -83,7 +83,8 @@ Process: [{
     handle 0nx = ~
   ];
 
-  # NOTE: There is a corner case. If process did exit with status code 259, the function will report that the process is still active
+  # NOTE: There is a corner case. If process did exit with status code 259, the
+  # function will report that the process is still active.
   running: [
     "get running status of" assertCreated
     statusCode: opExitCodeError: exitCode;;
