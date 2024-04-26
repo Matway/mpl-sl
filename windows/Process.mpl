@@ -41,7 +41,7 @@ Process: [{
 
   create: [
     command:;
-    [handle 0nx =] "Attempted to initialize process twice" assert
+    [isCreated ~] "Attempted to initialize process twice" assert
     processInformation: PROCESS_INFORMATION;
     startupInfo:        STARTUPINFOW;
     startupInfo storageSize Nat32 cast @startupInfo.!cb
@@ -76,6 +76,10 @@ Process: [{
     out success "GetExitCodeProcess" getErrorMessage
   ];
 
+  isCreated: [
+    handle 0nx = ~
+  ];
+
   # NOTE: There is a corner case. If process did exit with status code 259, the function will report that the process is still active
   running: [
     "get running status of" validateDebug
@@ -97,7 +101,7 @@ Process: [{
   ];
 
   private DIE: [
-    handle 0nx = ~ [
+    isCreated [
       succeed?: [.size 0 =];
 
       active: opRunningError: running;;
@@ -126,7 +130,7 @@ Process: [{
 
   private validateDebug: [
     operationName:;
-    [handle 0nx = ~] "Attempted to " operationName & " a process that is not initialized" & assert
+    [isCreated] "Attempted to " operationName & " a process that is not initialized" & assert
   ];
 
   private handle: 0nx;
