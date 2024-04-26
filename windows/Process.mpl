@@ -42,6 +42,7 @@ Process: [{
   create: [
     command:;
     [isCreated ~] "Attempted to initialize process twice" assert
+
     processInformation: PROCESS_INFORMATION;
     startupInfo:        STARTUPINFOW;
     startupInfo storageSize Nat32 cast @startupInfo.!cb
@@ -62,8 +63,10 @@ Process: [{
 
     success [
       processInformation.hProcess new !handle
-      succeed: processInformation.hThread CloseHandle 0 = ~;
-      succeed ~ [FALSE "CloseHandle" getErrorMessage reportError] when
+
+      processInformation.hThread CloseHandle 0 = [
+        FALSE "CloseHandle" getErrorMessage reportError
+      ] when
     ] when
 
     success "CreateProcessW" getErrorMessage
