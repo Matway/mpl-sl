@@ -68,19 +68,6 @@ Process: [{
     ] if
   ];
 
-  exitCode: [
-    "get exit code of" assertCreated
-
-    result: Nat32;
-
-    @result handle GetExitCodeProcess 0 = [
-      "GetExitCodeProcess" reportError
-      1 exit
-    ] when
-
-    result
-  ];
-
   isCreated: [
     handle 0nx = ~
   ];
@@ -121,7 +108,16 @@ Process: [{
       1 exit
     ] when
 
-    needExitCode [exitCode] when
+    needExitCode [
+      result: Nat32;
+
+      @result handle GetExitCodeProcess 0 = [
+        "GetExitCodeProcess" reportError
+        1 exit
+      ] when
+
+      result
+    ] when
 
     closeHandle
   ];
