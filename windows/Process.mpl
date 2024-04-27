@@ -22,7 +22,6 @@
 "kernel32.PROCESS_INFORMATION" use
 "kernel32.SECURITY_ATTRIBUTES" use
 "kernel32.STARTUPINFOW"        use
-"kernel32.STILL_ACTIVE"        use
 "kernel32.TerminateProcess"    use
 "kernel32.WAIT_FAILED"         use
 "kernel32.WAIT_OBJECT_0"       use
