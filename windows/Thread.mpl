@@ -39,7 +39,7 @@ Thread: [{
   ];
 
   wait: [
-    [isRunning] "Attempted to wait a Thread that is not running" assert
+    [isRunning] "Attempted to wait on a Thread that is not running" assert
     INFINITE handle WaitForSingleObject WAIT_OBJECT_0 = ~ [
       ("WaitForSingleObject failed, result=" GetLastError LF) printList 1 exit # There is no good way to handle this, report and abort
     ] when
