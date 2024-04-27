@@ -215,13 +215,13 @@ SYSTEM_INFO: [{
 {
   lpApplicationName:    Natx;
   lpCommandLine:        Natx;
-  lpProcessAttributes:  SECURITY_ATTRIBUTES Cref;
-  lpThreadAttributes:   SECURITY_ATTRIBUTES Cref;
+  lpProcessAttributes:  SECURITY_ATTRIBUTES Ref;
+  lpThreadAttributes:   SECURITY_ATTRIBUTES Ref;
   bInheritHandles:      Int32;
   dwCreationFlags:      Nat32;
   lpEnvironment:        Natx;
   lpCurrentDirectory:   Natx;
-  lpStartupInfo:        STARTUPINFOW Cref;
+  lpStartupInfo:        STARTUPINFOW Ref;
   lpProcessInformation: PROCESS_INFORMATION Ref;
 } Int32 {convention: stdcall;} "CreateProcessW" importFunction
 
