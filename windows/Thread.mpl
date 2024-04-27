@@ -26,16 +26,6 @@
 Thread: [{
   SCHEMA_NAME: "Thread" virtual;
 
-  DIE: [
-    isRunning [
-      join drop
-    ] when
-  ];
-
-  INIT: [
-    0nx !handle
-  ];
-
   create: [
     code: context: stackSize:;;;
     [isRunning ~] "Attempted to initialize a Thread that is already running" assert
@@ -48,8 +38,8 @@ Thread: [{
     handle 0nx = ~
   ];
 
-  join: [
-    [isRunning] "Attempted to join a Thread that is not running" assert
+  wait: [
+    [isRunning] "Attempted to wait on a Thread that is not running" assert
     INFINITE handle WaitForSingleObject WAIT_OBJECT_0 = ~ [
       ("WaitForSingleObject failed, result=" GetLastError LF) printList 1 exit # There is no good way to handle this, report and abort
     ] when
@@ -67,9 +57,17 @@ Thread: [{
     result
   ];
 
-  # Private
+  private handle: 0nx;
 
-  handle: 0nx;
+  private DIE: [
+    isRunning [
+      wait drop
+    ] when
+  ];
+
+  private INIT: [
+    0nx !handle
+  ];
 }];
 
 toThread3: [
