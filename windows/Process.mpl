@@ -8,8 +8,8 @@
 "String.String"         use
 "String.assembleString" use
 "String.printList"      use
-"control.Cref"          use
 "control.Nat32"         use
+"control.Ref"           use
 "control.assert"        use
 "control.exit"          use
 "control.when"          use
@@ -42,13 +42,13 @@ Process: [{
 
     success:
       @processInformation
-      startupInfo
+      @startupInfo
       0nx
       0nx
       0n32
       0
-      SECURITY_ATTRIBUTES Cref
-      SECURITY_ATTRIBUTES Cref
+      SECURITY_ATTRIBUTES Ref
+      SECURITY_ATTRIBUTES Ref
       command utf16.data storageAddress
       0nx
       CreateProcessW 0 = ~
