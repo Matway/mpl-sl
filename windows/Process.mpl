@@ -35,7 +35,7 @@ Process: [{
 
   create: [
     command:;
-    [isCreated ~] "Attempted to initialize a process twice" assert
+    [isCreated ~] "Attempted to initialize a Process twice" assert
 
     processInformation: PROCESS_INFORMATION;
     startupInfo:        STARTUPINFOW;
@@ -136,7 +136,7 @@ Process: [{
 
   private assertCreated: [
     operationName:;
-    [isCreated] "Attempted to " operationName & " a process that is not initialized" & assert
+    [isCreated] "Attempted to " operationName & " a Process that is not initialized" & assert
   ];
 
   private closeHandle: [
