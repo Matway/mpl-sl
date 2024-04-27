@@ -122,6 +122,8 @@ Process: [{
     closeHandle
   ];
 
+  private handle: 0nx;
+
   private DIE: [
     isCreated [
       FALSE wait
@@ -154,8 +156,6 @@ Process: [{
     functionName:;
     (functionName getErrorMessage LF) printList
   ];
-
-  private handle: 0nx;
 }];
 
 toProcess: [
