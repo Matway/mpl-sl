@@ -136,7 +136,7 @@ makeArrayObject: [
     ];
 
     enlarge: [
-      newSize: dynamic;
+      newSize: new dynamic;
       [newSize arraySize < ~] "Enlarged size is less than old size!" assert
 
       arrayReserve newSize < [
