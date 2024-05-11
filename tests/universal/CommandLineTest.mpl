@@ -31,10 +31,10 @@ testConstructor: [
   address: size Natx cast;
   commands: ref: address size constructor isRef;;
 
-  [ref ~                                       ] "Produced reference"   ensure
-  [@commands callable? ~                       ] "Produced callable"    ensure
-  [commands storageSize Natx Span storageSize =] "Produced huge object" ensure
-  [commands.size size =                        ] "Produced wrong size"  ensure
+  [ref ~                                       ] "Produced reference"                ensure
+  [@commands callable? ~                       ] "Produced callable"                 ensure
+  [commands storageSize Natx Span storageSize =] "Produced object with invalid size" ensure
+  [commands.size size =                        ] "Produced wrong size"               ensure
 ];
 
 [
