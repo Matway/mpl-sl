@@ -12,19 +12,19 @@
 "String.getCodePointAndSize" use
 "String.splitString"         use
 "Variant.Variant"            use
+"algorithm.="                use
+"algorithm.case"             use
+"algorithm.cond"             use
+"algorithm.each"             use
 "ascii.ascii"                use
 "control.&&"                 use
-"control.="                  use
 "control.Cref"               use
 "control.Int32"              use
 "control.Nat32"              use
 "control.Natx"               use
 "control.Ref"                use
 "control.assert"             use
-"control.case"               use
-"control.cond"               use
 "control.drop"               use
-"control.each"               use
 "control.times"              use
 "control.when"               use
 "control.while"              use
@@ -164,7 +164,7 @@ xmlInternal: {
       (" " attrib.name "=\"" attrib.value "\"") @string.catMany
     ] each
 
-    xml.getChildren.getSize 0 = [
+    xml.getChildren.size 0 = [
       "/>" @string.cat
     ] [
       ">" @string.cat
@@ -194,25 +194,11 @@ xmlInternal: {
     ] if
   ];
 
-  makeXMLParserPosition: [
-    column: copy;
-    line: copy;
-    offset: copy;
-    currentSymbol: copy;
-    currentCodepoint: copy;
-    position: XMLParsrPosition;
-    column @position.@column set
-    line @position.@line set
-    offset @position.@offset set
-    currentSymbol move @position.@currentSymbol set
-    currentCodepoint @position.@currentCodepoint set
-  ];
-
   fillPositionChars: [
     pos:;
     chars:;
 
-    position.offset chars.getSize < [
+    position.offset chars.size < [
       position.offset chars.at @position.@currentSymbol set
       cpMemory: position.currentSymbol.data;
       cpSize: position.currentSymbol.size;
@@ -508,7 +494,7 @@ xmlInternal: {
             position.currentSymbol (
               "/" [
                 parentTag.name parseClosingTag
-                mainResult.success copy !closingTagFound
+                mainResult.success new !closingTagFound
               ]
 
               "!" [
@@ -527,9 +513,9 @@ xmlInternal: {
 
               [
                 element: parseElementFromOpenTag;
-                result.getSize 1 + @result.resize
+                result.size 1 + @result.resize
                 XMLVALUE_ELEMENT @result.last.setTag
-                @element move XMLVALUE_ELEMENT @result.last.get set
+                @element XMLVALUE_ELEMENT @result.last.get set
               ]
             ) case
           ]
@@ -539,9 +525,9 @@ xmlInternal: {
           [
             data: parseCharData;
             data.size 0 > [
-              result.getSize 1 + @result.resize
+              result.size 1 + @result.resize
               XMLVALUE_CHARDATA @result.last.setTag
-              @data move XMLVALUE_CHARDATA @result.last.get set
+              @data XMLVALUE_CHARDATA @result.last.get set
             ] when
           ]
         ) case
@@ -596,7 +582,7 @@ xmlInternal: {
               0 [1]
               1 [2]
               2 [2]
-              [-1 [FALSE] "Unreachable" assert]
+              [ -1] # Unreachable
             ) case !invalidSequencePrefixLength
             position.currentSymbol @result.catString
             TRUE !hasNonWS
@@ -679,7 +665,7 @@ xmlInternal: {
             ("Duplicated attribute " attribute.name) assembleString lexicalError
             FALSE
           ] [
-            @attribute move @result.append
+            @attribute @result.append
             TRUE
           ] if
         ] [
@@ -760,7 +746,7 @@ xmlInternal: {
 
         iterateChecked
         i 1 + !i
-        i stringChars.getSize < mainResult.success and
+        i stringChars.size < mainResult.success and
       ] loop
     ] when
   ];
@@ -835,8 +821,7 @@ xmlInternal: {
   ];
 
   isInRanges: [
-    ranges:;
-    codepoint: copy;
+    codepoint: ranges:;;
     # maybe change search method
     result: FALSE;
     ranges fieldCount [
@@ -882,7 +867,7 @@ xmlInternal: {
 
   chars @position xmlInternal.fillPositionChars
   xmlInternal.parseDocument @xml set
-  position.offset chars.getSize < [
+  position.offset chars.size < [
     FALSE @mainResult.@finished set
     position @mainResult.@errorInfo.@position set
   ] when
