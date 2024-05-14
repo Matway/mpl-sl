@@ -5,17 +5,17 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"Array.Array"     use
-"String.toString" use
-"control.Nat16"   use
-"control.assert"  use
+"Array.Array"           use
+"String.makeStringView" use
+"control.Nat16"         use
+"control.assert"        use
 
 "kernel32.CP_UTF8"              use
 "kernel32.MB_ERR_INVALID_CHARS" use
 "kernel32.MultiByteToWideChar"  use
 
 utf16: [
-  source: toString;
+  source: makeStringView;
   destSize:
     0
     0nx
