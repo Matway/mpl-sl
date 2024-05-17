@@ -241,6 +241,10 @@ SYSTEM_INFO: [{
 } {} {convention: stdcall;} "EnterCriticalSection" importFunction
 
 {
+  hLibModule: HMODULE;
+} Int32 {convention: stdcall;} "FreeLibrary" importFunction
+
+{
   hProcess:   Natx;
   lpExitCode: Nat32 Ref;
 } Int32 {convention: stdcall;} "GetExitCodeProcess" importFunction
@@ -294,7 +298,6 @@ SYSTEM_INFO: [{
   fAlertable:              Int32;
 } Int32 {convention: stdcall;} "GetQueuedCompletionStatusEx" importFunction
 
-
 {
   lpSystemInfo: SYSTEM_INFO Ref;
 } {} {convention: stdcall;} "GetSystemInfo" importFunction
@@ -309,6 +312,10 @@ SYSTEM_INFO: [{
 {
   lpCriticalSection: CRITICAL_SECTION Ref;
 } {} {convention: stdcall;} "LeaveCriticalSection" importFunction
+
+{
+  lpLibFileName: Natx;
+} HMODULE {convention: stdcall;} "LoadLibraryW" importFunction
 
 {
   CodePage:       Nat32;
