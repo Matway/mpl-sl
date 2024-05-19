@@ -10,6 +10,7 @@
 "control.&&"       use
 "control.<"        use
 "control.="        use
+"control.Int32"    use
 "control.Natx"     use
 "control.Ref"      use
 "control.assert"   use
@@ -40,68 +41,58 @@ AvlMap: [
 
     clear: [
       clearImpl: [
-        recursive
         nodeAddress:;
         nodeAddress 0nx = ~ [
           node: nodeAddress asNode;
-          node.left  clearImpl
-          node.right clearImpl
+          node.left  avlMapClear
+          node.right avlMapClear
           node manuallyDestroyVariable
           Node storageSize nodeAddress mplFree
         ] when
       ];
+      @clearImpl !avlMapClear
 
-      clearRecursive: {root: Natx;} {} {} codeRef;
-      @clearImpl !clearRecursive
-
-      root clearRecursive
+      root avlMapClear
       0nx dynamic !root
     ];
 
     debugPrint: [
       "String.printList" use
-      "control.Int32"    use
       "control.times"    use
       "control.print"    use
 
       debugPrintImpl: [
-        recursive
         nodeAddress: depth:;;
         nodeAddress 0nx = ~ [
           node: nodeAddress asNode;
 
           depth ["  " print] times
-          ("(" node.balance ") " node.@key ": " node.@value LF) printList
+          ("(" node.balance ") " node.@key.item ": " node.@value.item LF) printList
 
-          node.left  depth 1 + debugPrintImpl
-          node.right depth 1 + debugPrintImpl
+          node.left  depth 1 + avlMapDebugPrint
+          node.right depth 1 + avlMapDebugPrint
         ] when
       ];
+      @debugPrintImpl !avlMapDebugPrint
 
-      printRecursive: {depth: Int32; root: Natx;} {} {} codeRef;
-      @debugPrintImpl !printRecursive
-
-      root 0 printRecursive
+      root 0 avlMapDebugPrint
     ];
 
     each: [
       body:;
 
       eachImpl: [
-        recursive
         nodeAddress:;
         nodeAddress 0nx = ~ [
           node: nodeAddress asNode;
           {key: node.@key const; value: @node.@value;} body
-          node.left  eachImpl
-          node.right eachImpl
+          node.left  avlMapEach
+          node.right avlMapEach
         ] when
       ];
+      @eachImpl !avlMapEach
 
-      eachRecursive: {root: Natx;} {} {} codeRef;
-      @eachImpl !eachRecursive
-
-      root eachRecursive
+      root avlMapEach
     ];
 
     erase: [
@@ -261,7 +252,6 @@ AvlMap: [
       other:;
 
       cloneImpl: [
-        recursive
         nodeAddress:;
         result: 0nx;
 
@@ -270,8 +260,8 @@ AvlMap: [
           node:       nodeAddress asNode;
           resultNode: result asNode;
           @resultNode manuallyInitVariable
-          node.left   cloneImpl @resultNode.!left
-          node.right  cloneImpl @resultNode.!right
+          node.left   avlMapClone @resultNode.!left
+          node.right  avlMapClone @resultNode.!right
           node.@key   const new @resultNode.!key
           node.@value const new @resultNode.!value
           node.balance      new @resultNode.!balance
@@ -279,12 +269,10 @@ AvlMap: [
 
         result
       ];
-
-      cloneRecursive: {root: Natx;} Natx {} codeRef;
-      @cloneImpl !cloneRecursive
+      @cloneImpl !avlMapClone
 
       clear
-      other.root cloneRecursive !root
+      other.root avlMapClone !root
     ];
 
     private DIE: [clear];
@@ -393,3 +381,8 @@ AvlMap: [
     private toNode2: @toNode2;
   }
 ];
+
+avlMapClear:      {root: Natx;              } {  } {} codeRef;
+avlMapClone:      {root: Natx;              } Natx {} codeRef;
+avlMapDebugPrint: {depth: Int32; root: Natx;} {  } {} codeRef;
+avlMapEach:       {root: Natx;              } {  } {} codeRef;

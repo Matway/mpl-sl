@@ -82,10 +82,10 @@
 
 eachCount: Int32; # When the transition will be finished, move it inside
 [
+  COUNT:  [64];
   avlMap: InvocationCounter InvocationCounter AvlMap;
-  Count:  [64];
 
-  Count [
+  COUNT [
     key: i InvocationCounter.to;
     [@key avlMap.find nil?] "[find] produced wrong result" ensure
 
@@ -96,32 +96,32 @@ eachCount: Int32; # When the transition will be finished, move it inside
     [@found @value =] "[find] produced wrong item" ensure
 
     0 !eachCount
-    lo: hi: i new virtual; 0 virtual; # The transition. Remove it
+    LO: HI: i new virtual; 0 virtual; # The transition. Remove it
     [
       node:;
-      [node.@key.item lo hi between         ] "[each] produced node with wrong key"   ensure
+      [node.@key.item LO HI between         ] "[each] produced node with wrong key"   ensure
       [node.@key.item 2 * node.@value.item =] "[each] produced node with wrong value" ensure
-      [eachCount hi > ~                     ] "[each] produced too much items"        ensure
+      [eachCount HI > ~                     ] "[each] produced too much items"        ensure
       eachCount 1 + dynamic !eachCount
     ] avlMap.each
     [eachCount i 1 + =] "[each] produced not enough items" ensure
   ] times
 
-  Count [
+  COUNT [
     key: i InvocationCounter.to;
     @key @avlMap.erase
     [@key avlMap.find nil?] "[find] produced wrong result" ensure
 
     0 !eachCount
-    lo: hi: Count 1 - virtual; i 1 + virtual; # The transition. Remove it
+    LO: HI: COUNT 1 - virtual; i 1 + virtual; # The transition. Remove it
     [
       node:;
-      [node.@key.item lo hi between         ] "[each] produced node with wrong key"   ensure
+      [node.@key.item LO HI between         ] "[each] produced node with wrong key"   ensure
       [node.@key.item 2 * node.@value.item =] "[each] produced node with wrong value" ensure
-      [eachCount hi lo - > ~                ] "[each] produced too much items"        ensure
+      [eachCount HI LO - > ~                ] "[each] produced too much items"        ensure
       eachCount 1 + !eachCount
     ] avlMap.each
-    [eachCount hi i - =] "[each] produced not enough items" ensure
+    [eachCount HI i - =] "[each] produced not enough items" ensure
   ] times
   [avlMap.root 0nx =] "[erase] did not remove root node" ensure
 ] call
