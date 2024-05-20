@@ -17,13 +17,13 @@ jobs:
       run: curl -LSs -o build/mplc.exe https://github.com/Matway/mpl-c/releases/latest/download/mplc.exe
 
     - name: mplc
-      run: ./build/mplc.exe ./.github/workflows/entryPoint.mpl -I ./ -I ./tests -I ./windows -o ./build/test.ll -ndebug -D DEBUG=TRUE -linker_option /DEFAULTLIB:"ws2_32.lib"
+      run: build/mplc.exe .github/workflows/entryPoint.mpl -I / -I tests -I windows -o build/test.ll -ndebug -D DEBUG=TRUE -linker_option /DEFAULTLIB:"ws2_32.lib"
 
     - name: clang
-      run: clang ./build/test.ll -O0 -o ./build/test.exe
+      run: clang build/test.ll -O0 -o build/test.exe
 
     - name: test
-      run: ./build/test.exe
+      run: build/test.exe
 
     - name: artifacts
       uses: actions/upload-artifact@main
