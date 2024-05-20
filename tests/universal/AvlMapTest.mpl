@@ -7,6 +7,7 @@
 
 "control.="         use
 "control.Int32"     use
+"control.Nat64"     use
 "control.Natx"      use
 "control.between"   use
 "control.callable?" use
@@ -134,72 +135,25 @@ eachCount: Int32; # When the transition will be finished, move it inside
     key: value: new; new;
     avlMap0: avlMap1: @key @value AvlMap dup new;;
 
-    resetInvocationCounter
-    avlMap0 new !avlMap1
-    [assignCount  0n64 =] "[assignCount] is incorrect"             ensure
-    [dieCount     0n64 =] "[dieCount] is incorrect"                ensure
-    [initCount    0n64 =] "[initCount] is incorrect"               ensure
-    [avlMap0.root 0nx = ] "[ASSIGN] made [root] address incorrect" ensure
-    [avlMap1.root 0nx = ] "[ASSIGN] made [root] address incorrect" ensure
+    test: [
+      assignCount0: dieCount0: initCount0: op:; Nat64 cast; Nat64 cast; Nat64 cast;
+      resetInvocationCounter
+      op
+      [assignCount0 assignCount =] "[assignCount] is incorrect" ensure
+      [dieCount0    dieCount =   ] "[dieCount] is incorrect"    ensure
+      [initCount0   initCount =  ] "[initCount] is incorrect"   ensure
+    ];
 
-    resetInvocationCounter
-    @avlMap0.clear
-    [assignCount  0n64 =] "[assignCount] is incorrect"            ensure
-    [dieCount     0n64 =] "[dieCount] is incorrect"               ensure
-    [initCount    0n64 =] "[initCount] is incorrect"              ensure
-    [avlMap0.root 0nx = ] "[clear] made [root] address incorrect" ensure
-
-    resetInvocationCounter
-    avlMap0 manuallyDestroyVariable
-    [assignCount  0n64 =] "[assignCount] is incorrect"          ensure
-    [dieCount     0n64 =] "[dieCount] is incorrect"             ensure
-    [initCount    0n64 =] "[initCount] is incorrect"            ensure
-    [avlMap0.root 0nx = ] "[DIE] made [root] address incorrect" ensure
-
-    resetInvocationCounter
-    @key @value @avlMap0.insert
-    [assignCount 0n64 =] "[assignCount] is incorrect" ensure
-    [dieCount    1n64 =] "[dieCount] is incorrect"    ensure
-    [initCount   2n64 =] "[initCount] is incorrect"   ensure
-
-    resetInvocationCounter
-    1 @key assign
-    @key const @value const @avlMap0.insert
-    [assignCount 1n64 =] "[assignCount] is incorrect" ensure
-    [dieCount    1n64 =] "[dieCount] is incorrect"    ensure
-    [initCount   2n64 =] "[initCount] is incorrect"   ensure
-
-    resetInvocationCounter
-    [drop] avlMap0.each
-    [assignCount 0n64 =] "[assignCount] is incorrect" ensure
-    [dieCount    0n64 =] "[dieCount] is incorrect"    ensure
-    [initCount   0n64 =] "[initCount] is incorrect"   ensure
-
-    resetInvocationCounter
-    @key @avlMap0.erase
-    [assignCount 0n64 =] "[assignCount] is incorrect" ensure
-    [dieCount    1n64 =] "[dieCount] is incorrect"    ensure
-    [initCount   0n64 =] "[initCount] is incorrect"   ensure
-
-    resetInvocationCounter
-    avlMap0 const new !avlMap1
-    [assignCount 1n64 =] "[assignCount] is incorrect" ensure
-    [dieCount    1n64 =] "[dieCount] is incorrect"    ensure
-    [initCount   2n64 =] "[initCount] is incorrect"   ensure
-
-    resetInvocationCounter
-    @avlMap0.clear
-    [assignCount  0n64 =] "[assignCount] is incorrect"       ensure
-    [dieCount     1n64 =] "[dieCount] is incorrect"          ensure
-    [initCount    0n64 =] "[initCount] is incorrect"         ensure
-    [avlMap0.root 0nx = ] "[clear] did not remove root node" ensure
-
-    resetInvocationCounter
-    avlMap1 manuallyDestroyVariable
-    [assignCount  0n64 =] "[assignCount] is incorrect"     ensure
-    [dieCount     1n64 =] "[dieCount] is incorrect"        ensure
-    [initCount    0n64 =] "[initCount] is incorrect"       ensure
-    [avlMap1.root 0nx = ] "[DIE] did not remove root node" ensure
+    0 0 0 [avlMap0 new !avlMap1                                 ] test [avlMap0.root 0nx = avlMap1.root 0nx = and] "[ASSIGN] made [root] address incorrect" ensure
+    0 0 0 [@avlMap0.clear                                       ] test [avlMap0.root 0nx =                       ] "[clear] made [root] address incorrect"  ensure
+    0 0 0 [avlMap0 manuallyDestroyVariable                      ] test [avlMap0.root 0nx =                       ] "[DIE] made [root] address incorrect"    ensure
+    0 1 2 [@key @value @avlMap0.insert                          ] test
+    1 1 2 [1 @key assign @key const @value const @avlMap0.insert] test
+    0 0 0 [[drop] avlMap0.each                                  ] test
+    0 1 0 [@key @avlMap0.erase                                  ] test
+    1 1 2 [avlMap0 const new !avlMap1                           ] test
+    0 1 0 [@avlMap0.clear                                       ] test [avlMap0.root 0nx =] "[clear] did not remove root node" ensure
+    0 1 0 [avlMap1 manuallyDestroyVariable                      ] test [avlMap1.root 0nx =] "[DIE] did not remove root node"   ensure
   ];
 
   InvocationCounter 0                 testCounters
