@@ -82,8 +82,4 @@
 "tests/universal/objectTraitTest"  use
 "tests/universal/syncTest"         use
 
-{} 0i32 {} [
-  "\nAll tests passed\n" print
-
-  0
-] "main" exportFunction
+TEST: [];
