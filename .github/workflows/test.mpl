@@ -1,85 +1,89 @@
-"Array"          use
-"AvlMap"         use
-"CommandLine"    use
-"Deque"          use
-"Function"       use
-"HashTable"      use
-"IntrusiveDeque" use
-"IntrusiveQueue" use
-"IntrusiveStack" use
-"Json"           use
-"Mref"           use
-"Owner"          use
-"Pool"           use
-"Pose"           use
-"PriorityQueue"  use
-"Quaternion"     use
-"RandomLCG"      use
-"Span"           use
-"SpanStatic"     use
-"Spinlock"       use
-"String"         use
-"Union"          use
-"Variant"        use
-"Xml"            use
-"algebra"        use
-"algorithm"      use
-"ascii"          use
-"atomic"         use
-"control"        use
-"conventions"    use
-"file"           use
-"interface"      use
-"lockGuard"      use
-"memory"         use
-"murmurHash"     use
-"objectTools"    use
-"sha1"           use
+"Array"     use
+"String"    use
+"algorithm" use
+"control"   use
 
-"sync/Context"      use
-"sync/ContextGroup" use
-"sync/Event"        use
-"sync/Signal"       use
+"Process"             use
+"Thread"              use
+"hardwareConcurrency" use
+"runningTime"         use
 
-"windows/ConditionVariable"   use
-"windows/Mutex"               use
-"windows/Process"             use
-"windows/TcpAcceptor"         use
-"windows/TcpConnection"       use
-"windows/Thread"              use
-"windows/dispatcher"          use
-"windows/errno"               use
-"windows/gdi32"               use
-"windows/hardwareConcurrency" use
-"windows/kernel32"            use
-"windows/ole32"               use
-"windows/opengl32"            use
-"windows/runningTime"         use
-"windows/shell32"             use
-"windows/unicode"             use
-"windows/user32"              use
-"windows/winmm"               use
-"windows/ws2_32"              use
+mplc: ["mplc"];
+mplc: [MPLC TRUE] [MPLC] pfunc;
 
-"windows/sync/TcpAcceptor"   use
-"windows/sync/TcpConnection" use
-"windows/sync/sync"          use
-"windows/sync/syncPrivate"   use
+clangArguments: [
+  additional: filenameSuffix:;;
+  "" (
+    additional
+    "-o build/tests" filenameSuffix & ".exe" &
+    "   build/tests" filenameSuffix & ".ll"  &
+  ) [" " swap & &] each
+];
 
-"tests/universal/CommandLineTest"  use
-"tests/universal/ContextGroupTest" use
-"tests/universal/ContextTest"      use
-"tests/universal/EventTest"        use
-"tests/universal/FunctionTest"     use
-"tests/universal/PoseTest"         use
-"tests/universal/QuaternionTest"   use
-"tests/universal/SignalTest"       use
-"tests/universal/SpanStaticTest"   use
-"tests/universal/SpanTest"         use
-"tests/universal/algorithmTest"    use
-"tests/universal/controlTest"      use
-"tests/universal/objectToolsTest"  use
-"tests/universal/objectTraitTest"  use
-"tests/universal/syncTest"         use
+mplcArguments: [
+  additional: filenameSuffix:;;
+  "" (
+    additional unwrap
 
-TEST: [];
+    "-I \"\""
+    "-I tests"
+    "-I windows"
+
+    "-linker_option /DEFAULTLIB:ws2_32.lib"
+
+    "-ndebug"
+
+    "-o build/tests" filenameSuffix & ".ll" &
+
+    ".github/workflows/entryPoint.mpl"
+  ) [" " swap & &] each
+];
+
+showTiming: [(runningTime.get LF) printList];
+
+runCommand: [
+  command: arguments:;;
+  needsExitStatus: TRUE;
+  exitStatus: needsExitStatus command arguments & toProcess ["" =] "[toProcess] on \"" command & "\" failed" & ensure.wait;
+  [exitStatus 0n32 =] "\n" command & " filed" & ensure
+  showTiming
+];
+
+runClang: [additionalArguments: filenameSuffix:;; "clang" additionalArguments filenameSuffix clangArguments runCommand];
+runMplc:  [additionalArguments: filenameSuffix:;; mplc    additionalArguments filenameSuffix mplcArguments  runCommand];
+runTests: [filenameSuffix:;                       "build/tests" filenameSuffix & ""                         runCommand];
+
+testConfiguration: [
+  extraArgMplc: extraArgClang: configurationName:;;;
+  filenameSuffix: "_" configurationName &;
+  showTiming
+  extraArgMplc  filenameSuffix runMplc
+  extraArgClang filenameSuffix runClang
+  filenameSuffix               runTests
+];
+
+tasks: (
+  [("-D TCP_PORT=6600" "-D DEBUG=TRUE") "-O3" "assertO3" testConfiguration]
+  [("-D TCP_PORT=6601"                ) "-O3" "ndebugO3" testConfiguration]
+  [("-D TCP_PORT=6602" "-D DEBUG=TRUE") "-O0" "assertO0" testConfiguration]
+  [("-D TCP_PORT=6603"                ) "-O0" "ndebugO0" testConfiguration]
+);
+
+[
+  FALSE "cmd /C chcp 65001" toProcess "" = [.wait] [drop drop] if
+
+  (
+    "MPL Compiler: «" mplc "»" LF
+
+    "Working threads count: " getHardwareConcurrency LF
+    "Parallel tasks count:  " tasks fieldCount       LF
+  ) printList
+
+  threads: Thread Array [tasks fieldCount swap.setReserve] keep;
+  tasks [
+    task:;
+    [drop task 0n32] 0nx 0 toThread3 @threads.append # Attaching thread to the array so that corresponding execution outlive the scope it will be started in
+  ] each
+] call
+
+{} Int32 {} [0] "main" exportFunction

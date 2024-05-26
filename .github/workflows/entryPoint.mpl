@@ -1,6 +1,6 @@
 "control.print" use
 
-"test" use
+"tests" use
 
 {} 0i32 {} [
   "\nAll tests passed\n" print

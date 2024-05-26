@@ -8,8 +8,10 @@
 "String.String"    use
 "String.printList" use
 "algorithm.="      use
+"control.Nat16"    use
 "control.ensure"   use
 "control.failProc" use
+"control.pfunc"    use
 "control.when"     use
 
 "sync/sync.connectTcp"   use
@@ -83,9 +85,12 @@ syncTest: [];
 ] call
 
 [
+  tcpPort: [6600n16];
+  tcpPort: [TCP_PORT TRUE] [TCP_PORT Nat16 cast] pfunc;
+
   client: [
     result: String;
-    connection: 0x7F000001n32 6600n16 connectTcp !result;
+    connection: 0x7F000001n32 tcpPort connectTcp !result;
     result "" = ~ [("connectTcp failed, " result LF) printList "" failProc] when
 
     "Hello, world!" connection.write !result
@@ -105,7 +110,7 @@ syncTest: [];
 
   server: [
     result: String;
-    acceptor: 0x7F000001n32 6600n16 listenTcp !result;
+    acceptor: 0x7F000001n32 tcpPort listenTcp !result;
     result "" = ~ [("listenTcp failed, " result LF) printList "" failProc] when
 
     connection: address: acceptor.accept !result;;
