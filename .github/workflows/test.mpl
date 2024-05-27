@@ -82,7 +82,7 @@ tasks: (
   threads: Thread Array [tasks fieldCount swap.setReserve] keep;
   tasks [
     task:;
-    [drop task 0n32] 0nx 0 toThread3 @threads.append # Attaching thread to the array so that corresponding execution outlive the scope it will be started in
+    [drop task 0n32] 0nx 0 toThread3 @threads.append # Attaching thread to the array so that corresponding execution outlive the scope it was started in
   ] each
 ] call
 
