@@ -69,7 +69,7 @@ tasks: (
   [("-D TCP_PORT=6603"                ) "-O0" "ndebugO0" testConfiguration]
 );
 
-[
+{} Int32 {} [
   FALSE "cmd /C chcp 65001" toProcess "" = [.wait] [drop drop] if
 
   (
@@ -84,6 +84,6 @@ tasks: (
     task:;
     [drop task 0n32] 0nx 0 toThread3 @threads.append # Attaching thread to the array so that corresponding execution outlive the scope it was started in
   ] each
-] call
 
-{} Int32 {} [0] "main" exportFunction
+  0
+] "main" exportFunction
