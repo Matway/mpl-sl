@@ -1,4 +1,3 @@
-"Array"     use
 "String"    use
 "algorithm" use
 "control"   use
@@ -79,10 +78,10 @@ tasks: (
     "Parallel tasks count:  " tasks fieldCount       LF
   ) printList
 
-  threads: Thread Array [tasks fieldCount swap.setReserve] keep;
-  tasks [
-    task:;
-    [drop task 0n32] 0nx 0 toThread3 @threads.append # Attaching thread to the array so that corresponding execution outlive the scope it was started in
+  threads: (tasks fieldCount [Thread] times);
+  (@threads tasks) wrapIter [
+    thread: task: unwrap;;
+    [drop task 0n32] 0nx 0 @thread.create
   ] each
 
   0
