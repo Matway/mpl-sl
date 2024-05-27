@@ -69,20 +69,21 @@ tasks: (
 );
 
 {} Int32 {} [
-  FALSE "cmd /C chcp 65001" toProcess "" = [.wait] [drop drop] if
+  [
+    FALSE "cmd /C chcp 65001" toProcess "" = [.wait] [drop drop] if
+    (
+      "MPL Compiler: «" mplc "»" LF
 
-  (
-    "MPL Compiler: «" mplc "»" LF
+      "Working threads count: " getHardwareConcurrency LF
+      "Parallel tasks count:  " tasks fieldCount       LF
+    ) printList
 
-    "Working threads count: " getHardwareConcurrency LF
-    "Parallel tasks count:  " tasks fieldCount       LF
-  ) printList
-
-  threads: (tasks fieldCount [Thread] times);
-  (@threads tasks) wrapIter [
-    thread: task: unwrap;;
-    [drop task 0n32] 0nx 0 @thread.create
-  ] each
+    threads: (tasks fieldCount [Thread] times);
+    (@threads tasks) wrapIter [
+      thread: task: unwrap;;
+      [drop task 0n32] 0nx 0 @thread.create
+    ] each
+  ] call
 
   0
 ] "main" exportFunction
