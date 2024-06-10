@@ -9,6 +9,7 @@
 "String.makeStringView" use
 "control.Nat16"         use
 "control.assert"        use
+"control.swap"          use
 
 "kernel32.CP_UTF8"              use
 "kernel32.MB_ERR_INVALID_CHARS" use
@@ -16,7 +17,7 @@
 
 utf16: [
   source: makeStringView;
-  destSize:
+  targetNat16Count:
     0
     0nx
     source.size
@@ -24,24 +25,21 @@ utf16: [
     MB_ERR_INVALID_CHARS
     CP_UTF8 MultiByteToWideChar
   ;
+  [targetNat16Count 0 = ~] "MultiByteToWideChar failed" assert
 
-  [destSize 0 = ~] "MultiByteToWideChar failed" assert
+  result: Nat16 Array [targetNat16Count 1 + swap.enlarge] keep;
 
-  result: Nat16 Array;
-  destSize @result.resize
-
-  writtenWChars:
-    destSize
+  writtenNat16Count:
+    targetNat16Count
     result.data storageAddress
-    source.size
+    source.size new
     source.data storageAddress
     MB_ERR_INVALID_CHARS
     CP_UTF8 MultiByteToWideChar
   ;
+  [writtenNat16Count targetNat16Count =] "MultiByteToWideChar failed" assert
 
-  [writtenWChars destSize =] "MultiByteToWideChar failed" assert
-
-  0n16 @result.append
+  0n16 @result.last set
 
   @result
 ];
