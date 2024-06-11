@@ -29,7 +29,7 @@ utf16: [
   ;
   [targetNat16Count 0 = ~] "MultiByteToWideChar failed" assert
 
-  result: Nat16 Array [targetNat16Count 1 + swap.enlarge] keep;
+  result: Nat16 Array [targetNat16Count 1 + swap .enlarge] keep;
 
   writtenNat16Count:
     targetNat16Count new
