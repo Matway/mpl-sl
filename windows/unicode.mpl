@@ -33,7 +33,7 @@ utf16: [
   writtenNat16Count:
     targetNat16Count
     result.data storageAddress
-    source.size new
+    source.size
     source.data storageAddress
     MB_ERR_INVALID_CHARS
     CP_UTF8 MultiByteToWideChar
