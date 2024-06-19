@@ -9,13 +9,17 @@
 "String.String"              use
 "String.StringView"          use
 "String.assembleString"      use
+"String.decode"              use
 "String.getCodePointAndSize" use
 "String.splitString"         use
+"String.toString"            use
 "Variant.Variant"            use
 "algorithm.="                use
+"algorithm.beginsWith"       use
 "algorithm.case"             use
 "algorithm.cond"             use
 "algorithm.each"             use
+"algorithm.map"              use
 "ascii.ascii"                use
 "control.&&"                 use
 "control.Cref"               use
@@ -25,10 +29,10 @@
 "control.Ref"                use
 "control.assert"             use
 "control.drop"               use
+"control.dup"                use
 "control.times"              use
 "control.when"               use
 "control.while"              use
-"conventions.cdecl"          use
 
 XMLParserResult: [{
   success: TRUE dynamic;
@@ -54,8 +58,7 @@ XMLDocument: [{
   root: XMLElement;
 }];
 
-XMLVALUE_ELEMENT: [0];
-
+XMLVALUE_ELEMENT:  [0];
 XMLVALUE_CHARDATA: [1];
 
 XMLValue: [(XMLElement String) Variant];
@@ -70,7 +73,7 @@ XMLElement: [
     name: String;
     attributes: XMLAttribute Array;
 
-    getChildren: [
+    children: [
       childrenStorage storageAddress XMLValue Array addressToReference
     ];
 
@@ -100,38 +103,9 @@ ArrayHelper: [{
   dataReserve: Int32;
 }];
 
-{dst: 0nx;          } () {convention: cdecl;} "XMLElementDestroy" importFunction
-{dst: 0nx; src: 0nx;} () {convention: cdecl;} "XMLElementSet"     importFunction
-{dst: 0nx;          } () {convention: cdecl;} "XMLElementInit"    importFunction
-
-virtual XMLElementRef: XMLElement Ref;
-
-asXMLElement: [@XMLElementRef addressToReference];
-
-{dst: 0nx;          } () {convention: cdecl;} [
-  asXMLElement manuallyInitVariable
-] "XMLElementInit" exportFunction
-
-{dst: 0nx; src: 0nx;} () {convention: cdecl;} [
-  dst: asXMLElement;
-  src: asXMLElement;
-  src @dst set
-] "XMLElementSet" exportFunction
-
-{dst: 0nx;          } () {convention: cdecl;} [
-  asXMLElement manuallyDestroyVariable
-] "XMLElementDestroy" exportFunction
-
-{
-  position: XMLParserPosition Ref;
-  chars: StringView Array Cref;
-  mainResult: XMLParserResult Ref;
-  xml: XMLDocument Ref;
-} () {convention: cdecl;} "parseStringToXMLImpl" importFunction
-
 parseStringToXML: [
   mainResult: XMLParserResult;
-  splittedString: makeStringView.split;
+  splittedString: splitString;
   splittedString.success [
     @mainResult.@xml @mainResult splittedString.chars XMLParserPosition parseStringToXMLImpl
   ] [
@@ -156,7 +130,7 @@ saveXMLToString: [
 xmlInternal: {
   printElementToString: [
     recursive
-    string:depth:xml:;;;
+    string: depth: xml:;;;
     catPad: [depth 2 * [" " @string.cat] times];
     catPad ("<" xml.name) @string.catMany
     xml.attributes [
@@ -164,12 +138,12 @@ xmlInternal: {
       (" " attrib.name "=\"" attrib.value "\"") @string.catMany
     ] each
 
-    xml.getChildren.size 0 = [
+    xml.children.size 0 = [
       "/>" @string.cat
     ] [
       ">" @string.cat
       hasNondataChild: FALSE;
-      xml.getChildren [
+      xml.children [
         child:;
         child.getTag (
           XMLVALUE_CHARDATA [
@@ -232,10 +206,27 @@ xmlInternal: {
     ] when
   ];
 
+  matchText: [
+    pattern: decode [.codepoint Nat32 cast] @Nat32 map;
+    matched: {
+      next: [
+        iterateChecked
+        position.currentCodepoint
+        mainResult.success new
+      ];
+    } pattern beginsWith;
+
+    position.currentCodepoint ascii.null = [
+      "Unexpected end of document" lexicalError
+    ] [
+      matched ~ ["Unexpected character" lexicalError] when
+    ] if
+  ];
+
   parseDocument: [
     document: XMLDocument;
     parseProlog
-    parseElementFromOpenTag @document.@root set
+    XMLElement dup @mainResult chars @position parseElementFromOpenTag @document.@root set
     parseDocumentEnd
     @document
   ];
@@ -423,7 +414,7 @@ xmlInternal: {
     mainResult.success [
       skipWhiteSpaces
       "<" skipString
-      parseElementFromOpenTag @result set
+      XMLElement dup @mainResult chars @position parseElementFromOpenTag @result set
     ] when
 
     @result
@@ -462,25 +453,6 @@ xmlInternal: {
     ] when
   ];
 
-  parseElementFromOpenTag: [
-    recursive
-    result: XMLElement;
-    mainResult.success [
-      skipWhiteSpaces
-      parseName @result.@name set
-      parseAttributes @result.@attributes set
-      position.currentCodepoint ascii.slash = [
-        iterateChecked
-        ">" skipString
-      ] [
-        ">" skipString
-        @result parseElementContentAndClosingTag @result.getChildren set
-      ] if
-    ] when
-
-    @result
-  ];
-
   parseElementContentAndClosingTag: [
     parentTag:;
     result: XMLValue Array;
@@ -512,15 +484,13 @@ xmlInternal: {
               ]
 
               [
-                element: parseElementFromOpenTag;
+                element: XMLElement dup @mainResult chars @position parseElementFromOpenTag;
                 result.size 1 + @result.resize
                 XMLVALUE_ELEMENT @result.last.setTag
                 @element XMLVALUE_ELEMENT @result.last.get set
               ]
             ) case
           ]
-
-          "&" ["Unsupported feature - Reference" lexicalError]
 
           [
             data: parseCharData;
@@ -575,7 +545,8 @@ xmlInternal: {
             TRUE !charDataEnded
           ]
           "&" [
-            TRUE !charDataEnded
+            parseReference
+            TRUE !hasNonWS
           ]
           "]" [
             invalidSequencePrefixLength (
@@ -701,7 +672,7 @@ xmlInternal: {
             iterateChecked
             position.currentSymbol (
               "\"" [FALSE !continueLoop iterateChecked]
-              "&" ["Unsupported feature: Reference" lexicalError]
+              "&" @parseReference
               "<" ["attrubute value cannot contain <" lexicalError]
               [position.currentSymbol @result.catString]
             ) case
@@ -716,7 +687,7 @@ xmlInternal: {
             iterateChecked
             position.currentSymbol (
               "'" [FALSE !continueLoop iterateChecked]
-              "&" ["Unsupported feature: references in attributes" lexicalError]
+              "&" @parseReference
               "<" ["attrubute value cannot contain <" lexicalError]
               [position.currentSymbol @result.catString]
             ) case
@@ -729,6 +700,18 @@ xmlInternal: {
     ] when
 
     @result
+  ];
+
+  parseReference: [
+    [position.currentCodepoint ascii.ampersand =] "Wrong position" assert
+    iterateChecked
+    position.currentSymbol (
+      "a" ["mp;"  matchText mainResult.success ["\26" @result.catString] when]
+      "g" ["t;"   matchText mainResult.success ["\3E" @result.catString] when]
+      "l" ["t;"   matchText mainResult.success ["\3C" @result.catString] when]
+      "q" ["uot;" matchText mainResult.success ["\22" @result.catString] when]
+      ["Unsupported feature: Reference" lexicalError]
+    ) case
   ];
 
   skipString: [
@@ -757,8 +740,8 @@ xmlInternal: {
     ] when
 
     iterate
-    position.currentCodepoint ascii.null = ~
-    [position.currentCodepoint isChar ~] && [
+
+    position.currentCodepoint ascii.null = ~ [position.currentCodepoint isChar ~] && [
       "invalid character" lexicalError
     ] when
   ];
@@ -822,22 +805,21 @@ xmlInternal: {
 
   isInRanges: [
     codepoint: ranges:;;
-    # maybe change search method
     result: FALSE;
-    ranges fieldCount [
+    i: 0 dynamic;
+    [
       range: i ranges @;
       codepoint 0 range @ < ~
-      codepoint 1 range @ > ~ and [
-        ranges fieldCount !i
-        TRUE !result
-      ] when
-    ] times
+      codepoint 1 range @ > ~ and dup [TRUE !result] when
+      i 1 + !i
+      ~ [i ranges fieldCount <] &&
+    ] loop
 
     result
   ];
 
   anyOf: [
-    x:predicates:;;
+    x: predicates:;;
     result: FALSE;
     predicates fieldCount [
       x i predicates @ call result or !result
@@ -854,17 +836,56 @@ xmlInternal: {
   ExtenderRanges: ((0x00B7n32 0x00B7n32) (0x02D0n32 0x02D0n32) (0x02D1n32 0x02D1n32) (0x0387n32 0x0387n32) (0x0640n32 0x0640n32) (0x0E46n32 0x0E46n32) (0x0EC6n32 0x0EC6n32) (0x3005n32 0x3005n32) (0x3031n32 0x3035n32) (0x309Dn32 0x309En32) (0x30FCn32 0x30FEn32));
 };
 
+{dst: 0nx;          } () {} "XMLElementDestroy" importFunction
+{dst: 0nx; src: 0nx;} () {} "XMLElementSet"     importFunction
+{dst: 0nx;          } () {} "XMLElementInit"    importFunction
+
+XMLElementRef: XMLElement Ref virtual;
+
+asXMLElement: [@XMLElementRef addressToReference];
+
+{dst: 0nx;          } () {} [asXMLElement manuallyInitVariable ]                 "XMLElementInit"    exportFunction
+{dst: 0nx; src: 0nx;} () {} [dst: asXMLElement; src: asXMLElement; src @dst set] "XMLElementSet"     exportFunction
+{dst: 0nx;          } () {} [asXMLElement manuallyDestroyVariable]               "XMLElementDestroy" exportFunction
+
 {
-  position: XMLParserPosition Ref;
-  chars: StringView Array Cref;
-  mainResult: XMLParserResult Ref;
-  xml: XMLDocument Ref;
-} () {convention: cdecl;} [
+  position:   XMLParserPosition Ref;
+  chars:      StringView Array  Cref;
+  mainResult: XMLParserResult   Ref;
+  result:     XMLElement        Ref;
+} () {} "parseElementFromOpenTag" importFunction
+
+{
+  position:   XMLParserPosition Ref;
+  chars:      StringView Array  Cref;
+  mainResult: XMLParserResult   Ref;
+  result:     XMLElement        Ref;
+} () {} [
+  result: mainResult: chars: position:;;;;
+  mainResult.success [
+    xmlInternal.skipWhiteSpaces
+    xmlInternal.parseName @result.@name set
+    xmlInternal.parseAttributes @result.@attributes set
+    position.currentCodepoint ascii.slash = [
+      xmlInternal.iterateChecked
+      ">" xmlInternal.skipString
+    ] [
+      ">" xmlInternal.skipString
+      @result xmlInternal.parseElementContentAndClosingTag @result.children set
+    ] if
+  ] when
+] "parseElementFromOpenTag" exportFunction
+
+{
+  position:   XMLParserPosition Ref;
+  chars:      StringView Array  Cref;
+  mainResult: XMLParserResult   Ref;
+  xml:        XMLDocument       Ref;
+} () {} [
   position:;
   chars:;
   mainResult:;
   xml:;
-
   chars @position xmlInternal.fillPositionChars
   xmlInternal.parseDocument @xml set
   position.offset chars.size < [
