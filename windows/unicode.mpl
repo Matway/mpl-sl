@@ -10,7 +10,6 @@
 "control.Nat16"         use
 "control.assert"        use
 "control.keep"          use
-"control.swap"          use
 
 "kernel32.CP_UTF8"              use
 "kernel32.MB_ERR_INVALID_CHARS" use
