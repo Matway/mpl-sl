@@ -25,8 +25,7 @@ utf16: [
     source.data storageAddress
     MB_ERR_INVALID_CHARS
     CP_UTF8
-    MultiByteToWideChar
-  ;
+    MultiByteToWideChar;
   [targetNat16Count 0 = ~] "MultiByteToWideChar failed" assert
 
   result: Nat16 Array [targetNat16Count 1 + swap .enlarge] keep;
@@ -38,8 +37,7 @@ utf16: [
     source.data storageAddress
     MB_ERR_INVALID_CHARS
     CP_UTF8
-    MultiByteToWideChar
-  ;
+    MultiByteToWideChar;
   [writtenNat16Count targetNat16Count =] "MultiByteToWideChar failed" assert
 
   0n16 @result.last set
