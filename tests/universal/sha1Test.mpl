@@ -24,7 +24,7 @@
 
 sha1Test: [];
 
-# sha1, ShaCounter
+# ShaCounter, sha1
 [
   check: [
     value0: value1: [Nat8 cast] [Nat8] map; toSpan dynamic;
