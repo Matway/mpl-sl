@@ -333,6 +333,7 @@ toArray: [toIter TRUE] [
   first: firstValid: @iter.next;;
   array: @first newVarOfTheSameType Array;
   firstValid [
+    @iter "size" has [@iter.size 1 + @array.setReserve] when
     @first @array.append
     @iter  @array.append
   ] when
