@@ -66,6 +66,12 @@
 "windows/sync/sync"          use
 "windows/sync/syncPrivate"   use
 
+"tests/AbortStatic"       use
+"tests/InvocationCounter" use
+"tests/reportTestName"    use
+"tests/testSchemaName"    use
+
+"tests/universal/AvlMapTest"       use
 "tests/universal/CommandLineTest"  use
 "tests/universal/ContextGroupTest" use
 "tests/universal/ContextTest"      use
