@@ -7,8 +7,6 @@
 
 "Span.toSpan"      use
 "algorithm.unhead" use
-"control.!"        use
-"control.&&"       use
 "control.@"        use
 "control.Int32"    use
 "control.Nat32"    use
@@ -16,6 +14,7 @@
 "control.Nat8"     use
 "control.Natx"     use
 "control.drop"     use
+"control.dup"      use
 "control.min"      use
 "control.times"    use
 "control.when"     use
@@ -23,54 +22,139 @@
 "memory.memcpy"    use
 "memory.memset"    use
 
+ShaCounter: [{
+  state: (0x67452301n32 0xEFCDAB89n32 0x98BADCFEn32 0x10325476n32 0xC3D2E1F0n32);
+  buffer: Nat8 64 array;
+  bufferProcessed: 0;
+  bitSize: Nat64;
+
+  append: [
+    source: toSpan;
+    source.size Nat64 cast 8n64 * bitSize + !bitSize
+    [
+      sz: 64 bufferProcessed - source.size min;
+      sz Natx cast
+      source.data storageAddress
+      buffer storageAddress bufferProcessed Natx cast + memcpy drop
+      @source sz unhead !source
+      bufferProcessed sz + !bufferProcessed
+
+      bufferProcessed 64 = dup [
+        @state buffer Sha1Internal.transform
+        0 !bufferProcessed
+      ] when
+    ] loop
+  ];
+
+  finish: [bufferProcessed bitSize @buffer @state Sha1Internal.finish];
+}];
+
+sha1: [
+  source: toSpan;
+  state: (0x67452301n32 0xEFCDAB89n32 0x98BADCFEn32 0x10325476n32 0xC3D2E1F0n32);
+  bitSize: source.size Nat64 cast 3n32 lshift;
+  [source.size 64 < ~] [
+    @state source Sha1Internal.transform
+    @source 64 unhead !source
+  ] while
+
+  buffer: Nat8 64 array;
+  count: source.size;
+
+  count Natx cast
+  source.data storageAddress
+  buffer storageAddress memcpy drop
+
+  count bitSize @buffer @state Sha1Internal.finish
+];
+
 Sha1Internal: {
   rol: [
-    value:count:;;
+    value: count:;;
     value count lshift
     value 32n32 count - rshift
     or
   ];
 
   f1: [
-    x:y:z:;;;
+    x: y: z:;;;
     y z xor x and z xor 0x5A827999n32 +
   ];
 
   f2: [
-    x:y:z:;;;
+    x: y: z:;;;
     x y xor z xor 0x6ED9EBA1n32 +
   ];
 
   f3: [
-    x:y:z:;;;
+    x: y: z:;;;
     x y and
     x y or z and or 0x8F1BBCDCn32 +
   ];
 
   f4: [
-    x:y:z:;;;
+    x: y: z:;;;
     x y xor z xor 0xCA62C1D6n32 +
   ];
 
   m: [
-    x:i:;;
-    b: i 0x0fn32 and Int32 cast @x @;
+    x: i:;;
+    b: i 0x0Fn32 and Int32 cast @x @;
 
     b
-    i 2n32 + 0x0fn32 and Int32 cast x @ xor
-    i 8n32 + 0x0fn32 and Int32 cast x @ xor
-    i 13n32 + 0x0fn32 and Int32 cast x @ xor 1n32 rol @b set
+    i 2n32 + 0x0Fn32 and Int32 cast x @ xor
+    i 8n32 + 0x0Fn32 and Int32 cast x @ xor
+    i 13n32 + 0x0Fn32 and Int32 cast x @ xor 1n32 rol @b set
     b new
   ];
 
   r: [
-    a:b:c:d:e:f:m:;;;;;;;
+    a: b: c: d: e: f: m:;;;;;;;
     a 5n32 rol b c d @f call + m + e + @e set
     b 30n32 rol @b set
   ];
 
+  finish: [
+    count: bitSize: buffer: state:;;; new;
+
+    0x80n8 count @buffer @ set
+    count 1 + !count
+    count 56 > [
+      64 count - Natx cast
+      0
+      buffer storageAddress count Natx cast + memset drop
+      @state buffer Sha1Internal.transform
+      0 !count
+    ] when
+
+    56 count - Natx cast
+    0
+    buffer storageAddress count Natx cast + memset drop
+
+    bitSize 56n32 rshift Nat8 cast 56 @buffer !
+    bitSize 48n32 rshift Nat8 cast 57 @buffer !
+    bitSize 40n32 rshift Nat8 cast 58 @buffer !
+    bitSize 32n32 rshift Nat8 cast 59 @buffer !
+    bitSize 24n32 rshift Nat8 cast 60 @buffer !
+    bitSize 16n32 rshift Nat8 cast 61 @buffer !
+    bitSize  8n32 rshift Nat8 cast 62 @buffer !
+    bitSize              Nat8 cast 63 @buffer !
+
+    @state buffer Sha1Internal.transform
+
+    result: 0n8 20 array;
+    5 [
+      i state @ 24n32 rshift Nat8 cast i 4 * 0 + @result !
+      i state @ 16n32 rshift Nat8 cast i 4 * 1 + @result !
+      i state @  8n32 rshift Nat8 cast i 4 * 2 + @result !
+      i state @              Nat8 cast i 4 * 3 + @result !
+    ] times
+
+    @result
+  ];
+
   transform: [
-    state:buf:;;
+    state: buf:;;
     x: Nat32 16 array;
     16 [
       i 4 * 0 + buf @ Nat32 cast 24n32 lshift
@@ -174,120 +258,3 @@ Sha1Internal: {
     e 4 state @ + 4 @state !
   ];
 };
-
-ShaCounter: [{
-  state: (0x67452301n32 0xEFCDAB89n32 0x98BADCFEn32 0x10325476n32 0xC3D2E1F0n32);
-  internalBuffer: Nat8 64 array;
-  internalBufferProcessed: 0;
-  bitSize: Nat64;
-
-  appendData: [
-    source: toSpan;
-    source.getSize Nat64 cast 8n64 * bitSize + !bitSize
-    [
-      sz: 64 internalBufferProcessed - source.getSize min;
-      sz Natx cast
-      source.data storageAddress
-      internalBuffer storageAddress internalBufferProcessed Natx cast + memcpy drop
-      @source sz unhead !source
-      internalBufferProcessed sz + !internalBufferProcessed
-
-      internalBufferProcessed 64 = [
-        @state internalBuffer Sha1Internal.transform
-        0 !internalBufferProcessed
-        TRUE
-      ] &&
-    ] loop
-  ];
-
-  finish: [
-    count: internalBufferProcessed copy;
-
-    0x80n8 count @internalBuffer @ set
-    count 1 + !count
-    count 56 > [
-      64 count - Natx cast
-      0
-      internalBuffer storageAddress count Natx cast + memset drop
-      @state internalBuffer Sha1Internal.transform
-      0 !count
-    ] when
-
-    56 count - Natx cast
-    0
-    internalBuffer storageAddress count Natx cast + memset drop
-
-    bitSize 56n32 rshift Nat8 cast 56 @internalBuffer !
-    bitSize 48n32 rshift Nat8 cast 57 @internalBuffer !
-    bitSize 40n32 rshift Nat8 cast 58 @internalBuffer !
-    bitSize 32n32 rshift Nat8 cast 59 @internalBuffer !
-    bitSize 24n32 rshift Nat8 cast 60 @internalBuffer !
-    bitSize 16n32 rshift Nat8 cast 61 @internalBuffer !
-    bitSize  8n32 rshift Nat8 cast 62 @internalBuffer !
-    bitSize              Nat8 cast 63 @internalBuffer !
-
-    @state internalBuffer Sha1Internal.transform
-
-    result: 0n8 20 array;
-    5 [
-      i state @ 24n32 rshift Nat8 cast i 4 * 0 + @result !
-      i state @ 16n32 rshift Nat8 cast i 4 * 1 + @result !
-      i state @  8n32 rshift Nat8 cast i 4 * 2 + @result !
-      i state @              Nat8 cast i 4 * 3 + @result !
-    ] times
-
-    @result
-  ];
-}];
-
-sha1: [
-  source: toSpan;
-  state: (0x67452301n32 0xEFCDAB89n32 0x98BADCFEn32 0x10325476n32 0xC3D2E1F0n32);
-  bitSize: source.size Nat64 cast 3n32 lshift;
-  [source.size 64 < ~] [
-    @state source Sha1Internal.transform
-    @source 64 unhead !source
-  ] while
-
-  buf: Nat8 64 array;
-  count: source.size;
-
-  count Natx cast
-  source.data storageAddress
-  buf storageAddress memcpy drop
-
-  0x80n8 count @buf @ set
-  count 1 + !count
-  count 56 > [
-    64 count - Natx cast
-    0
-    buf storageAddress count Natx cast + memset drop
-    @state buf Sha1Internal.transform
-    0 !count
-  ] when
-
-  56 count - Natx cast
-  0
-  buf storageAddress count Natx cast + memset drop
-
-  bitSize 56n32 rshift Nat8 cast 56 @buf @ set
-  bitSize 48n32 rshift Nat8 cast 57 @buf @ set
-  bitSize 40n32 rshift Nat8 cast 58 @buf @ set
-  bitSize 32n32 rshift Nat8 cast 59 @buf @ set
-  bitSize 24n32 rshift Nat8 cast 60 @buf @ set
-  bitSize 16n32 rshift Nat8 cast 61 @buf @ set
-  bitSize  8n32 rshift Nat8 cast 62 @buf @ set
-  bitSize              Nat8 cast 63 @buf @ set
-
-  @state buf Sha1Internal.transform
-
-  result: 0n8 20 array;
-  5 [
-    i state @ 24n32 rshift Nat8 cast i 4 * 0 + @result !
-    i state @ 16n32 rshift Nat8 cast i 4 * 1 + @result !
-    i state @  8n32 rshift Nat8 cast i 4 * 2 + @result !
-    i state @              Nat8 cast i 4 * 3 + @result !
-  ] times
-
-  @result
-];
