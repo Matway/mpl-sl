@@ -80,6 +80,7 @@
 "tests/universal/controlTest"      use
 "tests/universal/objectToolsTest"  use
 "tests/universal/objectTraitTest"  use
+"tests/universal/sha1Test"         use
 "tests/universal/syncTest"         use
 
 TEST: [];
