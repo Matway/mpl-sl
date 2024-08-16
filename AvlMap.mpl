@@ -40,7 +40,7 @@ AvlMap: [
     root: 0nx dynamic;
 
     clear: [
-      clearImpl: [
+      [
         nodeAddress:;
         nodeAddress 0nx = ~ [
           node: nodeAddress asNode;
@@ -49,8 +49,7 @@ AvlMap: [
           node manuallyDestroyVariable
           Node storageSize nodeAddress mplFree
         ] when
-      ];
-      @clearImpl !avlMapClear
+      ] !avlMapClear
 
       root avlMapClear
       0nx dynamic !root
@@ -58,10 +57,10 @@ AvlMap: [
 
     debugPrint: [
       "String.printList" use
-      "control.times"    use
       "control.print"    use
+      "control.times"    use
 
-      debugPrintImpl: [
+      [
         nodeAddress: depth:;;
         nodeAddress 0nx = ~ [
           node: nodeAddress asNode;
@@ -72,8 +71,7 @@ AvlMap: [
           node.left  depth 1 + avlMapDebugPrint
           node.right depth 1 + avlMapDebugPrint
         ] when
-      ];
-      @debugPrintImpl !avlMapDebugPrint
+      ] !avlMapDebugPrint
 
       root 0 avlMapDebugPrint
     ];
@@ -81,7 +79,7 @@ AvlMap: [
     each: [
       body:;
 
-      eachImpl: [
+      [
         nodeAddress:;
         nodeAddress 0nx = ~ [
           node: nodeAddress asNode;
@@ -89,8 +87,7 @@ AvlMap: [
           node.left  avlMapEach
           node.right avlMapEach
         ] when
-      ];
-      @eachImpl !avlMapEach
+      ] !avlMapEach
 
       root avlMapEach
     ];
@@ -251,7 +248,7 @@ AvlMap: [
     private ASSIGN: [
       other:;
 
-      cloneImpl: [
+      [
         nodeAddress:;
         result: 0nx;
 
@@ -268,8 +265,7 @@ AvlMap: [
         ] when
 
         result
-      ];
-      @cloneImpl !avlMapClone
+      ] !avlMapClone
 
       clear
       other.root avlMapClone !root
