@@ -124,7 +124,7 @@ eachCount: Int32; # When the transition will be finished, move it inside
     ] avlMap.each
     [eachCount HI i - =] "[each] produced not enough items" ensure
   ] times
-  [avlMap.root 0nx =] "[erase] did not remove root node" ensure
+  [avlMap.root 0nx =] "[erase] did not reset root node" ensure
 ] call
 
 [
@@ -152,8 +152,8 @@ eachCount: Int32; # When the transition will be finished, move it inside
     0 0 0 [[drop] avlMap0.each                                  ] test
     0 1 0 [@key @avlMap0.erase                                  ] test
     1 1 2 [avlMap0 const new !avlMap1                           ] test
-    0 1 0 [@avlMap0.clear                                       ] test [avlMap0.root 0nx =] "[clear] did not remove root node" ensure
-    0 1 0 [avlMap1 manuallyDestroyVariable                      ] test [avlMap1.root 0nx =] "[DIE] did not remove root node"   ensure
+    0 1 0 [@avlMap0.clear                                       ] test [avlMap0.root 0nx =] "[clear] did not reset root node" ensure
+    0 1 0 [avlMap1 manuallyDestroyVariable                      ] test [avlMap1.root 0nx =] "[DIE] did not reset root node"   ensure
   ];
 
   InvocationCounter 0                 testCounters
