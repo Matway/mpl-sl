@@ -5,143 +5,352 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
+"algorithm.<"      use
+"algorithm.="      use
 "control.&&"       use
+"control.<"        use
+"control.="        use
+"control.Int32"    use
+"control.Natx"     use
 "control.Ref"      use
 "control.assert"   use
-"control.pfunc"    use
 "control.when"     use
 "memory.mplFree"   use
 "memory.mplMalloc" use
 
-AVLMap: [
-  value:;
-  key:;
+AvlMap: [
+  Key: Value: Ref virtual; Ref virtual;
+
+  toNode2: [
+    key: value:;;
+    {
+      key:     @key   new;
+      value:   @value new;
+      balance: 0;
+      left:    0nx;
+      right:   0nx;
+    }
+  ];
 
   {
-    virtual AVL_MAP: ();
-    virtual keyType: @key Ref;
-    virtual valueType: @value Ref;
+    SCHEMA_NAME: "AvlMap<" @Key schemaName & ", " & @Value schemaName & ">" & virtual;
 
-    makeNode: [{
-      value: copy;
-      key: copy;
-      balance: 0 dynamic;
-      left: 0nx dynamic;
-      right: 0nx dynamic;
-    }];
-
-    virtual nodeType: @key newVarOfTheSameType @value newVarOfTheSameType makeNode Ref;
-
-    asNode: [@nodeType addressToReference];
+    Node: @Key newVarOfTheSameType @Value newVarOfTheSameType toNode2 Ref virtual;
 
     root: 0nx dynamic;
+
+    clear: [
+      [
+        nodeAddress:;
+        nodeAddress 0nx = ~ [
+          node: nodeAddress asNode;
+          node.left  avlMapClear
+          node.right avlMapClear
+          node manuallyDestroyVariable
+          Node storageSize nodeAddress mplFree
+        ] when
+      ] !avlMapClear
+
+      root avlMapClear
+      0nx dynamic !root
+    ];
+
+    debugPrint: [
+      "String.printList" use
+      "control.print"    use
+      "control.times"    use
+
+      [
+        nodeAddress: depth:;;
+        nodeAddress 0nx = ~ [
+          node: nodeAddress asNode;
+
+          depth ["  " print] times
+          ("(" node.balance ") " node.@key.item ": " node.@value.item LF) printList
+
+          node.left  depth 1 + avlMapDebugPrint
+          node.right depth 1 + avlMapDebugPrint
+        ] when
+      ] !avlMapDebugPrint
+
+      root 0 avlMapDebugPrint
+    ];
+
+    each: [
+      body:;
+
+      [
+        nodeAddress:;
+        nodeAddress 0nx = ~ [
+          node: nodeAddress asNode;
+          {key: node.@key const; value: @node.@value;} body
+          node.left  avlMapEach
+          node.right avlMapEach
+        ] when
+      ] !avlMapEach
+
+      root avlMapEach
+    ];
+
+    erase: [
+      key:;
+      [
+        currentRef:     @root;
+        previousRef:    @root;
+        primeRef:       @root;
+        droppedRef:     @currentRef;
+        droppedAddress: 0nx;
+        last:           FALSE dynamic;
+        haveP:          FALSE dynamic;
+
+        [
+          currentRef 0nx = ~ [
+            currentNode: currentRef asNode;
+            haveP [
+              currentNode.balance 0 = [currentNode.left 0nx = ~] && [@currentRef !primeRef] [
+                previousNode: previousRef asNode;
+                last [previousNode.balance 1 =] [previousNode.balance -1 =] if [
+                  last [previousNode.left new] [previousNode.right new] if asNode.balance 0 = [@previousRef !primeRef] when
+                ] when
+              ] if
+            ] when
+
+            TRUE !haveP
+            @currentRef !previousRef
+            @key currentNode.@key = [
+              @currentRef        !droppedRef
+              currentRef new     !droppedAddress
+              @currentNode.@left !currentRef
+              FALSE              !last
+            ] [
+              @key currentNode.@key < [
+                @currentNode.@left !currentRef
+                FALSE              !last
+              ] [
+                @currentNode.@right !currentRef
+                TRUE                !last
+              ] if
+            ] if
+            TRUE
+          ] &&
+        ] loop
+
+        [droppedAddress 0nx = ~] "Attempted to erase a Node that was not inserted" assert
+
+        [
+          primeRef previousRef is ~ [
+            primeNode: primeRef asNode;
+            primeNode.@key @key < [
+              primeNode.balance 1 + @primeNode.!balance
+              primeNode.balance 2 = [
+                @primeRef fixRotateRight
+                primeRef asNode.@right !primeRef
+              ] when
+              primeRef droppedAddress = [@primeRef !droppedRef] when
+              primeRef asNode.@right !primeRef
+            ] [
+              primeNode.balance 1 - @primeNode.!balance
+              primeNode.balance -2 = [
+                @primeRef fixRotateLeft
+                primeRef asNode.@left !primeRef
+              ] when
+              primeRef droppedAddress = [@primeRef !droppedRef] when
+              primeRef asNode.@left !primeRef
+            ] if
+            TRUE
+          ] &&
+        ] loop
+
+        [droppedRef asNode.@key @key =] "Invalid dropped node" assert
+
+        @droppedRef @previousRef swapNodes !droppedRef
+
+        droppedNode:         droppedRef asNode;
+        droppedChildAddress: droppedNode.left 0nx = [droppedNode.right new] [droppedNode.left new] if;
+
+        droppedRef asNode manuallyDestroyVariable
+        Node storageSize droppedRef mplFree
+        droppedChildAddress @droppedRef set
+      ] call
+    ];
 
     find: [
       key:;
       [
-        result: {
-          success: FALSE;
-          value: 0nx @valueType addressToReference;
-        };
+        result: @Node.@value Ref;
 
-        current: root copy;
+        currentAddress: root new;
         [
-          current 0nx = [
-            FALSE
-          ] [
-            curNode: current asNode;
-            key curNode.key = [
-              {
-                success: TRUE;
-                value: @curNode.@value;
-              } @result set
+          currentAddress 0nx = ~ [
+            currentNode: currentAddress asNode;
+            @key currentNode.@key = [
+              @currentNode.@value !result
               FALSE
             ] [
-              key curNode.key < [curNode.left] [curNode.right] if @current set
+              @key currentNode.@key < [currentNode.left new] [currentNode.right new] if !currentAddress
               TRUE
             ] if
-          ] if
+          ] &&
         ] loop
 
-        result
+        @result
       ] call
     ];
 
-    fixRotateLeft: [
+    insert: [
+      key: value:;;
+      [
+        # stage1: find prime node
+        currentRef: @root;
+        primeRef0:  @root;
+        [
+          currentRef 0nx = ~ [
+            currentNode: currentRef asNode;
+            [@key currentNode.@key = ~] "Attempted to insert node with key that already exist" assert
+            currentNode.balance 0 = ~ [@currentRef !primeRef0] when
+            @key currentNode.@key < [@currentNode.@left !currentRef] [@currentNode.@right !currentRef] if
+            TRUE
+          ] &&
+        ] loop
+
+        newAddress: Node storageSize mplMalloc;
+        newNode:    newAddress asNode;
+
+        @newNode manuallyInitVariable
+        @key @value toNode2 @newNode set
+        newAddress @currentRef set
+
+        currentRef primeRef0 is ~ [
+          # stage2: correct balance value
+          primeRef1: @primeRef0;
+          [
+            primeNode1: primeRef1 asNode;
+            primeNode1.@key newNode.@key < [
+              primeNode1.balance 1 - @primeNode1.!balance
+              @primeNode1.@right !primeRef1
+            ] [
+              primeNode1.balance 1 + @primeNode1.!balance
+              @primeNode1.@left !primeRef1
+            ] if
+
+            primeRef1 currentRef is ~
+          ] loop
+
+          # stage3: balance
+          primeNode0: primeRef0 asNode;
+          primeNode0.balance 2 = [@primeRef0 fixRotateRight] [
+            primeNode0.balance -2 = [@primeRef0 fixRotateLeft] when
+          ] if
+        ] when
+      ] call
+    ];
+
+    private ASSIGN: [
+      other:;
+
+      [
+        nodeAddress:;
+        result: 0nx;
+
+        nodeAddress 0nx = ~ [
+          Node storageSize mplMalloc !result
+          node:       nodeAddress asNode;
+          resultNode: result asNode;
+          @resultNode manuallyInitVariable
+          node.left   avlMapClone @resultNode.!left
+          node.right  avlMapClone @resultNode.!right
+          node.@key   const new @resultNode.!key
+          node.@value const new @resultNode.!value
+          node.balance      new @resultNode.!balance
+        ] when
+
+        result
+      ] !avlMapClone
+
+      clear
+      other.root avlMapClone !root
+    ];
+
+    private DIE: [clear];
+
+    private INIT: [0nx dynamic !root];
+
+    private asNode: [@Node addressToReference];
+
+    private fixRotateLeft: [
       addr:;
       n: addr asNode;
       r: n.right asNode;
       r.balance 1 = [
         rl: r.left asNode;
-        rl.balance 0 > [-1][0] if @r.@balance set
-        rl.balance 0 < [ 1][0] if @n.@balance set
-        0 @rl.@balance set
+        rl.balance 0 > [-1] [0] if @r.!balance
+        rl.balance 0 < [ 1] [0] if @n.!balance
+        0 @rl.!balance
 
-        tmp: rl.left copy;
-        addr @rl.@left set
+        tmp: rl.left new;
+        addr new @rl.!left
         r.left @addr set
-        rl.right @r.@left set
-        n.right @rl.@right set
-        tmp @n.@right set
+        rl.right new @r .!left
+        n.right  new @rl.!right
+        tmp      new @n .!right
       ] [
         r.balance 0 = [
-          -1 @n.@balance set
-          1 @r.@balance set
+          -1 @n.!balance
+           1 @r.!balance
         ] [
-          0 @n.@balance set
-          0 @r.@balance set
+          0 @n.!balance
+          0 @r.!balance
         ] if
 
-        tmp: n.right copy;
-        r.left @n.@right set
-        addr @r.@left set
+        tmp: n.right new;
+        r.left new @n.!right
+        addr   new @r.!left
         tmp @addr set
       ] if
     ];
 
-    fixRotateRight: [
+    private fixRotateRight: [
       addr:;
-      n: addr asNode;
+      n: addr   asNode;
       l: n.left asNode;
       l.balance -1 = [
         lr: l.right asNode;
-        lr.balance 0 < [ 1][0] if @l.@balance set
-        lr.balance 0 > [-1][0] if @n.@balance set
-        0 @lr.@balance set
+        lr.balance 0 < [ 1] [0] if @l.!balance
+        lr.balance 0 > [-1] [0] if @n.!balance
+        0 @lr.!balance
 
-        tmp: lr.right copy;
-        addr @lr.@right set
+        tmp: lr.right new;
+        addr new @lr.!right
         l.right @addr set
-        lr.left @l.@right set
-        n.left @lr.@left set
-        tmp @n.@left set
+        lr.left new @l .!right
+        n.left  new @lr.!left
+        tmp     new @n .!left
       ] [
         l.balance 0 = [
-          1 @n.@balance set
-          -1 @l.@balance set
+           1 @n.!balance
+          -1 @l.!balance
         ] [
-          0 @n.@balance set
-          0 @l.@balance set
+          0 @n.!balance
+          0 @l.!balance
         ] if
 
-        tmp: n.left copy;
-        l.right @n.@left set
-        addr @l.@right set
+        tmp: n.left new;
+        l.right new @n.!left
+        addr    new @l.!right
         tmp @addr set
       ] if
     ];
 
-    swapNodes: [
-      addr2:;
-      addr1:;
+    private swapNodes: [
+      addr1: addr2:;;
       addr1 addr2 = ~ [
         node1: addr1 asNode;
         node2: addr2 asNode;
-        iswap: [i1:; i2:; tmp: i1 copy; i2 @i1 set tmp @i2 set];
+        iswap: [i1:; i2:; tmp: i1 new; i2 @i1 set tmp @i2 set];
         @node1.@balance @node2.@balance iswap
 
         node1.left addr2 = [
-          tmp: addr2 copy;
+          tmp: addr2 new;
           node2.left @addr2 set
           addr1 @node2.@left set
           tmp @addr1 set
@@ -149,9 +358,9 @@ AVLMap: [
           @node2.@left
         ] [
           node1.right addr2 = [
-            tmp: addr2 copy;
+            tmp: addr2 new;
             node2.right @addr2 set
-            addr1 @node2.@right set
+            addr1 new   @node2.!right
             tmp @addr1 set
             @node1.@right @node2.@left iswap
             @node2.@right
@@ -162,246 +371,14 @@ AVLMap: [
             @addr2
           ] if
         ] if
-      ] [
-        @addr1
-      ] if
+      ] [@addr1] if
     ];
 
-    insert: [
-      valueIsMoved: isMoved;
-      value:;
-      keyIsMoved: isMoved;
-      key:;
+    private toNode2: @toNode2;
+  }
+];
 
-      [
-        # stage1: find prime node
-        current: @root;
-        prime: @root;
-        [
-          current 0nx = [
-            FALSE
-          ] [
-            curNode: current asNode;
-            [key curNode.key = ~] "Inserting existing element!" assert
-            curNode.balance 0 = ~ [@current !prime] when
-            key curNode.key < [@curNode.@left !current] [@curNode.@right !current] if
-            TRUE
-          ] if
-        ] loop
-
-        addr: nodeType storageSize mplMalloc;
-        newNode: addr asNode;
-        @newNode manuallyInitVariable
-        valueIsMoved [
-          keyIsMoved [@key move @value move makeNode @newNode set] [@key @value move makeNode @newNode set] if
-        ] [
-          keyIsMoved [@key move @value makeNode @newNode set] [@key @value makeNode @newNode set] if
-        ] if
-
-        addr @current set
-
-        current prime is ~ [
-          # stage2: correct balance value
-          p: @prime;
-          [
-            pNode: p asNode;
-            pNode.key newNode.key < [
-              pNode.balance 1 - @pNode.@balance set
-              @pNode.@right !p
-            ] [
-              pNode.balance 1 + @pNode.@balance set
-              @pNode.@left !p
-            ] if
-            p current is ~
-          ] loop
-
-          # stage3: rebalance
-          primeNode: prime asNode;
-          primeNode.balance 2 = [
-            @prime fixRotateRight
-          ] [
-            primeNode.balance -2 = [
-              @prime fixRotateLeft
-            ] [
-            ] if
-          ] if
-        ] when
-      ] call
-    ];
-
-    erase: [
-      key:;
-      [
-        current: @root;
-        prime: @root;
-        last: FALSE dynamic;
-        prev: @root;
-        haveP: FALSE dynamic;
-        dropped: 0nx;
-        droppedRef: @current;
-
-        [
-          current 0nx = [
-            FALSE
-          ] [
-            curNode: current asNode;
-            haveP [
-              curNode.balance 0 = [curNode.left 0nx = ~] && [
-                @current !prime
-              ] [
-                pNode: prev asNode;
-                last [pNode.balance 1 =][pNode.balance -1 =] if [
-                  last [pNode.left copy] [pNode.right copy] if asNode .balance 0 = [@prev !prime] when
-                ] when
-              ] if
-            ] when
-
-            TRUE @haveP set
-            @current !prev
-            key curNode.key = [
-              @current !droppedRef
-              @current @dropped set
-              FALSE @last set
-              @curNode.@left !current
-            ] [
-              key curNode.key < [
-                FALSE @last set
-                @curNode.@left !current
-              ] [
-                TRUE @last set
-                @curNode.@right !current
-              ] if
-            ] if
-            TRUE
-          ] if
-        ] loop
-
-        [dropped 0nx = ~] "Erasing unexisting element!" assert
-
-        [
-          prime prev is ~ [
-            primeNode: prime asNode;
-            primeNode.key key < [
-              primeNode.balance 1 + @primeNode.@balance set
-              primeNode.balance 2 = [
-                @prime fixRotateRight
-                prime asNode.@right !prime
-              ] when
-              prime dropped = [@prime !droppedRef] when
-              prime asNode.@right !prime
-            ] [
-              primeNode.balance 1 - @primeNode.@balance set
-              primeNode.balance -2 = [
-                @prime fixRotateLeft
-                @prime asNode.@left !prime
-              ] when
-              prime dropped = [@prime !droppedRef] when
-              @prime asNode.@left !prime
-            ] if
-            TRUE
-          ] &&
-        ] loop
-
-
-        [droppedRef asNode.key key =] "Invalid dropped node!" assert
-
-        @droppedRef @prev swapNodes !droppedRef
-
-        droppedNode: droppedRef asNode;
-        droppedChild: droppedNode.left 0nx = [droppedNode.right copy][droppedNode.left copy] if;
-
-        droppedRef asNode manuallyDestroyVariable
-        nodeType storageSize droppedRef mplFree
-        droppedChild @droppedRef set
-      ] call
-    ];
-
-    debugPrint: [
-      "Debug print" print LF print
-
-      debugPrintImpl: [
-        copy depth:;
-        copy nodeAddr:;
-        recursive
-
-        nodeAddr 0nx = ~ [
-          node: nodeAddr asNode;
-          node.left depth 1 + debugPrintImpl
-          depth ["  " print] times
-          ("(" node.balance ") " node.key ": " node.value LF) printList
-          node.right depth 1 + debugPrintImpl
-        ] when
-      ];
-
-      root 0 dynamic debugPrintImpl
-    ];
-
-    clear: [
-      clearImpl: [
-        copy nodeAddr:;
-        recursive
-
-        nodeAddr 0nx = ~ [
-          node: nodeAddr asNode;
-          node.left clearImpl
-          node.right clearImpl
-          nodeType storageSize nodeAddr mplFree
-        ] when
-      ];
-
-      root clearImpl
-      0nx dynamic @root set
-    ];
-
-    INIT: [0nx dynamic @root set];
-
-    ASSIGN: [
-      other:;
-      clear
-
-      cloneImpl: [
-        copy nodeAddr:;
-        recursive
-
-        nodeAddr 0nx = [
-          0nx
-        ] [
-          node: nodeAddr asNode;
-          result: 0nx;
-          nodeType storageSize mplMalloc @result set
-          resultNode: result asNode;
-          @resultNode manuallyInitVariable
-          node.left  cloneImpl @resultNode.@left set
-          node.right cloneImpl @resultNode.@right set
-          node.key             @resultNode.@key set
-          node.value           @resultNode.@value set
-          node.balance         @resultNode.@balance set
-          result
-        ] if
-      ];
-
-      other.root cloneImpl @root set
-    ];
-
-    DIE: [
-      clear
-    ];
-  }];
-
-each: [b:; "AVL_MAP" has] [
-  eachInTreeBody:;
-  eachInTreeTree:;
-  eachImpl: [
-    copy eachNodeAddr:;
-    recursive
-
-    eachNodeAddr 0nx = ~ [
-      eachNode: eachNodeAddr @eachInTreeTree.asNode;
-      eachNode.left eachImpl
-      {key: eachNode.key; value: @eachNode.@value;} @eachInTreeBody call
-      eachNode.right eachImpl
-    ] when
-  ];
-
-  eachInTreeTree.root eachImpl
-] pfunc;
+avlMapClear:      {root: Natx;              } {  } {} codeRef;
+avlMapClone:      {root: Natx;              } Natx {} codeRef;
+avlMapDebugPrint: {depth: Int32; root: Natx;} {  } {} codeRef;
+avlMapEach:       {root: Natx;              } {  } {} codeRef;
