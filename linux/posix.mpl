@@ -25,6 +25,11 @@ long: [Intx];
 
 # fcntl
 
+{
+  fildes: Int32;
+  cmd:    Int32;
+} Int32 {convention: cdecl; variadic: TRUE;} "fcntl" importFunction
+
 O_NONBLOCK: [2048];
 
 # signal
@@ -41,6 +46,7 @@ sigset_t:       [Natx _SIGSET_NWORDS array];
 # time
 
 CLOCK_MONOTONIC: [1];
+CLOCK_BOOTTIME:  [7];
 
 time_t: [Intx];
 

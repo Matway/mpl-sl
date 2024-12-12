@@ -131,7 +131,7 @@ fillUpSocketSendBuffer: [
   result "" = ~ [("TcpConnection.write failed, " result LF) printList "" failProc] when
 ] call
 
-# Test that on cancel before resuming nothing is read from the socket buffer. Fails on Windows.
+# Test that on cancel before resuming nothing is read from the socket buffer; fails on Windows
 [
   server: client: 0x7F000001n32 6600n16 getServerAndClientContexts .get; .get;
 
@@ -149,8 +149,9 @@ fillUpSocketSendBuffer: [
     @context.cancel
   ];} () spawn;
 
-  ["Hello, World!" @server.write] "write failed" ensure
-  
+  result: "Hello, World!" @server.write;
+  result "" = ~ [("TcpConnection.write failed, " result LF) printList "" failProc] when
+
   @cancelContext.wait
   @readContext  .wait
 

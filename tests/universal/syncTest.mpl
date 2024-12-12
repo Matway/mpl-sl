@@ -93,17 +93,17 @@ syncTest: [];
     connection: 0x7F000001n32 tcpPort connectTcp !result;
     result "" = ~ [("connectTcp failed, " result LF) printList "" failProc] when
 
-    "Hello, world!" connection.write !result
+    "Hello, world!" @connection.write !result
     result "" = ~ [("TcpConnection.write failed, " result LF) printList "" failProc] when
 
-    message: 1024 connection.readString !result;
+    message: 1024 @connection.readString !result;
     result "" = ~ [("TcpConnection.readString failed, " result LF) printList "" failProc] when
     message "Reply: Hello, world!" = ~ [("client received unexpected response, \"" message "\"\n") printList "" failProc] when
 
     connection.shutdown !result
     result "" = ~ [("TcpConnection.shutdown failed, " result LF) printList "" failProc] when
 
-    message: 1024 connection.readString !result;
+    message: 1024 @connection.readString !result;
     result "closed" = ~ [("TcpConnection.readString failed, " result LF) printList "" failProc] when
     message "" = ~ [("client received invalid response, \"" message "\"\n") printList "" failProc] when
   ];
@@ -117,14 +117,14 @@ syncTest: [];
     result "" = ~ [("TcpAcceptor.accept failed, " result LF) printList "" failProc] when
     address 0x7F000001n32 = ~ [("TcpAcceptor.accept returned unexpected address, " address ipv4ToString LF) printList "" failProc] when
 
-    message: 1024 connection.readString !result;
+    message: 1024 @connection.readString !result;
     result "" = ~ [("TcpConnection.readString failed, " result LF) printList "" failProc] when
     message "Hello, world!" = ~ [("server received unexpected request, \"" message "\"\n") printList "" failProc] when
 
-    "Reply: Hello, world!" connection.write !result
+    "Reply: Hello, world!" @connection.write !result
     result "" = ~ [("TcpConnection.write failed, " result LF) printList "" failProc] when
 
-    message: 1024 connection.readString !result;
+    message: 1024 @connection.readString !result;
     result "closed" = ~ [("TcpConnection.readString failed, " result LF) printList "" failProc] when
     message "" = ~ [("server received invalid request, \"" message "\"\n") printList "" failProc] when
 

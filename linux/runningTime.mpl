@@ -10,29 +10,24 @@
 "control.failProc" use
 "control.when"     use
 
-"posix.CLOCK_MONOTONIC" use
-"posix.clock_gettime"   use
-"posix.timespec"        use
+"posix.CLOCK_BOOTTIME" use
+"posix.clock_gettime"  use
+"posix.timespec"       use
 
 "errno.errno" use
 
 runningTimeInternal: {
-  init: [
-    @initTime CLOCK_MONOTONIC clock_gettime -1 = [("FATAL: clock_gettime failed, result=" errno LF) printList "" failProc] when
-  ];
-
   get: [
-    currentTime: timespec;
-    @currentTime CLOCK_MONOTONIC clock_gettime -1 = [("FATAL: clock_gettime failed, result=" errno LF) printList "" failProc] when
-
+    time1: timespec;
+    @time1 CLOCK_BOOTTIME clock_gettime -1 = [("FATAL: clock_gettime failed, result=" errno LF) printList "" failProc] when
     NANOSECONDS_TO_SECONDS_MULTIPLIER: [0.000000001r64];
-
-    currentTime.tv_sec initTime.tv_sec - Real64 cast currentTime.tv_nsec initTime.tv_nsec - Real64 cast NANOSECONDS_TO_SECONDS_MULTIPLIER * +
+    time1.tv_sec  time0.tv_sec  - Real64 cast
+    time1.tv_nsec time0.tv_nsec - Real64 cast NANOSECONDS_TO_SECONDS_MULTIPLIER * +
   ];
 
-  private initTime: timespec;
+  private time0: timespec;
+
+  @time0 CLOCK_BOOTTIME clock_gettime -1 = [("FATAL: clock_gettime failed, result=" errno LF) printList "" failProc] when
 };
 
-@runningTimeInternal.init
-
-runningTime: [@runningTimeInternal];
+runningTime: [runningTimeInternal];

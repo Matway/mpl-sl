@@ -91,12 +91,6 @@ socklen_t: [Nat32];
 } Int32 {convention: cdecl;} "connect" importFunction
 
 {
-  fd:  Int32;
-  cmd: Int32;
-  arg: Int32;
-} Int32 {convention: cdecl;} "fcntl" importFunction
-
-{
   res: addrinfo Ref;
 } {} {convention: cdecl;} "freeaddrinfo" importFunction
 

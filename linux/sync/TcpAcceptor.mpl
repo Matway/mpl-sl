@@ -18,6 +18,7 @@
 "control.||"       use
 
 "posix.O_NONBLOCK"      use
+"posix.fcntl"           use
 "socket.AF_INET"        use
 "socket.F_GETFL"        use
 "socket.F_SETFL"        use
@@ -30,7 +31,6 @@
 "socket.TCP_NODELAY"    use
 "socket.bind"           use
 "socket.close"          use
-"socket.fcntl"          use
 "socket.htonl"          use
 "socket.htons"          use
 "socket.listen"         use
@@ -121,10 +121,10 @@ TcpAcceptor: [{
 
         connection.connection -1 = [("accept failed, result=" errno) @result.catMany] when
       ] [
-        flags: 0 F_GETFL connection.connection fcntl;
+        flags: (0) F_GETFL connection.connection fcntl;
         flags -1 = [
           O_NONBLOCK Nat32 cast flags Nat32 cast or Int32 cast !flags
-          flags F_SETFL connection.connection fcntl -1 =
+          (flags new) F_SETFL connection.connection fcntl -1 =
         ] || [("fcntl failed, result=" errno) @result.catMany] when
       ] [
         nodelay: 1;
@@ -156,10 +156,10 @@ makeTcpAcceptor: [
       IPPROTO_TCP SOCK_STREAM AF_INET socket @acceptor.!acceptor
       acceptor.valid? ~ [("socket failed, result=" errno) @result.catMany] when
     ] [
-      flags: 0 F_GETFL acceptor.acceptor fcntl;
+      flags: (0) F_GETFL acceptor.acceptor fcntl;
       flags -1 = [
         flags Nat32 cast O_NONBLOCK Nat32 cast or Int32 cast !flags
-        flags F_SETFL acceptor.acceptor fcntl -1 =
+        (flags new) F_SETFL acceptor.acceptor fcntl -1 =
       ] || [("fcntl failed, result=" errno) @result.catMany] when
     ] [
       nodelay: 1;
