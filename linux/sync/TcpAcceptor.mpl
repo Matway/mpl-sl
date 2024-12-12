@@ -18,6 +18,7 @@
 "control.||"       use
 
 "posix.O_NONBLOCK"      use
+"posix.close"           use
 "posix.fcntl"           use
 "socket.AF_INET"        use
 "socket.F_GETFL"        use
@@ -30,7 +31,6 @@
 "socket.SO_REUSEADDR"   use
 "socket.TCP_NODELAY"    use
 "socket.bind"           use
-"socket.close"          use
 "socket.htonl"          use
 "socket.htons"          use
 "socket.listen"         use

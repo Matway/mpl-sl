@@ -21,18 +21,25 @@ EINPROGRESS: [115];
 EINTR:       [4];
 EWOULDBLOCK: [EAGAIN];
 
+F_SETFD: [2];
+
+FD_CLOEXEC: [1];
+
+WNOHANG: [1];
+
+WEXITSTATUS: [
+  status: Nat32 cast;
+  status 0xFF00n32 and 8n32 rshift Int32 cast
+];
+
+WIFEXITED: [
+  status: Nat32 cast;
+  status 0x7Fn32 and 0n32 =
+];
+
 long: [Intx];
 
-# fcntl
-
-{
-  fildes: Int32;
-  cmd:    Int32;
-} Int32 {convention: cdecl; variadic: TRUE;} "fcntl" importFunction
-
 O_NONBLOCK: [2048];
-
-# signal
 
 stack_t: [{
   ss_sp:    Natx;
@@ -42,8 +49,6 @@ stack_t: [{
 
 _SIGSET_NWORDS: [1024 Natx storageSize Int32 cast 8 * /];
 sigset_t:       [Natx _SIGSET_NWORDS array];
-
-# time
 
 CLOCK_MONOTONIC: [1];
 CLOCK_BOOTTIME:  [7];
@@ -61,13 +66,6 @@ timespec: [{
   tv_sec:  time_t;
   tv_nsec: long;
 }];
-
-{
-  clk_id: clockid_t;
-  tp:     timespec Ref;
-} Int32 {convention: cdecl;} "clock_gettime" importFunction
-
-# ucontext
 
 Natx storageSize 8nx = [ # __x86_64__
   greg_t: [Int64];
@@ -162,8 +160,34 @@ Natx storageSize 8nx = [ # __x86_64__
 ] uif
 
 {
+  clk_id: clockid_t;
+  tp:     timespec Ref;
+} Int32 {convention: cdecl;} "clock_gettime" importFunction
+
+{
+  fildes: Int32;
+} Int32 {convention: cdecl;} "close" importFunction
+
+{
+  file: Natx;
+  argv: Natx;
+} Int32 {convention: cdecl;} "execvp" importFunction
+
+{
+  fildes: Int32;
+  cmd:    Int32;
+} Int32 {convention: cdecl; variadic: TRUE;} "fcntl" importFunction
+
+{} Int32 {convention: cdecl;} "fork" importFunction
+
+{
   ucp: ucontext_t Ref;
 } Int32 {convention: cdecl;} "getcontext" importFunction
+
+{
+  pid: Int32;
+  sig: Int32;
+} Int32 {convention: cdecl;} "kill" importFunction
 
 {
   ucp:  ucontext_t Ref;
@@ -172,6 +196,28 @@ Natx storageSize 8nx = [ # __x86_64__
 } {} {variadic: TRUE; convention: cdecl;} "makecontext" importFunction
 
 {
+  filedes: {in: Int32; out: Int32;} Ref;
+} Int32 {convention: cdecl;} "pipe" importFunction
+
+{
+  filedes: Int32;
+  buffer:  Natx;
+  size:    Natx;
+} Intx {convention: cdecl;} "read" importFunction
+
+{
   oucp: ucontext_t Ref;
   ucp:  ucontext_t Ref;
 } Int32 {convention: cdecl;} "swapcontext" importFunction
+
+{
+  pid:     Int32;
+  wstatus: Int32 Ref;
+  options: Int32;
+} Int32 {convention: cdecl;} "waitpid" importFunction
+
+{
+  filedes: Int32;
+  buffer:  Natx;
+  size:    Natx;
+} Intx {convention: cdecl;} "write" importFunction
