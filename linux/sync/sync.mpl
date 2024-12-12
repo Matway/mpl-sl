@@ -35,7 +35,6 @@
 "syncPrivate.defaultCancelFunc"   use
 "syncPrivate.dispatch"            use
 "syncPrivate.epoll_fd"            use
-"syncPrivate.getTimePrivate"      use
 "syncPrivate.getTimerFd"          use
 "syncPrivate.resumingFibers"      use
 "syncPrivate.timers"              use
@@ -63,7 +62,10 @@ connectTcp: [makeTcpConnection];
 #   NONE
 # out:
 #   time (Real64) - time elapsed
-getTime: [getTimePrivate];
+getTime: [
+  "runningTime.runningTime" use
+  runningTime.get
+];
 
 # Convert Nat32 representation of IPv4 address to String
 # in:
@@ -103,8 +105,8 @@ sleepFor: [
       expirationTime: itimerspec;
       0ix             @expirationTime.@it_interval.!tv_sec
       0ix             @expirationTime.@it_interval.!tv_nsec
-      seconds     new @expirationTime.@it_value.!tv_sec
-      nanoseconds new @expirationTime.@it_value.!tv_nsec
+      seconds     new @expirationTime.@it_value   .!tv_sec
+      nanoseconds new @expirationTime.@it_value   .!tv_nsec
 
       timer_fd: getTimerFd;
       itimerspec Ref @expirationTime 0 timer_fd timerfd_settime -1 = [("FATAL: timerfd_settime failed, result=" errno LF) printList "" failProc] when

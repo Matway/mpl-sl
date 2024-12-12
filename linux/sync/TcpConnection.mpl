@@ -30,6 +30,7 @@
 "posix.EINPROGRESS"     use
 "posix.EWOULDBLOCK"     use
 "posix.O_NONBLOCK"      use
+"posix.fcntl"           use
 "socket.AF_INET"        use
 "socket.F_GETFL"        use
 "socket.F_SETFL"        use
@@ -43,7 +44,6 @@
 "socket.TCP_NODELAY"    use
 "socket.close"          use
 "socket.connect"        use
-"socket.fcntl"          use
 "socket.getsockopt"     use
 "socket.htonl"          use
 "socket.htons"          use
@@ -282,10 +282,10 @@ makeTcpConnection: [
       nodelay: 1;
       nodelay storageSize Nat32 cast nodelay storageAddress TCP_NODELAY IPPROTO_TCP connection.connection setsockopt -1 = [("setsockopt failed, result=" errno) @result.catMany] when
     ] [
-      flags: 0 F_GETFL connection.connection fcntl;
+      flags: (0) F_GETFL connection.connection fcntl;
       flags -1 = [
         O_NONBLOCK Nat32 cast flags Nat32 cast or Int32 cast !flags
-        flags F_SETFL connection.connection fcntl -1 =
+        (flags new) F_SETFL connection.connection fcntl -1 =
       ] || [("fcntl failed, result=" errno) @result.catMany] when
     ] [
       addressData: sockaddr_in;
