@@ -25,6 +25,8 @@ F_SETFD: [2];
 
 FD_CLOEXEC: [1];
 
+SIGKILL: [9];
+
 WNOHANG: [1];
 
 WEXITSTATUS: [

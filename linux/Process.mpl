@@ -19,7 +19,6 @@
 "algorithm.objectValues" use
 "algorithm.toIndex"      use
 "algorithm.toIter"       use
-"control.Cond"           use
 "control.Int32"          use
 "control.Intx"           use
 "control.Natx"           use
@@ -33,13 +32,12 @@
 "control.touch"          use
 "control.when"           use
 
-"errno.errno" use
-
+"errno.errno"       use
 "posix.F_SETFD"     use
 "posix.FD_CLOEXEC"  use
+"posix.SIGKILL"     use
 "posix.WEXITSTATUS" use
 "posix.WIFEXITED"   use
-"posix.WNOHANG"     use
 "posix.close"       use
 "posix.execvp"      use
 "posix.fcntl"       use
@@ -143,26 +141,10 @@ Process: [{
 
   isCreated: [processId -1 = ~];
 
-  isRunning: [
-    "get running status of" assertCreated
-
-    pid: WNOHANG Int32 Ref processId waitpid;
-    pid -1 = [
-      "waitpid" 1 errorExit
-      Cond # Unreachable
-    ] [
-      result: pid 0 =;
-      result ~ [-1 !processId] when
-
-      result
-    ] if
-  ];
-
   kill: [
-    signal:;
     "kill" assertCreated
     "posix.kill" use
-    signal processId kill -1 = ["kill" 1 errorExit] when
+    SIGKILL processId kill -1 = ["kill" 1 errorExit] when
   ];
 
   wait: [
