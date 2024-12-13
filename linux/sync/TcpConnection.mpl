@@ -30,6 +30,7 @@
 "posix.EINPROGRESS"     use
 "posix.EWOULDBLOCK"     use
 "posix.O_NONBLOCK"      use
+"posix.close"           use
 "posix.fcntl"           use
 "socket.AF_INET"        use
 "socket.F_GETFL"        use
@@ -42,7 +43,6 @@
 "socket.SOL_SOCKET"     use
 "socket.SO_ERROR"       use
 "socket.TCP_NODELAY"    use
-"socket.close"          use
 "socket.connect"        use
 "socket.getsockopt"     use
 "socket.htonl"          use

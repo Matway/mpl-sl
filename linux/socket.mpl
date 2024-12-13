@@ -81,10 +81,6 @@ socklen_t: [Nat32];
 } Int32 {convention: cdecl;} "bind" importFunction
 
 {
-  fd: Int32;
-} Int32 {convention: cdecl;} "close" importFunction
-
-{
   sockfd:  Int32;
   addr:    sockaddr Cref;
   addrlen: socklen_t;
