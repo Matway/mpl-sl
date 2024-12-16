@@ -15,6 +15,7 @@
 "control.drop"           use
 "control.dup"            use
 "control.ensure"         use
+"control.int?"           use
 "control.isBuiltinTuple" use
 "control.pfunc"          use
 "control.times"          use
@@ -542,6 +543,151 @@ testView: [
   "101" "10" beginsWith isRef TRUE  FALSE TRUE  check
   "011" "10" beginsWith isRef FALSE FALSE TRUE  check
   "111" "10" beginsWith isRef FALSE FALSE TRUE  check
+] call
+
+# compareBy
+[
+  Comparator: [{
+    comparator: upperBound: new virtual; virtual;
+    invocationCount: 0;
+
+    CALL: [
+      value0: value1:;;
+      [invocationCount 0 < ~] "arithmetic overflow" ensure
+      invocationCount 1 + !invocationCount
+      [invocationCount upperBound > ~] "extra attempt to invoke comparator" ensure
+
+      @value0 @value1 comparator
+    ];
+  }];
+
+  OnlyOnce: [{
+    body: virtual;
+    valid: TRUE;
+
+    CALL: [
+      [valid] "attempted to apply function twice" ensure
+      FALSE !valid
+      body
+    ];
+  }];
+
+  compareNormalized: [
+    iter0: iter1: comparator: Diff:;;;;
+    diff: ref?:@iter0 @iter1 @comparator @Diff compareBy isRef;;
+    [diff int?] "not an Int" ensure
+    zero: [0 diff cast];
+
+    diff zero < [-1] [
+      diff zero = [0] [1] if
+    ] if diff cast ref?
+  ];
+
+  test: [
+    transform0: transform1:;;
+
+    transform2: [
+      iter0: iter1:;;
+      @iter0 transform0 @iter1 transform1
+    ];
+
+    # 0)
+    # THE TRANSITION: Remove ['] from function's name. See the next item
+    testCompareBy': [
+      iter0: iter1: comparator: upperBound: Diff: normalizedResult:;;;;;;
+      @iter0 @iter1 @comparator upperBound Comparator @Diff OnlyOnce compareNormalized normalizedResult FALSE FALSE check
+    ];
+
+    # 1)
+    # THE TRANSITION: Remove this version of the function. Without this version test cases are unable to pass assertions
+    testCompareBy: [
+      iter0: iter1: comparator: upperBound: Diff: normalizedResult:;;;;;;
+      @iter0 dynamic @iter1 dynamic @comparator upperBound Comparator @Diff OnlyOnce compareNormalized normalizedResult FALSE TRUE check
+    ];
+
+    # 2)
+    # THE TRANSITION: Turn on this block
+    #(     ) (     ) transform2 [] 0 @Int32  0 testCompareBy
+    #(     ) (0    ) transform2 [] 0 @Int32 -1 testCompareBy
+    #(     ) (0 0  ) transform2 [] 0 @Int32 -1 testCompareBy
+    #(     ) (0 0 0) transform2 [] 0 @Int32 -1 testCompareBy
+    #(0    ) (     ) transform2 [] 0 @Int32  1 testCompareBy
+    #(0 0  ) (     ) transform2 [] 0 @Int32  1 testCompareBy
+    #(0 0 0) (     ) transform2 [] 0 @Int32  1 testCompareBy
+
+    # 3)
+    # THE TRANSITION: Remove this block
+    (     ) (     ) transform2 [] 0 @Int32  0 testCompareBy'
+    (     ) (0    ) transform2 [] 0 @Int32 -1 testCompareBy'
+    (     ) (0 0  ) transform2 [] 0 @Int32 -1 testCompareBy'
+    (     ) (0 0 0) transform2 [] 0 @Int32 -1 testCompareBy'
+    (0    ) (     ) transform2 [] 0 @Int32  1 testCompareBy'
+    (0 0  ) (     ) transform2 [] 0 @Int32  1 testCompareBy'
+    (0 0 0) (     ) transform2 [] 0 @Int32  1 testCompareBy'
+
+    (0      ) (0      ) transform2 [-] 1 @Int32  0 testCompareBy
+    (0 0    ) (0 0    ) transform2 [-] 2 @Int32  0 testCompareBy
+    (0 0 0  ) (0 0 0  ) transform2 [-] 3 @Int32  0 testCompareBy
+    (0      ) (0 0    ) transform2 [-] 1 @Int32 -1 testCompareBy
+    (0 0    ) (0 0 0  ) transform2 [-] 2 @Int32 -1 testCompareBy
+    (0 0 0  ) (0 0 0 0) transform2 [-] 3 @Int32 -1 testCompareBy
+    (0 0    ) (0      ) transform2 [-] 1 @Int32  1 testCompareBy
+    (0 0 0  ) (0 0    ) transform2 [-] 2 @Int32  1 testCompareBy
+    (0 0 0 0) (0 0 0  ) transform2 [-] 3 @Int32  1 testCompareBy
+
+    (0      ) (1 0    ) transform2 [-] 1 @Int32 -1 testCompareBy
+    (0 0    ) (0 1 0  ) transform2 [-] 2 @Int32 -1 testCompareBy
+    (0 0 0  ) (0 0 1 0) transform2 [-] 3 @Int32 -1 testCompareBy
+    (1      ) (0 0    ) transform2 [-] 1 @Int32  1 testCompareBy
+    (0 1    ) (0 0 0  ) transform2 [-] 2 @Int32  1 testCompareBy
+    (0 0 1  ) (0 0 0 0) transform2 [-] 3 @Int32  1 testCompareBy
+    (0 0    ) (1      ) transform2 [-] 1 @Int32 -1 testCompareBy
+    (0 0 0  ) (0 1    ) transform2 [-] 2 @Int32 -1 testCompareBy
+    (0 0 0 0) (0 0 1  ) transform2 [-] 3 @Int32 -1 testCompareBy
+    (1 0    ) (0      ) transform2 [-] 1 @Int32  1 testCompareBy
+    (0 1 0  ) (0 0    ) transform2 [-] 2 @Int32  1 testCompareBy
+    (0 0 1 0) (0 0 0  ) transform2 [-] 3 @Int32  1 testCompareBy
+
+    (0    ) (1    ) transform2 [-] 1 @Int32 -1 testCompareBy
+    (1    ) (0    ) transform2 [-] 1 @Int32  1 testCompareBy
+    (0 0  ) (1 0  ) transform2 [-] 1 @Int32 -1 testCompareBy
+    (0 0  ) (0 1  ) transform2 [-] 2 @Int32 -1 testCompareBy
+    (1 0  ) (0 0  ) transform2 [-] 1 @Int32  1 testCompareBy
+    (0 1  ) (0 0  ) transform2 [-] 2 @Int32  1 testCompareBy
+    (0 0 0) (1 0 0) transform2 [-] 1 @Int32 -1 testCompareBy
+    (0 0 0) (0 1 0) transform2 [-] 2 @Int32 -1 testCompareBy
+    (0 0 0) (0 0 1) transform2 [-] 3 @Int32 -1 testCompareBy
+    (1 0 0) (0 0 0) transform2 [-] 1 @Int32  1 testCompareBy
+    (0 1 0) (0 0 0) transform2 [-] 2 @Int32  1 testCompareBy
+    (0 0 1) (0 0 0) transform2 [-] 3 @Int32  1 testCompareBy
+  ];
+
+  noSizeIter: [
+    source:;
+    {iter:@source toIter; next: [@iter.next];}
+  ];
+
+  @noSizeIter @noSizeIter test
+  [         ] [         ] test
+  @noSizeIter [         ] test
+  [         ] @noSizeIter test
+
+  # White-box check that a furthest possible iteration is not affected by arithmetic overflow
+  [
+    INT32_MAX: [0x7FFFFFFF];
+
+    ints: 0 iota INT32_MAX @Int32 headIter dynamic;
+    [ints "size" has ~] "size given" ensure
+
+    testCompareUnknown: [
+      iter0: iter1: comparator: upperBound: Diff: normalizedResult:;;;;;;
+      @iter0 @iter1 @comparator upperBound Comparator @Diff OnlyOnce compareNormalized normalizedResult FALSE TRUE check
+    ];
+
+    ints dup                                                       [-] INT32_MAX @Int32  0 testCompareUnknown
+    ints dup [a:; a INT32_MAX 1 - < [a new] [a 1 +] if] @Int32 map [-] INT32_MAX @Int32 -1 testCompareUnknown
+    ints dup [a:; a INT32_MAX 1 - < [a new] [a 1 -] if] @Int32 map [-] INT32_MAX @Int32  1 testCompareUnknown
+  ] call
 ] call
 
 # contains

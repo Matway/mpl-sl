@@ -611,6 +611,48 @@ beginsWith: [
   result
 ];
 
+compareBy: [
+  iter0: iter1: comparator: Diff:;; toIter; toIter;
+  size0:  @iter0 "size" has [@iter0.size] [()] if;
+  size1:  @iter1 "size" has [@iter1.size] [()] if;
+  offset: size0 () same size1 () same or [0] [()] if;
+  result: 0 Diff cast;
+  [result int?] "Invalid schema" assert
+  [
+    offset Int32 same [
+      size0 () same [size1 () same] && [
+        [offset 0 < ~] "Offset is out of bounds" assert
+      ] when
+      offset 1 + !offset
+    ] when
+
+    item0: @iter0.next swap; [
+      item1: @iter1.next swap; [
+        diff: @item0 @item1 comparator;
+        diff result = [diff new !result FALSE] ||
+      ] [1 result cast !result FALSE] if
+    ] [
+      # Preconditions: isSignedInteger(Target)
+      differenceUnchecked: [
+        source: Target:;;
+        Target storageSize source storageSize < [
+          source 0 < [-1] [
+            source 0 = [0] [1] if
+          ] if
+        ] [source] if Target cast
+      ];
+      offset () same [size0 size1 - result differenceUnchecked] [
+        size1 () same [
+          @iter1.next swap drop [-1 result cast] [result new] if
+        ] [offset 1 - size1 - result differenceUnchecked] if
+      ] if !result
+      FALSE
+    ] if
+  ] loop
+
+  result
+];
+
 contains: [
   iter0: iter1:; toIter;
   size0: @iter0        "size" has [@iter0       .size] [@iter0 new    count] if;
