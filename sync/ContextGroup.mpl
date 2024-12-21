@@ -79,7 +79,9 @@ ContextGroup: [{
     ] when
 
     [fibers.empty? ~] [
-      [fibers.first.waitedBy nil?] "multiple attempts to wait on the same fiber" assert
+      [fibers.first.waitedBy nil?          ] "multiple attempts to wait on the same fiber" assert
+      [fibers.first.fiber currentFiber is ~] "attempt to wait on self"                     assert
+
       @currentFiber @fibers.@first.!waitedBy
       canceled? ~ [
         [currentFiber.@func @defaultCancelFunc is] "invalid cancelation function" assert

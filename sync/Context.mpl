@@ -62,7 +62,9 @@ Context: [{
 
   wait: [
     done? ~ [
-      [data.waitedBy nil?] "multiple attempts to wait on the same fiber" assert
+      [data.waitedBy nil?          ] "multiple attempts to wait on the same fiber" assert
+      [data.fiber currentFiber is ~] "attempt to wait on self"                     assert
+
       @currentFiber @data.!waitedBy
       canceled? [
         cancel
