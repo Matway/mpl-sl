@@ -80,7 +80,7 @@ ContextGroup: [{
 
     [fibers.empty? ~] [
       [fibers.first.waitedBy nil?          ] "multiple attempts to wait on the same fiber" assert
-      [fibers.first.fiber currentFiber is ~] "attempted to wait on self"                   assert
+      [fibers.first.fiber currentFiber is ~] "attempted to wait on itself"                 assert
 
       @currentFiber @fibers.@first.!waitedBy
       canceled? ~ [
