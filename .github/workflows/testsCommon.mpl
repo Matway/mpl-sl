@@ -59,4 +59,3 @@
 "tests/universal/syncTest"         use
 
 TESTS_COMMON: [];
-

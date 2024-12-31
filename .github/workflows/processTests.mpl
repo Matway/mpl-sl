@@ -48,7 +48,7 @@ clangArguments: [
 mplcArguments: [
   additional: filenameSuffix:;;
   additional
-   "-D" "PLATFORM_TESTS=\"" PLATFORM & "/tests\"" &
+  "-D" "PLATFORM_TESTS=\"" PLATFORM & "/tests\"" &
   "-I" ""
   "-I" "tests"
   "-I" PLATFORM
