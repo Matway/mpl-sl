@@ -14,8 +14,8 @@ clangArguments: [
   additional: filenameSuffix:;;
   "" (
     additional
-    "-o build/tests" filenameSuffix & ".exe" &
-    "   build/tests" filenameSuffix & ".ll"  &
+    "-o out/tests" filenameSuffix & ".exe" &
+    "   out/tests" filenameSuffix & ".ll"  &
   ) [" " swap & &] each
 ];
 
@@ -23,6 +23,8 @@ mplcArguments: [
   additional: filenameSuffix:;;
   "" (
     additional unwrap
+
+    "-D PLATFORM_TESTS=\\\"windows/tests\\\""
 
     "-I \"\""
     "-I tests"
@@ -32,7 +34,7 @@ mplcArguments: [
 
     "-ndebug"
 
-    "-o build/tests" filenameSuffix & ".ll" &
+    "-o out/tests" filenameSuffix & ".ll" &
 
     ".github/workflows/entryPoint.mpl"
   ) [" " swap & &] each
@@ -50,7 +52,7 @@ runCommand: [
 
 runClang: [additionalArguments: filenameSuffix:;; "clang" additionalArguments filenameSuffix clangArguments runCommand];
 runMplc:  [additionalArguments: filenameSuffix:;; mplc    additionalArguments filenameSuffix mplcArguments  runCommand];
-runTests: [filenameSuffix:;                       "build/tests" filenameSuffix & ""                         runCommand];
+runTests: [filenameSuffix:;                       "out/tests" filenameSuffix & ""                           runCommand];
 
 testConfiguration: [
   extraArgMplc: extraArgClang: configurationName:;;;
@@ -70,7 +72,6 @@ tasks: (
 
 {} Int32 {} [
   [
-    FALSE "cmd /C chcp 65001" toProcess "" = [.wait] [drop drop] if
     (
       "MPL Compiler: «" mplc "»" LF
 
