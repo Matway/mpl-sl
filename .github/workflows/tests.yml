@@ -17,7 +17,7 @@ jobs:
       run: curl -LSs -o tools/mplc.exe https://github.com/Matway/mpl-c/releases/latest/download/mplc.exe
 
     - name: test
-      run: test.bat tools/mplc
+      run: ./test tools/mplc
 
     - name: artifacts
       uses: actions/upload-artifact@main
