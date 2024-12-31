@@ -1,7 +1,8 @@
-"Process"   use
 "String"    use
 "algorithm" use
 "control"   use
+
+"Process" use
 
 # THE TRANSITION: Remove the function so that built-in one will be used.
 # Without this function only the first two items of [tasks] will be handled correctly, and the rest will be replaced with the first item(s).
