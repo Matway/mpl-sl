@@ -1,6 +1,8 @@
 "control.print" use
 
-"tests" use
+"testsCommon" use
+
+PLATFORM_TESTS use
 
 {} 0i32 {} [
   "\nAll tests passed\n" print

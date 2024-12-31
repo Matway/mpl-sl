@@ -11,21 +11,19 @@ jobs:
       uses: actions/checkout@main
 
     - name: dir
-      run: md build
+      run: md tools
 
     - name: mplc
-      run: curl -LSs -o build/mplc.exe https://github.com/Matway/mpl-c/releases/latest/download/mplc.exe
-
-    - name: runner
-      run: .github/workflows/buildTest build/mplc
+      run: curl -LSs -o tools/mplc.exe https://github.com/Matway/mpl-c/releases/latest/download/mplc.exe
 
     - name: test
-      run: build/test.exe
+      run: ./test tools/mplc
 
     - name: artifacts
       uses: actions/upload-artifact@main
       with:
         name: tests
         path: |
-          build/*.exe
-          build/*.ll
+          tools/mplc.exe
+          out/*.exe
+          out/*.ll
