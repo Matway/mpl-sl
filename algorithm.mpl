@@ -615,7 +615,7 @@ compareBy: [
   iter0: iter1: comparator: Diff:;; toIter; toIter;
   size0:  @iter0 "size" has [@iter0.size] [()] if;
   size1:  @iter1 "size" has [@iter1.size] [()] if;
-  offset: size0 () same size1 () same or [0] [()] if;
+  offset: size0 () same [size1 () same] || [0] [()] if;
   result: 0 Diff cast;
   [result int?] "Invalid schema" assert
   [
