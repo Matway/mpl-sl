@@ -634,7 +634,7 @@ compareBy: [
     ] [
       # Preconditions: isSignedInteger(Target)
       differenceUnchecked: [
-        source: Target:;;
+        source: Target: Ref virtual;;
         Target storageSize source storageSize < [
           source 0 < [-1] [
             source 0 = [0] [1] if
