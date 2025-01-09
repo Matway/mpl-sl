@@ -684,8 +684,8 @@ testView: [
     ];
 
     ints dup                                                       [-] INT32_MAX @Int32  0 testCompareUnknown
-    ints dup [a:; a INT32_MAX 1 - < [a new] [a 1 +] if] @Int32 map [-] INT32_MAX @Int32 -1 testCompareUnknown
-    ints dup [a:; a INT32_MAX 1 - < [a new] [a 1 -] if] @Int32 map [-] INT32_MAX @Int32  1 testCompareUnknown
+    ints dup [v:; v INT32_MAX 1 - < [v new] [v 1 +] if] @Int32 map [-] INT32_MAX @Int32 -1 testCompareUnknown
+    ints dup [v:; v INT32_MAX 1 - < [v new] [v 1 -] if] @Int32 map [-] INT32_MAX @Int32  1 testCompareUnknown
   ] call
 ] call
 
