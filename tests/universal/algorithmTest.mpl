@@ -18,6 +18,7 @@
 "control.int?"           use
 "control.isBuiltinTuple" use
 "control.pfunc"          use
+"control.sign"           use
 "control.times"          use
 "control.when"           use
 "control.||"             use
@@ -568,6 +569,7 @@ testView: [
     CALL: [
       [valid] "attempted to apply function twice" ensure
       FALSE !valid
+
       body
     ];
   }];
@@ -576,11 +578,8 @@ testView: [
     iter0: iter1: comparator: Diff:;;;;
     diff: ref?: @iter0 @iter1 @comparator @Diff compareBy isRef;;
     [diff int?] "not an Int" ensure
-    zero: [0 diff cast];
 
-    diff zero < [-1] [
-      diff zero = [0] [1] if
-    ] if diff cast ref?
+    diff sign diff cast ref?
   ];
 
   test: [
