@@ -574,7 +574,7 @@ testView: [
 
   compareNormalized: [
     iter0: iter1: comparator: Diff:;;;;
-    diff: ref?:@iter0 @iter1 @comparator @Diff compareBy isRef;;
+    diff: ref?: @iter0 @iter1 @comparator @Diff compareBy isRef;;
     [diff int?] "not an Int" ensure
     zero: [0 diff cast];
 
@@ -664,7 +664,7 @@ testView: [
 
   noSizeIter: [
     source:;
-    {iter:@source toIter; next: [@iter.next];}
+    {iter: @source toIter; next: [@iter.next];}
   ];
 
   @noSizeIter @noSizeIter test
