@@ -562,24 +562,12 @@ testView: [
     ];
   }];
 
-  OnlyOnce: [{
-    body: virtual;
-    valid: TRUE;
-
-    CALL: [
-      [valid] "attempted to apply function twice" ensure
-      FALSE !valid
-
-      body
-    ];
-  }];
-
   compareNormalized: [
-    iter0: iter1: comparator: Diff:;;;;
-    diff: ref?: @iter0 @iter1 @comparator @Diff compareBy isRef;;
-    [diff int?] "not an Int" ensure
+    iter0: iter1: comparator:;;;
+    diff: ref?: @iter0 @iter1 @comparator compareBy isRef;;
+    [diff Int32 same] "not an Int32" ensure
 
-    diff sign diff cast ref?
+    diff sign ref?
   ];
 
   test: [
@@ -593,72 +581,79 @@ testView: [
     # 0)
     # THE TRANSITION: Remove ['] from function's name. See the next item
     testCompareBy': [
-      iter0: iter1: comparator: upperBound: Diff: normalizedResult:;;;;;;
-      @iter0 @iter1 @comparator upperBound Comparator @Diff OnlyOnce compareNormalized normalizedResult FALSE FALSE check
+      iter0: iter1: comparator: upperBound: normalizedResult:;;;;;
+      @iter0 @iter1 @comparator upperBound Comparator compareNormalized normalizedResult FALSE FALSE check
     ];
 
     # 1)
     # THE TRANSITION: Remove this version of the function. Without this version test cases are unable to pass assertions
     testCompareBy: [
-      iter0: iter1: comparator: upperBound: Diff: normalizedResult:;;;;;;
-      @iter0 dynamic @iter1 dynamic @comparator upperBound Comparator @Diff OnlyOnce compareNormalized normalizedResult FALSE TRUE check
+      iter0: iter1: comparator: upperBound: normalizedResult:;;;;;
+      @iter0 dynamic @iter1 dynamic @comparator upperBound Comparator compareNormalized normalizedResult FALSE TRUE check
     ];
 
     # 2)
     # THE TRANSITION: Turn on this block
-    #(     ) (     ) transform2 [] 0 @Int32  0 testCompareBy
-    #(     ) (0    ) transform2 [] 0 @Int32 -1 testCompareBy
-    #(     ) (0 0  ) transform2 [] 0 @Int32 -1 testCompareBy
-    #(     ) (0 0 0) transform2 [] 0 @Int32 -1 testCompareBy
-    #(0    ) (     ) transform2 [] 0 @Int32  1 testCompareBy
-    #(0 0  ) (     ) transform2 [] 0 @Int32  1 testCompareBy
-    #(0 0 0) (     ) transform2 [] 0 @Int32  1 testCompareBy
+    #(     ) (     ) transform2 [] 0  0 testCompareBy
+    #(     ) (0    ) transform2 [] 0 -1 testCompareBy
+    #(     ) (0 0  ) transform2 [] 0 -1 testCompareBy
+    #(     ) (0 0 0) transform2 [] 0 -1 testCompareBy
+    #(0    ) (     ) transform2 [] 0  1 testCompareBy
+    #(0 0  ) (     ) transform2 [] 0  1 testCompareBy
+    #(0 0 0) (     ) transform2 [] 0  1 testCompareBy
 
     # 3)
     # THE TRANSITION: Remove this block
-    (     ) (     ) transform2 [] 0 @Int32  0 testCompareBy'
-    (     ) (0    ) transform2 [] 0 @Int32 -1 testCompareBy'
-    (     ) (0 0  ) transform2 [] 0 @Int32 -1 testCompareBy'
-    (     ) (0 0 0) transform2 [] 0 @Int32 -1 testCompareBy'
-    (0    ) (     ) transform2 [] 0 @Int32  1 testCompareBy'
-    (0 0  ) (     ) transform2 [] 0 @Int32  1 testCompareBy'
-    (0 0 0) (     ) transform2 [] 0 @Int32  1 testCompareBy'
+    (     ) (     ) transform2 [] 0  0 testCompareBy'
+    (     ) (0    ) transform2 [] 0 -1 testCompareBy'
+    (     ) (0 0  ) transform2 [] 0 -1 testCompareBy'
+    (     ) (0 0 0) transform2 [] 0 -1 testCompareBy'
+    (0    ) (     ) transform2 [] 0  1 testCompareBy'
+    (0 0  ) (     ) transform2 [] 0  1 testCompareBy'
+    (0 0 0) (     ) transform2 [] 0  1 testCompareBy'
 
-    (0      ) (0      ) transform2 [-] 1 @Int32  0 testCompareBy
-    (0 0    ) (0 0    ) transform2 [-] 2 @Int32  0 testCompareBy
-    (0 0 0  ) (0 0 0  ) transform2 [-] 3 @Int32  0 testCompareBy
-    (0      ) (0 0    ) transform2 [-] 1 @Int32 -1 testCompareBy
-    (0 0    ) (0 0 0  ) transform2 [-] 2 @Int32 -1 testCompareBy
-    (0 0 0  ) (0 0 0 0) transform2 [-] 3 @Int32 -1 testCompareBy
-    (0 0    ) (0      ) transform2 [-] 1 @Int32  1 testCompareBy
-    (0 0 0  ) (0 0    ) transform2 [-] 2 @Int32  1 testCompareBy
-    (0 0 0 0) (0 0 0  ) transform2 [-] 3 @Int32  1 testCompareBy
+    (0       ) (0       ) transform2 [-] 1  0 testCompareBy
+    (0 0     ) (0 0     ) transform2 [-] 2  0 testCompareBy
+    (0 0 0   ) (0 0 0   ) transform2 [-] 3  0 testCompareBy
+    (0       ) (0      0) transform2 [-] 1 -1 testCompareBy
+    (0 0     ) (0 0    0) transform2 [-] 2 -1 testCompareBy
+    (0 0 0   ) (0 0 0  0) transform2 [-] 3 -1 testCompareBy
+    (0      0) (0       ) transform2 [-] 1  1 testCompareBy
+    (0 0    0) (0 0     ) transform2 [-] 2  1 testCompareBy
+    (0 0 0  0) (0 0 0   ) transform2 [-] 3  1 testCompareBy
 
-    (0      ) (1 0    ) transform2 [-] 1 @Int32 -1 testCompareBy
-    (0 0    ) (0 1 0  ) transform2 [-] 2 @Int32 -1 testCompareBy
-    (0 0 0  ) (0 0 1 0) transform2 [-] 3 @Int32 -1 testCompareBy
-    (1      ) (0 0    ) transform2 [-] 1 @Int32  1 testCompareBy
-    (0 1    ) (0 0 0  ) transform2 [-] 2 @Int32  1 testCompareBy
-    (0 0 1  ) (0 0 0 0) transform2 [-] 3 @Int32  1 testCompareBy
-    (0 0    ) (1      ) transform2 [-] 1 @Int32 -1 testCompareBy
-    (0 0 0  ) (0 1    ) transform2 [-] 2 @Int32 -1 testCompareBy
-    (0 0 0 0) (0 0 1  ) transform2 [-] 3 @Int32 -1 testCompareBy
-    (1 0    ) (0      ) transform2 [-] 1 @Int32  1 testCompareBy
-    (0 1 0  ) (0 0    ) transform2 [-] 2 @Int32  1 testCompareBy
-    (0 0 1 0) (0 0 0  ) transform2 [-] 3 @Int32  1 testCompareBy
+    (0         ) (0      0 0) transform2 [-] 1 -1 testCompareBy
+    (0 0       ) (0 0    0 0) transform2 [-] 2 -1 testCompareBy
+    (0 0 0     ) (0 0 0  0 0) transform2 [-] 3 -1 testCompareBy
+    (0      0 0) (0         ) transform2 [-] 1  1 testCompareBy
+    (0 0    0 0) (0 0       ) transform2 [-] 2  1 testCompareBy
+    (0 0 0  0 0) (0 0 0     ) transform2 [-] 3  1 testCompareBy
 
-    (0    ) (1    ) transform2 [-] 1 @Int32 -1 testCompareBy
-    (1    ) (0    ) transform2 [-] 1 @Int32  1 testCompareBy
-    (0 0  ) (1 0  ) transform2 [-] 1 @Int32 -1 testCompareBy
-    (0 0  ) (0 1  ) transform2 [-] 2 @Int32 -1 testCompareBy
-    (1 0  ) (0 0  ) transform2 [-] 1 @Int32  1 testCompareBy
-    (0 1  ) (0 0  ) transform2 [-] 2 @Int32  1 testCompareBy
-    (0 0 0) (1 0 0) transform2 [-] 1 @Int32 -1 testCompareBy
-    (0 0 0) (0 1 0) transform2 [-] 2 @Int32 -1 testCompareBy
-    (0 0 0) (0 0 1) transform2 [-] 3 @Int32 -1 testCompareBy
-    (1 0 0) (0 0 0) transform2 [-] 1 @Int32  1 testCompareBy
-    (0 1 0) (0 0 0) transform2 [-] 2 @Int32  1 testCompareBy
-    (0 0 1) (0 0 0) transform2 [-] 3 @Int32  1 testCompareBy
+    (0       ) (1      0) transform2 [-] 1 -1 testCompareBy
+    (0 0     ) (0 1    0) transform2 [-] 2 -1 testCompareBy
+    (0 0 0   ) (0 0 1  0) transform2 [-] 3 -1 testCompareBy
+    (1       ) (0      0) transform2 [-] 1  1 testCompareBy
+    (0 1     ) (0 0    0) transform2 [-] 2  1 testCompareBy
+    (0 0 1   ) (0 0 0  0) transform2 [-] 3  1 testCompareBy
+    (0      0) (1       ) transform2 [-] 1 -1 testCompareBy
+    (0 0    0) (0 1     ) transform2 [-] 2 -1 testCompareBy
+    (0 0 0  0) (0 0 1   ) transform2 [-] 3 -1 testCompareBy
+    (1      0) (0       ) transform2 [-] 1  1 testCompareBy
+    (0 1    0) (0 0     ) transform2 [-] 2  1 testCompareBy
+    (0 0 1  0) (0 0 0   ) transform2 [-] 3  1 testCompareBy
+
+    (0    ) (1    ) transform2 [-] 1 -1 testCompareBy
+    (1    ) (0    ) transform2 [-] 1  1 testCompareBy
+    (0 0  ) (1 0  ) transform2 [-] 1 -1 testCompareBy
+    (0 0  ) (0 1  ) transform2 [-] 2 -1 testCompareBy
+    (1 0  ) (0 0  ) transform2 [-] 1  1 testCompareBy
+    (0 1  ) (0 0  ) transform2 [-] 2  1 testCompareBy
+    (0 0 0) (1 0 0) transform2 [-] 1 -1 testCompareBy
+    (0 0 0) (0 1 0) transform2 [-] 2 -1 testCompareBy
+    (0 0 0) (0 0 1) transform2 [-] 3 -1 testCompareBy
+    (1 0 0) (0 0 0) transform2 [-] 1  1 testCompareBy
+    (0 1 0) (0 0 0) transform2 [-] 2  1 testCompareBy
+    (0 0 1) (0 0 0) transform2 [-] 3  1 testCompareBy
   ];
 
   noSizeIter: [
@@ -679,13 +674,13 @@ testView: [
     [ints "size" has ~] "size given" ensure
 
     testCompareUnknown: [
-      iter0: iter1: comparator: upperBound: Diff: normalizedResult:;;;;;;
-      @iter0 @iter1 @comparator upperBound Comparator @Diff OnlyOnce compareNormalized normalizedResult FALSE TRUE check
+      iter0: iter1: comparator: upperBound: normalizedResult:;;;;;
+      @iter0 @iter1 @comparator upperBound Comparator compareNormalized normalizedResult FALSE TRUE check
     ];
 
-    ints dup                                                       [-] INT32_MAX @Int32  0 testCompareUnknown
-    ints dup [v:; v INT32_MAX 1 - < [v new] [v 1 +] if] @Int32 map [-] INT32_MAX @Int32 -1 testCompareUnknown
-    ints dup [v:; v INT32_MAX 1 - < [v new] [v 1 -] if] @Int32 map [-] INT32_MAX @Int32  1 testCompareUnknown
+    ints dup                                                       [-] INT32_MAX  0 testCompareUnknown
+    ints dup [v:; v INT32_MAX 1 - < [v new] [v 1 +] if] @Int32 map [-] INT32_MAX -1 testCompareUnknown
+    ints dup [v:; v INT32_MAX 1 - < [v new] [v 1 -] if] @Int32 map [-] INT32_MAX  1 testCompareUnknown
   ] call
 ] call
 

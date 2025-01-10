@@ -612,12 +612,11 @@ beginsWith: [
 ];
 
 compareBy: [
-  iter0: iter1: comparator: Diff:;; toIter; toIter;
+  iter0: iter1: comparator:; toIter; toIter;
   size0:  @iter0 "size" has [@iter0.size] [()] if;
   size1:  @iter1 "size" has [@iter1.size] [()] if;
   offset: size0 () same [size1 () same] || [0] [()] if;
-  result: 0 Diff cast;
-  [result int?] "Invalid schema" assert
+  result: Int32;
   [
     offset Int32 same [
       size0 () same [size1 () same] && [
@@ -630,21 +629,19 @@ compareBy: [
     item0: @iter0.next swap; [
       item1: @iter1.next swap; [
         diff: @item0 @item1 comparator;
-        diff result = [diff new !result FALSE] ||
+        [diff int?] "Not an Int" assert
+        0 diff cast diff = [
+          diff diff storageSize Int32 storageSize > [sign] [Int32 cast] if !result FALSE
+        ] ||
       ] [
-        1 result cast !result FALSE
+        1 !result FALSE
       ] if
     ] [
-      # Preconditions: isSignedInteger(Target)
-      differenceUnchecked: [
-        diff: Target: Ref virtual;;
-        diff Target storageSize diff storageSize < [sign] when Target cast
-      ];
-      offset () same [size0 size1 - result differenceUnchecked] [
+      offset () same [size0 size1 -] [
         size1 () same [
-          @iter1.next swap drop [-1 result cast] [result new] if
+          @iter1.next swap drop [-1] [0] if
         ] [
-          offset 1 - size1 - result differenceUnchecked
+          offset 1 - size1 -
         ] if
       ] if !result
 
