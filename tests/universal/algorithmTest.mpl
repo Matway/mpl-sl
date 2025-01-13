@@ -15,7 +15,6 @@
 "control.drop"           use
 "control.dup"            use
 "control.ensure"         use
-"control.int?"           use
 "control.isBuiltinTuple" use
 "control.pfunc"          use
 "control.sign"           use
