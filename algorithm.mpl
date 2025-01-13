@@ -629,9 +629,9 @@ compareBy: [
     size1:       @iter1.size;
     short: long: @iter0 @iter1 size0 size1 < [2 touch -1 !result] [swap size1 size0 - sign !result] if;;
     [
-      item2: @short.next swap; [
-        item3: @long.next drop;
-        @item2 @item3 cmp
+      item0: @short.next swap; [
+        item1: @long.next drop;
+        @item0 @item1 cmp
       ] &&
     ] loop
 
