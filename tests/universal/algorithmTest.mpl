@@ -666,22 +666,19 @@ testView: [
   @noSizeIter [         ] test
   [         ] @noSizeIter test
 
-  # White-box check that a furthest possible iteration is not affected by arithmetic overflow
-  [
-    INT32_MAX: [0x7FFFFFFF];
+  INT32_MAX: [0x7FFFFFFF];
 
-    ints: 0 iota INT32_MAX @Int32 headIter dynamic;
-    [ints "size" has ~] "size given" ensure
+  ints: 0 iota INT32_MAX @Int32 headIter dynamic;
+  [ints "size" has ~] "size given" ensure
 
-    testCompareUnknown: [
-      iter0: iter1: comparator: upperBound: normalizedResult:;;;;;
-      @iter0 @iter1 @comparator upperBound Comparator compareNormalized normalizedResult FALSE TRUE check
-    ];
+  testCompareUnknown: [
+    iter0: iter1: comparator: upperBound: normalizedResult:;;;;;
+    @iter0 @iter1 @comparator upperBound Comparator compareNormalized normalizedResult FALSE TRUE check
+  ];
 
-    ints dup                                                       [-] INT32_MAX  0 testCompareUnknown
-    ints dup [v:; v INT32_MAX 1 - < [v new] [v 1 +] if] @Int32 map [-] INT32_MAX -1 testCompareUnknown
-    ints dup [v:; v INT32_MAX 1 - < [v new] [v 1 -] if] @Int32 map [-] INT32_MAX  1 testCompareUnknown
-  ] call
+  ints dup                                                       [-] INT32_MAX  0 testCompareUnknown
+  ints dup [v:; v INT32_MAX 1 - < [v new] [v 1 +] if] @Int32 map [-] INT32_MAX -1 testCompareUnknown
+  ints dup [v:; v INT32_MAX 1 - < [v new] [v 1 -] if] @Int32 map [-] INT32_MAX  1 testCompareUnknown
 ] call
 
 # contains

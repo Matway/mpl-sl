@@ -613,41 +613,40 @@ beginsWith: [
 
 compareBy: [
   iter0: iter1: comparator:; toIter; toIter;
-  size0:  @iter0 "size" has [@iter0.size] [()] if;
-  size1:  @iter1 "size" has [@iter1.size] [()] if;
-  offset: size0 () same [size1 () same] || [0] [()] if;
   result: Int32;
-  [
-    offset Int32 same [
-      size0 () same [size1 () same] && [
-        [offset 0 < ~] "Offset is out of bounds" assert
-      ] when
 
-      offset 1 + !offset
-    ] when
+  cmp: [
+    item0: item1:;;
+    diff: @item0 @item1 comparator;
+    [diff int?] "Not an Int" assert
+    0 diff cast diff = [
+      diff diff storageSize Int32 storageSize > [sign] [Int32 cast] if !result FALSE
+    ] ||
+  ];
 
-    item0: @iter0.next swap; [
-      item1: @iter1.next swap; [
-        diff: @item0 @item1 comparator;
-        [diff int?] "Not an Int" assert
-        0 diff cast diff = [
-          diff diff storageSize Int32 storageSize > [sign] [Int32 cast] if !result FALSE
-        ] ||
+  @iter0 "size" has [@iter1 "size" has] && [
+    size0:       @iter0.size;
+    size1:       @iter1.size;
+    short: long: @iter0 @iter1 size0 size1 < [2 touch -1 !result] [swap size1 size0 - sign !result] if;;
+    [
+      item2: @short.next swap; [
+        item3: @long.next drop;
+        @item2 @item3 cmp
+      ] &&
+    ] loop
+
+    size0 size1 < ~ [result neg !result] when
+  ] [
+    [
+      item0: @iter0.next swap; ~ [
+        @iter1.next swap drop [-1] [0] if !result FALSE
       ] [
-        1 !result FALSE
-      ] if
-    ] [
-      offset () same [size0 size1 -] [
-        size1 () same [
-          @iter1.next swap drop [-1] [0] if
-        ] [
-          offset 1 - size1 -
+        item1: @iter1.next swap; ~ [1 !result FALSE] [
+          @item0 @item1 cmp
         ] if
-      ] if !result
-
-      FALSE
-    ] if
-  ] loop
+      ] if
+    ] loop
+  ] if
 
   result
 ];
