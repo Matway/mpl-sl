@@ -629,15 +629,11 @@ compare: [
         item1: @iter1.next drop;
         comparisonResult: @item0 @item1 comparator;
         [comparisonResult int?] "Not an Int" assert
-        comparisonResult 0 comparisonResult cast < [
+        0 comparisonResult cast comparisonResult < [
+          result neg !result
           FALSE
         ] [
-          0 comparisonResult cast comparisonResult < [
-            result neg !result
-            FALSE
-          ] [
-            TRUE
-          ] if
+          0 comparisonResult cast comparisonResult =
         ] if
       ] [
         drop
