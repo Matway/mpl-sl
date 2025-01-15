@@ -629,12 +629,16 @@ compare: [
         item1: @iter1.next drop;
         comparisonResult: @item0 @item1 comparator;
         [comparisonResult int?] "Not an Int" assert
-        comparisonResult 0 comparisonResult cast < ~ [
-          comparisonResult 0 comparisonResult cast = [
+        comparisonResult 0 comparisonResult cast < [
+          FALSE
+        ] [
+          0 comparisonResult cast comparisonResult < [
             result neg !result
             FALSE
-          ] ||
-        ] &&
+          ] [
+            TRUE
+          ] if
+        ] if
       ] [
         drop
         @iter1.next ~ [0 !result] when drop
@@ -650,8 +654,10 @@ compare: [
           comparisonResult: @item0 @item1 comparator;
           [comparisonResult int?] "Not an Int" assert
           0 comparisonResult cast comparisonResult = [
+            TRUE
+          ] [
             comparisonResult comparisonResult storageSize Int32 storageSize > [sign] [Int32 cast] if !result FALSE
-          ] ||
+          ] if
         ] if
       ] if
     ] loop
