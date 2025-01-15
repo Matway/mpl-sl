@@ -675,8 +675,10 @@ testView: [
     ] if
   ];
 
-  (0) (1) @i32min compare [0 <] "produced wrong result" ensure
-  (1) (0) @i32min compare [0 >] "produced wrong result" ensure
+  (0  ) (1  ) @i32min compare [0 <] "produced wrong result" ensure
+  (1  ) (0  ) @i32min compare [0 >] "produced wrong result" ensure
+  (0  ) (1 0) @i32min compare [0 <] "produced wrong result" ensure
+  (1 0) (0  ) @i32min compare [0 >] "produced wrong result" ensure
 
   ints: 0 iota INT32_MAX @Int32 headIter dynamic;
   [ints "size" has ~] "size given" ensure
