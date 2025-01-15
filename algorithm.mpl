@@ -649,9 +649,7 @@ compare: [
         item1: @iter1.next swap; ~ [1 !result FALSE] [
           comparisonResult: @item0 @item1 comparator;
           [comparisonResult int?] "Not an Int" assert
-          0 comparisonResult cast comparisonResult = [
-            TRUE
-          ] [
+          0 comparisonResult cast comparisonResult = [TRUE] [
             comparisonResult comparisonResult storageSize Int32 storageSize > [sign] [Int32 cast] if !result FALSE
           ] if
         ] if
