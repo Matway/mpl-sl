@@ -616,11 +616,9 @@ compare: [
   result: Int32;
   @iter0 "size" has [@iter1 "size" has] && [
     iter0: iter1: @iter0 @iter1 iter1.size iter0.size < [
-      swap
-      1 !result
+      swap     1 !result
     ] [
-      2 touch
-      -1 !result
+      2 touch -1 !result
     ] if;;
 
     [
