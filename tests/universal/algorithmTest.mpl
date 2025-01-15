@@ -545,7 +545,7 @@ testView: [
   "111" "10" beginsWith isRef FALSE FALSE TRUE  check
 ] call
 
-# compareBy
+# compare
 [
   Comparator: [{
     comparator: upperBound: new virtual; virtual;
@@ -563,10 +563,10 @@ testView: [
 
   compareNormalized: [
     iter0: iter1: comparator:;;;
-    diff: ref?: @iter0 @iter1 @comparator compareBy isRef;;
-    [diff Int32 same] "not an Int32" ensure
+    comparisonResult: ref?: @iter0 @iter1 @comparator compare isRef;;
+    [comparisonResult Int32 same] "not an Int32" ensure
 
-    diff sign ref?
+    comparisonResult sign ref?
   ];
 
   test: [
@@ -579,80 +579,80 @@ testView: [
 
     # 0)
     # THE TRANSITION: Remove ['] from function's name. See the next item
-    testCompareBy': [
+    testCompare': [
       iter0: iter1: comparator: upperBound: normalizedResult:;;;;;
       @iter0 @iter1 @comparator upperBound Comparator compareNormalized normalizedResult FALSE FALSE check
     ];
 
     # 1)
     # THE TRANSITION: Remove this version of the function. Without this version test cases are unable to pass assertions
-    testCompareBy: [
+    testCompare: [
       iter0: iter1: comparator: upperBound: normalizedResult:;;;;;
       @iter0 dynamic @iter1 dynamic @comparator upperBound Comparator compareNormalized normalizedResult FALSE TRUE check
     ];
 
     # 2)
     # THE TRANSITION: Turn on this block
-    #(     ) (     ) transform2 [] 0  0 testCompareBy
-    #(     ) (0    ) transform2 [] 0 -1 testCompareBy
-    #(     ) (0 0  ) transform2 [] 0 -1 testCompareBy
-    #(     ) (0 0 0) transform2 [] 0 -1 testCompareBy
-    #(0    ) (     ) transform2 [] 0  1 testCompareBy
-    #(0 0  ) (     ) transform2 [] 0  1 testCompareBy
-    #(0 0 0) (     ) transform2 [] 0  1 testCompareBy
+    #(     ) (     ) transform2 [] 0  0 testCompare
+    #(     ) (0    ) transform2 [] 0 -1 testCompare
+    #(     ) (0 0  ) transform2 [] 0 -1 testCompare
+    #(     ) (0 0 0) transform2 [] 0 -1 testCompare
+    #(0    ) (     ) transform2 [] 0  1 testCompare
+    #(0 0  ) (     ) transform2 [] 0  1 testCompare
+    #(0 0 0) (     ) transform2 [] 0  1 testCompare
 
     # 3)
     # THE TRANSITION: Remove this block
-    (     ) (     ) transform2 [] 0  0 testCompareBy'
-    (     ) (0    ) transform2 [] 0 -1 testCompareBy'
-    (     ) (0 0  ) transform2 [] 0 -1 testCompareBy'
-    (     ) (0 0 0) transform2 [] 0 -1 testCompareBy'
-    (0    ) (     ) transform2 [] 0  1 testCompareBy'
-    (0 0  ) (     ) transform2 [] 0  1 testCompareBy'
-    (0 0 0) (     ) transform2 [] 0  1 testCompareBy'
+    (     ) (     ) transform2 [] 0  0 testCompare'
+    (     ) (0    ) transform2 [] 0 -1 testCompare'
+    (     ) (0 0  ) transform2 [] 0 -1 testCompare'
+    (     ) (0 0 0) transform2 [] 0 -1 testCompare'
+    (0    ) (     ) transform2 [] 0  1 testCompare'
+    (0 0  ) (     ) transform2 [] 0  1 testCompare'
+    (0 0 0) (     ) transform2 [] 0  1 testCompare'
 
-    (0       ) (0       ) transform2 [-] 1  0 testCompareBy
-    (0 0     ) (0 0     ) transform2 [-] 2  0 testCompareBy
-    (0 0 0   ) (0 0 0   ) transform2 [-] 3  0 testCompareBy
-    (0       ) (0      0) transform2 [-] 1 -1 testCompareBy
-    (0 0     ) (0 0    0) transform2 [-] 2 -1 testCompareBy
-    (0 0 0   ) (0 0 0  0) transform2 [-] 3 -1 testCompareBy
-    (0      0) (0       ) transform2 [-] 1  1 testCompareBy
-    (0 0    0) (0 0     ) transform2 [-] 2  1 testCompareBy
-    (0 0 0  0) (0 0 0   ) transform2 [-] 3  1 testCompareBy
+    (0       ) (0       ) transform2 [-] 1  0 testCompare
+    (0 0     ) (0 0     ) transform2 [-] 2  0 testCompare
+    (0 0 0   ) (0 0 0   ) transform2 [-] 3  0 testCompare
+    (0       ) (0      0) transform2 [-] 1 -1 testCompare
+    (0 0     ) (0 0    0) transform2 [-] 2 -1 testCompare
+    (0 0 0   ) (0 0 0  0) transform2 [-] 3 -1 testCompare
+    (0      0) (0       ) transform2 [-] 1  1 testCompare
+    (0 0    0) (0 0     ) transform2 [-] 2  1 testCompare
+    (0 0 0  0) (0 0 0   ) transform2 [-] 3  1 testCompare
 
-    (0         ) (0      0 0) transform2 [-] 1 -1 testCompareBy
-    (0 0       ) (0 0    0 0) transform2 [-] 2 -1 testCompareBy
-    (0 0 0     ) (0 0 0  0 0) transform2 [-] 3 -1 testCompareBy
-    (0      0 0) (0         ) transform2 [-] 1  1 testCompareBy
-    (0 0    0 0) (0 0       ) transform2 [-] 2  1 testCompareBy
-    (0 0 0  0 0) (0 0 0     ) transform2 [-] 3  1 testCompareBy
+    (0         ) (0      0 0) transform2 [-] 1 -1 testCompare
+    (0 0       ) (0 0    0 0) transform2 [-] 2 -1 testCompare
+    (0 0 0     ) (0 0 0  0 0) transform2 [-] 3 -1 testCompare
+    (0      0 0) (0         ) transform2 [-] 1  1 testCompare
+    (0 0    0 0) (0 0       ) transform2 [-] 2  1 testCompare
+    (0 0 0  0 0) (0 0 0     ) transform2 [-] 3  1 testCompare
 
-    (0       ) (1      0) transform2 [-] 1 -1 testCompareBy
-    (0 0     ) (0 1    0) transform2 [-] 2 -1 testCompareBy
-    (0 0 0   ) (0 0 1  0) transform2 [-] 3 -1 testCompareBy
-    (1       ) (0      0) transform2 [-] 1  1 testCompareBy
-    (0 1     ) (0 0    0) transform2 [-] 2  1 testCompareBy
-    (0 0 1   ) (0 0 0  0) transform2 [-] 3  1 testCompareBy
-    (0      0) (1       ) transform2 [-] 1 -1 testCompareBy
-    (0 0    0) (0 1     ) transform2 [-] 2 -1 testCompareBy
-    (0 0 0  0) (0 0 1   ) transform2 [-] 3 -1 testCompareBy
-    (1      0) (0       ) transform2 [-] 1  1 testCompareBy
-    (0 1    0) (0 0     ) transform2 [-] 2  1 testCompareBy
-    (0 0 1  0) (0 0 0   ) transform2 [-] 3  1 testCompareBy
+    (0       ) (1      0) transform2 [-] 1 -1 testCompare
+    (0 0     ) (0 1    0) transform2 [-] 2 -1 testCompare
+    (0 0 0   ) (0 0 1  0) transform2 [-] 3 -1 testCompare
+    (1       ) (0      0) transform2 [-] 1  1 testCompare
+    (0 1     ) (0 0    0) transform2 [-] 2  1 testCompare
+    (0 0 1   ) (0 0 0  0) transform2 [-] 3  1 testCompare
+    (0      0) (1       ) transform2 [-] 1 -1 testCompare
+    (0 0    0) (0 1     ) transform2 [-] 2 -1 testCompare
+    (0 0 0  0) (0 0 1   ) transform2 [-] 3 -1 testCompare
+    (1      0) (0       ) transform2 [-] 1  1 testCompare
+    (0 1    0) (0 0     ) transform2 [-] 2  1 testCompare
+    (0 0 1  0) (0 0 0   ) transform2 [-] 3  1 testCompare
 
-    (0    ) (1    ) transform2 [-] 1 -1 testCompareBy
-    (1    ) (0    ) transform2 [-] 1  1 testCompareBy
-    (0 0  ) (1 0  ) transform2 [-] 1 -1 testCompareBy
-    (0 0  ) (0 1  ) transform2 [-] 2 -1 testCompareBy
-    (1 0  ) (0 0  ) transform2 [-] 1  1 testCompareBy
-    (0 1  ) (0 0  ) transform2 [-] 2  1 testCompareBy
-    (0 0 0) (1 0 0) transform2 [-] 1 -1 testCompareBy
-    (0 0 0) (0 1 0) transform2 [-] 2 -1 testCompareBy
-    (0 0 0) (0 0 1) transform2 [-] 3 -1 testCompareBy
-    (1 0 0) (0 0 0) transform2 [-] 1  1 testCompareBy
-    (0 1 0) (0 0 0) transform2 [-] 2  1 testCompareBy
-    (0 0 1) (0 0 0) transform2 [-] 3  1 testCompareBy
+    (0    ) (1    ) transform2 [-] 1 -1 testCompare
+    (1    ) (0    ) transform2 [-] 1  1 testCompare
+    (0 0  ) (1 0  ) transform2 [-] 1 -1 testCompare
+    (0 0  ) (0 1  ) transform2 [-] 2 -1 testCompare
+    (1 0  ) (0 0  ) transform2 [-] 1  1 testCompare
+    (0 1  ) (0 0  ) transform2 [-] 2  1 testCompare
+    (0 0 0) (1 0 0) transform2 [-] 1 -1 testCompare
+    (0 0 0) (0 1 0) transform2 [-] 2 -1 testCompare
+    (0 0 0) (0 0 1) transform2 [-] 3 -1 testCompare
+    (1 0 0) (0 0 0) transform2 [-] 1  1 testCompare
+    (0 1 0) (0 0 0) transform2 [-] 2  1 testCompare
+    (0 0 1) (0 0 0) transform2 [-] 3  1 testCompare
   ];
 
   noSizeIter: [
@@ -666,6 +666,17 @@ testView: [
   [         ] @noSizeIter test
 
   INT32_MAX: [0x7FFFFFFF];
+  INT32_MIN: [INT32_MAX 1 +];
+
+  i32min: [
+    v0: v1:;;
+    v0 v1 < [INT32_MIN] [
+      v0 v1 = [0] [42] if
+    ] if
+  ];
+
+  (0) (1) @i32min compare [0 <] "produced wrong result" ensure
+  (1) (0) @i32min compare [0 >] "produced wrong result" ensure
 
   ints: 0 iota INT32_MAX @Int32 headIter dynamic;
   [ints "size" has ~] "size given" ensure

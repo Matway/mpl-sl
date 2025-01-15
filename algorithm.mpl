@@ -611,38 +611,50 @@ beginsWith: [
   result
 ];
 
-compareBy: [
+compare: [
   iter0: iter1: comparator:; toIter; toIter;
   result: Int32;
-
-  cmp: [
-    item0: item1:;;
-    diff: @item0 @item1 comparator;
-    [diff int?] "Not an Int" assert
-    0 diff cast diff = [
-      diff diff storageSize Int32 storageSize > [sign] [Int32 cast] if !result FALSE
-    ] ||
-  ];
-
   @iter0 "size" has [@iter1 "size" has] && [
-    size0:       @iter0.size;
-    size1:       @iter1.size;
-    short: long: @iter0 @iter1 size0 size1 < [2 touch -1 !result] [swap size1 size0 - sign !result] if;;
-    [
-      item0: @short.next swap; [
-        item1: @long.next drop;
-        @item0 @item1 cmp
-      ] &&
-    ] loop
+    iter0: iter1: @iter0 @iter1 iter1.size iter0.size < [
+      swap
+      1 !result
+    ] [
+      2 touch
+      -1 !result
+    ] if;;
 
-    size0 size1 < ~ [result neg !result] when
+    [
+      @iter0.next [
+        item0:;
+        item1: @iter1.next drop;
+        comparisonResult: @item0 @item1 comparator;
+        comparisonResult 0 < [
+          FALSE
+        ] [
+          0 comparisonResult < [
+            result neg !result
+            FALSE
+          ] [
+            TRUE
+          ] if
+        ] if
+      ] [
+        drop
+        @iter1.next ~ [0 !result] when drop
+        FALSE
+      ] if
+    ] loop
   ] [
     [
       item0: @iter0.next swap; ~ [
         @iter1.next swap drop [-1] [0] if !result FALSE
       ] [
         item1: @iter1.next swap; ~ [1 !result FALSE] [
-          @item0 @item1 cmp
+          comparisonResult: @item0 @item1 comparator;
+          [comparisonResult int?] "Not an Int" assert
+          0 comparisonResult cast comparisonResult = [
+            comparisonResult comparisonResult storageSize Int32 storageSize > [sign] [Int32 cast] if !result FALSE
+          ] ||
         ] if
       ] if
     ] loop
