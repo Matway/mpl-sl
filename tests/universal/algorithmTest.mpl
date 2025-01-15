@@ -547,6 +547,8 @@ testView: [
 
 # compare
 [
+  INT32_MAX: [0x7FFFFFFF];
+
   Comparator: [{
     comparator: upperBound: new virtual; virtual;
     invocationCount: 0;
@@ -653,6 +655,19 @@ testView: [
     (1 0 0) (0 0 0) transform2 [-] 1  1 testCompare
     (0 1 0) (0 0 0) transform2 [-] 2  1 testCompare
     (0 0 1) (0 0 0) transform2 [-] 3  1 testCompare
+
+    i32min: [
+      v0: v1:;;
+      INT32_MIN: [INT32_MAX 1 +];
+      v0 v1 < [INT32_MIN] [
+        v0 v1 = [0] [42] if
+      ] if
+    ];
+
+    (0  ) (1  ) transform2 @i32min 1 -1 testCompare
+    (1  ) (0  ) transform2 @i32min 1  1 testCompare
+    (0  ) (1 0) transform2 @i32min 1 -1 testCompare
+    (1 0) (0  ) transform2 @i32min 1  1 testCompare
   ];
 
   noSizeIter: [
@@ -664,21 +679,6 @@ testView: [
   [         ] [         ] test
   @noSizeIter [         ] test
   [         ] @noSizeIter test
-
-  INT32_MAX: [0x7FFFFFFF];
-  INT32_MIN: [INT32_MAX 1 +];
-
-  i32min: [
-    v0: v1:;;
-    v0 v1 < [INT32_MIN] [
-      v0 v1 = [0] [42] if
-    ] if
-  ];
-
-  (0  ) (1  ) @i32min compare [0 <] "produced wrong result" ensure
-  (1  ) (0  ) @i32min compare [0 >] "produced wrong result" ensure
-  (0  ) (1 0) @i32min compare [0 <] "produced wrong result" ensure
-  (1 0) (0  ) @i32min compare [0 >] "produced wrong result" ensure
 
   ints: 0 iota INT32_MAX @Int32 headIter dynamic;
   [ints "size" has ~] "size given" ensure
