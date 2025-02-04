@@ -427,57 +427,22 @@ objectValues: [[object: offset:;; @object offset fieldRead                      
 ] [
   iter0: iter1: toIter; toIter;
   result: FALSE;
-  @iter0 "size" has [
-    size0: @iter0.size;
-    @iter1 "size" has [
-      size1: @iter1.size;
-      size0 size1 = ~ [] [
-        [
-          size1 0 = [TRUE !result FALSE] [
-            @iter0.next drop @iter1.next drop = dup [size1 1 - !size1] when
-          ] if
-        ] loop
+  compare: [
+    [
+      @iter1.next ~ [
+        drop
+        @iter0.next ~ [TRUE !result] when
+        drop
+        FALSE
+      ] [
+        @iter0.next ~ [drop drop FALSE] [swap =] if
       ] if
-    ] [
-      [
-        @iter1.next ~ [
-          drop
-          size0 0 = [TRUE !result] when
-          FALSE
-        ] [
-          size0 0 = [drop FALSE] [
-            @iter0.next drop swap = dup [size0 1 - !size0] when
-          ] if
-        ] if
-      ] loop
-    ] if
-  ] [
-    @iter1 "size" has [
-      size1: @iter1.size;
-      [
-        size1 0 = [
-          @iter0.next ~ [TRUE !result] when
-          drop
-          FALSE
-        ] [
-          @iter0.next ~ [drop FALSE] [
-            @iter1.next drop = dup [size1 1 - !size1] when
-          ] if
-        ] if
-      ] loop
-    ] [
-      [
-        @iter1.next ~ [
-          drop
-          @iter0.next ~ [TRUE !result] when
-          drop
-          FALSE
-        ] [
-          @iter0.next ~ [drop drop FALSE] [swap =] if
-        ] if
-      ] loop
-    ] if
-  ] if
+    ] loop
+  ];
+
+  @iter0 "size" has [@iter1 "size" has] && [
+    @iter0.size @iter1.size = ~ [] @compare if
+  ] @compare if
 
   result
 ] pfunc;
