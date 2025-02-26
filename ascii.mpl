@@ -5,6 +5,9 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
+"control.Nat32"   use
+"control.between" use
+
 ascii: {
   null:       [  0n32 dynamic];
 
@@ -114,3 +117,8 @@ ascii: {
   closeFBr:   [125n32 dynamic];
   tilda:      [126n32 dynamic];
 };
+
+digit?: [
+  code: Nat32 cast;
+  code ascii.zero ascii.nine between
+];
