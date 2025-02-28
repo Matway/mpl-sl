@@ -52,6 +52,7 @@ stack_t: [{
 _SIGSET_NWORDS: [1024 Natx storageSize Int32 cast 8 * /];
 sigset_t:       [Natx _SIGSET_NWORDS array];
 
+CLOCK_REALTIME:  [0];
 CLOCK_MONOTONIC: [1];
 CLOCK_BOOTTIME:  [7];
 
@@ -67,6 +68,20 @@ itimerspec: [{
 timespec: [{
   tv_sec:  time_t;
   tv_nsec: long;
+}];
+
+tm: [{
+  tm_sec:    Int32;
+  tm_min:    Int32;
+  tm_hour:   Int32;
+  tm_mday:   Int32;
+  tm_mon:    Int32;
+  tm_year:   Int32;
+  tm_wday:   Int32;
+  tm_yday:   Int32;
+  tm_isdst:  Int32;
+  tm_gmtoff: long;
+  tm_zone:   Natx;
 }];
 
 Natx storageSize 8nx = [ # __x86_64__
@@ -165,6 +180,11 @@ Natx storageSize 8nx = [ # __x86_64__
   clk_id: clockid_t;
   tp:     timespec Ref;
 } Int32 {convention: cdecl;} "clock_gettime" importFunction
+
+{
+  timer: Natx;
+  tp:    tm Ref;
+} Natx {convention: cdecl;} "gmtime_r" importFunction
 
 {
   fildes: Int32;
