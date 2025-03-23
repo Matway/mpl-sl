@@ -180,54 +180,6 @@ makeArrayObject: [
       ] when
     ];
 
-    heapSort: [
-      [<] heapSortWithComparator
-    ];
-
-    heapSortWithComparator: [
-      comparator:;
-
-      swap: [
-        i1:; i2:;
-        i1ref: i1 at;
-        i2ref: i2 at;
-        tmp: @i1ref new;
-        @i2ref @i1ref set
-        @tmp @i2ref set
-      ];
-
-      pushDown: [
-        index: new;
-        [
-          left: index 2 * 1 +;
-          right: left 1 +;
-
-          max: index new;
-          left  heapSize < [max at left  at @comparator call] && [left  @max set] when
-          right heapSize < [max at right at @comparator call] && [right @max set] when
-          max index = ~ [
-            max index swap
-            max @index set TRUE
-          ] &&
-        ] loop
-      ];
-
-      heapSize: arraySize new;
-      i: arraySize 1 + 2 /;
-      [i 0 >] [
-        i 1 - @i set
-        i pushDown
-      ] while
-
-      i: arraySize new;
-      [i 1 >] [
-        i 1 - @i set
-        i 0 swap
-        heapSize 1 - @heapSize set
-        0 dynamic pushDown
-      ] while
-    ];
-
     iter: [
       span
     ];
