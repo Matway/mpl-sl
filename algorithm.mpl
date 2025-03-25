@@ -1099,54 +1099,42 @@ untail: [
   0 @view.size size - @view.slice
 ];
 
-# Indexable objects transformers
+# Index consumers
 heapSort: [
   [<] heapSort2
 ];
 
 heapSort2: [
-  items: comparator:;;
-
-  itemsIndexed: @items toIndex;
-
-  exchange: [
-    key0: key1:;;
-    item0: key0 @itemsIndexed.at;
-    item1: key1 @itemsIndexed.at;
-    @item0        new
-    @item1 @item0 set
-    @item1        set
-  ];
+  items: comparator:; toIndex;
 
   pushDown: [
     key: new;
     [
-      left: key 2 * 1 +;
+      left:  key 2 * 1 +;
       right: left 1 +;
 
       max: key new;
-      left  heapSize < [max @itemsIndexed @ left  @itemsIndexed @ comparator] && [left new !max]  when
-      right heapSize < [max @itemsIndexed @ right @itemsIndexed @ comparator] && [right new !max] when
+      left  heapSize < [max @items @ left  @items @ comparator] && [left  new !max] when
+      right heapSize < [max @items @ right @items @ comparator] && [right new !max] when
       max key = ~ [
-        max key exchange
+        max @items.at key @items.at swapValues
         max new !key TRUE
       ] &&
     ] loop
   ];
 
-  heapSize: itemsIndexed.size;
-  key: itemsIndexed.size 1 + 2 /;
+  heapSize: items.size;
+  key: items.size 1 + 2 /;
   [key 0 >] [
     key 1 - !key
     key pushDown
   ] while
 
-  key: itemsIndexed.size;
+  key: items.size;
   [key 1 >] [
     key 1 - !key
-    key 0 exchange
-    heapSize 1 - @heapSize set
+    key @items.at 0 @items.at swapValues
+    heapSize 1 - !heapSize
     0 pushDown
   ] while
-  @items
 ];
