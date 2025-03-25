@@ -7,8 +7,16 @@
 
 "IntrusiveQueue.IntrusiveQueue" use
 "Mref.Mref"                     use
+"String.String"                 use
+"String.assembleString"         use
+"String.addTerminator"          use
+"String.makeStringView"         use
 "String.printList"              use
+"String.toString"               use
+"algorithm.cond0"               use
+"control.AsRef"                 use
 "control.Int64"                 use
+"control.Cref"                  use
 "control.Nat32"                 use
 "control.Nat64"                 use
 "control.Natx"                  use
@@ -19,7 +27,12 @@
 "control.dup"                   use
 "control.failProc"              use
 "control.nil?"                  use
+"control.swap"                  use
+"control.reinterpret"           use
+"control.times"                 use
 "control.when"                  use
+"control.while"                 use
+"unicode.utf16"                 use
 
 "kernel32.ConvertThreadToFiber"        use
 "kernel32.CreateFiber"                 use
@@ -32,10 +45,22 @@
 "kernel32.OVERLAPPED_ENTRY"            use
 "kernel32.QueryPerformanceCounter"     use
 "kernel32.QueryPerformanceFrequency"   use
+"kernel32.PostQueuedCompletionStatus"  use
 "kernel32.SwitchToFiber"               use
 "kernel32.WAIT_TIMEOUT"                use
+"ws2_32.ADDRINFOEXW"                   use
+"ws2_32.AF_INET"                       use
+"ws2_32.FreeAddrInfoExW"               use
+"ws2_32.GetAddrInfoExCancel"           use
+"ws2_32.GetAddrInfoExW"                use
+"ws2_32.IPPROTO_TCP"                   use
+"ws2_32.NS_DNS"                        use
+"ws2_32.SOCK_STREAM"                   use
+"ws2_32.WSA_IO_PENDING"                use
 "ws2_32.WSADATA"                       use
 "ws2_32.WSAStartup"                    use
+"ws2_32.ntohl"                         use
+"ws2_32.sockaddr_in"                   use
 
 FiberData: [{
   canceled?: [@func nil?];
@@ -191,3 +216,89 @@ timers: TimerData IntrusiveQueue;
 
   @rootFiber !currentFiber
 ] call
+
+resolveHost0: [
+  name: utf16;
+
+  completion: [
+    context: _: dwError:;; @ContextSchema reinterpret;
+    dwError new @context.!error
+    @context.@overlapped 0nx 0n32 completionPort new PostQueuedCompletionStatus 0 = [
+      ("FATAL: PostQueuedCompletionStatus failed, result=" GetLastError LF) printList "" failProc
+    ] when
+  ];
+
+  context: {
+    overlapped:   OVERLAPPED;
+    fiber:        @currentFiber;
+    cancelHandle: Natx;
+    error:        Nat32;
+  };
+
+  ContextSchema: @context ;
+
+  hints: ADDRINFOEXW;
+  AF_INET     @hints.!ai_family
+  SOCK_STREAM @hints.!ai_socktype
+  IPPROTO_TCP @hints.!ai_protocol
+
+  hosts: ADDRINFOEXW AsRef;
+
+  canceled? ~ [
+    status:
+      @context.@cancelHandle
+      @completion
+      @context.@overlapped
+      0nx
+      @hosts
+      @hints
+      0nx
+      NS_DNS
+      0nx
+      name.data storageAddress
+      GetAddrInfoExW
+    ;
+
+    (
+      [status WSA_IO_PENDING =] [
+        context storageAddress [
+          context: @ContextSchema addressToReference;
+          status: @context.@cancelHandle GetAddrInfoExCancel;
+          status 0 = ~ [
+            ("FATAL: GetAddrInfoExCancel failed, result=" status LF) printList "" failProc
+          ] when
+        ] @currentFiber.setFunc
+        dispatch
+        canceled? ~ [@defaultCancelFunc @currentFiber.!func] when
+        context.error 0n32 = [String] [
+          ("??? failed, result = " context.error) assembleString
+        ] if
+      ]
+
+      [status 0 =] [String]
+
+      [("GetAddrInfoExW failed, result = " status) assembleString]
+    ) cond0
+  ] ["canceled" toString] if
+
+  {
+    SCHEMA_NAME: "ResolveIpv4HostsIter" virtual;
+
+    root:   hosts;
+    source: hosts;
+
+    next: [
+      source nil? ~ [
+        source.ai_addr sockaddr_in Cref addressToReference .sin_addr new ntohl
+        TRUE
+        @source.ai_next ADDRINFOEXW addressToReference !source
+      ] [Nat32 FALSE] if
+    ];
+
+    DIE: [
+      root nil? ~ [
+        @root FreeAddrInfoExW
+      ] when
+    ];
+  } swap
+];

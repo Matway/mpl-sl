@@ -5,6 +5,7 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
+"Mref"           use
 "control.AsRef"       use
 "control.Cref"        use
 "control.Int32"       use
@@ -56,6 +57,12 @@ WSAOVERLAPPED_COMPLETION_ROUTINERef: [{
   dwFlags:       Nat32;
 } {} {convention: stdcall;} codeRef];
 
+LOOKUPSERVICE_COMPLETION_ROUTINERef: [{
+  dwError:      Nat32;
+  dwBytes:      Nat32;
+  lpOverlapped: OVERLAPPED Ref;
+} () {convention: stdcall;} codeRef];
+
 AF_INET: [2];
 
 FIONBIO: [-2147195266];
@@ -91,6 +98,8 @@ WSAID_GETACCEPTEXSOCKADDRS: [(0xB5367DF2n32 0xCBACn16 0x11CFn16 (0x95n8 0xCAn8 0
 
 WSA_IO_PENDING: [997];
 
+NS_DNS: [12n32];
+
 WSABUF: [{
   len: Nat32;
   buf: Natx;
@@ -125,6 +134,20 @@ addrinfo: [{
   ai_addrlen:   Natx;
   ai_canonname: Natx;
   ai_addr:      Natx;
+  ai_next:      Natx;
+}];
+
+ADDRINFOEXW: [{
+  ai_flags:     0;
+  ai_family:    0;
+  ai_socktype:  0;
+  ai_protocol:  0;
+  ai_addrlen:   0nx;
+  ai_canonname: 0nx;
+  ai_addr:      0nx;
+  ai_blob:      0nx;
+  ai_bloblen:   0nx;
+  ai_provider:  0nx;
   ai_next:      Natx;
 }];
 
@@ -226,11 +249,32 @@ timeval: [{
 } {} {convention: stdcall;} "freeaddrinfo" importFunction
 
 {
+  pAddrInfoEx: ADDRINFOEXW Ref;
+} () {convention: stdcall;} "FreeAddrInfoExW" importFunction
+
+{
   pNodeName:    Natx;
   pServiceName: Natx;
   pHints:       addrinfo Cref;
   ppResult:     Natx;
 } Int32 {convention: stdcall;} "getaddrinfo" importFunction
+
+{
+  pName:               Natx;
+  pServiceName:        Natx;
+  dwNameSpace:         Nat32;
+  lpNspId:             Natx;
+  pHints:              ADDRINFOEXW Ref;
+  ppResult:            ADDRINFOEXW AsRef Ref;
+  timeout:             Natx;
+  lpOverlapped:        OVERLAPPED Ref;
+  lpCompletionRoutine: LOOKUPSERVICE_COMPLETION_ROUTINERef;
+  lpHandle:            Natx Ref;
+} Int32 {convention: stdcall;} "GetAddrInfoExW" importFunction
+
+{
+  lpHandle: Natx Ref;
+} Int32 {convention: stdcall;} "GetAddrInfoExCancel" importFunction
 
 {
   hostlong: Nat32;
