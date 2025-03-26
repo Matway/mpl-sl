@@ -1176,3 +1176,61 @@ testView: [
     @tuple i new dynamic untail FALSE TRUE  TRUE @tuple 0 tuple fieldCount i - testView
   ] times
 ] call
+
+# heapSort
+[
+  tuples: (
+    (7 3 5 2 11 13 11 17 19)
+    (2 3)
+    (1)
+    (5 50 2)
+    (0 0 0)
+    (-100 100 0)
+    (3 2 1)
+    (1 2 3)
+    (0)
+    ("bb" toString "aa" toString "ab" toString)
+    ("e" toString "e" toString)
+  );
+  @tuples [
+    tuple: toArray;
+    previousItem: 0 @tuple @ String same ["a" toString] [-10000] if;
+    minItem: previousItem;
+    @tuple heapSort
+    @tuple [
+      arrItem:;
+      [arrItem previousItem < ~] "sort does not work" ensure
+      @arrItem new !previousItem
+    ] each
+    @initialItem new !previousItem
+  ] each
+] call
+
+# heapSort2 - descendingOrder
+[
+  tuples: (
+    (7 3 5 2 11 13 11 17 19)
+    (2 3)
+    (1)
+    (5 50 2)
+    (0 0 0)
+    (-100 100 0)
+    (3 2 1)
+    (1 2 3)
+    (0)
+    ("bb" toString "aa" toString "ab" toString)
+    ("e" toString "e" toString)
+  );
+  @tuples [
+    tuple: toArray;
+    previousItem: 0 @tuple @ String same ["z" toString] [10000] if;
+    initialItem: previousItem;
+    @tuple [>] heapSort2
+    @tuple [
+      arrItem:;
+      [arrItem previousItem > ~] "sort does not work" ensure
+      @arrItem new !previousItem
+    ] each
+    @initialItem new !previousItem
+  ] each
+] call

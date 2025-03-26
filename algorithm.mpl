@@ -1098,3 +1098,43 @@ untail: [
   [size 0 @view.size between] "size is out of bounds" assert
   0 @view.size size - @view.slice
 ];
+
+# Index consumers
+heapSort: [
+  [<] heapSort2
+];
+
+heapSort2: [
+  items: comparator:; toIndex;
+
+  pushDown: [
+    key: new;
+    [
+      left:  key 2 * 1 +;
+      right: left 1 +;
+
+      max: key new;
+      left  heapSize < [max @items @ left  @items @ comparator] && [left  new !max] when
+      right heapSize < [max @items @ right @items @ comparator] && [right new !max] when
+      max key = ~ [
+        max @items.at key @items.at swapValues
+        max new !key TRUE
+      ] &&
+    ] loop
+  ];
+
+  heapSize: @items.size;
+  key: @items.size 1 + 2 /;
+  [key 0 >] [
+    key 1 - !key
+    key pushDown
+  ] while
+
+  key: @items.size;
+  [key 1 >] [
+    key 1 - !key
+    key @items.at 0 @items.at swapValues
+    heapSize 1 - !heapSize
+    0 pushDown
+  ] while
+];

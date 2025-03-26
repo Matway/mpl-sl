@@ -408,6 +408,13 @@ sequence: [
   @iterate ucall
 ];
 
+swapValues: [
+  v0: v1:;;
+  @v0         new
+  @v1 @v0     set
+  @v1         set
+];
+
 keep: [
   object: body:;;
   @object body
