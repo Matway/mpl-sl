@@ -251,13 +251,6 @@ dup: [v:; @v @v];
 
 swap: [v0: v1:;; @v1 @v0];
 
-swapValues: [
-  v0: v1:;;
-  @v0         new
-  @v1 @v0     set
-  @v1         set
-];
-
 over: [v0: v1:;; @v0 @v1 @v0];
 
 when: [[] if];
@@ -413,6 +406,13 @@ sequence: [
 
   i: 1;
   @iterate ucall
+];
+
+swapValues: [
+  v0: v1:;;
+  @v0         new
+  @v1 @v0     set
+  @v1         set
 ];
 
 keep: [

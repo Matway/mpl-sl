@@ -1123,14 +1123,14 @@ heapSort2: [
     ] loop
   ];
 
-  heapSize: items.size;
-  key: items.size 1 + 2 /;
+  heapSize: @items.size;
+  key: @items.size 1 + 2 /;
   [key 0 >] [
     key 1 - !key
     key pushDown
   ] while
 
-  key: items.size;
+  key: @items.size;
   [key 1 >] [
     key 1 - !key
     key @items.at 0 @items.at swapValues
