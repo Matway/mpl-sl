@@ -9,6 +9,6 @@
 "control.Ref"       use
 "conventions.cdecl" use
 
-errno: [__errno_location];
+errno: [__error];
 
-{} Int32 Ref {convention: cdecl;} "__errno_location" importFunction # Link with libpthread.a
+{} Int32 Ref {convention: cdecl;} "__error" importFunction
