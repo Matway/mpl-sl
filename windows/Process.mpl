@@ -111,26 +111,21 @@ Process: [{
   create2: [
     arguments: options:;;
 
-    command:            @arguments @options "encodeCommand" has [@options.encodeCommand] [CommandEncoder.crt] if;
     processInformation: PROCESS_INFORMATION;
     startupInfo:        STARTUPINFOW;
     startupInfo storageSize Nat32 cast @startupInfo.!cb
 
-    success:
-      @processInformation
-      @startupInfo
-      0nx
-      0nx
-      0n32
-      0
-      SECURITY_ATTRIBUTES Ref
-      SECURITY_ATTRIBUTES Ref
-      command.span.stringView utf16.data storageAddress
-      0nx
-      CreateProcessW 0 = ~
-    ;
-
-    success [
+    @processInformation
+    @startupInfo
+    0nx
+    0nx
+    0n32
+    0
+    SECURITY_ATTRIBUTES Ref
+    SECURITY_ATTRIBUTES Ref
+    @arguments @options "encodeCommand" has [@options.encodeCommand] [CommandEncoder.crt] uif.span.stringView utf16.data storageAddress
+    0nx
+    CreateProcessW 0 = ~ [
       processInformation.hThread CloseHandle 0 = [
         "CloseHandle" reportError
       ] when
@@ -143,9 +138,13 @@ Process: [{
     ] if
   ];
 
-  create2: [drop makeStringView TRUE] [swap 1 wrap swap create2] pfunc;
+  create2: [drop makeStringView TRUE] [
+    swap 1 wrap swap create2
+  ] pfunc;
 
-  isCreated: [handle 0nx = ~];
+  isCreated: [
+    handle 0nx = ~
+  ];
 
   kill: [
     "kill" assertCreated
@@ -184,10 +183,14 @@ Process: [{
   private handle: 0nx;
 
   private DIE: [
-    isCreated [FALSE wait] when
+    isCreated [
+      FALSE wait
+    ] when
   ];
 
-  private INIT: [0nx !handle];
+  private INIT: [
+    0nx !handle
+  ];
 
   private assertCreated: [
     operationName:;
@@ -205,7 +208,9 @@ Process: [{
   ];
 }];
 
-toProcess: [{} toProcess2];
+toProcess: [
+  {} toProcess2
+];
 
 toProcess2: [
   Process [.create2] keep swap
