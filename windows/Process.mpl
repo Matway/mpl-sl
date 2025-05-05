@@ -41,15 +41,14 @@
 "kernel32.WaitForSingleObject" use
 "unicode.utf16"                use
 
-CommandLineEncoder: {
+CommandEncoder: {
   crt: [
     arguments: toIter;
-
     result: Nat8 Array;
 
     @arguments.next [
       program: makeStringView;
-      [program [0x22n8 =] any ~] "[CommandLineEncoder.crt], first command-line argument (program) contains quote character «\22»" assert
+      [program [0x22n8 =] any ~] "[CommandEncoder.crt], first argument (program) contains quote character «\22»" assert
 
       "\22"   @result.append
       program @result.append
@@ -58,7 +57,6 @@ CommandLineEncoder: {
       last: Nat8;
       @arguments [
         argument: makeStringView;
-
         freeQuoteCount: 0;
 
         0n8 !last
@@ -67,7 +65,8 @@ CommandLineEncoder: {
           character: new;
           character (
             0x22n8 ["\5C\22" @result.append]
-            0x5Cn8 ["\5C\5C" @result.append] [
+            0x5Cn8 ["\5C\5C" @result.append]
+            [
               last 0x5Cn8 = [
                 freeQuoteCount 1 + !freeQuoteCount
                 "\22" @result.append
@@ -78,13 +77,11 @@ CommandLineEncoder: {
           character new !last
         ] each
 
-        freeQuoteCount 2 mod 0 = [
-          "\22" @result.append
-        ] ["\22\22" @result.append] if
+        freeQuoteCount 2 mod 0 = ["\22"] ["\22\22"] if @result.append
       ] each
     ] [
       drop
-      DEBUG ["[CommandLineEncoder.crt], command-line arguments have no command" failProc] when
+      DEBUG ["[CommandEncoder.crt], command (program) is not provided" failProc] when
     ] if
 
     @result
@@ -93,9 +90,9 @@ CommandLineEncoder: {
   plain: [
     arguments: toIter;
 
-    value: valid: @arguments.next;;
+    argument: valid: @arguments.next;;
     [valid] "Provided empty iterator" assert
-    result: value makeStringView toArray;
+    result: argument makeStringView toArray;
 
     @arguments [
       " "            @result.append
@@ -114,13 +111,7 @@ Process: [{
   create2: [
     arguments: options:;;
 
-    commandLine:
-      @arguments
-      @options "commandLineEncoder" has ~
-      [CommandLineEncoder.crt]
-      [@options.commandLineEncoder] if
-    ;
-
+    command:            @arguments @options "encodeCommand" has [@options.encodeCommand] [CommandEncoder.crt] if;
     processInformation: PROCESS_INFORMATION;
     startupInfo:        STARTUPINFOW;
     startupInfo storageSize Nat32 cast @startupInfo.!cb
@@ -134,7 +125,7 @@ Process: [{
       0
       SECURITY_ATTRIBUTES Ref
       SECURITY_ATTRIBUTES Ref
-      commandLine.span.stringView utf16 .data storageAddress
+      command.span.stringView utf16.data storageAddress
       0nx
       CreateProcessW 0 = ~
     ;
@@ -148,15 +139,13 @@ Process: [{
 
       String
     ] [
-      "CreateProcessW" getErrorMessage
+      "CreateProcessW" errorMessage
     ] if
   ];
 
   create2: [drop makeStringView TRUE] [swap 1 wrap swap create2] pfunc;
 
-  isCreated: [
-    handle 0nx = ~
-  ];
+  isCreated: [handle 0nx = ~];
 
   kill: [
     "kill" assertCreated
@@ -187,9 +176,7 @@ Process: [{
       result Int32 cast
     ] when
 
-    handle CloseHandle 0 = [
-      "CloseHandle" reportError
-    ] when
+    handle CloseHandle 0 = ["CloseHandle" reportError] when
 
     0nx !handle
   ];
@@ -197,41 +184,29 @@ Process: [{
   private handle: 0nx;
 
   private DIE: [
-    isCreated [
-      FALSE wait
-    ] when
+    isCreated [FALSE wait] when
   ];
 
-  private INIT: [
-    0nx !handle
-  ];
+  private INIT: [0nx !handle];
 
   private assertCreated: [
     operationName:;
     [isCreated] "Attempted to " operationName & " a Process that is not initialized" & assert
   ];
 
-  private getErrorMessage: [
+  private errorMessage: [
     functionName:;
     (functionName " failed, result=" GetLastError LF) assembleString
   ];
 
   private reportError: [
     functionName:;
-    (functionName getErrorMessage LF) printList
+    (functionName errorMessage LF) printList
   ];
 }];
 
-ProcessSchema: Process Ref virtual;
-
-toProcess: [
-  process: Process;
-  result: {} @process.create2;
-  @process @result
-];
+toProcess: [{} toProcess2];
 
 toProcess2: [
-  process: Process;
-  result: @process.create2;
-  @process @result
+  Process [.create2] keep swap
 ];
