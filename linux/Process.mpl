@@ -27,6 +27,7 @@
 "control.compilable?"    use
 "control.drop"           use
 "control.exit"           use
+"control.swap"           use
 "control.pfunc"          use
 "control.print"          use
 "control.touch"          use
