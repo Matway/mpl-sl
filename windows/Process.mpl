@@ -106,7 +106,9 @@ CommandEncoder: {
 Process: [{
   SCHEMA_NAME: "Process" virtual;
 
-  create: [{} create2];
+  create: [
+    {} create2
+  ];
 
   create2: [
     arguments: options:;;
