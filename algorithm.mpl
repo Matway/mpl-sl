@@ -888,7 +888,7 @@ unhead: [drop isIter] [
 
 # Iter consumers
 all: [swap toIter swap allStatic];
-all: [drop toIter dynamic .next TRUE] [
+all: [drop source: toIter; @source dynamic .next TRUE] [
   source: pred:; toIter;
   FALSE [
     drop @source.next [pred TRUE = FALSE swap] [drop TRUE FALSE] if
@@ -903,7 +903,7 @@ allStatic: [
 ];
 
 any: [swap toIter swap anyStatic];
-any: [drop toIter dynamic .next TRUE] [
+any: [drop source: toIter; @source dynamic .next TRUE] [
   source: pred:; toIter;
   FALSE [
     drop @source.next [pred ~ TRUE swap] [drop FALSE FALSE] if
@@ -1012,7 +1012,7 @@ findOneOf: [
 ];
 
 findOrdinal: [swap toIter swap 0 findOrdinalStatic];
-findOrdinal: [drop toIter dynamic .next TRUE] [
+findOrdinal: [drop source: toIter; @source dynamic .next TRUE] [
   source: pred:; toIter;
   key: 0;
   [
