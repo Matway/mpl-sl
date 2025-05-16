@@ -867,7 +867,7 @@ wrapIter: [{
   @sources ["size" has] all [
     size: [
       @sources fieldCount 0 = [0] [
-        0 @sources @ .size @sources fieldCount 1 - [i 1 + @sources @ .size min isRef [new] when] times
+        0 @sources @ .size @sources fieldCount 1 - [i 1 + @sources @ .size min new] times
       ] if
     ];
   ] [] uif
