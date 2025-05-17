@@ -1031,6 +1031,18 @@ findOrdinalStatic: [
   ] [drop -1] if
 ];
 
+interleave: [
+  source: consume: splice:;; toIter;
+  @source.next [
+    consume
+    [
+      @source.next [splice consume TRUE] [drop FALSE] if
+    ] loop
+  ] [
+    drop
+  ] if
+];
+
 meetsAll: [
   meetsAllInternal: [
     object: source:;;
