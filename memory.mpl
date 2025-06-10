@@ -176,7 +176,9 @@ debugMemory [
 
   getMemoryMetrics: [memoryMetrics];
 ] [
-  mplMalloc: [fastAllocate];
-  mplRealloc: [fastReallocate];
-  mplFree: [fastDeallocate];
+  {size: Natx;} Natx {} [fastAllocate] "mplMalloc" exportFunction
+
+  {ptr: Natx; oldSize: Natx; newSize: Natx;} Natx {} [fastReallocate] "mplRealloc" exportFunction
+
+  {ptr: Natx; size: Natx;} {} {} [fastDeallocate] "mplFree" exportFunction
 ] uif
