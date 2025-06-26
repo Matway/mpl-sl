@@ -17,6 +17,7 @@
 "control.ensure"         use
 "control.isBuiltinTuple" use
 "control.pfunc"          use
+"control.sign"           use
 "control.times"          use
 "control.when"           use
 "control.||"             use
@@ -542,6 +543,154 @@ testView: [
   "101" "10" beginsWith isRef TRUE  FALSE TRUE  check
   "011" "10" beginsWith isRef FALSE FALSE TRUE  check
   "111" "10" beginsWith isRef FALSE FALSE TRUE  check
+] call
+
+# compare
+[
+  INT32_MAX: [0x7FFFFFFF];
+
+  Comparator: [{
+    comparator: upperBound: new virtual; virtual;
+    invocationCount: 0;
+
+    CALL: [
+      value0: value1:;;
+      [invocationCount 0 < ~] "arithmetic overflow" ensure
+      invocationCount 1 + !invocationCount
+      [invocationCount upperBound > ~] "extra attempt to invoke comparator" ensure
+
+      @value0 @value1 comparator
+    ];
+  }];
+
+  compareNormalized: [
+    iter0: iter1: comparator:;;;
+    comparisonResult: ref?: @iter0 @iter1 @comparator compare isRef;;
+    [comparisonResult Int32 same] "not an Int32" ensure
+
+    comparisonResult sign ref?
+  ];
+
+  test: [
+    transform0: transform1:;;
+
+    transform2: [
+      iter0: iter1:;;
+      @iter0 transform0 @iter1 transform1
+    ];
+
+    # 0)
+    # THE TRANSITION: Remove ['] from function's name. See the next item
+    testCompare': [
+      iter0: iter1: comparator: upperBound: normalizedResult:;;;;;
+      @iter0 @iter1 @comparator upperBound Comparator compareNormalized normalizedResult FALSE FALSE check
+    ];
+
+    # 1)
+    # THE TRANSITION: Remove this version of the function. Without this version test cases are unable to pass assertions
+    testCompare: [
+      iter0: iter1: comparator: upperBound: normalizedResult:;;;;;
+      @iter0 dynamic @iter1 dynamic @comparator upperBound Comparator compareNormalized normalizedResult FALSE TRUE check
+    ];
+
+    # 2)
+    # THE TRANSITION: Turn on this block
+    #(     ) (     ) transform2 [] 0  0 testCompare
+    #(     ) (0    ) transform2 [] 0 -1 testCompare
+    #(     ) (0 0  ) transform2 [] 0 -1 testCompare
+    #(     ) (0 0 0) transform2 [] 0 -1 testCompare
+    #(0    ) (     ) transform2 [] 0  1 testCompare
+    #(0 0  ) (     ) transform2 [] 0  1 testCompare
+    #(0 0 0) (     ) transform2 [] 0  1 testCompare
+
+    # 3)
+    # THE TRANSITION: Remove this block
+    (     ) (     ) transform2 [] 0  0 testCompare'
+    (     ) (0    ) transform2 [] 0 -1 testCompare'
+    (     ) (0 0  ) transform2 [] 0 -1 testCompare'
+    (     ) (0 0 0) transform2 [] 0 -1 testCompare'
+    (0    ) (     ) transform2 [] 0  1 testCompare'
+    (0 0  ) (     ) transform2 [] 0  1 testCompare'
+    (0 0 0) (     ) transform2 [] 0  1 testCompare'
+
+    (0       ) (0       ) transform2 [-] 1  0 testCompare
+    (0 0     ) (0 0     ) transform2 [-] 2  0 testCompare
+    (0 0 0   ) (0 0 0   ) transform2 [-] 3  0 testCompare
+    (0       ) (0      0) transform2 [-] 1 -1 testCompare
+    (0 0     ) (0 0    0) transform2 [-] 2 -1 testCompare
+    (0 0 0   ) (0 0 0  0) transform2 [-] 3 -1 testCompare
+    (0      0) (0       ) transform2 [-] 1  1 testCompare
+    (0 0    0) (0 0     ) transform2 [-] 2  1 testCompare
+    (0 0 0  0) (0 0 0   ) transform2 [-] 3  1 testCompare
+
+    (0         ) (0      0 0) transform2 [-] 1 -1 testCompare
+    (0 0       ) (0 0    0 0) transform2 [-] 2 -1 testCompare
+    (0 0 0     ) (0 0 0  0 0) transform2 [-] 3 -1 testCompare
+    (0      0 0) (0         ) transform2 [-] 1  1 testCompare
+    (0 0    0 0) (0 0       ) transform2 [-] 2  1 testCompare
+    (0 0 0  0 0) (0 0 0     ) transform2 [-] 3  1 testCompare
+
+    (0       ) (1      0) transform2 [-] 1 -1 testCompare
+    (0 0     ) (0 1    0) transform2 [-] 2 -1 testCompare
+    (0 0 0   ) (0 0 1  0) transform2 [-] 3 -1 testCompare
+    (1       ) (0      0) transform2 [-] 1  1 testCompare
+    (0 1     ) (0 0    0) transform2 [-] 2  1 testCompare
+    (0 0 1   ) (0 0 0  0) transform2 [-] 3  1 testCompare
+    (0      0) (1       ) transform2 [-] 1 -1 testCompare
+    (0 0    0) (0 1     ) transform2 [-] 2 -1 testCompare
+    (0 0 0  0) (0 0 1   ) transform2 [-] 3 -1 testCompare
+    (1      0) (0       ) transform2 [-] 1  1 testCompare
+    (0 1    0) (0 0     ) transform2 [-] 2  1 testCompare
+    (0 0 1  0) (0 0 0   ) transform2 [-] 3  1 testCompare
+
+    (0    ) (1    ) transform2 [-] 1 -1 testCompare
+    (1    ) (0    ) transform2 [-] 1  1 testCompare
+    (0 0  ) (1 0  ) transform2 [-] 1 -1 testCompare
+    (0 0  ) (0 1  ) transform2 [-] 2 -1 testCompare
+    (1 0  ) (0 0  ) transform2 [-] 1  1 testCompare
+    (0 1  ) (0 0  ) transform2 [-] 2  1 testCompare
+    (0 0 0) (1 0 0) transform2 [-] 1 -1 testCompare
+    (0 0 0) (0 1 0) transform2 [-] 2 -1 testCompare
+    (0 0 0) (0 0 1) transform2 [-] 3 -1 testCompare
+    (1 0 0) (0 0 0) transform2 [-] 1  1 testCompare
+    (0 1 0) (0 0 0) transform2 [-] 2  1 testCompare
+    (0 0 1) (0 0 0) transform2 [-] 3  1 testCompare
+
+    i32min: [
+      v0: v1:;;
+      INT32_MIN: [INT32_MAX 1 +];
+      v0 v1 < [INT32_MIN] [
+        v0 v1 = [0] [42] if
+      ] if
+    ];
+
+    (0  ) (1  ) transform2 @i32min 1 -1 testCompare
+    (1  ) (0  ) transform2 @i32min 1  1 testCompare
+    (0  ) (1 0) transform2 @i32min 1 -1 testCompare
+    (1 0) (0  ) transform2 @i32min 1  1 testCompare
+  ];
+
+  noSizeIter: [
+    source:;
+    {iter: @source toIter; next: [@iter.next];}
+  ];
+
+  @noSizeIter @noSizeIter test
+  [         ] [         ] test
+  @noSizeIter [         ] test
+  [         ] @noSizeIter test
+
+  ints: 0 iota INT32_MAX @Int32 headIter dynamic;
+  [ints "size" has ~] "size given" ensure
+
+  testCompareUnknown: [
+    iter0: iter1: comparator: upperBound: normalizedResult:;;;;;
+    @iter0 @iter1 @comparator upperBound Comparator compareNormalized normalizedResult FALSE TRUE check
+  ];
+
+  ints dup                                                       [-] INT32_MAX  0 testCompareUnknown
+  ints dup [v:; v INT32_MAX 1 - < [v new] [v 1 +] if] @Int32 map [-] INT32_MAX -1 testCompareUnknown
+  ints dup [v:; v INT32_MAX 1 - < [v new] [v 1 -] if] @Int32 map [-] INT32_MAX  1 testCompareUnknown
 ] call
 
 # contains
