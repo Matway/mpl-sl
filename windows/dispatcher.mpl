@@ -34,8 +34,8 @@ dispatcherInternal: {
 
   Context: [{
     overlapped: OVERLAPPED;
-    onEvent: OnEventRef;
-    context: Natx;
+    onEvent:    OnEventRef;
+    context:    Natx;
   }];
 
   DIE: [

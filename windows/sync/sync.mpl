@@ -14,8 +14,8 @@
 
 "TcpAcceptor.makeTcpAcceptor"     use
 "TcpConnection.makeTcpConnection" use
-"syncPrivate.TimerData"           use
 "sync/Context.makeContext"        use
+"syncPrivate.TimerData"           use
 "syncPrivate.currentFiber"        use
 "syncPrivate.defaultCancelFunc"   use
 "syncPrivate.dispatch"            use

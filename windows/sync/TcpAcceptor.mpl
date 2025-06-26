@@ -85,8 +85,8 @@ TcpAcceptor: [{
   accept: [
     [valid?] "invalid TcpAcceptor" assert
     connection: TcpConnection;
-    address: Nat32;
-    result: String;
+    address:    Nat32;
+    result:     String;
 
     (
       [result "" =] [

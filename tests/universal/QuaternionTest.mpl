@@ -100,7 +100,7 @@ testInterpolation: [
 [
   axis: (1.0 2.0 neg 3.0) unit;
   tests: (
-    {angle:   0.0; q: 0.0 identityQuaternion                                                                 ;}
+    {angle:   0.0; q: 0.0 identityQuaternion;                                                                 }
     {angle:  35.0; q: (0.08036700542578 0.160734010851561 neg 0.241101016277342 0.953716950748227) quaternion;}
     {angle:  90.0; q: (0.18898223650461 0.377964473009227 neg 0.566946709513841 0.707106781186548) quaternion;}
   );
@@ -203,14 +203,14 @@ testInterpolation: [
     {operation: [q0 2.0 *]; expected: ( 2.0  4.0 neg  6.0      8.0    ) quaternion;}
     {operation: [2.0 q0 *]; expected: ( 2.0  4.0 neg  6.0      8.0    ) quaternion;}
     {operation: [q0 q1 * ]; expected: (44.0 32.0     12.0 neg 46.0 neg) quaternion;}
-    {operation: [q0 iq * ]; expected: q0                                          ;}
-    {operation: [iq q0 * ]; expected: q0                                          ;}
+    {operation: [q0 iq * ]; expected: q0;                                          }
+    {operation: [iq q0 * ]; expected: q0;                                          }
     {operation: [q0 conj ]; expected: ( 1.0  2.0 neg  3.0      4.0 neg) quaternion;}
 
     {operation: [q0 q1 dot]; expected: 18.0 neg;}
 
-    {operation: [q0 unit                          ]; expected: q ;}
-    {operation: [q0 unitChecked                   ]; expected: q ;}
+    {operation: [q0 unit                          ]; expected: q; }
+    {operation: [q0 unitChecked                   ]; expected: q; }
     {operation: [q0 100.0 unitCheckedWithThreshold]; expected: iq;}
   );
 
@@ -226,10 +226,10 @@ testInterpolation: [
   q0: (1.0 2.0 neg 3.0 4.0    ) quaternion;
   q1: (5.0 6.0     7.0 8.0 neg) quaternion;
   tests: (
-    {fraction: 0.0; q: q0 unit                                                                                        ;}
+    {fraction: 0.0; q: q0 unit;                                                                                        }
     {fraction: 0.3; q: (0.129913960492326 neg 0.519655841969305 neg 0.0                   0.84444074320012) quaternion;}
     {fraction: 0.6; q: (0.298083609185736 neg 0.504449184775861 neg 0.343942625983541 neg 0.73374426876488) quaternion;}
-    {fraction: 1.0; q: q1 unit                                                                                        ;}
+    {fraction: 1.0; q: q1 unit;                                                                                        }
   );
   q0 q1 tests @nlerp testInterpolation
 ] call
@@ -239,10 +239,10 @@ testInterpolation: [
   q0: (1.0 2.0 neg 3.0 4.0    ) quaternion unit;
   q1: (5.0 6.0     7.0 8.0 neg) quaternion unit;
   tests: (
-    {fraction: 0.0; q: q0 new                                                                                      ;}
+    {fraction: 0.0; q: q0 new;                                                                                      }
     {fraction: 0.3; q: (0.000501537327541 neg 0.48176120346404 neg 0.23987752707694     0.8428313373983) quaternion;}
     {fraction: 0.6; q: (0.183499748964156 neg 0.52391886713953 neg 0.10504006435854 neg 0.8251081430121) quaternion;}
-    {fraction: 1.0; q: q1 new                                                                                      ;}
+    {fraction: 1.0; q: q1 new;                                                                                      }
   );
   q0 q1 tests @slerp testInterpolation
 ] call

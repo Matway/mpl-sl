@@ -302,7 +302,6 @@ AVLMap: [
           ] &&
         ] loop
 
-
         [droppedRef asNode.key key =] "Invalid dropped node!" assert
 
         @droppedRef @prev swapNodes !droppedRef

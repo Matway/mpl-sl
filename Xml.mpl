@@ -42,10 +42,10 @@ XMLParserResult: [{
 }];
 
 XMLParserPosition: [{
-  column: Int32;
-  line: Int32;
-  offset: Int32;
-  currentSymbol: StringView;
+  column:           Int32;
+  line:             Int32;
+  offset:           Int32;
+  currentSymbol:    StringView;
   currentCodepoint: Nat32;
 }];
 
@@ -98,8 +98,8 @@ XMLElementHelper: [{
 }];
 
 ArrayHelper: [{
-  dataBegin: Natx;
-  dataSize: Int32;
+  dataBegin:   Natx;
+  dataSize:    Int32;
   dataReserve: Int32;
 }];
 

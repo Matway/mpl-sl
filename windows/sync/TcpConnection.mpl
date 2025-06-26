@@ -139,7 +139,9 @@ TcpConnection: [{
 
   shutdown: [
     [valid?] "invalid TcpConnection" assert
+
     "ws2_32.shutdown" use
+
     SD_SEND connection shutdown 0 = [String] [("shutdown failed, result=" WSAGetLastError) assembleString] if
   ];
 

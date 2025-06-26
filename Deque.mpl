@@ -81,7 +81,7 @@ Deque: [
     ];
 
     swapBuffers: [
-      from:to:;;
+      from: to:;;
 
       swapCount: from.size 1 + 2 /;
 

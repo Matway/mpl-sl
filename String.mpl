@@ -251,7 +251,6 @@ String: [{
       digit 0n32 cast 48n32 + catAsciiSymbolCodeNZ
       by3 [shift 0 >] && [shift 3 mod 0 =] && [44n32 catAsciiSymbolCodeNZ] when
 
-
       shifted digit rounded * - @shifted set
       rounded 10n64 / @rounded set
 

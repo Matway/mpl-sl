@@ -32,10 +32,10 @@ runningTimeInternal: {
     previousTime new
   ];
 
-  spinlock: Spinlock;
-  multiplier: Real64;
+  spinlock:        Spinlock;
+  multiplier:      Real64;
   previousCounter: Nat64;
-  previousTime: Real64;
+  previousTime:    Real64;
 };
 
 @runningTimeInternal.init

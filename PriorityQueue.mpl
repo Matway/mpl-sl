@@ -6,15 +6,17 @@
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
 "Array.Array" use
-"control.&&" use
+"control.&&"  use
 
 PriorityQueue: [{
   data: Array;
 
   swap: [
     new i1:; new i2:;
+
     i1ref: i1 @data.at;
     i2ref: i2 @data.at;
+
     tmp: @i1ref new;
     @i2ref @i1ref set
     @tmp @i2ref set
