@@ -13,10 +13,8 @@ PriorityQueue: [{
 
   swap: [
     new i1:; new i2:;
-
     i1ref: i1 @data.at;
     i2ref: i2 @data.at;
-
     tmp: @i1ref new;
     @i2ref @i1ref set
     @tmp @i2ref set
