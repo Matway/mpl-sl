@@ -74,9 +74,9 @@ SIO_GET_EXTENSION_FUNCTION_POINTER: [0x80000000n32 0x40000000n32 or 0x08000000n3
 
 SOCK_STREAM: [1];
 
-SOL_SOCKET: [0xffff];
+SOL_SOCKET: [0xFFFF];
 
-SOMAXCONN: [0x7fffffff];
+SOMAXCONN: [0x7FFFFFFF];
 
 SO_UPDATE_ACCEPT_CONTEXT:  [0x700B];
 SO_UPDATE_CONNECT_CONTEXT: [0x7010];
@@ -282,11 +282,11 @@ timeval: [{
 } Int32 {convention: stdcall;} "send" importFunction
 
 {
-  s: Natx;
-  level: Int32;
+  s:       Natx;
+  level:   Int32;
   optname: Int32;
-  optval: Natx;
-  optlen: Int32;
+  optval:  Natx;
+  optlen:  Int32;
 } Int32 {convention: stdcall;} "setsockopt" importFunction
 
 {

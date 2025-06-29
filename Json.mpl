@@ -149,11 +149,11 @@ objectAsJSON: [
 ];
 
 makeJSONParserPosition: [{
-  column: new;
-  line: new;
-  offset: new;
+  column:        new;
+  line:          new;
+  offset:        new;
   currentSymbol: new;
-  currentCode: new;
+  currentCode:   new;
 }];
 
 JSONParserPosition: [0n32 dynamic StringView 0 dynamic 1 dynamic 1 dynamic makeJSONParserPosition];
@@ -253,7 +253,6 @@ parseJSONNodeImpl: [
     ] when
   ];
 
-
   isDigit: [code: new; code ascii.zero < ~ code ascii.zero 10n32 + < and];
 
   parseString: [
@@ -339,9 +338,9 @@ parseJSONNodeImpl: [
   ];
 
   parseNumberJSON: [
-    n0: {vi:0i64 dynamic; vf: 0.0r64 dynamic; c:0 dynamic; m:FALSE dynamic;};
-    n1: {vi:0i64 dynamic; vf: 0.0r64 dynamic; c:0 dynamic; m:FALSE dynamic;};
-    n2: {vi:0i64 dynamic; vf: 0.0r64 dynamic; c:0 dynamic; m:FALSE dynamic;};
+    n0: {vi: 0i64 dynamic; vf: 0.0r64 dynamic; c: 0 dynamic; m: FALSE dynamic;};
+    n1: {vi: 0i64 dynamic; vf: 0.0r64 dynamic; c: 0 dynamic; m: FALSE dynamic;};
+    n2: {vi: 0i64 dynamic; vf: 0.0r64 dynamic; c: 0 dynamic; m: FALSE dynamic;};
     cur: @n0;
     s: 0;
 
@@ -353,7 +352,7 @@ parseJSONNodeImpl: [
         cur.c 1 + @cur.@c set
         digit: pos.currentCode ascii.zero -;
         digiti: digit 0n64 cast 0i64 cast;
-        cur.vi 0x7fffffffffffi64 digiti - 10i64 / > [TRUE @ov set] when
+        cur.vi 0x7FFFFFFFFFFFi64 digiti - 10i64 / > [TRUE @ov set] when
 
         cur.vi 10i64   * digiti            + @cur.@vi set
         cur.vf 10.0r64 * digit 0.0r64 cast + @cur.@vf set
@@ -564,7 +563,6 @@ parseJSONNodeImpl: [
   @position parseJSONNodeImpl
 ] "parseJSONNode" exportFunction
 
-
 saveJSONToString: [
   json:;
   result: String;
@@ -624,7 +622,7 @@ catJSONNodeWithPaddingImpl: [
                         [codePoint 0x10000n32 <] "Rare codepoint JSON string!" assert
                         "\\u" @result.cat
                         4 [
-                          current: codePoint 3 i - 4 * 0n32 cast rshift 0xfn32 and;
+                          current: codePoint 3 i - 4 * 0n32 cast rshift 0xFn32 and;
                           current 10n32 < [
                             ascii.zero current + @result.catAsciiSymbolCode
                           ] [
