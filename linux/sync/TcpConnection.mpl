@@ -10,9 +10,11 @@
 "String.assembleString" use
 "String.printList"      use
 "algorithm.="           use
+"algorithm.unhead"      use
 "control.&&"            use
 "control.Cref"          use
 "control.Int32"         use
+"control.Intx"          use
 "control.Nat16"         use
 "control.Nat32"         use
 "control.Nat8"          use
@@ -24,6 +26,7 @@
 "control.nil?"          use
 "control.sequence"      use
 "control.when"          use
+"control.while"         use
 "control.||"            use
 
 "posix.EAGAIN"          use
@@ -178,7 +181,9 @@ TcpConnection: [{
 
   shutdown: [
     [valid?] "invalid TcpConnection" assert
+
     "socket.shutdown" use
+
     SHUT_WR connection shutdown 0 = [String] [("shutdown failed, result=" errno) assembleString] if
   ];
 
@@ -192,73 +197,79 @@ TcpConnection: [{
     [valid?]                    "invalid TcpConnection"                      assert
     [fiberPair.writeFiber nil?] "attempted to write data by multiple fibers" assert
     (data.data) (Nat8 Cref) same ~ [data printStack drop "[TcpConnection.write], invalid argument, [Nat8 Cref Span] expected" raiseStaticError] when
-    result: String;
 
-    sentByteCount: 0ix;
-    canceled? ["canceled" @result.cat] [
-      MSG_NOSIGNAL Int32 cast data.size Natx cast data.data storageAddress connection send !sentByteCount
-    ] if
+    result:        String;
 
-    sentByteCount -1ix = [
-      (
-        [result "" =] [
-          lastErrorNumber: errno;
-          lastErrorNumber EAGAIN = ~ [lastErrorNumber EWOULDBLOCK = ~] && [("send failed, result=" lastErrorNumber) @result.catMany] when
-        ] [
-          @currentFiber @fiberPair.!writeFiber
+    [canceled? ~ [result "" =] && [data.size 0 >] &&] [
+      sentByteCount: MSG_NOSIGNAL Int32 cast data.size Natx cast data.data storageAddress connection send;
+      sentByteCount -1ix = ~ [
+        data sentByteCount Int32 cast unhead !data
+      ] when
 
-          connectionEvent: epoll_event;
-          fiberPair storageAddress @connectionEvent.ptr set
-
-          fiberPair.readFiber nil? ~ [
-            EPOLLIN EPOLLOUT or EPOLLONESHOT or @connectionEvent.!events
-          ] [
-            EPOLLOUT EPOLLONESHOT or @connectionEvent.!events
-          ] if
-
-          @connectionEvent connection EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("epoll_ctl failed, result=" errno) @result.catMany] when
-        ] [
-          context: {
-            connection: connection new;
-            fiberPair:  @fiberPair;
-          };
-
-          context storageAddress [
-            context:   @context addressToReference;
-            fiberPair: @context.@fiberPair;
+      data.size 0 > [sentByteCount -1ix =] && [
+        (
+          [result "" =]
+          [
+            lastErrorNumber: errno;
+            lastErrorNumber EAGAIN = ~ [lastErrorNumber EWOULDBLOCK = ~] && [("send failed, result=" lastErrorNumber) @result.catMany] when
+          ]
+          [
+            @currentFiber @fiberPair.!writeFiber
 
             connectionEvent: epoll_event;
-            fiberPair.readFiber nil? ~ [
-              EPOLLIN EPOLLONESHOT or  @connectionEvent.!events
-              fiberPair storageAddress @connectionEvent.ptr set
-            ] when
-
-            @connectionEvent context.connection EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("FATAL: epoll_failed failed, result=" errno LF) printList "" failProc] when
-
-            @fiberPair.@writeFiber @resumingFibers.append
-          ] @currentFiber.setFunc
-
-          dispatch
-          FiberData Ref @fiberPair.!writeFiber
-          canceled? ["canceled" @result.cat] when
-        ] [
-          @defaultCancelFunc @currentFiber.!func
-
-          fiberPair.readFiber nil? ~ [
-            connectionEvent: epoll_event;
-            EPOLLIN EPOLLONESHOT or  @connectionEvent.!events
             fiberPair storageAddress @connectionEvent.ptr set
 
+            fiberPair.readFiber nil? ~ [
+              EPOLLIN EPOLLOUT or EPOLLONESHOT or @connectionEvent.!events
+            ] [
+              EPOLLOUT EPOLLONESHOT or @connectionEvent.!events
+            ] if
+
             @connectionEvent connection EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("epoll_ctl failed, result=" errno) @result.catMany] when
-          ] when
-        ] [
-          0 data.size Natx cast data.data storageAddress connection send !sentByteCount
-          sentByteCount -1ix = [("send failed, result=" errno) @result.catMany] when
-        ] [
-          [sentByteCount Int32 cast data.size =] "wrong transferred size" assert
-        ]
-      ) sequence
-    ] when
+          ]
+          [
+            context: {
+              connection: connection new;
+              fiberPair:  @fiberPair;
+            };
+
+            context storageAddress [
+              context:   @context addressToReference;
+              fiberPair: @context.@fiberPair;
+
+              connectionEvent: epoll_event;
+              fiberPair.readFiber nil? ~ [
+                EPOLLIN EPOLLONESHOT or  @connectionEvent.!events
+                fiberPair storageAddress @connectionEvent.ptr set
+              ] when
+
+              @connectionEvent context.connection EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("FATAL: epoll_failed failed, result=" errno LF) printList "" failProc] when
+
+              @fiberPair.@writeFiber @resumingFibers.append
+            ] @currentFiber.setFunc
+
+            dispatch
+            FiberData Ref @fiberPair.!writeFiber
+            canceled? ["canceled" @result.cat] when
+          ]
+          [
+            @defaultCancelFunc @currentFiber.!func
+
+            fiberPair.readFiber nil? ~ [
+              connectionEvent: epoll_event;
+              EPOLLIN EPOLLONESHOT or  @connectionEvent.!events
+              fiberPair storageAddress @connectionEvent.ptr set
+
+              @connectionEvent connection EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("epoll_ctl failed, result=" errno) @result.catMany] when
+            ] when
+          ]
+        ) sequence
+      ] when
+    ] while
+
+    canceled? [result "" =] && ["canceled" @result.cat] when
+
+    [result "" = ~ [data.size 0 =] ||] "wrong transferred size on no error" assert
 
     @result
   ];
