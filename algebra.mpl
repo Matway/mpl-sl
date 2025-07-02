@@ -78,7 +78,7 @@ Natx storageSize 8nx = [
   {argy: Real64; argx: Real64;} Real64 {convention: cdecl;} "atan2" importFunction
   atan2Func: @atan2;
   atan2: [
-    x:y:;;
+    x: y:;;
     x Real32 same
     y Real32 same and
   ] [
@@ -124,32 +124,32 @@ cosSin: [
 ];
 
 -: [
-  v1:v2:;;
+  v1: v2:;;
   v1 vector?
   v2 vector? and
   v1 fieldCount v2 fieldCount = and
 ] [
-  v1:v2:;;
+  v1: v2:;;
   (v1 fieldCount [i v1 @ i v2 @ -] times)
 ] pfunc;
 
 +: [
-  v1:v2:;;
+  v1: v2:;;
   v1 vector?
   v2 vector? and
   v1 fieldCount v2 fieldCount = and
 ] [
-  v1:v2:;;
+  v1: v2:;;
   (v1 fieldCount [i v1 @ i v2 @ +] times)
 ] pfunc;
 
 =: [
-  v1:v2:;;
+  v1: v2:;;
   v1 vector?
   v2 vector? and
   v1 fieldCount v2 fieldCount = and
 ] [
-  v1:v2:;;
+  v1: v2:;;
   result: TRUE;
   v1 fieldCount [
     i v1 @ i v2 @ = result and !result
@@ -159,14 +159,14 @@ cosSin: [
 ] pfunc;
 
 =: [
-  v1:m2:;;
+  v1: m2:;;
   v1 vector?
   v1 matrix? ~ and
   m2 matrix? and
   v1 fieldCount m2 getColCount = and
   m2 getRowCount 1 = and
 ] [
-  v1:m2:;;
+  v1: m2:;;
   result: TRUE;
   v1 fieldCount [
     i v1 @ i 0 m2 @ @ = result and !result
@@ -174,31 +174,31 @@ cosSin: [
 ] pfunc;
 
 /: [
-  vector:value:;;
+  vector: value:;;
   vector vector?
 ] [
-  vector:value:;;
+  vector: value:;;
   (vector fieldCount [i vector @ value /] times)
 ] pfunc;
 
 *: [
-  vector:value:;;
+  vector: value:;;
   vector vector? [value number?] &&
 ] [
-  vector:value:;;
+  vector: value:;;
   (vector fieldCount [i vector @ value *] times)
 ] pfunc;
 
 *: [
-  value:vector:;;
+  value: vector:;;
   vector vector?
 ] [
-  value:vector:;;
+  value: vector:;;
   (vector fieldCount [i vector @ value *] times)
 ] pfunc;
 
 *: [
-  v1:v2:;;
+  v1: v2:;;
   v1 vector?
   v2 vector? and
 ] [
@@ -206,11 +206,11 @@ cosSin: [
 ] pfunc;
 
 *: [
-  m1:m2:;;
+  m1: m2:;;
   m1 matrix? m2 matrix? and
   m1 getColCount m2 getRowCount = and
 ] [
-  m1:m2:;;
+  m1: m2:;;
   result: 0 0 m1 @ @ m2 getColCount m1 getRowCount Matrix;
   m1 getRowCount [ row0: i;
     m2 getColCount [ col1: i;
@@ -230,13 +230,13 @@ cosSin: [
 ] pfunc;
 
 *: [
-  v1:m2:;;
+  v1: m2:;;
   v1 vector?
   v1 matrix? ~ and
   m2 matrix? and
   v1 fieldCount m2 getRowCount = and
 ] [
-  v:m:;;
+  v: m:;;
   result: v new;
   v fieldCount [ col1: i;
     0 v @
@@ -254,12 +254,12 @@ cosSin: [
 ] pfunc;
 
 |: [
-  m1:m2:;;
+  m1: m2:;;
   m1 matrix?
   m2 matrix? and
   m1 getColCount m2 getColCount = and
 ] [
-  m1:m2:;;
+  m1: m2:;;
   (
     m1 getRowCount [i m1 @ new] times
     m2 getRowCount [i m2 @ new] times
@@ -267,12 +267,12 @@ cosSin: [
 ] pfunc;
 
 |: [
-  m:v:;;
+  m: v:;;
   m matrix?
   v vector? and
   m getColCount v fieldCount = and
 ] [
-  m:v:;;
+  m: v:;;
   (
     m getRowCount [i m @ new] times
     v new
@@ -280,21 +280,21 @@ cosSin: [
 ] pfunc;
 
 &: [
-  v1:v2:;;
+  v1: v2:;;
   v1 vector?
   v2 vector? and
 ] [
-  v1:v2:;;
+  v1: v2:;;
   (v1 fieldCount [i v1 @ new] times v2 fieldCount [i v2 @ new] times)
 ] pfunc;
 
 &: [
-  m1:m2:;;
+  m1: m2:;;
   m1 matrix?
   m2 matrix? and
   m1 getRowCount m2 getRowCount = and
 ] [
-  m1:m2:;;
+  m1: m2:;;
   (
     m1 getRowCount [ row: i;
       (
@@ -308,40 +308,40 @@ cosSin: [
 toColumn: [vector?] [v:;(v fieldCount [(i v @ new)] times)] pfunc;
 
 multiply: [
-  v1:v2:;;
+  v1: v2:;;
   v1 vector? v2 vector? and
   v1 fieldCount v2 fieldCount = and
 ] [
-  v1:v2:;;
+  v1: v2:;;
   (v1 fieldCount [i v1 @ i v2 @ *] times)
 ] pfunc;
 
 divide: [
-  v1:v2:;;
+  v1: v2:;;
   v1 vector? v2 vector? and
   v1 fieldCount v2 fieldCount = and
 ] [
-  v1:v2:;; (v1 fieldCount [i v1 @ i v2 @ /] times)
+  v1: v2:;; (v1 fieldCount [i v1 @ i v2 @ /] times)
 ] pfunc;
 
 dot: [
-  v0:v1:;;
+  v0: v1:;;
   v0 vector?
   v1 vector? and
   v0 fieldCount v1 fieldCount = and
 ] [
-  v0:v1:;;
+  v0: v1:;;
   sum: 0 v0 @ 0 v1 @ *;
   v0 fieldCount 1 - [i1: i 1 +; i1 v0 @ i1 v1 @ * sum + !sum] times
   sum
 ] pfunc;
 
 cross: [
-  v0:v1:;;
+  v0: v1:;;
   v0 fieldCount 3 =
   v1 fieldCount 3 = and
 ] [
-  v0:v1:;;
+  v0: v1:;;
   (
     1 v0 @ 2 v1 @ * 2 v0 @ 1 v1 @ * -
     2 v0 @ 0 v1 @ * 0 v0 @ 2 v1 @ * -
@@ -378,7 +378,7 @@ unitChecked: [vector?] [
 
 neg: [vector?] [v:; (v fieldCount [i v @ neg] times)] pfunc;
 
-cast: [v0:v1:;; v0 vector? v1 vector? and] [v0:v1:;; (v1 fieldCount [i v0 @ i v1 @ cast] times)] pfunc;
+cast: [v0: v1:;; v0 vector? v1 vector? and] [v0: v1:;; (v1 fieldCount [i v0 @ i v1 @ cast] times)] pfunc;
 
 trans: [
   v:;

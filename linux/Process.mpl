@@ -33,8 +33,8 @@
 "control.when"           use
 
 "errno.errno"       use
-"posix.F_SETFD"     use
 "posix.FD_CLOEXEC"  use
+"posix.F_SETFD"     use
 "posix.SIGKILL"     use
 "posix.WEXITSTATUS" use
 "posix.WIFEXITED"   use
@@ -144,6 +144,7 @@ Process: [{
   kill: [
     "kill" assertCreated
     "posix.kill" use
+
     SIGKILL processId kill -1 = ["kill" 1 errorExit] when
   ];
 

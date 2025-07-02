@@ -186,9 +186,9 @@ Variant: [{
     rawDestroy
   ];
 }
-result:;
-@result manuallyInitVariable
-@result
+  result:;
+  @result manuallyInitVariable
+  @result
 ];
 
 getHeapUsedSize: ["VARIANT" has] [

@@ -160,8 +160,8 @@ dieCount:  Int32;
   ([0] Int32 spawn.get) (Int32 Ref) same ~ ["Context.get returned invalid output schema" raiseStaticError] [] uif
   [[0] Int32 spawn.get 0 =] "Context.get returned invalid output value" ensure
 
-  ({CALL:[1];} Int32 spawn.get) (Int32 Ref) same ~ ["Context.get returned invalid output schema" raiseStaticError] [] uif
-  [{CALL:[1];} Int32 spawn.get 1 =] "Context.get returned invalid output value" ensure
+  ({CALL: [1];} Int32 spawn.get) (Int32 Ref) same ~ ["Context.get returned invalid output schema" raiseStaticError] [] uif
+  [{CALL: [1];} Int32 spawn.get 1 =] "Context.get returned invalid output value" ensure
 
   code: {} Int32 {} codeRef;
   [2] !code

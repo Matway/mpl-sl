@@ -102,11 +102,13 @@ toSpan2: [
 
     spanStatic: [
       "SpanStatic.toSpanStatic2" use
+
       @spanData spanSize toSpanStatic2
     ];
 
     stringView: [
       "String.toStringView" use
+
       (spanData spanSize new) toStringView
     ];
 

@@ -27,11 +27,11 @@ refCast: [
 ACQUIRE: {MEMORY_ORDER: {}; virtual ORDER: "acquire";};
 RELEASE: {MEMORY_ORDER: {}; virtual ORDER: "release";};
 
-{ref: Nat8  Ref; value: Nat8 ;} Nat8  {convention: cdecl;} "atomicExchangeN8Acquire"  importFunction
+{ref: Nat8  Ref; value: Nat8; } Nat8  {convention: cdecl;} "atomicExchangeN8Acquire"  importFunction
 {ref: Nat16 Ref; value: Nat16;} Nat16 {convention: cdecl;} "atomicExchangeN16Acquire" importFunction
 {ref: Nat32 Ref; value: Nat32;} Nat32 {convention: cdecl;} "atomicExchangeN32Acquire" importFunction
 {ref: Nat64 Ref; value: Nat64;} Nat64 {convention: cdecl;} "atomicExchangeN64Acquire" importFunction
-{ref: Nat8  Ref; value: Nat8 ;} Nat8  {convention: cdecl;} "atomicExchangeN8Release"  importFunction
+{ref: Nat8  Ref; value: Nat8; } Nat8  {convention: cdecl;} "atomicExchangeN8Release"  importFunction
 {ref: Nat16 Ref; value: Nat16;} Nat16 {convention: cdecl;} "atomicExchangeN16Release" importFunction
 {ref: Nat32 Ref; value: Nat32;} Nat32 {convention: cdecl;} "atomicExchangeN32Release" importFunction
 {ref: Nat64 Ref; value: Nat64;} Nat64 {convention: cdecl;} "atomicExchangeN64Release" importFunction
@@ -41,25 +41,25 @@ RELEASE: {MEMORY_ORDER: {}; virtual ORDER: "release";};
 {ref: Nat32 Cref;} Nat32 {convention: cdecl;} "atomicLoadN32Acquire" importFunction
 {ref: Nat64 Cref;} Nat64 {convention: cdecl;} "atomicLoadN64Acquire" importFunction
 
-{ref: Nat8  Ref; value: Nat8 ;} Nat8  {convention: cdecl;} "atomicOrN8Acquire"  importFunction
+{ref: Nat8  Ref; value: Nat8; } Nat8  {convention: cdecl;} "atomicOrN8Acquire"  importFunction
 {ref: Nat16 Ref; value: Nat16;} Nat16 {convention: cdecl;} "atomicOrN16Acquire" importFunction
 {ref: Nat32 Ref; value: Nat32;} Nat32 {convention: cdecl;} "atomicOrN32Acquire" importFunction
 {ref: Nat64 Ref; value: Nat64;} Nat64 {convention: cdecl;} "atomicOrN64Acquire" importFunction
-{ref: Nat8  Ref; value: Nat8 ;} Nat8  {convention: cdecl;} "atomicOrN8Release"  importFunction
+{ref: Nat8  Ref; value: Nat8; } Nat8  {convention: cdecl;} "atomicOrN8Release"  importFunction
 {ref: Nat16 Ref; value: Nat16;} Nat16 {convention: cdecl;} "atomicOrN16Release" importFunction
 {ref: Nat32 Ref; value: Nat32;} Nat32 {convention: cdecl;} "atomicOrN32Release" importFunction
 {ref: Nat64 Ref; value: Nat64;} Nat64 {convention: cdecl;} "atomicOrN64Release" importFunction
 
-{ref: Nat8  Ref; value: Nat8 ;} {} {convention: cdecl;} "atomicStoreN8Release"  importFunction
+{ref: Nat8  Ref; value: Nat8; } {} {convention: cdecl;} "atomicStoreN8Release"  importFunction
 {ref: Nat16 Ref; value: Nat16;} {} {convention: cdecl;} "atomicStoreN16Release" importFunction
 {ref: Nat32 Ref; value: Nat32;} {} {convention: cdecl;} "atomicStoreN32Release" importFunction
 {ref: Nat64 Ref; value: Nat64;} {} {convention: cdecl;} "atomicStoreN64Release" importFunction
 
-{ref: Nat8  Ref; value: Nat8 ;} Nat8  {convention: cdecl;} "atomicXorN8Acquire"  importFunction
+{ref: Nat8  Ref; value: Nat8; } Nat8  {convention: cdecl;} "atomicXorN8Acquire"  importFunction
 {ref: Nat16 Ref; value: Nat16;} Nat16 {convention: cdecl;} "atomicXorN16Acquire" importFunction
 {ref: Nat32 Ref; value: Nat32;} Nat32 {convention: cdecl;} "atomicXorN32Acquire" importFunction
 {ref: Nat64 Ref; value: Nat64;} Nat64 {convention: cdecl;} "atomicXorN64Acquire" importFunction
-{ref: Nat8  Ref; value: Nat8 ;} Nat8  {convention: cdecl;} "atomicXorN8Release"  importFunction
+{ref: Nat8  Ref; value: Nat8; } Nat8  {convention: cdecl;} "atomicXorN8Release"  importFunction
 {ref: Nat16 Ref; value: Nat16;} Nat16 {convention: cdecl;} "atomicXorN16Release" importFunction
 {ref: Nat32 Ref; value: Nat32;} Nat32 {convention: cdecl;} "atomicXorN32Release" importFunction
 {ref: Nat64 Ref; value: Nat64;} Nat64 {convention: cdecl;} "atomicXorN64Release" importFunction

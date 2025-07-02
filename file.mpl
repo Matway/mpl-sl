@@ -38,6 +38,7 @@ SEEK_END: [2i32];
 
 private errno: [
   "errno.errno" use
+
   errno
 ];
 

@@ -6,7 +6,7 @@
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
 "Array.Array" use
-"control.&&" use
+"control.&&"  use
 
 PriorityQueue: [{
   data: Array;

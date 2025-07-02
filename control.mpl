@@ -421,7 +421,7 @@ unwrap: [list:; @list fieldCount [i @list @] times];
 wrap: [(touch)];
 
 enum: [
-  enum_names:enum_type:;;
+  enum_names: enum_type:;;
   enum_index: 0;
   enum_uloop: [
     enum_index enum_names fieldCount < [
