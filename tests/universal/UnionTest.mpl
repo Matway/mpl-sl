@@ -47,6 +47,24 @@ UNION_TEST: [];
   ] each
 ] call
 
+# Unions have correct sizes.
+[
+  (
+    ()
+    (())
+    (() Nat8)
+    (() Nat8 Nat16)
+    (() Nat8 Nat16 Nat32)
+    (() Nat8 Nat16 Nat32 Nat64)
+    (() Nat8 Nat16 Nat32 Nat64 (Nat64 Nat64))
+  ) [
+    Schemas:;
+    maxSize: 0nx @Schemas [storageSize max] each;
+    union: @Schemas Union;
+    [@union storageSize maxSize =] "Union has incorrect size" ensure
+  ] each
+] call
+
 # Can access and modify union items.
 [
   items: (
