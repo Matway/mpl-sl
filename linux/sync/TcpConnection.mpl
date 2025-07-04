@@ -14,7 +14,6 @@
 "control.&&"            use
 "control.Cref"          use
 "control.Int32"         use
-"control.Intx"          use
 "control.Nat16"         use
 "control.Nat32"         use
 "control.Nat8"          use
@@ -198,15 +197,13 @@ TcpConnection: [{
     [fiberPair.writeFiber nil?] "attempted to write data by multiple fibers" assert
     (data.data) (Nat8 Cref) same ~ [data printStack drop "[TcpConnection.write], invalid argument, [Nat8 Cref Span] expected" raiseStaticError] when
 
-    result:        String;
+    result: String;
 
     [canceled? ~ [result "" =] && [data.size 0 >] &&] [
       sentByteCount: MSG_NOSIGNAL Int32 cast data.size Natx cast data.data storageAddress connection send;
       sentByteCount -1ix = ~ [
         data sentByteCount Int32 cast unhead !data
-      ] when
-
-      data.size 0 > [sentByteCount -1ix =] && [
+      ] [
         (
           [result "" =]
           [
@@ -264,7 +261,7 @@ TcpConnection: [{
             ] when
           ]
         ) sequence
-      ] when
+      ] if
     ] while
 
     canceled? [result "" =] && ["canceled" @result.cat] when
