@@ -547,6 +547,14 @@ testView: [
 
 # compare
 [
+  (   ) (   ) () compare isRef  0 FALSE FALSE check
+  (0  ) (0  ) () compare isRef  0 FALSE FALSE check
+  (0  ) (1  ) () compare isRef -1 FALSE FALSE check
+  (0  ) (1  ) () compare isRef -1 FALSE FALSE check
+  (1  ) (0  ) () compare isRef  1 FALSE FALSE check
+  (0  ) (1 0) () compare isRef -1 FALSE FALSE check
+  (1 0) (0  ) () compare isRef  1 FALSE FALSE check
+
   Comparator: [{
     comparator: upperBound: new virtual; virtual;
     count: 0;

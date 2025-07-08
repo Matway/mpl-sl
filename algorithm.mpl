@@ -613,6 +613,16 @@ beginsWith: [
 
 compare: [
   iter0: iter1: comparator:; toIter; toIter;
+
+  @comparator () same [
+    comparator: [
+      left: right:;;
+      @left @right < [-1] [
+        @left @right = [0] [1] if
+      ] if
+    ];
+  ] [] uif
+
   result: Int32;
   @iter0 "size" has [@iter1 "size" has] && [
     iter0: iter1: @iter0 @iter1 iter1.size iter0.size < [
