@@ -273,7 +273,7 @@ makeTupleView: [
 
 toIndex: [
   source:;
-  @source isBuiltinTuple [@source 0 @source fieldCount makeTupleIndex] [
+  @source tuple? [@source 0 @source fieldCount makeTupleIndex] [
     @source isIndex [@source dup "DIE" has ~ [new] when] [
       @source "index" has [@source.index] [
         "Built-in tuple, Index, or Indexable expected" raiseStaticError
@@ -285,7 +285,7 @@ toIndex: [
 toIter: [
   source:;
   @source Text same [(source storageAddress Nat8 Cref addressToReference source textSize Int32 cast) toTextIter] [
-    @source isBuiltinTuple [@source 0 @source fieldCount makeTupleIter] [
+    @source tuple? [@source 0 @source fieldCount makeTupleIter] [
       @source isIter [@source @source @source isConst [copyable?] [movable?] if [new] when] [
         @source "iter" has [@source.iter] [
           "Built-in text, tuple, Iter, or Iterable expected" raiseStaticError
@@ -298,7 +298,7 @@ toIter: [
 toView: [
   source:;
   @source Text same [(source storageAddress Nat8 Cref addressToReference source textSize Int32 cast) toTextView] [
-    @source isBuiltinTuple [@source 0 @source fieldCount makeTupleView] [
+    @source tuple? [@source 0 @source fieldCount makeTupleView] [
       @source isView [@source dup "DIE" has ~ [new] when] [
         "Built-in tuple or View expected" raiseStaticError
       ] if
