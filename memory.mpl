@@ -5,18 +5,18 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"control.&&"            use
-"control.Int32"         use
-"control.Nat64"         use
-"control.Natx"          use
-"control.assert"        use
-"control.drop"          use
-"control.max"           use
-"control.min"           use
-"control.pfunc"         use
-"control.when"          use
-"control.||"            use
-"conventions.cdecl"     use
+"control.&&"        use
+"control.Int32"     use
+"control.Nat64"     use
+"control.Natx"      use
+"control.assert"    use
+"control.drop"      use
+"control.max"       use
+"control.min"       use
+"control.pfunc"     use
+"control.when"      use
+"control.||"        use
+"conventions.cdecl" use
 
 SYNCHRONIZED: [FALSE];
 SYNCHRONIZED: [SL_MEMORY_SYNCHRONIZED TRUE] [

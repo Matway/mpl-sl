@@ -179,6 +179,7 @@ TcpConnection: [{
   shutdown: [
     [valid?] "invalid TcpConnection" assert
     "socket.shutdown" use
+
     SHUT_WR connection shutdown 0 = [String] [("shutdown failed, result=" errno) assembleString] if
   ];
 

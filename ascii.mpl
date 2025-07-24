@@ -15,7 +15,7 @@ ascii: {
   ff:         [ 12n32 dynamic];
   cr:         [ 13n32 dynamic];
   space:      [ 32n32 dynamic];
-  exclamation:[ 33n32 dynamic];
+  exclamation: [ 33n32 dynamic];
   quote:      [ 34n32 dynamic];
   grid:       [ 35n32 dynamic];
   dollar:     [ 36n32 dynamic];

@@ -12,6 +12,7 @@
 "algorithm.cond"                use
 "control.&&"                    use
 "control.Int32"                 use
+"control.Nat32"                 use
 "control.Nat64"                 use
 "control.Natx"                  use
 "control.Ref"                   use
@@ -28,38 +29,22 @@
 "conventions.cdecl"             use
 "memory.malloc"                 use
 
+"macos.EVFILT_READ"   use
+"macos.EVFILT_TIMER"  use
+"macos.EVFILT_WRITE"  use
+"macos.kevent"        use
+"macos.kqueue"        use
+"macos.struct_kevent" use
+
 "posix.CLOCK_BOOTTIME" use
 "posix.EINTR"          use
 "posix.getcontext"     use
 "posix.makecontext"    use
 "posix.swapcontext"    use
+"posix.timespec"       use
 "posix.ucontext_t"     use
 
-"errno.errno"          use
-"linux.EPOLLIN"        use
-"linux.EPOLLOUT"       use
-"linux.EPOLL_CTL_ADD"  use
-"linux.TFD_NONBLOCK"   use
-"linux.epoll_create1"  use
-"linux.epoll_ctl"      use
-"linux.epoll_event"    use
-"linux.epoll_wait"     use
-"linux.timerfd_create" use
-
-UNDER_VALGRIND: [FALSE];
-UNDER_VALGRIND: [SL_SYNC_UNDER_VALGRIND TRUE] [
-  SL_SYNC_UNDER_VALGRIND {} same [SL_SYNC_UNDER_VALGRIND] ||
-] pfunc;
-
-{
-  default: Nat64;
-  request: Nat64;
-  arg1:    Nat64;
-  arg2:    Nat64;
-  arg3:    Nat64;
-  arg4:    Nat64;
-  arg5:    Nat64;
-} Nat64 {} "valgrind_client_request" importFunction
+"errno.errno" use
 
 FiberData: [{
   canceled?: [@func nil?];
@@ -87,7 +72,7 @@ FiberData: [{
   ];
 
   nativeFiber: Natx;
-  next:        [FiberData] Mref; # For reusable fibers: next fiber in the LIFO stack; for resuming fibers: next fiber to resume, FIFO queue
+  next:        [FiberData] Mref;
   func:        {data: Natx;} {} {} codeRef;
   funcData:    Natx;
 }];
@@ -112,15 +97,8 @@ createFiber: [
   @ucontext getcontext -1 = [("FATAL: getcontext failed, result=" errno LF) printList "" failProc] when
 
   STACK_SIZE: [64 1024 * Natx cast];
-  STACK_SIZE malloc @ucontext.@uc_stack.!ss_sp
-  STACK_SIZE        @ucontext.@uc_stack.!ss_size
-
-  UNDER_VALGRIND [
-    VALGRIND_STACK_REGISTER: [0x1501n64];
-    offset0: stackPtr Nat64 cast;
-    offset1: STACK_SIZE Nat64 cast offset0 +;
-    0n64 0n64 0n64 offset1 offset0 VALGRIND_STACK_REGISTER 0n64 valgrind_client_request drop
-  ] when
+  STACK_SIZE malloc     @ucontext.@uc_stack.!ss_sp
+  STACK_SIZE Nat64 cast @ucontext.@uc_stack.!ss_size
 
   {data: creationDataPtr new;} 1 @fiberFunc storageAddress @ucontext makecontext
 
@@ -132,33 +110,30 @@ dispatch: [
 
   [
     resumingFibers.empty? [
-      event: epoll_event;
-
-      INFINITE_TIMEOUT: [-1];
-      MAX_EVENT_COUNT:  [1];
-
-      INFINITE_TIMEOUT MAX_EVENT_COUNT event storageAddress epoll_fd epoll_wait MAX_EVENT_COUNT = [
-        fiberPair: event.ptr FiberPair addressToReference;
-        result: event.events (
-          [EPOLLOUT and 0n32 = ~] [@fiberPair.@writeFiber !fiber TRUE]
-          [EPOLLIN  and 0n32 = ~] [@fiberPair.@readFiber  !fiber TRUE]
+      MAX_EVENT_COUNT: [1];
+      event: struct_kevent;
+      timespec Ref 0n32 MAX_EVENT_COUNT @event 0 struct_kevent Ref kqueue_fd kevent -1 = [
+        lastErrorNumber: errno;
+        lastErrorNumber EINTR = ~ [("FATAL: [In dispatch] kevent failed, result=" lastErrorNumber LF) printList "" failProc] when
+        TRUE
+      ] [
+        fiberPair: event.udata Natx cast FiberPair addressToReference;
+        result: event.filter (
+          [EVFILT_READ = ] [@fiberPair.@readFiber !fiber TRUE]
+          [EVFILT_TIMER = ] [@fiberPair.@readFiber !fiber TRUE]
+          [EVFILT_WRITE =] [@fiberPair.@writeFiber !fiber TRUE]
           [FALSE]
         ) cond;
 
         [result [fiber nil?] && ~] "dispatch failed" assert
 
         result ~
-      ] [
-        lastErrorNumber: errno;
-        lastErrorNumber EINTR = ~ [("FATAL: epoll_wait failed, result=" lastErrorNumber LF) printList "" failProc] when
-        TRUE
       ] if
     ] [
       @resumingFibers.popFirst !fiber
       FALSE
     ] if
   ] loop
-
   fiber currentFiber is ~ [
     @fiber.switchTo
   ] when
@@ -168,18 +143,18 @@ emptyCancelFunc: {data: Natx;} {} {} codeRef; [
   drop
 ] !emptyCancelFunc
 
+lastTimer: 1nx;
+
 getTimerFd: [
-  timer_fd: Int32;
+  timer_fd: Natx;
   timers.size 0 = [
-    TFD_NONBLOCK CLOCK_BOOTTIME timerfd_create !timer_fd
-    timer_fd -1 = [("FATAL: timerfd_create failed, result=" errno LF) printList "" failProc] when
-    epoll_event timer_fd EPOLL_CTL_ADD epoll_fd epoll_ctl -1 = [("FATAL: epoll_ctl failed, result=" errno LF) printList "" failProc] when
+    lastTimer new !timer_fd
+    lastTimer 1nx + !lastTimer
   ] [
     timers.last new !timer_fd
     @timers.popBack
   ] if
-
-  timer_fd new
+  timer_fd
 ];
 
 makeUcontext: [ucontext_t dup dup storageSize malloc swap addressToReference [set] keep];
@@ -189,9 +164,9 @@ spawnFiber: [
 
   reusableFibers.empty? [
     creationData: {nativeFiber: Natx; func: @func; funcData: funcData;};
-    fiberFunc:    {data: Natx;} {} {convention: cdecl;} codeRef; [
+    fiberFunc: {data: Natx;} {} {convention: cdecl;} codeRef; [
       creationData: creationData addressToReference;
-      data:         FiberData;
+      data: FiberData;
 
       creationData.nativeFiber new @data.!nativeFiber
       creationData.@func           @data.!func
@@ -218,15 +193,15 @@ spawnFiber: [
 ];
 
 currentFiber:   FiberData Ref;
-epoll_fd:       Int32;
+kqueue_fd:      Int32;
 rootFiber:      FiberData;
 resumingFibers: FiberData IntrusiveQueue;
 reusableFibers: FiberData IntrusiveQueue;
-timers:         Int32 Array;
+timers:         Natx Array;
 
 [
-  0 epoll_create1 !epoll_fd
-  epoll_fd -1 = [("FATAL: epoll_create1 failed, result=" errno LF) printList "" failProc] when
+  kqueue !kqueue_fd
+  kqueue_fd -1 = [("In [syncPrivate]: FATAL: kqueue failed, result=" errno LF) printList "" failProc] when
 
   rootContext: makeUcontext;
   rootContext storageAddress @rootFiber.!nativeFiber
