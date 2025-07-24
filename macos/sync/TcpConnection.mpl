@@ -15,6 +15,7 @@
 "control.Int32"         use
 "control.Nat16"         use
 "control.Nat32"         use
+"control.Nat64"         use
 "control.Nat8"          use
 "control.Natx"          use
 "control.Ref"           use
@@ -32,6 +33,7 @@
 "posix.O_NONBLOCK"      use
 "posix.close"           use
 "posix.fcntl"           use
+"posix.timespec"        use
 "socket.AF_INET"        use
 "socket.F_GETFL"        use
 "socket.F_SETFL"        use
@@ -56,13 +58,11 @@
 "socket.socklen_t"      use
 
 "errno.errno"         use
-"linux.EPOLLIN"       use
-"linux.EPOLLONESHOT"  use
-"linux.EPOLLOUT"      use
-"linux.EPOLL_CTL_ADD" use
-"linux.EPOLL_CTL_MOD" use
-"linux.epoll_ctl"     use
-"linux.epoll_event"   use
+"macos.EVFILT_READ"   use
+"macos.EVFILT_WRITE"  use
+"macos.EV_ONESHOT"    use
+"macos.kevent"        use
+"macos.struct_kevent" use
 
 "syncPrivate.FiberData"         use
 "syncPrivate.FiberPair"         use
@@ -70,7 +70,7 @@
 "syncPrivate.currentFiber"      use
 "syncPrivate.defaultCancelFunc" use
 "syncPrivate.dispatch"          use
-"syncPrivate.epoll_fd"          use
+"syncPrivate.kqueue_fd"         use
 "syncPrivate.resumingFibers"    use
 
 TcpConnection: [{
@@ -111,16 +111,21 @@ TcpConnection: [{
         ] [
           @currentFiber @fiberPair.!readFiber
 
-          connectionEvent: epoll_event;
-          fiberPair storageAddress @connectionEvent.ptr set
+          connectionEvent: struct_kevent;
+          fiberPair storageAddress Nat64 cast @connectionEvent.@udata set
+
+          connection Nat64 cast @connectionEvent.!ident
 
           fiberPair.writeFiber nil? ~ [
-            EPOLLIN EPOLLOUT or EPOLLONESHOT or @connectionEvent.!events
+            EVFILT_READ EVFILT_WRITE or @connectionEvent.@filter set
           ] [
-            EPOLLIN EPOLLONESHOT or @connectionEvent.!events
+            EVFILT_READ @connectionEvent.@filter set
           ] if
 
-          @connectionEvent connection EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("epoll_ctl failed, result=" errno) @result.catMany] when
+          EV_ONESHOT @connectionEvent.@flags set
+
+          timespec Ref 0n32 0 struct_kevent Ref 1 connectionEvent kqueue_fd kevent -1 = [("kevent failed, result=" errno) @result.catMany] when
+          "control.Nat32" use
         ] [
           context: {
             connection: connection new;
@@ -131,13 +136,16 @@ TcpConnection: [{
             context:   @context addressToReference;
             fiberPair: @context.@fiberPair;
 
-            connectionEvent: epoll_event;
+            connectionEvent: struct_kevent;
+
+            context.connection Nat64 cast @connectionEvent.!ident
             fiberPair.writeFiber nil? ~ [
-              EPOLLOUT EPOLLONESHOT or @connectionEvent.!events
-              fiberPair storageAddress @connectionEvent.ptr set
+              EVFILT_WRITE @connectionEvent.@filter set
+              EV_ONESHOT @connectionEvent.@flags set
+              fiberPair storageAddress Nat64 cast @connectionEvent.udata set
             ] when
 
-            @connectionEvent context.connection EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("FATAL: epoll_failed failed, result=" errno LF) printList "" failProc] when
+            timespec Ref 0n32 0 struct_kevent Ref 1 connectionEvent kqueue_fd kevent -1 = [("FATAL: kevent failed, result=" errno LF) printList "" failProc] when
 
             @fiberPair.@readFiber @resumingFibers.append
           ] @currentFiber.setFunc
@@ -149,11 +157,14 @@ TcpConnection: [{
           @defaultCancelFunc @currentFiber.!func
 
           fiberPair.writeFiber nil? ~ [
-            connectionEvent: epoll_event;
-            EPOLLOUT EPOLLONESHOT or @connectionEvent.!events
-            fiberPair storageAddress @connectionEvent.ptr set
+            connectionEvent: struct_kevent;
 
-            @connectionEvent connection EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("epoll_ctl failed, result=" errno) @result.catMany] when
+            connection Nat64 cast @connectionEvent.!ident
+            EVFILT_WRITE @connectionEvent.@filter set
+            EV_ONESHOT @connectionEvent.@flags set
+            fiberPair storageAddress Nat64 cast @connectionEvent.udata set
+
+            timespec Ref 0n32 0 struct_kevent Ref 1 connectionEvent kqueue_fd kevent -1 = [("kevent failed, result=" errno) @result.catMany] when
           ] when
         ] [
           0 data.size Natx cast data.data storageAddress connection recv !recievedByteCount
@@ -179,6 +190,7 @@ TcpConnection: [{
   shutdown: [
     [valid?] "invalid TcpConnection" assert
     "socket.shutdown" use
+
     SHUT_WR connection shutdown 0 = [String] [("shutdown failed, result=" errno) assembleString] if
   ];
 
@@ -207,16 +219,19 @@ TcpConnection: [{
         ] [
           @currentFiber @fiberPair.!writeFiber
 
-          connectionEvent: epoll_event;
-          fiberPair storageAddress @connectionEvent.ptr set
+          connectionEvent: struct_kevent;
+          connection Nat64 cast @connectionEvent.!ident
+          fiberPair storageAddress Nat64 cast @connectionEvent.udata set
 
           fiberPair.readFiber nil? ~ [
-            EPOLLIN EPOLLOUT or EPOLLONESHOT or @connectionEvent.!events
+            EVFILT_READ EVFILT_WRITE or @connectionEvent.@filter set
           ] [
-            EPOLLOUT EPOLLONESHOT or @connectionEvent.!events
+            EVFILT_WRITE @connectionEvent.@filter set
           ] if
 
-          @connectionEvent connection EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("epoll_ctl failed, result=" errno) @result.catMany] when
+          EV_ONESHOT @connectionEvent.@flags set
+
+          timespec Ref 0n32 0 struct_kevent Ref 1 connectionEvent kqueue_fd kevent -1 = [("kevent failed, result=" errno) @result.catMany] when
         ] [
           context: {
             connection: connection new;
@@ -227,13 +242,15 @@ TcpConnection: [{
             context:   @context addressToReference;
             fiberPair: @context.@fiberPair;
 
-            connectionEvent: epoll_event;
+            connectionEvent: struct_kevent;
+            context.connection Nat64 cast @connectionEvent.!ident
             fiberPair.readFiber nil? ~ [
-              EPOLLIN EPOLLONESHOT or  @connectionEvent.!events
-              fiberPair storageAddress @connectionEvent.ptr set
+              EVFILT_READ @connectionEvent.@filter set
+              fiberPair storageAddress Nat64 cast @connectionEvent.udata set
+              EV_ONESHOT @connectionEvent.@flags set
             ] when
 
-            @connectionEvent context.connection EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("FATAL: epoll_failed failed, result=" errno LF) printList "" failProc] when
+            timespec Ref 0n32 0 struct_kevent Ref 1 connectionEvent kqueue_fd kevent -1 = [("FATAL: kevent failed, result=" errno LF) printList "" failProc] when
 
             @fiberPair.@writeFiber @resumingFibers.append
           ] @currentFiber.setFunc
@@ -245,11 +262,12 @@ TcpConnection: [{
           @defaultCancelFunc @currentFiber.!func
 
           fiberPair.readFiber nil? ~ [
-            connectionEvent: epoll_event;
-            EPOLLIN EPOLLONESHOT or  @connectionEvent.!events
-            fiberPair storageAddress @connectionEvent.ptr set
+            connectionEvent: struct_kevent;
+            connection Nat64 cast @connectionEvent.!ident
+            EVFILT_READ @connectionEvent.@filter set
+            fiberPair storageAddress Nat64 cast @connectionEvent.udata set
 
-            @connectionEvent connection EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("epoll_ctl failed, result=" errno) @result.catMany] when
+            timespec Ref 0n32 0 struct_kevent Ref 1 connectionEvent kqueue_fd kevent -1 = [("kevent failed, result=" errno) @result.catMany] when
           ] when
         ] [
           0 data.size Natx cast data.data storageAddress connection send !sentByteCount
@@ -284,7 +302,7 @@ makeTcpConnection: [
     ] [
       flags: (0) F_GETFL connection.connection fcntl;
       flags -1 = [
-        O_NONBLOCK Nat32 cast flags Nat32 cast or Int32 cast !flags
+        O_NONBLOCK Nat32 cast flags Nat32 cast or Int32 cast @flags set
         (flags new) F_SETFL connection.connection fcntl -1 =
       ] || [("fcntl failed, result=" errno) @result.catMany] when
     ] [
@@ -301,26 +319,34 @@ makeTcpConnection: [
       fiberPair: FiberPair;
       @currentFiber @fiberPair.!writeFiber
 
-      connectEvent: epoll_event;
-      EPOLLOUT EPOLLONESHOT or @connectEvent.!events
-      fiberPair storageAddress @connectEvent.ptr set
+      connectEvent: struct_kevent;
 
-      @connectEvent connection.connection EPOLL_CTL_ADD epoll_fd epoll_ctl -1 = [("epoll_ctl failed, result=" errno) @result.catMany] when
+      connection.connection Nat64 cast @connectEvent.!ident
+      EVFILT_WRITE @connectEvent.@filter set
+      EV_ONESHOT @connectEvent.@flags set
+
+      fiberPair storageAddress Nat64 cast @connectEvent.@udata set
+
+      timespec Ref 0n32 0 struct_kevent Ref 1 connectEvent kqueue_fd kevent -1 = [("kevent failed, result=" errno) @result.catMany] when
     ] [
       context: {
         connection: connection.connection new;
         fiber:      @currentFiber;
+        connEvent:  struct_kevent;
       };
+
+      connection.connection Nat64 cast @context.@connEvent.!ident
 
       context storageAddress [
         context: @context addressToReference;
 
-        epoll_event context.connection EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("epoll_ctl failed, result=" errno LF) printList "" failProc] when
+        timespec Ref 0n32 0 struct_kevent Ref 1 context.connEvent kqueue_fd kevent -1 = [("kevent failed, result=" errno) printList "" failProc] when
 
         @context.@fiber @resumingFibers.append
       ] @currentFiber.setFunc
 
       dispatch
+      FiberData Ref @fiberPair.!readFiber
       canceled? ["canceled" @result.cat] when
     ] [
       @defaultCancelFunc @currentFiber.!func

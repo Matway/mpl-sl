@@ -8,25 +8,30 @@
 "String.assembleString" use
 "String.printList"      use
 "control.&&"            use
+"control.Int32"         use
 "control.Intx"          use
 "control.Nat32"         use
+"control.Natx"          use
 "control.Real64"        use
 "control.Ref"           use
 "control.assert"        use
 "control.failProc"      use
 "control.when"          use
+"control.while"         use
 
 "posix.itimerspec" use
+"posix.timespec"   use
 
-"errno.errno"           use
-"linux.EPOLLIN"         use
-"linux.EPOLLONESHOT"    use
-"linux.EPOLL_CTL_MOD"   use
-"linux.epoll_ctl"       use
-"linux.epoll_event"     use
-"linux.timerfd_settime" use
+"errno.errno"         use
+"macos.EVFILT_TIMER"  use
+"macos.EV_ADD"        use
+"macos.EV_ONESHOT"    use
+"macos.EV_SET"        use
+"macos.NOTE_NSECONDS" use
+"macos.kevent"        use
+"macos.struct_kevent" use
 
-"TcpAcceptor.makeTcpAcceptor"     use
+#"TcpAcceptor.makeTcpAcceptor"     use
 "TcpConnection.makeTcpConnection" use
 "sync/Context.makeContext"        use
 "syncPrivate.FiberData"           use
@@ -34,8 +39,8 @@
 "syncPrivate.currentFiber"        use
 "syncPrivate.defaultCancelFunc"   use
 "syncPrivate.dispatch"            use
-"syncPrivate.epoll_fd"            use
 "syncPrivate.getTimerFd"          use
+"syncPrivate.kqueue_fd"           use
 "syncPrivate.resumingFibers"      use
 "syncPrivate.timers"              use
 
@@ -64,6 +69,7 @@ connectTcp: [makeTcpConnection];
 #   time (Real64) - time elapsed
 getTime: [
   "runningTime.runningTime" use
+
   runningTime.get
 ];
 
@@ -92,52 +98,56 @@ listenTcp: [makeTcpAcceptor];
 # out:
 #   NONE
 sleepFor: [
-  duration:;
+  duration: Real64 cast;
 
   SECONDS_TO_NANOSECONDS_MULTIPLIER: [1000000000.0r64];
 
-  seconds:     duration Intx cast;
-  nanoseconds: duration seconds Real64 cast - SECONDS_TO_NANOSECONDS_MULTIPLIER * Intx cast;
   canceled? ~ [
-    seconds 0ix = [nanoseconds 0ix =] && [yield] [
+    duration 0.0r64 = [yield] [
       [currentFiber.@func @defaultCancelFunc is] "invalid cancelation function" assert
 
-      expirationTime: itimerspec;
-      0ix             @expirationTime.@it_interval.!tv_sec
-      0ix             @expirationTime.@it_interval.!tv_nsec
-      seconds     new @expirationTime.@it_value   .!tv_sec
-      nanoseconds new @expirationTime.@it_value   .!tv_nsec
+      expirationTime: duration SECONDS_TO_NANOSECONDS_MULTIPLIER * Int32 cast;
 
       timer_fd: getTimerFd;
-      itimerspec Ref @expirationTime 0 timer_fd timerfd_settime -1 = [("FATAL: timerfd_settime failed, result=" errno LF) printList "" failProc] when
+
+      timerEvent: struct_kevent;
 
       fiberPair: FiberPair;
       FiberData Ref @fiberPair.!writeFiber
       @currentFiber @fiberPair.!readFiber
 
-      timerEvent: epoll_event;
-      EPOLLIN EPOLLONESHOT or  @timerEvent.!events
-      fiberPair storageAddress @timerEvent.ptr set
+      @timerEvent timer_fd EVFILT_TIMER EV_ADD EV_ONESHOT or NOTE_NSECONDS expirationTime fiberPair storageAddress 0n64 0n64 EV_SET
 
-      @timerEvent timer_fd EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("FATAL: epoll_ctl failed, result=" errno LF) printList "" failProc] when
+      timespec Ref 0n32 0 struct_kevent Ref 1 timerEvent kqueue_fd kevent -1 = [
+        ("In [sleepFor]: FATAL: kevent failed, result=" errno LF) printList "" failProc
+      ] when
 
       context: {
         fiber:    @currentFiber;
+        pair:     @fiberPair;
         timer_fd: timer_fd new;
+        duration: duration new;
       };
 
       context storageAddress [
         context: @context addressToReference;
+        event: struct_kevent;
+        EVFILT_TIMER @event.@filter set
+        timeout: timespec;
+        context.duration Intx cast @timeout.@tv_sec set
 
-        epoll_event context.timer_fd EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("FATAL: epoll_ctl failed, result=" errno LF) printList "" failProc] when
+        [event.udata Natx cast context.pair storageAddress = ~]
+        [
+          timeout 0n32 1 @event 1 event kqueue_fd kevent -1 = [("FATAL: [In currentFiber.func] epoll_ctl failed, result=" errno LF) printList "" failProc] when
+        ] while
 
         @context.@fiber @resumingFibers.append
+        context.timer_fd @timers.append
       ] @currentFiber.setFunc
 
       dispatch
 
       canceled? ~ [@defaultCancelFunc @currentFiber.!func] when
-      timer_fd @timers.append
     ] if
   ] when
 ];
