@@ -64,6 +64,8 @@
 "macos.kevent"        use
 "macos.struct_kevent" use
 
+"objectTools.formatObject" use
+
 "syncPrivate.FiberData"         use
 "syncPrivate.FiberPair"         use
 "syncPrivate.canceled?"         use
@@ -111,20 +113,26 @@ TcpConnection: [{
         ] [
           @currentFiber @fiberPair.!readFiber
 
-          connectionEvent: struct_kevent;
-          fiberPair storageAddress Nat64 cast @connectionEvent.@udata set
+          isReadWrite: fiberPair.writeFiber nil? ~;
+          nEvents: isReadWrite [2] [1] if;
 
-          connection Nat64 cast @connectionEvent.!ident
+          connectionEvents: struct_kevent 2 array;
 
-          fiberPair.writeFiber nil? ~ [
-            EVFILT_READ EVFILT_WRITE or @connectionEvent.@filter set
-          ] [
-            EVFILT_READ @connectionEvent.@filter set
-          ] if
+          readEvent: 0 @connectionEvents @;
+          fiberPair storageAddress Nat64 cast @readEvent.@udata set
+          connection Nat64 cast @readEvent.!ident
+          EVFILT_READ @readEvent.@filter set
+          EV_ONESHOT @readEvent.@flags set
 
-          EV_ONESHOT @connectionEvent.@flags set
+          isReadWrite [
+            writeEvent: 1 @connectionEvents @;
+            fiberPair storageAddress Nat64 cast @writeEvent.@udata set
+            connection Nat64 cast @writeEvent.!ident
+            EVFILT_WRITE @writeEvent.@filter set
+            EV_ONESHOT @writeEvent.@flags set
+          ] when
 
-          timespec Ref 0n32 0 struct_kevent Ref 1 connectionEvent kqueue_fd kevent -1 = [("kevent failed, result=" errno) @result.catMany] when
+          timespec Ref 0n32 0 struct_kevent Ref nEvents connectionEvents storageAddress struct_kevent addressToReference kqueue_fd kevent -1 = [("kevent failed, result=" errno) @result.catMany] when
           "control.Nat32" use
         ] [
           context: {
@@ -142,7 +150,7 @@ TcpConnection: [{
             fiberPair.writeFiber nil? ~ [
               EVFILT_WRITE @connectionEvent.@filter set
               EV_ONESHOT @connectionEvent.@flags set
-              fiberPair storageAddress Nat64 cast @connectionEvent.udata set
+              fiberPair storageAddress Nat64 cast @connectionEvent.@udata set
             ] when
 
             timespec Ref 0n32 0 struct_kevent Ref 1 connectionEvent kqueue_fd kevent -1 = [("FATAL: kevent failed, result=" errno LF) printList "" failProc] when
@@ -162,7 +170,7 @@ TcpConnection: [{
             connection Nat64 cast @connectionEvent.!ident
             EVFILT_WRITE @connectionEvent.@filter set
             EV_ONESHOT @connectionEvent.@flags set
-            fiberPair storageAddress Nat64 cast @connectionEvent.udata set
+            fiberPair storageAddress Nat64 cast @connectionEvent.@udata set
 
             timespec Ref 0n32 0 struct_kevent Ref 1 connectionEvent kqueue_fd kevent -1 = [("kevent failed, result=" errno) @result.catMany] when
           ] when
@@ -324,6 +332,8 @@ makeTcpConnection: [
       connection.connection Nat64 cast @connectEvent.!ident
       EVFILT_WRITE @connectEvent.@filter set
       EV_ONESHOT @connectEvent.@flags set
+
+      (connectEvent {} formatObject LF) printList
 
       fiberPair storageAddress Nat64 cast @connectEvent.@udata set
 
