@@ -47,8 +47,8 @@ addrinfo: [{
   ai_socktype:  Int32;
   ai_protocol:  Int32;
   ai_addrlen:   Natx;
-  ai_addr:      Natx;
   ai_canonname: Natx;
+  ai_addr:      Natx;
   ai_next:      Natx;
 }];
 
