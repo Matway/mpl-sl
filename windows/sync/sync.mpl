@@ -20,6 +20,7 @@
 "syncPrivate.defaultCancelFunc"   use
 "syncPrivate.dispatch"            use
 "syncPrivate.getTimePrivate"      use
+"syncPrivate.resolveHost0"        use
 "syncPrivate.resumingFibers"      use
 "syncPrivate.timers"              use
 
@@ -142,3 +143,11 @@ yield: [
   @currentFiber @resumingFibers.append
   dispatch
 ];
+
+# Resolves host to it's corresponding IPv4 address using system DNS resolver
+# in:
+#   host (String) - host to resolve
+# out:
+#   addresses (Nat32 Iterable) - IPv4 addresses of host provided
+#   result (String) - empty on success, error message on failure
+resolveIpv4Hosts: [resolveHost0];

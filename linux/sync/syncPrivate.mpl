@@ -5,12 +5,16 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"Array.Array"                   use
 "IntrusiveQueue.IntrusiveQueue" use
 "Mref.Mref"                     use
+"String.addTerminator"          use
+"String.assembleString"         use
+"String.makeStringView"         use
 "String.printList"              use
 "algorithm.cond"                use
 "control.&&"                    use
+"control.AsRef"                 use
+"control.Cref"                  use
 "control.Int32"                 use
 "control.Nat64"                 use
 "control.Natx"                  use
@@ -45,6 +49,15 @@
 "linux.epoll_event"    use
 "linux.epoll_wait"     use
 "linux.timerfd_create" use
+
+"socket.AF_INET"      use
+"socket.IPPROTO_TCP"  use
+"socket.SOCK_STREAM"  use
+"socket.addrinfo"     use
+"socket.freeaddrinfo" use
+"socket.getaddrinfo"  use
+"socket.ntohl"        use
+"socket.sockaddr_in"  use
 
 UNDER_VALGRIND: [FALSE];
 UNDER_VALGRIND: [SL_SYNC_UNDER_VALGRIND TRUE] [
@@ -234,3 +247,43 @@ timers:         Int32 Array;
   @defaultCancelFunc @rootFiber.!func
   @rootFiber !currentFiber
 ] call
+
+resolveHost0: [
+  host: addTerminator makeStringView;
+  hints: addrinfo;
+  0           @hints.!ai_flags
+  AF_INET     @hints.!ai_family
+  SOCK_STREAM @hints.!ai_socktype
+  IPPROTO_TCP @hints.!ai_protocol
+  0nx @hints.!ai_addrlen
+  0nx @hints.!ai_canonname
+  0nx @hints.!ai_addr
+  0nx @hints.!ai_next
+  addressInfos: addrinfo Ref AsRef;
+  result: @addressInfos storageAddress hints 0nx host.data storageAddress getaddrinfo;
+  result 0 = ~ [
+    ("getaddrinfo failed, result = " result) assembleString
+  ] [
+    String
+  ] if
+
+  {
+    SCHEMA_NAME: "ResolveHosts" virtual;
+
+    root: addressInfos;
+    data: addressInfos;
+
+    next: [
+        data nil? ~ [
+            data.ai_addr sockaddr_in Cref addressToReference .sin_addr new ntohl
+            TRUE
+        ] [Nat32 FALSE] if
+    ];
+
+    DIE: [
+      root nil? ~ [
+        @root freeaddrinfo
+      ] when
+    ];
+  }
+];
