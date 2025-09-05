@@ -5,14 +5,28 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
+"Array.Array"           use
 "String.String"         use
 "String.assembleString" use
+"String.makeStringView" use
 "String.printList"      use
+"algorithm.any"         use
+"algorithm.case"        use
+"algorithm.each"        use
+"algorithm.tail"        use
+"algorithm.toIter"      use
+"control.Int32"         use
 "control.Nat32"         use
-"control.Ref"           use
+"control.Nat8"          use
 "control.assert"        use
+"control.drop"          use
 "control.exit"          use
+"control.keep"          use
+"control.pfunc"         use
+"control.swap"          use
+"control.times"         use
 "control.when"          use
+"control.wrap"          use
 
 "kernel32.CloseHandle"         use
 "kernel32.CreateProcessW"      use
@@ -23,83 +37,156 @@
 "kernel32.SECURITY_ATTRIBUTES" use
 "kernel32.STARTUPINFOW"        use
 "kernel32.TerminateProcess"    use
-"kernel32.WAIT_FAILED"         use
 "kernel32.WAIT_OBJECT_0"       use
 "kernel32.WaitForSingleObject" use
+"unicode.utf16"                use
 
-"unicode.utf16" use
+CommandEncoder: {
+  crt: [
+    arguments: toIter;
+    result: @arguments 3 getBuffer; # Two quotes per argument, plus one space between arguments (we do not count any quotes or slashes that may be present in a command)
+
+    program: @arguments consume makeStringView;
+    [program [0x22n8 =] any ~] "[CommandEncoder.crt], First argument (program) contains quote character «\"»" assert
+    "\""    @result.append
+    program @result.append
+    "\""    @result.append
+
+    @arguments [
+      argument: makeStringView;
+      freeSlashCount: 0;
+      " \"" @result.append
+      argument [
+        codeUnit: new;
+        codeUnit (
+          0x22n8 [
+            result.size freeSlashCount 2 + + @result.enlarge # [2 +] for \"
+            unassigned: @result freeSlashCount 2 + tail;
+            freeSlashCount 1 + [0x5Cn8 i @unassigned.at set] times
+            0x22n8 @result.last set
+            0
+          ]
+
+          0x5Cn8 [
+            "\\" @result.append
+            freeSlashCount 1 +
+          ]
+
+          [
+            codeUnit @result.append
+            0
+          ]
+        ) case !freeSlashCount
+      ] each
+      freeSlashCount 0 = ~ [
+        result.size freeSlashCount + @result.enlarge
+        slashes: @result freeSlashCount tail;
+        freeSlashCount [0x5Cn8 i @slashes.at set] times
+      ] when
+      "\"" @result.append
+    ] each
+
+    result
+  ];
+
+  plain: [
+    arguments: toIter;
+    result: @arguments 1 getBuffer; # One space between arguments
+
+    program: @arguments consume makeStringView;
+    program @result.append
+    @arguments [
+      " "            @result.append
+      makeStringView @result.append
+    ] each
+
+    result
+  ];
+
+  # Internal
+
+  consume: [
+    source:;
+    first: valid: @source.next;;
+    [valid] "Command (program) is not provided" assert
+    result: first;
+    [result makeStringView.size 0 = ~] "Command (program) is empty" assert
+
+    result
+  ];
+
+  getBuffer: [
+    source: multiplier:;;
+    iter: @source toIter;
+    @source @iter is [ # We should not try to exhaust the source
+      Nat8 Array
+    ] [
+      count: 0;
+      size:  0;
+      @iter [
+        1                   count + !count
+        makeStringView.size size  + !size
+      ] each
+      [count 0 = ~] "The source is empty" assert
+      count multiplier * 1 - size + Nat8 Array [.setReserve] keep # One space less
+    ] if
+  ];
+};
 
 Process: [{
   SCHEMA_NAME: "Process" virtual;
 
   create: [
-    command:;
-    [isCreated ~] "Attempted to initialize a Process twice" assert
+    {} create2
+  ];
+
+  create2: [
+    arguments: options:;;
 
     processInformation: PROCESS_INFORMATION;
     startupInfo:        STARTUPINFOW;
     startupInfo storageSize Nat32 cast @startupInfo.!cb
 
-    success:
-      @processInformation
-      @startupInfo
-      0nx
-      0nx
-      0n32
-      0
-      SECURITY_ATTRIBUTES Ref
-      SECURITY_ATTRIBUTES Ref
-      command utf16.data storageAddress
-      0nx
-      CreateProcessW 0 = ~
-    ;
+    @processInformation
+    @startupInfo
+    0nx
+    0nx
+    0n32
+    0
+    0nx SECURITY_ATTRIBUTES addressToReference
+    0nx SECURITY_ATTRIBUTES addressToReference
+    @arguments @options "encodeCommand" has [@options.encodeCommand] [CommandEncoder.crt] if.span.stringView utf16.data storageAddress
+    0nx
+    CreateProcessW 0 = ~ [
+      processInformation.hThread closeHandle
 
-    success [
       processInformation.hProcess new !handle
-
-      processInformation.hThread CloseHandle 0 = [
-        "CloseHandle" reportError
-      ] when
 
       String
     ] [
-      "CreateProcessW" getErrorMessage
+      "CreateProcessW" errorMessage
     ] if
   ];
+
+  create2: [drop makeStringView TRUE] [
+    swap 1 wrap swap create2
+  ] pfunc;
 
   isCreated: [
     handle 0nx = ~
   ];
 
-  isRunning: [
-    "get running status of" assertCreated
-
-    waitResult: 0n32 handle WaitForSingleObject;
-
-    waitResult WAIT_FAILED = [
-      "WaitForSingleObject" reportError
-      1 exit
-    ] when
-
-    waitResult WAIT_OBJECT_0 = ~
-  ];
-
   kill: [
-    exitCode:;
     "kill" assertCreated
 
-    exitCode handle TerminateProcess 0 = [
+    1n32 handle TerminateProcess 0 = [
       "TerminateProcess" reportError
       1 exit
     ] when
-
-    closeHandle
   ];
 
   wait: [
-    needExitCode:;
-    [needExitCode isStatic] "[needExitCode] must be static" assert
-
+    needExitCode: new virtual;
     "wait" assertCreated
 
     INFINITE handle WaitForSingleObject WAIT_OBJECT_0 = ~ [
@@ -115,10 +202,11 @@ Process: [{
         1 exit
       ] when
 
-      result
+      result Int32 cast
     ] when
 
-    closeHandle
+    handle closeHandle
+    0nx !handle
   ];
 
   private handle: 0nx;
@@ -135,30 +223,31 @@ Process: [{
 
   private assertCreated: [
     operationName:;
-    [isCreated] "Attempted to " operationName & " a Process that is not initialized" & assert
+    [isCreated] "Attempted to apply " operationName & " on a Process that is not initialized" & assert
   ];
 
   private closeHandle: [
-    handle CloseHandle 0 = [
-      "CloseHandle" reportError
-    ] when
-
-    0nx !handle
+    handle:;
+    handle CloseHandle 0 = ["CloseHandle" reportError] when
   ];
 
-  private getErrorMessage: [
+  private errorMessage: [
     functionName:;
     (functionName " failed, result=" GetLastError LF) assembleString
   ];
 
   private reportError: [
     functionName:;
-    (functionName getErrorMessage LF) printList
+    (functionName errorMessage LF) printList
   ];
 }];
 
+ProcessSchema: 0nx Process addressToReference virtual;
+
 toProcess: [
-  process: Process;
-  result: @process.create;
-  @process @result
+  {} toProcess2
+];
+
+toProcess2: [
+  Process [.create2] keep swap
 ];

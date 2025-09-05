@@ -12,47 +12,46 @@ mplc: [MPLC TRUE] [MPLC] pfunc;
 
 clangArguments: [
   additional: filenameSuffix:;;
-  "" (
-    additional
-    "-o out/tests" filenameSuffix & ".exe" &
-    "   out/tests" filenameSuffix & ".ll"  &
-  ) [" " swap & &] each
+  additional unwrap
+  "-o" "out/tests" filenameSuffix & ".exe" &
+  "out/tests"      filenameSuffix & ".ll"  &
 ];
 
 mplcArguments: [
   additional: filenameSuffix:;;
-  "" (
-    additional unwrap
 
-    "-D PLATFORM_TESTS=\\\"windows/tests\\\""
+  additional unwrap
 
-    "-I \"\""
-    "-I tests"
-    "-I windows"
+  "-D" "PLATFORM_TESTS=\"windows/tests\""
 
-    "-linker_option /DEFAULTLIB:ws2_32.lib"
+  "-I" ""
+  "-I" "tests"
+  "-I" "windows"
 
-    "-ndebug"
+  "-linker_option" "/DEFAULTLIB:ws2_32.lib"
 
-    "-o out/tests" filenameSuffix & ".ll" &
+  "-ndebug"
 
-    ".github/workflows/entryPoint.mpl"
-  ) [" " swap & &] each
+  "-o" "out/tests" filenameSuffix & ".ll" &
+
+  ".github/workflows/entryPoint.mpl"
 ];
 
 showTiming: [(runningTime.get LF) printList];
 
 runCommand: [
-  command: arguments:;;
+  arguments:;
+  command: 0 arguments @;
   needsExitStatus: TRUE;
-  exitStatus: needsExitStatus command arguments & toProcess ["" =] "[toProcess] on \"" command & "\" failed" & ensure.wait;
-  [exitStatus 0n32 =] "\n" command & " filed" & ensure
+  process: error: needsExitStatus arguments dynamic toProcess;;
+  [error         "" =] "[toProcess] on \"" command & "\" failed" & ensure
+  [@process.wait 0  =] "\n"                command & " failed"   & ensure
   showTiming
 ];
 
-runClang: [additionalArguments: filenameSuffix:;; "clang" additionalArguments filenameSuffix clangArguments runCommand];
-runMplc:  [additionalArguments: filenameSuffix:;; mplc    additionalArguments filenameSuffix mplcArguments  runCommand];
-runTests: [filenameSuffix:;                       "out/tests" filenameSuffix & ""                           runCommand];
+runClang: [additionalArguments: filenameSuffix:;; ("clang"                      additionalArguments filenameSuffix clangArguments) runCommand];
+runMplc:  [additionalArguments: filenameSuffix:;; (mplc                         additionalArguments filenameSuffix mplcArguments ) runCommand];
+runTests: [                     filenameSuffix:;  ("out/tests" filenameSuffix &                                                  ) runCommand];
 
 testConfiguration: [
   extraArgMplc: extraArgClang: configurationName:;;;
@@ -64,10 +63,10 @@ testConfiguration: [
 ];
 
 tasks: (
-  [("-D TCP_PORT=6600" "-D DEBUG=TRUE") "-O3" "assertO3" testConfiguration]
-  [("-D TCP_PORT=6601"                ) "-O3" "ndebugO3" testConfiguration]
-  [("-D TCP_PORT=6602" "-D DEBUG=TRUE") "-O0" "assertO0" testConfiguration]
-  [("-D TCP_PORT=6603"                ) "-O0" "ndebugO0" testConfiguration]
+  [("-D" "TCP_PORT=6600" "-D" "DEBUG=TRUE") ("-O3") "assertO3" testConfiguration]
+  [("-D" "TCP_PORT=6601"                  ) ("-O3") "ndebugO3" testConfiguration]
+  [("-D" "TCP_PORT=6602" "-D" "DEBUG=TRUE") ("-O0") "assertO0" testConfiguration]
+  [("-D" "TCP_PORT=6603"                  ) ("-O0") "ndebugO0" testConfiguration]
 );
 
 {} Int32 {} [
