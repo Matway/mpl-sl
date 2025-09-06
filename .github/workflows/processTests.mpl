@@ -4,15 +4,14 @@
 
 "Process" use
 
-# THE TRANSITION: Remove the function so that built-in one will be used.
-# Without this function only the first two items of [tasks] will be handled correctly, and the rest will be replaced with the first item(s).
+# THE TRANSITION: 0) Remove the function so that built-in one will be used. See the item #1
 &: [2 wrap assembleString];
 
 tasks: (
-  [["-D" "TCP_PORT=6600" "-D" "DEBUG=TRUE"] "-O3" "assertO3"]
-  [["-D" "TCP_PORT=6601"                  ] "-O3" "ndebugO3"]
-  [["-D" "TCP_PORT=6602" "-D" "DEBUG=TRUE"] "-O0" "assertO0"]
-  [["-D" "TCP_PORT=6603"                  ] "-O0" "ndebugO0"]
+  [[("-D" "TCP_PORT=6600" "-D" "DEBUG=TRUE") dynamic unwrap] ("-O3" "assertO3") dynamic unwrap] # THE TRANSITION: 1) Do not make references unknown. Only first tasks handled correctly, but not the rest ones
+  [[("-D" "TCP_PORT=6601"                  ) dynamic unwrap] ("-O3" "ndebugO3") dynamic unwrap] #
+  [[("-D" "TCP_PORT=6602" "-D" "DEBUG=TRUE") dynamic unwrap] ("-O0" "assertO0") dynamic unwrap] #
+  [[("-D" "TCP_PORT=6603"                  ) dynamic unwrap] ("-O0" "ndebugO0") dynamic unwrap] #
 );
 
 mplc: ["mplc"];
@@ -49,7 +48,9 @@ clangArguments: [
 mplcArguments: [
   additional: filenameSuffix:;;
   additional
-  "-D" "PLATFORM_TESTS=\"" PLATFORM & "/tests\"" &
+  "-D" "FILENAME_SUFFIX=\"" filenameSuffix &       "\"" &
+  "-D" "MPLC=\""            mplc           &       "\"" &
+  "-D" "PLATFORM_TESTS=\""  PLATFORM       & "/tests\"" &
   "-I" ""
   "-I" "tests"
   "-I" PLATFORM
@@ -99,7 +100,7 @@ offloadTask: [
         error "" = ~ [
           1 !result
           configurationName: task; drop drop
-          ("Failed to start child for \"" configurationName "\", " error) printList
+          ("Failed to start child for configuration \"" configurationName "\", " error) printList
         ] when
 
         process
@@ -110,8 +111,7 @@ offloadTask: [
       process:;
       process.isCreated [
         exitStatus: TRUE @process.wait;
-        # TODO: Do not [cast]
-        exitStatus Int32 cast 0 = ~ [
+        exitStatus 0 = ~ [
           ("Child terminated with non-zero exit status: " exitStatus LF) printList
           1 !result
         ] when
