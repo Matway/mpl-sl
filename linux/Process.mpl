@@ -27,8 +27,10 @@
 "control.compilable?"    use
 "control.drop"           use
 "control.exit"           use
+"control.keep"           use
 "control.pfunc"          use
 "control.print"          use
+"control.swap"           use
 "control.touch"          use
 "control.when"           use
 
@@ -61,7 +63,9 @@ Process: [{
 
     closeDescriptor: [
       descriptor:;
-      descriptor close -1 = ["close" 1 errorExit] when
+      descriptor close -1 = [
+        "close" 1 errorExit
+      ] when
     ];
 
     childPipe: {in: Int32; out: Int32;};
@@ -137,15 +141,20 @@ Process: [{
     result
   ];
 
-  create: [makeStringView TRUE] [(1 touch) create] pfunc;
+  create: [makeStringView TRUE] [
+    (1 touch) create
+  ] pfunc;
 
-  isCreated: [processId -1 = ~];
+  isCreated: [
+    processId -1 = ~
+  ];
 
   kill: [
     "kill" assertCreated
     "posix.kill" use
-
-    SIGKILL processId kill -1 = ["kill" 1 errorExit] when
+    SIGKILL processId kill -1 = [
+      "kill" 1 errorExit
+    ] when
   ];
 
   wait: [
@@ -165,10 +174,14 @@ Process: [{
   private processId: -1;
 
   private DIE: [
-    isCreated [FALSE wait] when
+    isCreated [
+      FALSE wait
+    ] when
   ];
 
-  private INIT: [-1 !processId];
+  private INIT: [
+    -1 !processId
+  ];
 
   private assertCreated: [
     operationName:;
@@ -193,7 +206,5 @@ Process: [{
 }];
 
 toProcess: [
-  process: Process;
-  result: @process.create;
-  @process @result
+  Process [.create] keep swap
 ];
