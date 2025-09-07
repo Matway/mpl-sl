@@ -2,88 +2,122 @@
 "algorithm" use
 "control"   use
 
-"Process"             use
-"Thread"              use
-"hardwareConcurrency" use
-"runningTime"         use
+"Process" use
+
+# THE TRANSITION: 0) Remove the function so that built-in one will be used. See the item #1
+&: [2 wrap assembleString];
+
+tasks: (
+  [[("-D" "TCP_PORT=6600" "-D" "DEBUG=TRUE") dynamic unwrap] ("-O3" "assertO3") dynamic unwrap] # THE TRANSITION: 1) Do not make references unknown. Only first tasks handled correctly, but not the rest ones
+  [[("-D" "TCP_PORT=6601"                  ) dynamic unwrap] ("-O3" "ndebugO3") dynamic unwrap] #
+  [[("-D" "TCP_PORT=6602" "-D" "DEBUG=TRUE") dynamic unwrap] ("-O0" "assertO0") dynamic unwrap] #
+  [[("-D" "TCP_PORT=6603"                  ) dynamic unwrap] ("-O0" "ndebugO0") dynamic unwrap] #
+);
 
 mplc: ["mplc"];
 mplc: [MPLC TRUE] [MPLC] pfunc;
 
+additionalLibrary: [
+  PLATFORM (
+    "linux"   ["m"]
+    "windows" ["ws2_32.lib"]
+    [
+      "Unknown platform" raiseStaticError
+    ]
+  ) case
+];
+
+executableExtension: [
+  PLATFORM (
+    "linux"   [""]
+    "windows" [".exe"]
+    [
+      "Unknown platform" raiseStaticError
+    ]
+  ) case
+];
+
 clangArguments: [
   additional: filenameSuffix:;;
-  additional unwrap
-  "-o" "out/tests" filenameSuffix & ".exe" &
-  "out/tests"      filenameSuffix & ".ll"  &
+  additional
+  "-l" additionalLibrary &
+  "-o" "out/tests" filenameSuffix & executableExtension &
+  "out/tests" filenameSuffix & ".ll"  &
 ];
 
 mplcArguments: [
   additional: filenameSuffix:;;
-
-  additional unwrap
-
-  "-D" "PLATFORM_TESTS=\"windows/tests\""
-
+  additional
+  "-D" "FILENAME_SUFFIX=\"" filenameSuffix &       "\"" &
+  "-D" "MPLC=\""            mplc           &       "\"" &
+  "-D" "PLATFORM_TESTS=\""  PLATFORM       & "/tests\"" &
   "-I" ""
   "-I" "tests"
-  "-I" "windows"
-
-  "-linker_option" "/DEFAULTLIB:ws2_32.lib"
-
+  "-I" PLATFORM
   "-ndebug"
-
   "-o" "out/tests" filenameSuffix & ".ll" &
-
   ".github/workflows/entryPoint.mpl"
 ];
 
-showTiming: [(runningTime.get LF) printList];
-
-runCommand: [
-  arguments:;
-  command: 0 arguments @;
-  needsExitStatus: TRUE;
-  process: error: needsExitStatus arguments dynamic toProcess;;
-  [error         "" =] "[toProcess] on \"" command & "\" failed" & ensure
-  [@process.wait 0  =] "\n"                command & " failed"   & ensure
-  showTiming
-];
-
-runClang: [additionalArguments: filenameSuffix:;; ("clang"                      additionalArguments filenameSuffix clangArguments) runCommand];
-runMplc:  [additionalArguments: filenameSuffix:;; (mplc                         additionalArguments filenameSuffix mplcArguments ) runCommand];
-runTests: [                     filenameSuffix:;  ("out/tests" filenameSuffix &                                                  ) runCommand];
-
-testConfiguration: [
-  extraArgMplc: extraArgClang: configurationName:;;;
+taskArguments: [
+  extraArgMplc: extraArgClang: configurationName: call;;;
   filenameSuffix: "_" configurationName &;
-  showTiming
-  extraArgMplc  filenameSuffix runMplc
-  extraArgClang filenameSuffix runClang
-  filenameSuffix               runTests
+  (
+    "out/sequentialTasks"
+
+    "<separator>"
+    mplc
+    @extraArgMplc filenameSuffix mplcArguments
+
+    "<separator>"
+    "clang"
+    extraArgClang filenameSuffix clangArguments
+
+    "<separator>"
+    "out/tests" filenameSuffix &
+  )
 ];
 
-tasks: (
-  [("-D" "TCP_PORT=6600" "-D" "DEBUG=TRUE") ("-O3") "assertO3" testConfiguration]
-  [("-D" "TCP_PORT=6601"                  ) ("-O3") "ndebugO3" testConfiguration]
-  [("-D" "TCP_PORT=6602" "-D" "DEBUG=TRUE") ("-O0") "assertO0" testConfiguration]
-  [("-D" "TCP_PORT=6603"                  ) ("-O0") "ndebugO0" testConfiguration]
-);
+offloadTask: [
+  task:;
+  @task taskArguments toProcess
+];
 
 {} Int32 {} [
+  result: 0;
+
   [
     (
-      "MPL Compiler: «" mplc "»" LF
-
-      "Working threads count: " getHardwareConcurrency LF
-      "Parallel tasks count:  " tasks fieldCount       LF
+      "MPL Compiler: «" mplc "»"                LF
+      "Parallel tasks count: " tasks fieldCount LF
     ) printList
 
-    threads: (tasks fieldCount [Thread] times);
-    (@threads tasks) wrapIter [
-      thread: task: unwrap;;
-      [drop task 0n32] 0nx 0 @thread.create
+    processes: (
+      tasks [
+        task:;
+        process: error: @task offloadTask;;
+
+        error "" = ~ [
+          1 !result
+          configurationName: task; drop drop
+          ("Failed to start child for configuration \"" configurationName "\", " error) printList
+        ] when
+
+        process
+      ] each
+    );
+
+    @processes [
+      process:;
+      process.isCreated [
+        exitStatus: TRUE @process.wait;
+        exitStatus 0 = ~ [
+          ("Child terminated with non-zero exit status: " exitStatus LF) printList
+          1 !result
+        ] when
+      ] when
     ] each
   ] call
 
-  0
+  result
 ] "main" exportFunction

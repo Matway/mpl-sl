@@ -12,14 +12,14 @@
   argumentAddress: Natx;
 } Int32 {} [
   arguments: toCommandLine2;
-  [arguments.size 1 >] "Not enough arguments\n" ensure
+  [arguments.size 1 >] "[sequentialTasks], Not enough arguments\n" ensure
 
   buildInputs: [
     arguments: toIter;
     [arguments new.next ["<separator>" =] [drop TRUE] if] "There is argument before \"<separator>\"\n" ensure
-    result: StringView Array Array dynamic; # THE TRANSITION: [dynamic], otherwise regardless of function's input [result] will be empty
+    result: StringView Array Array dynamic; # THE TRANSITION: Do not make object unknown. Regardless of function's input [result] is empty
 
-    # Preconditions: arguments = ("<separator>", (freeFormText)*)*
+    # Preconditions: arguments have to match ("<separator>", (freeFormText)*)*
     doUnchecked: [
       recursive
       @arguments.next [
@@ -36,8 +36,8 @@
 
   launch: [
     commands:;
-    [commands.size 0 >] "Attempted to start a Process without arguments\n" ensure
-    startPoint: runningTime.get;
+    [commands.size 0 >] "Attempted to start a process without specifying a command\n" ensure
+    startPoint:     runningTime.get;
     process: error: commands toProcess;;
 
     error "" = ~ [
@@ -46,7 +46,7 @@
     ] when
 
     exitStatus: TRUE @process.wait;
-    time: runningTime.get startPoint -;
+    time:       runningTime.get startPoint -;
 
     exitStatus 0 = ~ [
       ("\"" commands.data "\"" " terminated with status " exitStatus LF) printList

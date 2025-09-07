@@ -3,13 +3,13 @@ mkdir out
 
 buildTaskProcessor0() {
   set -eu
-  mplc .github/workflows/processTests.mpl -D PLATFORM=\"linux\" -I "" -I linux -ndebug -o out/processTests.ll
-  clang out/processTests.ll -O0 -o out/processTests
+  mplc .github/workflows/test.mpl -D DEBUG=TRUE -D PLATFORM=\"linux\" -I "" -I linux -ndebug -o out/test.ll
+  clang out/test.ll -O0 -o out/test
 }
 
 buildTaskProcessor1() {
   set -eu
-  mplc .github/workflows/sequentialTasks.mpl -I "" -I linux -ndebug -o out/sequentialTasks.ll
+  mplc .github/workflows/sequentialTasks.mpl -D DEBUG=TRUE -I "" -I linux -ndebug -o out/sequentialTasks.ll
   clang out/sequentialTasks.ll -O0 -lm -o out/sequentialTasks
 }
 
@@ -29,4 +29,4 @@ if [ $status0 -ne 0 ] || [ $status1 -ne 0 ]; then
   exit 1
 fi
 
-time out/processTests
+time out/test
