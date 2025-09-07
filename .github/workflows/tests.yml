@@ -4,26 +4,38 @@ on: [push, pull_request]
 
 jobs:
   tests:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
 
     steps:
     - name: сheckout
       uses: actions/checkout@main
 
     - name: dir
-      run: md tools
+      run: mkdir -p tools
 
     - name: mplc
-      run: curl -LSs -o tools/mplc.exe https://github.com/Matway/mpl-c/releases/latest/download/mplc.exe
+      shell: bash
+      run: |
+        if [[ "${{ matrix.os }}" == 'windows-latest' ]]; then
+          curl -LSs -o tools/mplc.exe https://github.com/Matway/mpl-c/releases/latest/download/mplc.exe;
+        else
+          curl -LSfs -o tools/mplc https://github.com/Matway/mpl-c/releases/latest/download/mplc && chmod +x tools/mplc;
+        fi
 
     - name: test
-      run: ./test tools/mplc
+      shell: bash
+      run: if [[ "${{ matrix.os }}" == 'windows-latest' ]]; then ./test.bat tools/mplc; else ./test.sh ./tools/mplc; fi
 
     - name: artifacts
       uses: actions/upload-artifact@main
       with:
-        name: tests
+        name: tests-${{ matrix.os }}
         path: |
+          out/
+          tools/mplc
           tools/mplc.exe
-          out/*.exe
-          out/*.ll
