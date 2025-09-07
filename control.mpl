@@ -438,11 +438,6 @@ enum: [
 
 @: ["at" has] [.at] pfunc;
 
-isBuiltinTuple: [
-  object:;
-  @object isCombined [@object () same [@object 0 fieldName "" =] ||] &&
-];
-
 hasSchemaName: [
   object: name:;;
   @object "SCHEMA_NAME" has [@object.@SCHEMA_NAME name =] &&
