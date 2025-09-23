@@ -1,5 +1,5 @@
 "linux/syncTest" use
 
-"testsSync" use
+"../testsSync" use
 
 TESTS: [];

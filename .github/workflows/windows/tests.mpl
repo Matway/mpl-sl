@@ -1,3 +1,3 @@
-"testsSync" use
+"../testsSync" use
 
 TESTS: [];
