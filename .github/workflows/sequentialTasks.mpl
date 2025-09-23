@@ -5,7 +5,7 @@
 "control"     use
 
 "Process"     use
-"runningTime" use
+#"runningTime" use
 
 {
   argumentCount:   Int32;
@@ -37,7 +37,7 @@
   launch: [
     commands:;
     [commands.size 0 >] "Attempted to start a process without specifying a command\n" ensure
-    startPoint:     runningTime.get;
+    #startPoint:     runningTime.get;
     process: error: commands toProcess;;
 
     error "" = ~ [
@@ -46,14 +46,17 @@
     ] when
 
     exitStatus: TRUE @process.wait;
-    time:       runningTime.get startPoint -;
+    #time:       runningTime.get startPoint -;
 
     exitStatus 0 = ~ [
       ("\"" commands.data "\"" " terminated with status " exitStatus LF) printList
       1 exit
     ] when
 
-    (time " \"" commands.data "\"\n") printList
+    (
+      #time # TODO: We are waiting for the delivery of macos/runningTime.mpl
+      " \"" commands.data "\"\n"
+    ) printList
   ];
 
   @arguments 1 unhead buildInputs [launch] each
