@@ -33,6 +33,7 @@
 "posix/interfaceUcontext.swapcontext" use
 
 "errno.errno"          use
+"linux.CLOCK_BOOTTIME" use
 "linux.EPOLLIN"        use
 "linux.EPOLLOUT"       use
 "linux.EPOLL_CTL_ADD"  use
@@ -42,7 +43,6 @@
 "linux.epoll_event"    use
 "linux.epoll_wait"     use
 "linux.timerfd_create" use
-"posix.CLOCK_BOOTTIME" use
 "posix.EINTR"          use
 "ucontext.ucontext_t"  use
 
