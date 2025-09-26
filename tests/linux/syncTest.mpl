@@ -17,11 +17,11 @@
 "control.when"     use
 "control.while"    use
 
+"posix/interfaceSocket.send" use
+
+"errno.errno"       use
 "posix.EAGAIN"      use
 "posix.EWOULDBLOCK" use
-"socket.send"       use
-
-"errno.errno" use
 
 "sync/TcpConnection"     use
 "sync/sync.canceled?"    use

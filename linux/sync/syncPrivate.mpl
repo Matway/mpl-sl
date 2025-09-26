@@ -28,12 +28,9 @@
 "conventions.cdecl"             use
 "memory.malloc"                 use
 
-"posix.CLOCK_BOOTTIME" use
-"posix.EINTR"          use
-"posix.getcontext"     use
-"posix.makecontext"    use
-"posix.swapcontext"    use
-"posix.ucontext_t"     use
+"posix/interfaceUcontext.getcontext"  use
+"posix/interfaceUcontext.makecontext" use
+"posix/interfaceUcontext.swapcontext" use
 
 "errno.errno"          use
 "linux.EPOLLIN"        use
@@ -45,6 +42,9 @@
 "linux.epoll_event"    use
 "linux.epoll_wait"     use
 "linux.timerfd_create" use
+"posix.CLOCK_BOOTTIME" use
+"posix.EINTR"          use
+"ucontext.ucontext_t"  use
 
 UNDER_VALGRIND: [FALSE];
 UNDER_VALGRIND: [SL_SYNC_UNDER_VALGRIND TRUE] [

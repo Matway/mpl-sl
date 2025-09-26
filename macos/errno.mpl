@@ -9,6 +9,6 @@
 "control.Ref"       use
 "conventions.cdecl" use
 
-errno: [__error];
-
 {} Int32 Ref {convention: cdecl;} "__error" importFunction
+
+errno: [__error];

@@ -15,7 +15,9 @@
 "control.when"      use
 "conventions.cdecl" use
 
-"posix.itimerspec" use
+"posix/common.itimerspec" use
+
+CLOCK_BOOTTIME: [7];
 
 # epoll
 
