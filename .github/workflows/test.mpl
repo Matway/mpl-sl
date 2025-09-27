@@ -41,7 +41,7 @@ executableExtension: [
 clangArguments: [
   additional: filenameSuffix:;;
   additional
-  "-l" additionalLibrary &
+  additionalLibrary () = ~ ["-l" additionalLibrary &] when
   "-o" "out/tests" filenameSuffix & executableExtension &
   "out/tests" filenameSuffix & ".ll"  &
 ];

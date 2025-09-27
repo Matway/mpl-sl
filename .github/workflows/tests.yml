@@ -31,7 +31,7 @@ jobs:
 
     - name: test
       shell: bash
-      run: if [[ "${{ matrix.os }}" == 'windows-latest' ]]; then ./test.bat tools/mplc; else ./test.sh ./tools/mplc; fi
+      run: if [[ "${{ matrix.os }}" == 'windows-latest' ]]; then ./test.bat tools/mplc; else sh test.sh ./tools/mplc; fi
 
     - name: artifacts
       uses: actions/upload-artifact@main
