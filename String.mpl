@@ -409,7 +409,6 @@ String: [{
       [nat? ] [@arg FALSE catNatNZ  ]
       [real?] [@arg FALSE catFloatNZ]
       [
-        @arg printStack
         "object is not supported for string concatenation" raiseStaticError
       ]
     ) cond
