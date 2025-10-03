@@ -39,6 +39,8 @@ JSONArray:  [5 static];
 JSONObject: [6 static];
 
 JSON: [{
+  SCHEMA_NAME: "Json" virtual;
+
   mem0: 0n64 dynamic;
   mem1: 0n64 dynamic;
   mem2: 0nx dynamic;
