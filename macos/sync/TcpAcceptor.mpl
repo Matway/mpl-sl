@@ -42,12 +42,12 @@
 "socket.socklen_t"      use
 
 "errno.errno"         use
-"linux.EPOLLIN"       use
-"linux.EPOLLONESHOT"  use
-"linux.EPOLL_CTL_ADD" use
-"linux.EPOLL_CTL_MOD" use
-"linux.epoll_ctl"     use
-"linux.epoll_event"   use
+"macos.EPOLLIN"       use
+"macos.EPOLLONESHOT"  use
+"macos.EPOLL_CTL_ADD" use
+"macos.EPOLL_CTL_MOD" use
+"macos.epoll_ctl"     use
+"macos.epoll_event"   use
 
 "TcpConnection.TcpConnection"   use
 "syncPrivate.FiberPair"         use
@@ -55,7 +55,7 @@
 "syncPrivate.currentFiber"      use
 "syncPrivate.defaultCancelFunc" use
 "syncPrivate.dispatch"          use
-"syncPrivate.epoll_fd"          use
+"syncPrivate.kqueue_fd"         use
 "syncPrivate.resumingFibers"    use
 
 TcpAcceptor: [{
@@ -94,7 +94,7 @@ TcpAcceptor: [{
         EPOLLIN EPOLLONESHOT or  @listenEvent.!events
         fiberPair storageAddress @listenEvent.ptr set
 
-        @listenEvent acceptor EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("epoll_ctl failed, result=" errno) @result.catMany] when
+        @listenEvent acceptor EPOLL_CTL_MOD kqueue_fd epoll_ctl -1 = [("epoll_ctl failed, result=" errno) @result.catMany] when
       ] [
         acceptContext: {
           acceptor: acceptor new;
@@ -104,7 +104,7 @@ TcpAcceptor: [{
         acceptContext storageAddress [
           acceptContext: @acceptContext addressToReference;
 
-          epoll_event acceptContext.acceptor EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("FATAL: epoll_ctl failed, result=" errno LF) printList "" failProc] when
+          epoll_event acceptContext.acceptor EPOLL_CTL_MOD kqueue_fd epoll_ctl -1 = [("FATAL: epoll_ctl failed, result=" errno LF) printList "" failProc] when
 
           @acceptContext.@fiber @resumingFibers.append
         ] @currentFiber.setFunc
@@ -131,7 +131,7 @@ TcpAcceptor: [{
         nodelay: 1;
         nodelay storageSize Nat32 cast nodelay storageAddress TCP_NODELAY IPPROTO_TCP connection.connection setsockopt -1 = [("setsockopt failed, result=" errno) @result.catMany] when
       ] [
-        epoll_event connection.connection EPOLL_CTL_ADD epoll_fd epoll_ctl -1 = [("epoll_ctl failed, result=" errno) @result.catMany] when
+        epoll_event connection.connection EPOLL_CTL_ADD kqueue_fd epoll_ctl -1 = [("epoll_ctl failed, result=" errno) @result.catMany] when
       ] [
         remoteAddress storageAddress sockaddr_in addressToReference .sin_addr ntohl !address
       ]
@@ -178,7 +178,7 @@ makeTcpAcceptor: [
     ] [
       SOMAXCONN acceptor.acceptor listen 0 = ~ [("listen failed, result=" errno) @result.catMany] when
     ] [
-      epoll_event acceptor.acceptor EPOLL_CTL_ADD epoll_fd epoll_ctl -1 = [("epoll_ctl failed, result=" errno) @result.catMany] when
+      epoll_event acceptor.acceptor EPOLL_CTL_ADD kqueue_fd epoll_ctl -1 = [("epoll_ctl failed, result=" errno) @result.catMany] when
     ]
   ) sequence
 
