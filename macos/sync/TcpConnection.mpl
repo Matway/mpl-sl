@@ -134,7 +134,6 @@ TcpConnection: [{
 
           timespec Ref 0n32 0 struct_kevent Ref nEvents connectionEvents storageAddress struct_kevent addressToReference kqueue_fd kevent -1 = [("kevent failed, result=" errno) @result.catMany] when
           "control.Nat32" use
-
         ] [
           context: {
             connection: connection new;
