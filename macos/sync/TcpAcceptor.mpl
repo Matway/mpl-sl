@@ -42,12 +42,10 @@
 "socket.socklen_t"      use
 
 "errno.errno"         use
-"macos.EPOLLIN"       use
-"macos.EPOLLONESHOT"  use
-"macos.EPOLL_CTL_ADD" use
-"macos.EPOLL_CTL_MOD" use
-"macos.epoll_ctl"     use
-"macos.epoll_event"   use
+"macos.EVFILT_READ"   use
+"macos.EV_ONESHOT"    use
+"macos.kevent"        use
+"macos.struct_kevent" use
 
 "TcpConnection.TcpConnection"   use
 "syncPrivate.FiberPair"         use
@@ -90,11 +88,13 @@ TcpAcceptor: [{
         fiberPair: FiberPair;
         @currentFiber @fiberPair.!readFiber
 
-        listenEvent: epoll_event;
-        EPOLLIN EPOLLONESHOT or  @listenEvent.!events
-        fiberPair storageAddress @listenEvent.ptr set
+        listenEvent: struct_kevent;
+        EVFILT_READ @listenEvent.@filter set
+        EV_ONESHOT @listenEvent.@flags set
+        fiberPair storageAddress Nat64 cast @listenEvent.@udata set
+        acceptor Nat64 cast @listenEvent.!ident
 
-        @listenEvent acceptor EPOLL_CTL_MOD kqueue_fd epoll_ctl -1 = [("epoll_ctl failed, result=" errno) @result.catMany] when
+        timespec Ref 0n32 0 struct_kevent Ref 1 listenEvent kqueue_fd kevent -1 = [("kevent failed, result=" errno) @result.catMany] when
       ] [
         acceptContext: {
           acceptor: acceptor new;
@@ -104,7 +104,9 @@ TcpAcceptor: [{
         acceptContext storageAddress [
           acceptContext: @acceptContext addressToReference;
 
-          epoll_event acceptContext.acceptor EPOLL_CTL_MOD kqueue_fd epoll_ctl -1 = [("FATAL: epoll_ctl failed, result=" errno LF) printList "" failProc] when
+          acceptContext.acceptor Nat64 cast @listenEvent.!ident
+
+          timespec Ref 0n32 0 struct_kevent Ref 1 listenEvent kqueue_fd kevent -1 = [("FATAL: kevent failed, result=" errno LF) printList "" failProc] when
 
           @acceptContext.@fiber @resumingFibers.append
         ] @currentFiber.setFunc
