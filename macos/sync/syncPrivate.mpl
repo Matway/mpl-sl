@@ -28,6 +28,7 @@
 "control.||"                    use
 "conventions.cdecl"             use
 "memory.malloc"                 use
+"objectTools.formatObject"      use
 
 "macos.EVFILT_READ"   use
 "macos.EVFILT_TIMER"  use
@@ -100,7 +101,7 @@ createFiber: [
   STACK_SIZE malloc     @ucontext.@uc_stack.!ss_sp
   STACK_SIZE Nat64 cast @ucontext.@uc_stack.!ss_size
 
-  {data: creationDataPtr new;} 1 @fiberFunc storageAddress @ucontext makecontext
+  (creationDataPtr) 1 @fiberFunc storageAddress @ucontext makecontext
 
   ucontext storageAddress
 ];
@@ -166,12 +167,18 @@ spawnFiber: [
     creationData: {nativeFiber: Natx; func: @func; funcData: funcData;};
     fiberFunc: {data: Natx;} {} {convention: cdecl;} codeRef; [
       creationData: creationData addressToReference;
+      ("In fiberFunc, creationData storageAddress: " creationData storageAddress LF) printList
       data: FiberData;
 
+      ("Creation data: " creationData formatObject LF) printList
       creationData.nativeFiber new @data.!nativeFiber
+      ("Native Fiber set" LF) printList
       creationData.@func           @data.!func
+      ("Func set" LF) printList
       creationData.funcData    new @data.!funcData
+      ("Func data set" LF) printList
       @data !currentFiber
+      ("Current fiber set" LF) printList
       [
         data.funcData data.@func
         @emptyCancelFunc @data.!func
@@ -180,10 +187,11 @@ spawnFiber: [
       ] loop
     ] !fiberFunc
 
+    ("creationData storageAddress: " creationData storageAddress LF) printList
     creationData storageAddress @fiberFunc createFiber @creationData.!nativeFiber
 
-    creationData.nativeFiber ucontext_t addressToReference
-    currentFiber.nativeFiber ucontext_t addressToReference
+    @creationData.@nativeFiber ucontext_t addressToReference
+    @currentFiber.@nativeFiber ucontext_t addressToReference
     swapcontext -1 = [("FATAL: swapcontext failed, result=" errno LF) printList "" failProc] when
   ] [
     fiber: @reusableFibers.popFirst;

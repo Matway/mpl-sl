@@ -26,18 +26,18 @@ INVALID_SOCKET: [-1];
 
 IPPROTO_TCP: [6];
 
-MSG_NOSIGNAL: [0x4000n32];
+MSG_NOSIGNAL: [0x80000n32];
 
 SHUT_WR: [1];
 
 SOCK_STREAM: [1];
 
-SOL_SOCKET: [1];
+SOL_SOCKET: [0xffff];
 
 SOMAXCONN: [128];
 
-SO_ERROR:     [4];
-SO_REUSEADDR: [2];
+SO_ERROR:     [0x1007];
+SO_REUSEADDR: [0x0004];
 
 TCP_NODELAY: [1];
 
@@ -55,12 +55,14 @@ addrinfo: [{
 in_addr: [Nat32];
 
 sockaddr: [{
-  sa_family: Nat16;
+  sa_len:    Nat8;
+  sa_family: Nat8;
   sa_data:   Nat8 14 array;
 }];
 
 sockaddr_in: [{
-  sin_family: Nat16;
+  sin_len:    Nat8;
+  sin_family: Nat8;
   sin_port:   Nat16;
   sin_addr:   in_addr;
   sin_zero:   Nat8 8 array;

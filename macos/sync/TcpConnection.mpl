@@ -60,6 +60,7 @@
 "errno.errno"         use
 "macos.EVFILT_READ"   use
 "macos.EVFILT_WRITE"  use
+"macos.EV_ADD"        use
 "macos.EV_ONESHOT"    use
 "macos.kevent"        use
 "macos.struct_kevent" use
@@ -322,14 +323,13 @@ makeTcpConnection: [
       ] || [("fcntl failed, result=" errno) @result.catMany] when
     ] [
       addressData: sockaddr_in;
-      AF_INET Nat16 cast @addressData.!sin_family
+      AF_INET Nat8 cast  @addressData.!sin_family
       port    htons      @addressData.!sin_port
       address htonl      @addressData.!sin_addr
 
-      addressData storageSize Nat32 cast addressData storageAddress sockaddr addressToReference connection.connection connect 0 = [("connect returned immediately") @result.catMany] when
-    ] [
-      lastErrorNumber: errno;
-      lastErrorNumber EINPROGRESS = ~ [("connect failed, result=" lastErrorNumber) @result.catMany] when
+      addressData storageSize Nat32 cast addressData storageAddress sockaddr addressToReference connection.connection connect 0 = ~ [
+        ("connect failed, result=" errno) @result.catMany
+      ] when
     ] [
       fiberPair: FiberPair;
       @currentFiber @fiberPair.!writeFiber
@@ -338,11 +338,11 @@ makeTcpConnection: [
 
       connection.connection Nat64 cast @connectEvent.!ident
       EVFILT_WRITE @connectEvent.@filter set
-      EV_ONESHOT @connectEvent.@flags set
-
-      (connectEvent {} formatObject LF) printList
+      EV_ADD EV_ONESHOT or @connectEvent.@flags set
 
       fiberPair storageAddress Nat64 cast @connectEvent.@udata set
+
+      (connectEvent {} formatObject LF "kqueue_fd: " kqueue_fd LF) printList
 
       timespec Ref 0n32 0 struct_kevent Ref 1 connectEvent kqueue_fd kevent -1 = [("kevent failed, result=" errno) @result.catMany] when
     ] [
