@@ -101,7 +101,11 @@ createFiber: [
   STACK_SIZE malloc     @ucontext.@uc_stack.!ss_sp
   STACK_SIZE Nat64 cast @ucontext.@uc_stack.!ss_size
 
-  (creationDataPtr) 1 @fiberFunc storageAddress @ucontext makecontext
+  # split creationDataPtr (Natx) into two Ints
+  arg1: creationDataPtr storageAddress                     Int32 addressToReference;
+  arg2: creationDataPtr storageAddress Int32 storageSize + Int32 addressToReference;
+
+  {arg1: arg1 new; arg2: arg2 new;} 2 @fiberFunc storageAddress @ucontext makecontext
 
   ucontext storageAddress
 ];
@@ -165,20 +169,20 @@ spawnFiber: [
 
   reusableFibers.empty? [
     creationData: {nativeFiber: Natx; func: @func; funcData: funcData;};
-    fiberFunc: {data: Natx;} {} {convention: cdecl;} codeRef; [
-      creationData: creationData addressToReference;
-      ("In fiberFunc, creationData storageAddress: " creationData storageAddress LF) printList
+    fiberFunc: {arg1: Int32; arg2: Int32;} {} {convention: cdecl;} codeRef; [
+      arg2: arg1:;;
+      creationDataPtr: 0nx;
+
+      arg1 @creationDataPtr storageAddress                     Int32 addressToReference set
+      arg2 @creationDataPtr storageAddress Int32 storageSize + Int32 addressToReference set
+
+      creationData: creationDataPtr creationData addressToReference;
       data: FiberData;
 
-      ("Creation data: " creationData formatObject LF) printList
       creationData.nativeFiber new @data.!nativeFiber
-      ("Native Fiber set" LF) printList
       creationData.@func           @data.!func
-      ("Func set" LF) printList
       creationData.funcData    new @data.!funcData
-      ("Func data set" LF) printList
       @data !currentFiber
-      ("Current fiber set" LF) printList
       [
         data.funcData data.@func
         @emptyCancelFunc @data.!func
@@ -186,8 +190,6 @@ spawnFiber: [
         TRUE dynamic
       ] loop
     ] !fiberFunc
-
-    ("creationData storageAddress: " creationData storageAddress LF) printList
     creationData storageAddress @fiberFunc createFiber @creationData.!nativeFiber
 
     @creationData.@nativeFiber ucontext_t addressToReference

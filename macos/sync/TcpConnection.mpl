@@ -342,8 +342,6 @@ makeTcpConnection: [
 
       fiberPair storageAddress Nat64 cast @connectEvent.@udata set
 
-      (connectEvent {} formatObject LF "kqueue_fd: " kqueue_fd LF) printList
-
       timespec Ref 0n32 0 struct_kevent Ref 1 connectEvent kqueue_fd kevent -1 = [("kevent failed, result=" errno) @result.catMany] when
     ] [
       context: {
