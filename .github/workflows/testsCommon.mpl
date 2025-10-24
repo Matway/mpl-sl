@@ -1,46 +1,11 @@
-"Array"          use
-"AvlMap"         use
-"CommandLine"    use
-"Deque"          use
-"Function"       use
-"HashTable"      use
-"IntrusiveDeque" use
-"IntrusiveQueue" use
-"IntrusiveStack" use
-"Json"           use
-"Mref"           use
-"Owner"          use
-"Pool"           use
-"Pose"           use
-"PriorityQueue"  use
-"Quaternion"     use
-"RandomLCG"      use
-"Span"           use
-"SpanStatic"     use
-"Spinlock"       use
-"String"         use
-"Union"          use
-"Variant"        use
-"Xml"            use
-"algebra"        use
-"algorithm"      use
-"ascii"          use
-"atomic"         use
-"control"        use
-"conventions"    use
-"file"           use
-"interface"      use
-"lockGuard"      use
-"memory"         use
-"murmurHash"     use
-"objectTools"    use
-"sha1"           use
+# Copyright (C) Matway Burkow
+#
+# This repository and all its contents belong to Matway Burkow (referred here and below as "the owner").
+# The content is for demonstration purposes only.
+# It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
+# By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"sync/Context"      use
-"sync/ContextGroup" use
-"sync/Event"        use
-"sync/Signal"       use
-
+"tests/ProcessTest"                use
 "tests/universal/CommandLineTest"  use
 "tests/universal/ContextGroupTest" use
 "tests/universal/ContextTest"      use
