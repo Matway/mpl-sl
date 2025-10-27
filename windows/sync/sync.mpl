@@ -114,7 +114,7 @@ sleepUntil: [
     ] loop
 
     data storageAddress [
-      data: @data addressToReference;
+      data: TimerData addressToReference;
       # Cancelation is considered a rare operation, so O(n) complexity is not a problem here
       # It is possible that the current fiber was already removed from the linked list by dispatch
       [data is] @timers.cutIf 1 = [@data.@fiber @resumingFibers.append] when
