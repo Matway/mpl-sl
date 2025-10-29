@@ -24,6 +24,7 @@
 "control.Nat8"            use
 "control.Natx"            use
 "control.Real32"          use
+"control.STDOUT_FILENO"   use
 "control.Text"            use
 "control.assert"          use
 "control.between"         use
@@ -38,6 +39,7 @@
 "control.times"           use
 "control.when"            use
 "control.while"           use
+"control.write"           use
 "control.within"          use
 "control.||"              use
 "conventions.cdecl"       use
@@ -610,8 +612,8 @@ makeStringViewByAddress: [
 print: [Text same ~] [toString print] pfunc;
 
 print: [object:; @object "SCHEMA_NAME" has [@object.SCHEMA_NAME "String" =] &&] [
-  string: addTerminator;
-  (string.data) "%s\00" printf drop
+  string:;
+  string.size Natx cast string.data storageAddress STDOUT_FILENO write drop
 ] pfunc;
 
 printList: [

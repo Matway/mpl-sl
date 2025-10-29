@@ -22,8 +22,11 @@ Real32: [0.0r32 v:; @v];
 Real64: [0.0    v:; @v];
 Text:   [""];
 
-{format: Text;} Int32 {variadic: TRUE; convention: cdecl;} "printf" importFunction # need for assert
-{result: 0;} () {convention: cdecl;} "exit" importFunction
+{status: Int32;                    } ()    {convention: cdecl;                } "exit"   importFunction
+{format: Natx;                     } Int32 {convention: cdecl; variadic: TRUE;} "printf" importFunction
+{fd: Int32; buf: Natx; count: Natx;} Intx  {convention: cdecl;                } "write"  importFunction
+
+STDOUT_FILENO: [1];
 
 REF_SIZE: [Natx storageSize Int32 cast];
 
@@ -192,9 +195,12 @@ overload failProc: [
   trace: getCallTrace;
   [
     trace storageAddress 0nx = [
+      "\n" print
       FALSE
     ] [
-      (trace.name trace.line new trace.column new) " in %s at %i:%i\n\00" printf drop
+      " in "     print
+      trace.name print
+      (trace.line new trace.column new) " at %i:%i\n\00" storageAddress printf drop
       trace.prev trace addressToReference !trace
       TRUE
     ] if
@@ -215,19 +221,9 @@ pfunc: [{
 >: [drop "less"    has] [swap .less   ] pfunc;
 >: [     "greater" has] [     .greater] pfunc;
 
-print: ["" same] [
+print: [Text same] [
   text:;
-  text isStatic [
-    (text "\00" &) "%s\00" printf drop
-  ] [
-    i: 0nx; [
-      i text textSize = [FALSE] [
-        (text storageAddress i + Nat8 addressToReference new) "%c\00" printf drop
-        i 1nx + !i
-        TRUE
-      ] if
-    ] loop
-  ] if
+  text textSize text storageAddress STDOUT_FILENO write drop
 ] pfunc;
 
 Ref:  [v:; 0nx @v       addressToReference]; # for signatures
