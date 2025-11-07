@@ -16,9 +16,9 @@
 "ucontext.swapcontext" use
 "ucontext.ucontext_t"  use
 
-EAGAIN:      [11];
-EINPROGRESS: [115];
-EINTR:       [4];
+EAGAIN:      [    11];
+EINPROGRESS: [   115];
+EINTR:       [     4];
 EWOULDBLOCK: [EAGAIN];
 
 F_SETFD: [2];
@@ -52,9 +52,9 @@ stack_t: [{
 _SIGSET_NWORDS: [1024 Natx storageSize Int32 cast 8 * /];
 sigset_t:       [Natx _SIGSET_NWORDS array];
 
-CLOCK_MONOTONIC:    [1];
-CLOCK_BOOTTIME:     [7];
-CLOCK_UPTIME_RAW:   [8];
+CLOCK_MONOTONIC:  [1];
+CLOCK_BOOTTIME:   [7];
+CLOCK_UPTIME_RAW: [8];
 
 time_t: [Intx];
 
@@ -118,7 +118,7 @@ timespec: [{
   size:    Natx;
 } Intx {convention: cdecl;} "write" importFunction
 
-ucontext_t: @ucontext_t;
-getcontext: @getcontext;
+ucontext_t:  @ucontext_t;
+getcontext:  @getcontext;
 makecontext: @makecontext;
 swapcontext: @swapcontext;

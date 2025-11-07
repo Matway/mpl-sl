@@ -54,14 +54,14 @@ __darwin_fp_control: [{
     call: TRUE;
   }];
   private data: Nat16;
-  __invalid:    [data              1n16 and];
-  __denorm:     [data 1n8   rshift 1n16 and];
-  __zdiv:       [data 2n8   rshift 1n16 and];
-  __ovrfl:      [data 3n8   rshift 1n16 and];
-  __undfl:      [data 4n8   rshift 1n16 and];
-  __precis:     [data 5n8   rshift 1n16 and];
-  __pc:         [data 8n8   rshift 3n16 and];
-  __rc:         [data 10n8  rshift 3n16 and];
+  __invalid: [data              1n16 and];
+  __denorm:  [data 1n8   rshift 1n16 and];
+  __zdiv:    [data 2n8   rshift 1n16 and];
+  __ovrfl:   [data 3n8   rshift 1n16 and];
+  __undfl:   [data 4n8   rshift 1n16 and];
+  __precis:  [data 5n8   rshift 1n16 and];
+  __pc:      [data 8n8   rshift 3n16 and];
+  __rc:      [data 10n8  rshift 3n16 and];
 }];
 
 __darwin_fp_status: [{
@@ -69,20 +69,20 @@ __darwin_fp_status: [{
     call: TRUE;
   }];
   data: Nat16;
-  __invalid:    [data              1n16 and];
-  __denorm:     [data 1n8   rshift 1n16 and];
-  __zdiv:       [data 2n8   rshift 1n16 and];
-  __ovrfl:      [data 3n8   rshift 1n16 and];
-  __undfl:      [data 4n8   rshift 1n16 and];
-  __precis:     [data 5n8   rshift 1n16 and];
-  __stkflt:     [data 6n8   rshift 1n16 and];
-  __errsumm:    [data 7n8   rshift 1n16 and];
-  __c0:         [data 8n8   rshift 1n16 and];
-  __c1:         [data 9n8   rshift 1n16 and];
-  __c2:         [data 10n8  rshift 1n16 and];
-  __tos:        [data 11n8  rshift 7n16 and];
-  __c3:         [data 14n8  rshift 1n16 and];
-  __busy:       [data 15n8  rshift 1n16 and];
+  __invalid: [data              1n16 and];
+  __denorm:  [data 1n8   rshift 1n16 and];
+  __zdiv:    [data 2n8   rshift 1n16 and];
+  __ovrfl:   [data 3n8   rshift 1n16 and];
+  __undfl:   [data 4n8   rshift 1n16 and];
+  __precis:  [data 5n8   rshift 1n16 and];
+  __stkflt:  [data 6n8   rshift 1n16 and];
+  __errsumm: [data 7n8   rshift 1n16 and];
+  __c0:      [data 8n8   rshift 1n16 and];
+  __c1:      [data 9n8   rshift 1n16 and];
+  __c2:      [data 10n8  rshift 1n16 and];
+  __tos:     [data 11n8  rshift 7n16 and];
+  __c3:      [data 14n8  rshift 1n16 and];
+  __busy:    [data 15n8  rshift 1n16 and];
 }];
 
 __darwin_mmst_reg: [{

@@ -32,21 +32,22 @@
 "control.touch"          use
 "control.when"           use
 
-"errno.errno"       use
-"posix.F_SETFD"     use
-"posix.FD_CLOEXEC"  use
-"posix.SIGKILL"     use
-"posix.WEXITSTATUS" use
-"posix.WIFEXITED"   use
-"posix.close"       use
-"posix.execvp"      use
-"posix.fcntl"       use
-"posix.fork"        use
-"posix.kill"        use
-"posix.pipe"        use
-"posix.read"        use
-"posix.waitpid"     use
-"posix.write"       use
+"errno.errno"             use
+"posix/posix.FD_CLOEXEC"  use
+"posix/posix.F_SETFD"     use
+"posix/posix.SIGKILL"     use
+"posix/posix.WEXITSTATUS" use
+"posix/posix.WIFEXITED"   use
+"posix/posix.close"       use
+"posix/posix.execvp"      use
+"posix/posix.fcntl"       use
+"posix/posix.fork"        use
+"posix/posix.kill"        use
+"posix/posix.kill"        use
+"posix/posix.pipe"        use
+"posix/posix.read"        use
+"posix/posix.waitpid"     use
+"posix/posix.write"       use
 
 Process: [{
   SCHEMA_NAME: "Process" virtual;
@@ -143,7 +144,6 @@ Process: [{
 
   kill: [
     "kill" assertCreated
-    "posix.kill" use
     SIGKILL processId kill -1 = ["kill" 1 errorExit] when
   ];
 

@@ -37,13 +37,13 @@
 "macos.kqueue"        use
 "macos.struct_kevent" use
 
-"posix.CLOCK_BOOTTIME" use
-"posix.EINTR"          use
-"posix.getcontext"     use
-"posix.makecontext"    use
-"posix.swapcontext"    use
-"posix.timespec"       use
-"posix.ucontext_t"     use
+"posix/posix.CLOCK_BOOTTIME" use
+"posix/posix.EINTR"          use
+"posix/posix.getcontext"     use
+"posix/posix.makecontext"    use
+"posix/posix.swapcontext"    use
+"posix/posix.timespec"       use
+"posix/posix.ucontext_t"     use
 
 "errno.errno" use
 

@@ -19,8 +19,8 @@
 "control.when"          use
 "control.while"         use
 
-"posix.itimerspec" use
-"posix.timespec"   use
+"posix/posix.itimerspec" use
+"posix/posix.timespec"   use
 
 "errno.errno"         use
 "macos.EVFILT_TIMER"  use
@@ -31,7 +31,7 @@
 "macos.kevent"        use
 "macos.struct_kevent" use
 
-#"TcpAcceptor.makeTcpAcceptor"     use
+"TcpAcceptor.makeTcpAcceptor"     use
 "TcpConnection.makeTcpConnection" use
 "sync/Context.makeContext"        use
 "syncPrivate.FiberData"           use
