@@ -9,7 +9,6 @@
 "String.printList" use
 "algorithm.="      use
 "control.Int32"    use
-"control.Nat16"    use
 "control.Nat32"    use
 "control.Nat64"    use
 "control.Nat8"     use
@@ -92,7 +91,7 @@ TcpAcceptor: [{
         fiberPair: FiberPair;
         @currentFiber @fiberPair.!readFiber
 
-        listenEvent: struct_kevent;
+        listenEvent: struct_kevent virtual;
         EVFILT_READ @listenEvent.@filter set
         EV_ONESHOT @listenEvent.@flags set
         fiberPair storageAddress Nat64 cast @listenEvent.@udata set
@@ -137,8 +136,6 @@ TcpAcceptor: [{
         nodelay: 1;
         nodelay storageSize Nat32 cast nodelay storageAddress TCP_NODELAY IPPROTO_TCP connection.connection setsockopt -1 = [("setsockopt failed, result=" errno) @result.catMany] when
       ] [
-        epoll_event connection.connection EPOLL_CTL_ADD kqueue_fd epoll_ctl -1 = [("epoll_ctl failed, result=" errno) @result.catMany] when
-      ] [
         remoteAddress storageAddress sockaddr_in addressToReference .sin_addr ntohl !address
       ]
     ) sequence
@@ -176,15 +173,13 @@ makeTcpAcceptor: [
       reuseAddrEnable storageSize Nat32 cast reuseAddrEnable storageAddress SO_REUSEADDR SOL_SOCKET acceptor.acceptor setsockopt -1 = [("setsockopt failed, result=" errno) @result.catMany] when
     ] [
       addressData: sockaddr_in;
-      AF_INET Nat16 cast @addressData.!sin_family
+      AF_INET Nat8 cast @addressData.!sin_family
       port    htons      @addressData.!sin_port
       address htonl      @addressData.!sin_addr
 
       addressData storageSize Nat32 cast addressData storageAddress sockaddr addressToReference acceptor.acceptor bind 0 = ~ [("bind failed, result=" errno) @result.catMany] when
     ] [
       SOMAXCONN acceptor.acceptor listen 0 = ~ [("listen failed, result=" errno) @result.catMany] when
-    ] [
-      epoll_event acceptor.acceptor EPOLL_CTL_ADD kqueue_fd epoll_ctl -1 = [("epoll_ctl failed, result=" errno) @result.catMany] when
     ]
   ) sequence
 

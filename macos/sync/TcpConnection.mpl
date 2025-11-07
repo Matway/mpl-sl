@@ -13,7 +13,6 @@
 "control.&&"            use
 "control.Cref"          use
 "control.Int32"         use
-"control.Int64"         use
 "control.Nat16"         use
 "control.Nat32"         use
 "control.Nat64"         use
