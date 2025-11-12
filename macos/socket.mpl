@@ -32,7 +32,7 @@ SHUT_WR: [1];
 
 SOCK_STREAM: [1];
 
-SOL_SOCKET: [0xffff];
+SOL_SOCKET: [0xFFFF];
 
 SOMAXCONN: [128];
 

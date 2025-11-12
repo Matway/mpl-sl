@@ -1,6 +1,6 @@
-"String"    use
-"control"   use
-"memory"    use
+"String"  use
+"control" use
+"memory"  use
 
 {} Int32 {} [
   a: ("T" "h" "i" "s" " " "i" "s" " " "t" "h" "e" " " "t" "e" "x" "t" "." " ");
