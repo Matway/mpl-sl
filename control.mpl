@@ -22,7 +22,7 @@ Real32: [0.0r32 v:; @v];
 Real64: [0.0    v:; @v];
 Text:   [""];
 
-{format: Text;} Int32 {variadic: TRUE; convention: cdecl;} "printf" importFunction # need for assert
+{format: Natx;} Int32 {variadic: TRUE; convention: cdecl;} "printf" importFunction # need for assert
 {result: 0;} () {convention: cdecl;} "exit" importFunction
 
 REF_SIZE: [Natx storageSize Int32 cast];
@@ -194,7 +194,7 @@ overload failProc: [
     trace storageAddress 0nx = [
       FALSE
     ] [
-      (trace.name trace.line new trace.column new) " in %s at %i:%i\n\00" printf drop
+      (trace.name trace.line new trace.column new) " in %s at %i:%i\n\00" storageAddress printf drop
       trace.prev trace addressToReference !trace
       TRUE
     ] if
@@ -218,11 +218,11 @@ pfunc: [{
 print: ["" same] [
   text:;
   text isStatic [
-    (text "\00" &) "%s\00" printf drop
+    (text "\00" &) "%s\00" storageAddress printf drop
   ] [
     i: 0nx; [
       i text textSize = [FALSE] [
-        (text storageAddress i + Nat8 addressToReference new) "%c\00" printf drop
+        (text storageAddress i + Nat8 addressToReference new) "%c\00" storageAddress printf drop
         i 1nx + !i
         TRUE
       ] if

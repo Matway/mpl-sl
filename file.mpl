@@ -25,7 +25,7 @@
 {stream: Natx;} Int32                                       {convention: cdecl;} "fclose"   importFunction
 {stream: Natx;} Int32                                       {convention: cdecl;} "ferror"   importFunction
 {stream: Natx;} Int32                                       {convention: cdecl;} "fflush"   importFunction
-{filename: Text; mode: Text;} Natx                          {convention: cdecl;} "fopen"    importFunction
+{filename: Natx; mode: Natx;} Natx                          {convention: cdecl;} "fopen"    importFunction
 {buffer: Natx; size: Natx; count: Natx; stream: Natx;} Natx {convention: cdecl;} "fread"    importFunction
 {stream: Natx; offset: Int32; origin: Int32;} Int32         {convention: cdecl;} "fseek"    importFunction
 {stream: Natx;} Int32                                       {convention: cdecl;} "ftell"    importFunction
@@ -57,7 +57,7 @@ loadFile: [
   () (
     [
       drop
-      "rb\00" name.data storageAddress Text addressToReference fopen @file set
+      "rb\00" storageAddress name.data storageAddress fopen @file set
       file 0nx =
     ] [("fopen failed, " errno new getErrnoText) assembleString @result.!result]
     [
@@ -82,7 +82,7 @@ saveFile: [
   () (
     [
       drop
-      "wb\00" name.data storageAddress Text addressToReference fopen @file set
+      "wb\00" storageAddress name.data storageAddress fopen @file set
       file 0nx =
     ] [("fopen failed, " errno new getErrnoText) assembleString]
     [
@@ -105,7 +105,7 @@ loadString: [
   };
 
   size: 0nx dynamic;
-  f: "rb\00" name.data storageAddress Text addressToReference fopen;
+  f: "rb\00" storageAddress name.data storageAddress fopen;
   f 0nx = ~ [
     SEEK_END 0 f fseek 0 =
     [f ftell Natx cast @size set
@@ -124,7 +124,7 @@ saveString: [
   stringView: makeStringView;
   name: addTerminator makeStringView;
   size: stringView.size;
-  f: "wb\00" name.data storageAddress Text addressToReference fopen;
+  f: "wb\00" storageAddress name.data storageAddress fopen;
   f 0nx = ~
   [
     size 0 = [f size Natx cast 1nx stringView.data storageAddress fwrite size Natx cast =] ||
@@ -137,7 +137,7 @@ appendString: [
   stringView: makeStringView;
   name: addTerminator makeStringView;
   size: stringView.size;
-  f: "ab\00" name.data storageAddress Text addressToReference fopen;
+  f: "ab\00" storageAddress name.data storageAddress fopen;
   f 0nx = ~
   [
     size 0 = [f size Natx cast 1nx stringView.data storageAddress fwrite size Natx cast =] ||

@@ -611,7 +611,7 @@ print: [Text same ~] [toString print] pfunc;
 
 print: [object:; @object "SCHEMA_NAME" has [@object.SCHEMA_NAME "String" =] &&] [
   string: addTerminator;
-  (string.data) "%s\00" printf drop
+  (string.data) "%s\00" storageAddress printf drop
 ] pfunc;
 
 printList: [
