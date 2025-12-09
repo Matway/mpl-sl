@@ -8,16 +8,15 @@
 "Array.Array"            use
 "Array.toArray"          use
 "String.String"          use
+"String.addTerminator"   use
 "String.assembleString"  use
 "String.makeStringView"  use
 "String.print"           use
-"algorithm.any"          use
 "algorithm.case"         use
 "algorithm.cond"         use
 "algorithm.each"         use
 "algorithm.map"          use
 "algorithm.objectValues" use
-"algorithm.toIndex"      use
 "algorithm.toIter"       use
 "control.Int32"          use
 "control.Intx"           use
@@ -55,9 +54,8 @@ Process: [{
 
   create: [
     commands:;
-    [@commands toIndex.size 0 >                                                                                       ] "Lack of commands"                        assert
-    [([0 @commands toIndex dynamic.at makeStringView] [@commands toIter [makeStringView drop] each]) [compilable?] any] "Invalid item schema"                     assert
-    [isCreated ~                                                                                                      ] "Attempted to initialize a Process twice" assert
+    [isCreated ~                                              ] "Attempted to initialize a Process twice" assert
+    [[@commands toIter [makeStringView drop] each] compilable?] "Invalid item schema"                     assert
 
     result: String;
 
@@ -75,24 +73,23 @@ Process: [{
         childPipe objectValues [closeDescriptor] each
       ] [
         r/w: [
-          op: descriptor: buffer:;;;
-          opName: @op 0 codeTokenRead virtual;
-          [opName "read" = opName "write" = or] "Invalid operatin name" assert
+          op: descriptor: buffer:;; virtual;
+          [op "read" = op "write" = or] "Invalid operatin name" assert
 
           result: TRUE;
 
           size:      buffer storageSize;
-          byteCount: size buffer storageAddress descriptor op;
+          byteCount: size buffer storageAddress descriptor op call;
           byteCount (
-            [-1ix =] [opName 1 errorExit]
+            [-1ix =] [op 1 errorExit]
 
             [0ix =] [
-              [opName "write" = ~ dynamic] "[write] transferred nothing" assert
+              [op "write" = ~ dynamic] "[write] transferred nothing" assert
               FALSE !result
             ]
 
             [size Intx cast <] [
-              "insufficient [" opName & "]\n" & print
+              "insufficient [" op & "]\n" & print
               1 exit
             ]
 
@@ -104,7 +101,8 @@ Process: [{
           result
         ];
 
-        sources:   @commands [(1 touch "\00") assembleString] [String] map toArray;
+        sources: @commands [makeStringView addTerminator] [String] map toArray;
+        [sources.size 0 = ~] "Command-line arguments have no command" assert
         arguments: Natx Array;
         sources.size 1 + @arguments.setReserve
         sources [.data storageAddress] [Natx] map @arguments.append
@@ -117,7 +115,7 @@ Process: [{
           0 [ # A child's body, not a parent's one
             childPipe.in closeDescriptor
             arguments.data storageAddress arguments.data execvp drop
-            [write] childPipe.out errno r/w drop
+            "write" childPipe.out errno r/w drop
             childPipe.out closeDescriptor
             1 exit
           ]
@@ -127,7 +125,7 @@ Process: [{
             childPipe.out closeDescriptor
 
             buffer: Int32;
-            [read] childPipe.in buffer r/w [
+            "read" childPipe.in buffer r/w [
               "execvp" buffer errorMessage2 !result
               FALSE wait
             ] when
