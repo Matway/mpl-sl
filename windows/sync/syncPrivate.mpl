@@ -142,7 +142,7 @@ spawnFiber: [
   funcData: func:;;
   reusableFibers.empty? [
     fiberFunc: [
-      creationData: creationData addressToReference;
+      creationData: @CreationData addressToReference;
       data: FiberData;
       creationData.nativeFiber new @data.!nativeFiber
       creationData.@func @data.!func
@@ -158,6 +158,7 @@ spawnFiber: [
     ];
 
     creationData: {nativeFiber: Natx; func: @func; funcData: funcData;};
+    CreationData: creationData Ref virtual;
     creationData storageAddress @fiberFunc 4096nx CreateFiber @creationData.!nativeFiber creationData.nativeFiber 0nx = [("FATAL: CreateFiber failed, result=" GetLastError LF) printList "" failProc] when
     creationData.nativeFiber SwitchToFiber
   ] [

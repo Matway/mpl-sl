@@ -103,6 +103,7 @@ TcpAcceptor: [{
           fiber: FiberData Ref;
           acceptor: Natx;
         };
+        Context: @context Ref virtual;
 
         @context.@overlapped Nat32 Ref sockaddr_in storageSize Nat32 cast 16n32 + dup 0n32 addresses storageAddress connection.connection acceptor AcceptEx 0 = ~ [("AcceptEx returned immediately") @result.catMany] when
       ] [
@@ -112,7 +113,7 @@ TcpAcceptor: [{
         @currentFiber @context.!fiber
         acceptor new @context.!acceptor
         context storageAddress [
-          context: @context addressToReference;
+          context: @Context addressToReference;
           @context.@overlapped context.acceptor CancelIoEx 1 = ~ [
             lastError: GetLastError;
             lastError ERROR_NOT_FOUND = ~ [("FATAL: CancelIoEx failed, result=" lastError LF) printList "" failProc] when

@@ -40,7 +40,7 @@ ContextGroup: [{
   spawn: [
     in:;
     contextGroupFunc: [
-      creationData: @creationData addressToReference;
+      creationData: @CreationData addressToReference;
       group:        @creationData.@group;
       data:         Data;
       @currentFiber @data.!fiber
@@ -70,6 +70,7 @@ ContextGroup: [{
     ];
 
     creationData: {group: @self; in: @in; waitingFiber: @currentFiber;};
+    CreationData: @creationData Ref virtual;
     creationData storageAddress @contextGroupFunc spawnFiber
   ];
 
@@ -85,7 +86,8 @@ ContextGroup: [{
       @currentFiber @fibers.@first.!waitedBy
       canceled? ~ [
         [currentFiber.@func @defaultCancelFunc is] "invalid cancelation function" assert
-        self storageAddress [@self addressToReference .cancel] @currentFiber.setFunc
+        Self: @self Ref virtual;
+        self storageAddress [@Self addressToReference .cancel] @currentFiber.setFunc
       ] when
 
       dispatch

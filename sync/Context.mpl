@@ -70,7 +70,8 @@ Context: [{
         cancel
       ] [
         [currentFiber.@func @defaultCancelFunc is] "invalid cancelation function" assert
-        self storageAddress [@self addressToReference .cancel] @currentFiber.setFunc
+        Self: @self Ref virtual;
+        self storageAddress [@Self addressToReference .cancel] @currentFiber.setFunc
       ] if
 
       dispatch
@@ -92,7 +93,7 @@ Context: [{
 makeContext: [
   in: virtual Out: dup virtual? ~ [Ref] when;;
   contextFunc: [
-    creationData: @creationData addressToReference;
+    creationData: @CreationData addressToReference;
     data:         @Out Context.Data;
 
     @currentFiber @data.!fiber
@@ -135,6 +136,7 @@ makeContext: [
   ];
 
   creationData: {in: @in; waitingFiber: @currentFiber; data: @Out Context.Data Ref;};
+  CreationData: @creationData Ref virtual;
   creationData storageAddress @contextFunc spawnFiber
 
   context: @Out Context;

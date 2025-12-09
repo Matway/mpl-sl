@@ -7,7 +7,6 @@
 
 "control.Int32"       use
 "control.Natx"        use
-"control.Text"        use
 "conventions.stdcall" use
 
 "user32.HDC"   use
@@ -24,7 +23,7 @@
 } Int32 {convention: stdcall;} "wglDeleteContext" importFunction
 
 {
-  procedureName: Text;
+  procedureName: Natx;
 } Natx {convention: stdcall;} "wglGetProcAddress" importFunction
 
 {
