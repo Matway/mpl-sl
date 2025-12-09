@@ -5,10 +5,8 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"control.Int32"     use
-"control.Ref"       use
-"conventions.cdecl" use
+"linux/posix.FD_CLOEXEC" use
+"linux/posix.F_SETFD"    use
 
-{} Int32 Ref {convention: cdecl;} "__errno_location" importFunction # Link with libpthread.a
-
-errno: [__errno_location];
+FD_CLOEXEC: @FD_CLOEXEC;
+F_SETFD:    @F_SETFD;

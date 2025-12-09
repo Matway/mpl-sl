@@ -6,9 +6,23 @@
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
 "control.Int32"     use
+"control.Natx"      use
 "control.Ref"       use
 "conventions.cdecl" use
 
-{} Int32 Ref {convention: cdecl;} "__errno_location" importFunction # Link with libpthread.a
+"ucontext.ucontext_t" use
 
-errno: [__errno_location];
+{
+  ucp: ucontext_t Ref;
+} Int32 {convention: cdecl;} "getcontext" importFunction
+
+{
+  ucp:  ucontext_t Ref;
+  func: Natx;
+  argc: Int32;
+} {} {variadic: TRUE; convention: cdecl;} "makecontext" importFunction
+
+{
+  oucp: ucontext_t Ref;
+  ucp:  ucontext_t Ref;
+} Int32 {convention: cdecl;} "swapcontext" importFunction

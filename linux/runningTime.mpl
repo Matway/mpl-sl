@@ -10,11 +10,11 @@
 "control.failProc" use
 "control.when"     use
 
-"posix.CLOCK_BOOTTIME" use
-"posix.clock_gettime"  use
-"posix.timespec"       use
+"posix/common.clock_gettime" use
+"posix/common.timespec"      use
 
-"errno.errno" use
+"errno.errno"          use
+"linux.CLOCK_BOOTTIME" use
 
 runningTimeInternal: {
   get: [

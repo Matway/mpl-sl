@@ -9,10 +9,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:
-    - name: сheckout
+    - name: checkout
       uses: actions/checkout@main
 
     - name: dir
@@ -23,13 +23,15 @@ jobs:
       run: |
         if [[ "${{ matrix.os }}" == 'windows-latest' ]]; then
           curl -LSs -o tools/mplc.exe https://github.com/Matway/mpl-c/releases/latest/download/mplc.exe;
+        elif [[ "${{ matrix.os }}" == 'macos-latest' ]]; then
+          curl -LSfs -o tools/mplc.ll https://github.com/Matway/mpl-c/releases/latest/download/mplc.ll && clang -O3 tools/mplc.ll -o tools/mplc;
         else
           curl -LSfs -o tools/mplc https://github.com/Matway/mpl-c/releases/latest/download/mplc && chmod +x tools/mplc;
         fi
 
     - name: test
       shell: bash
-      run: if [[ "${{ matrix.os }}" == 'windows-latest' ]]; then ./test.bat tools/mplc; else ./test.sh ./tools/mplc; fi
+      run: if [[ "${{ matrix.os }}" == 'windows-latest' ]]; then ./test.bat tools/mplc; else sh test.sh ./tools/mplc; fi
 
     - name: artifacts
       uses: actions/upload-artifact@main

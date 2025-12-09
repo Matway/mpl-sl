@@ -5,15 +5,20 @@ mplc=$1
 rm -r -f out
 mkdir out
 
+platform="linux"
+if [[ "$(uname)" == "Darwin" ]]; then
+  platform="macos"
+fi
+
 buildTaskProcessor0() {
   set -eu
-  $mplc .github/workflows/test.mpl -D DEBUG=TRUE -D MPLC=\"${mplc}\" -D PLATFORM=\"linux\" -I "" -I linux -ndebug -o out/test.ll
+  $mplc .github/workflows/test.mpl -D DEBUG=TRUE -D MPLC=\"${mplc}\" -D PLATFORM=\"${platform}\" -I "" -I "${platform}" -ndebug -o out/test.ll
   clang out/test.ll -O0 -o out/test
 }
 
 buildTaskProcessor1() {
   set -eu
-  $mplc .github/workflows/sequentialTasks.mpl -D DEBUG=TRUE -I "" -I linux -ndebug -o out/sequentialTasks.ll
+  $mplc .github/workflows/sequentialTasks.mpl -D DEBUG=TRUE -I "" -I "${platform}" -ndebug -o out/sequentialTasks.ll
   clang out/sequentialTasks.ll -O0 -lm -o out/sequentialTasks
 }
 

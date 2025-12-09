@@ -17,9 +17,25 @@
 "control.when"     use
 "control.||"       use
 
+"posix/common.close"               use
+"posix/common.fcntl"               use
+"posix/interfaceSocket.accept"     use
+"posix/interfaceSocket.bind"       use
+"posix/interfaceSocket.htonl"      use
+"posix/interfaceSocket.htons"      use
+"posix/interfaceSocket.listen"     use
+"posix/interfaceSocket.ntohl"      use
+"posix/interfaceSocket.setsockopt" use
+"posix/interfaceSocket.socket"     use
+
+"errno.errno"           use
+"linux.EPOLLIN"         use
+"linux.EPOLLONESHOT"    use
+"linux.EPOLL_CTL_ADD"   use
+"linux.EPOLL_CTL_MOD"   use
+"linux.epoll_ctl"       use
+"linux.epoll_event"     use
 "posix.O_NONBLOCK"      use
-"posix.close"           use
-"posix.fcntl"           use
 "socket.AF_INET"        use
 "socket.F_GETFL"        use
 "socket.F_SETFL"        use
@@ -30,24 +46,9 @@
 "socket.SOMAXCONN"      use
 "socket.SO_REUSEADDR"   use
 "socket.TCP_NODELAY"    use
-"socket.bind"           use
-"socket.htonl"          use
-"socket.htons"          use
-"socket.listen"         use
-"socket.ntohl"          use
-"socket.setsockopt"     use
 "socket.sockaddr"       use
 "socket.sockaddr_in"    use
-"socket.socket"         use
 "socket.socklen_t"      use
-
-"errno.errno"         use
-"linux.EPOLLIN"       use
-"linux.EPOLLONESHOT"  use
-"linux.EPOLL_CTL_ADD" use
-"linux.EPOLL_CTL_MOD" use
-"linux.epoll_ctl"     use
-"linux.epoll_event"   use
 
 "TcpConnection.TcpConnection"   use
 "syncPrivate.FiberPair"         use
@@ -114,7 +115,7 @@ TcpAcceptor: [{
       ] [
         @defaultCancelFunc @currentFiber.!func
 
-        "socket.accept" use
+        "posix/interfaceSocket.accept" use
 
         remoteAddress: sockaddr;
         addressSize:   remoteAddress storageSize;

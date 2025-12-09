@@ -28,12 +28,29 @@
 "control.when"          use
 "control.||"            use
 
+"posix/common.close"               use
+"posix/common.fcntl"               use
+"posix/interfaceSocket.connect"    use
+"posix/interfaceSocket.getsockopt" use
+"posix/interfaceSocket.htonl"      use
+"posix/interfaceSocket.htons"      use
+"posix/interfaceSocket.recv"       use
+"posix/interfaceSocket.send"       use
+"posix/interfaceSocket.setsockopt" use
+"posix/interfaceSocket.socket"     use
+
+"errno.errno"           use
+"linux.EPOLLIN"         use
+"linux.EPOLLONESHOT"    use
+"linux.EPOLLOUT"        use
+"linux.EPOLL_CTL_ADD"   use
+"linux.EPOLL_CTL_MOD"   use
+"linux.epoll_ctl"       use
+"linux.epoll_event"     use
 "posix.EAGAIN"          use
 "posix.EINPROGRESS"     use
 "posix.EWOULDBLOCK"     use
 "posix.O_NONBLOCK"      use
-"posix.close"           use
-"posix.fcntl"           use
 "socket.AF_INET"        use
 "socket.F_GETFL"        use
 "socket.F_SETFL"        use
@@ -45,26 +62,9 @@
 "socket.SOL_SOCKET"     use
 "socket.SO_ERROR"       use
 "socket.TCP_NODELAY"    use
-"socket.connect"        use
-"socket.getsockopt"     use
-"socket.htonl"          use
-"socket.htons"          use
-"socket.recv"           use
-"socket.send"           use
-"socket.setsockopt"     use
 "socket.sockaddr"       use
 "socket.sockaddr_in"    use
-"socket.socket"         use
 "socket.socklen_t"      use
-
-"errno.errno"         use
-"linux.EPOLLIN"       use
-"linux.EPOLLONESHOT"  use
-"linux.EPOLLOUT"      use
-"linux.EPOLL_CTL_ADD" use
-"linux.EPOLL_CTL_MOD" use
-"linux.epoll_ctl"     use
-"linux.epoll_event"   use
 
 "syncPrivate.FiberData"         use
 "syncPrivate.FiberPair"         use
@@ -181,7 +181,7 @@ TcpConnection: [{
   shutdown: [
     [valid?] "invalid TcpConnection" assert
 
-    "socket.shutdown" use
+    "posix/interfaceSocket.shutdown" use
 
     SHUT_WR connection shutdown 0 = [String] [("shutdown failed, result=" errno) assembleString] if
   ];

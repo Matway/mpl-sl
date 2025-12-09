@@ -20,6 +20,7 @@ mplc: [MPLC TRUE] [MPLC] pfunc;
 additionalLibrary: [
   PLATFORM (
     "linux"   ["m"]
+    "macos"   [""]
     "windows" ["ws2_32.lib"]
     [
       "Unknown platform" raiseStaticError
@@ -29,18 +30,18 @@ additionalLibrary: [
 
 executableExtension: [
   PLATFORM (
-    "linux"   [""]
-    "windows" [".exe"]
+    [(["linux" =] ["macos" =]) meetsAny] [""]
+    ["windows" =]                        [".exe"]
     [
       "Unknown platform" raiseStaticError
     ]
-  ) case
+  ) cond
 ];
 
 clangArguments: [
   additional: filenameSuffix:;;
   additional
-  "-l" additionalLibrary &
+  additionalLibrary () = ~ ["-l" additionalLibrary &] when
   "-o" "out/tests" filenameSuffix & executableExtension &
   "out/tests" filenameSuffix & ".ll"  &
 ];

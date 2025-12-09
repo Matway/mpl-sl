@@ -16,7 +16,7 @@
 "control.failProc"      use
 "control.when"          use
 
-"posix.itimerspec" use
+"posix/common.itimerspec" use
 
 "errno.errno"           use
 "linux.EPOLLIN"         use
