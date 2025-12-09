@@ -127,8 +127,9 @@ sleepFor: [
         timer_fd: timer_fd new;
       };
 
+      ContextType: @context Ref virtual;
       context storageAddress [
-        context: @context addressToReference;
+        context: @ContextType addressToReference;
 
         epoll_event context.timer_fd EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("FATAL: epoll_ctl failed, result=" errno LF) printList "" failProc] when
 

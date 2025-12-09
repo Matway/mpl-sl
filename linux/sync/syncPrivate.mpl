@@ -122,7 +122,7 @@ createFiber: [
     0n64 0n64 0n64 offset1 offset0 VALGRIND_STACK_REGISTER 0n64 valgrind_client_request drop
   ] when
 
-  {data: creationDataPtr new;} 1 @fiberFunc storageAddress @ucontext makecontext
+  (creationDataPtr new) 1 @fiberFunc storageAddress @ucontext makecontext
 
   ucontext storageAddress
 ];
@@ -189,8 +189,9 @@ spawnFiber: [
 
   reusableFibers.empty? [
     creationData: {nativeFiber: Natx; func: @func; funcData: funcData;};
+    CreationDataType: creationData Ref virtual;
     fiberFunc:    {data: Natx;} {} {convention: cdecl;} codeRef; [
-      creationData: creationData addressToReference;
+      creationData: CreationDataType addressToReference;
       data:         FiberData;
 
       creationData.nativeFiber new @data.!nativeFiber

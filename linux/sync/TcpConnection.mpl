@@ -129,8 +129,9 @@ TcpConnection: [{
             fiberPair:  @fiberPair;
           };
 
+          ContextType: @context Ref virtual;
           context storageAddress [
-            context:   @context addressToReference;
+            context:   @ContextType addressToReference;
             fiberPair: @context.@fiberPair;
 
             connectionEvent: epoll_event;
@@ -229,8 +230,9 @@ TcpConnection: [{
                 fiberPair:  @fiberPair;
               };
 
+              ContextType: @context Ref virtual;
               context storageAddress [
-                context:   @context addressToReference;
+                context:   @ContextType addressToReference;
                 fiberPair: @context.@fiberPair;
 
                 connectionEvent: epoll_event;
