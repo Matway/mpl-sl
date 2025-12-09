@@ -108,7 +108,7 @@ TcpConnection: [{
         @currentFiber @context.!fiber
         connection new @context.!connection
         context storageAddress [
-          context: Context addressToReference;
+          context: @Context addressToReference;
           @context.@overlapped context.connection CancelIoEx 1 = ~ [
             lastError: GetLastError;
             lastError ERROR_NOT_FOUND = ~ [("FATAL: CancelIoEx failed, result=" lastError LF) printList "" failProc] when
@@ -176,7 +176,7 @@ TcpConnection: [{
         @currentFiber @context.!fiber
         connection new @context.!connection
         context storageAddress [
-          context: Context addressToReference;
+          context: @Context addressToReference;
           @context.@overlapped context.connection CancelIoEx 1 = ~ [
             lastError: GetLastError;
             lastError ERROR_NOT_FOUND = ~ [("FATAL: CancelIoEx failed, result=" lastError LF) printList "" failProc] when
@@ -250,7 +250,7 @@ makeTcpConnection: [
       @currentFiber @context.!fiber
       connection.connection new @context.!connection
       context storageAddress [
-        context: Context addressToReference;
+        context: @Context addressToReference;
         @context.@overlapped context.connection CancelIoEx 1 = ~ [
           lastError: GetLastError;
           lastError ERROR_NOT_FOUND = ~ [("FATAL: CancelIoEx failed, result=" lastError LF) printList "" failProc] when

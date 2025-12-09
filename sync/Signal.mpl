@@ -32,7 +32,7 @@ Signal: [{
       data: {fibers: @fibers; fiber: @currentFiber;};
       Data: @data Ref virtual;
       data storageAddress [
-        data: Data addressToReference;
+        data: @Data addressToReference;
         # Cancelation is considered a rare operation, so O(n) complexity is not a problem here
         # It is possible that the current fiber was already removed from the linked list by calling wake/wakeOne before cancel
         [data.fiber is] @data.@fibers.cutIf 1 = [@data.@fiber @resumingFibers.append] when

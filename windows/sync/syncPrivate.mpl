@@ -142,7 +142,7 @@ spawnFiber: [
   funcData: func:;;
   reusableFibers.empty? [
     fiberFunc: [
-      creationData: CreationData addressToReference;
+      creationData: @CreationData addressToReference;
       data: FiberData;
       creationData.nativeFiber new @data.!nativeFiber
       creationData.@func @data.!func

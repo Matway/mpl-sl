@@ -113,7 +113,7 @@ TcpAcceptor: [{
         @currentFiber @context.!fiber
         acceptor new @context.!acceptor
         context storageAddress [
-          context: Context addressToReference;
+          context: @Context addressToReference;
           @context.@overlapped context.acceptor CancelIoEx 1 = ~ [
             lastError: GetLastError;
             lastError ERROR_NOT_FOUND = ~ [("FATAL: CancelIoEx failed, result=" lastError LF) printList "" failProc] when
