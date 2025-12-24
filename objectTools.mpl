@@ -5,40 +5,34 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"Mref.Mref"             use
-"String.assembleString" use
-"String.toString"       use
-"algorithm.cond"        use
-"control.&&"            use
-"control.Cond"          use
-"control.Int16"         use
-"control.Int32"         use
-"control.Int64"         use
-"control.Int8"          use
-"control.Intx"          use
-"control.Nat16"         use
-"control.Nat32"         use
-"control.Nat64"         use
-"control.Nat8"          use
-"control.Natx"          use
-"control.Real32"        use
-"control.Text"          use
-"control.assert"        use
-"control.between"       use
-"control.dup"           use
-"control.hasSchemaName" use
-"control.int?"          use
-"control.nat?"          use
-"control.number?"       use
-"control.real?"         use
-"control.sized?"        use
-"control.swap"          use
-"control.times"         use
-"control.tuple?"        use
-"control.when"          use
-"control.while"         use
-"control.within"        use
-"control.||"            use
+"algorithm.cond"  use
+"control.&&"      use
+"control.Cond"    use
+"control.Int16"   use
+"control.Int32"   use
+"control.Int64"   use
+"control.Int8"    use
+"control.Intx"    use
+"control.Nat16"   use
+"control.Nat32"   use
+"control.Nat64"   use
+"control.Nat8"    use
+"control.Natx"    use
+"control.Real32"  use
+"control.Text"    use
+"control.assert"  use
+"control.between" use
+"control.int?"    use
+"control.nat?"    use
+"control.real?"   use
+"control.sized?"  use
+"control.swap"    use
+"control.times"   use
+"control.tuple?"  use
+"control.when"    use
+"control.while"   use
+"control.within"  use
+"control.||"      use
 
 # Object formatting
 
@@ -262,126 +256,6 @@ formatObjectStatic: [
   ) cond
 ];
 
-# Dynamic object formatting
-
-formatCode: [object: options:;;
-  options "call" has [options.call] && [object] ["code" toString] if
-];
-
-formatCodeRef: [object: options:;;
-  "codeRef" toString
-];
-
-formatDict: [
-  dict: options: new;;
-  formatOptions:
-    dict "FORMAT_OPTIONS" has [@dict.FORMAT_OPTIONS] [{}] uif;
-  (
-    "{"
-    new_options: @options "dictIndent" has [
-      @options {dictIndent: @options.@dictIndent 1 +;} mergeDicts @formatOptions mergeDicts
-    ] [@options @formatOptions mergeDicts] uif;
-    i: 0; [i @dict fieldCount = ~] [
-      @dict i fieldName "FORMAT_OPTIONS" = [] [
-        @new_options "dictIndent" has [
-          "\n" & @new_options.dictIndent ["  " &] times
-        ] [
-          i 0 = ~ [" " &] when
-        ] if
-
-        @dict i fieldName & ": " &
-
-        value: @dict i fieldRead;
-        @value code? [
-          value: @dict dup i fieldName callField;
-        ] [] uif
-
-        @value @new_options formatObject
-
-        @dict i fieldIsRef [@dict i fieldRead sized?] && [
-          @dict i fieldRead isConst [" Cref"] [" Ref"] if
-        ] when
-
-        @dict i fieldIsVirtual [@dict i fieldRead virtual? ~] && [" virtual"] when
-
-        ";"
-      ] uif
-      i 1 + !i
-    ] while
-
-    @new_options "dictIndent" has [
-      @dict fieldCount 0 = ~ [
-        "\n" @new_options.dictIndent 1 - ["  " &] times
-      ] when
-    ] when
-
-    "}"
-  ) assembleString
-];
-
-formatTuple: [
-  tuple: options: new;;
-  (
-    "("
-    @options "tupleIndent" has [@options.tupleIndent 1 + @options.!tupleIndent] when
-    i: 0; [i @tuple fieldCount = ~] [
-      @options "tupleIndent" has [
-        "\n" & @options.tupleIndent ["  " &] times
-      ] [
-        i 0 = ~ [" " &] when
-      ] if
-
-      @tuple i fieldRead @options formatObject
-
-      @tuple i fieldIsRef [@tuple i fieldRead sized?] && [
-        @tuple i fieldRead isConst [" Cref"] [" Ref"] if
-      ] when
-
-      ""
-
-      i 1 + !i
-    ] while
-
-    @options "tupleIndent" has [
-      @options.tupleIndent 1 - @options.!tupleIndent
-      @tuple fieldCount 0 = ~ [
-        "\n" @options.tupleIndent ["  " &] times
-      ] when
-    ] when
-
-    ")"
-  ) assembleString
-];
-formatStruct: [struct: options:;;
-  @struct @options @struct {} same [@struct tuple? ~] || [formatDict] [formatTuple] if
-];
-
-formatMref: [mref: options:;;
-  @mref.data 0nx = [
-    "NULL " @mref.@getSchema @options (TRUE) "expandCode" 0 insertField formatCodeStatic & " Mref" & toString
-  ] [
-    @options "MrefVisited" has [
-      @mref.@getSchema @options (TRUE) "expandCode" 0 insertField formatCodeStatic " Mref" & toString
-    ][
-      (
-        mref @options (TRUE) "MrefVisited" 0 insertField formatObject
-        " Mref"
-      ) assembleString
-    ] if
-  ] if
-];
-
-formatObject: [object: options:;;
-  @object (
-    [Cond same [@object Text same] || [@object number?] ||] [ object toString]
-
-    [code?               ] [@object @options formatCode   ]
-    [codeRef?            ] [@object @options formatCodeRef]
-    ["Mref" hasSchemaName] [@object @options formatMref   ]
-    [isCombined          ] [@object @options formatStruct ]
-  ) cond
-];
-
 # Object manipulation
 
 cloneDict: [
@@ -396,30 +270,6 @@ cloneDict: [
 
   i: 0;
   {@iterate ucall}
-];
-
-mergeDicts: [dict1: dict2:;;
-  iterate1: [
-    i @dict1 fieldCount = [
-      0 !i
-      @iterate2 ucall
-    ] [
-      @dict1 i @transferField ucall
-      i 1 + !i
-      @iterate1 ucall
-    ] uif
-  ];
-
-  iterate2: [
-    i @dict2 fieldCount = [] [
-      @dict2 i @transferField ucall
-      i 1 + !i
-      @iterate2 ucall
-    ] uif
-  ];
-
-  i: 0;
-  {@iterate1 ucall}
 ];
 
 fieldNeedsVirtual: [

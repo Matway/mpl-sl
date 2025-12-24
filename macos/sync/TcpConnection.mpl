@@ -66,8 +66,6 @@
 "macos.kevent"        use
 "macos.struct_kevent" use
 
-"objectTools.formatObject" use
-
 "syncPrivate.FiberData"         use
 "syncPrivate.FiberPair"         use
 "syncPrivate.canceled?"         use

@@ -1,16 +1,15 @@
-"Mref.Mref"                use
-"String.print"             use
-"control.Int32"            use
-"control.Nat16"            use
-"control.Nat32"            use
-"control.Nat64"            use
-"control.Nat8"             use
-"control.Natx"             use
-"control.Ref"              use
-"control.pfunc"            use
-"control.print"            use
-"conventions.cdecl"        use
-"objectTools.formatObject" use
+"Mref.Mref"         use
+"String.print"      use
+"control.Int32"     use
+"control.Nat16"     use
+"control.Nat32"     use
+"control.Nat64"     use
+"control.Nat8"      use
+"control.Natx"      use
+"control.Ref"       use
+"control.pfunc"     use
+"control.print"     use
+"conventions.cdecl" use
 
 __darwin_sigaltstack: [{
   ss_sp:    Natx;
@@ -158,8 +157,6 @@ __darwin_ucontext: [{
 }];
 
 ucontext_t: @__darwin_ucontext;
-
-print: [ucontext_t same] [{dictIndent: 0;} formatObject print LF print] pfunc;
 
 {
   ucp: ucontext_t Ref;

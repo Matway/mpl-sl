@@ -28,7 +28,6 @@
 "control.||"                    use
 "conventions.cdecl"             use
 "memory.malloc"                 use
-"objectTools.formatObject"      use
 
 "macos.EVFILT_READ"   use
 "macos.EVFILT_TIMER"  use
