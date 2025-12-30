@@ -38,6 +38,7 @@
 "syncPrivate.getTimerFd"          use
 "syncPrivate.resumingFibers"      use
 "syncPrivate.timers"              use
+"runningTime.runningTime"         use
 
 # Test if current context was canceled
 # in:
@@ -63,8 +64,6 @@ connectTcp: [makeTcpConnection];
 # out:
 #   time (Real64) - time elapsed
 getTime: [
-  "runningTime.runningTime" use
-
   runningTime.get
 ];
 

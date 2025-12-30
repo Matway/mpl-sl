@@ -317,9 +317,10 @@ makeTcpConnection: [
         connection: connection.connection new;
         fiber:      @currentFiber;
       };
+      ContextType: @context Ref virtual;
 
       context storageAddress [
-        context: @context addressToReference;
+        context: @ContextType addressToReference;
 
         epoll_event context.connection EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("epoll_ctl failed, result=" errno LF) printList "" failProc] when
 
