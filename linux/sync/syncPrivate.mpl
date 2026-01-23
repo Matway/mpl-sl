@@ -189,9 +189,9 @@ spawnFiber: [
 
   reusableFibers.empty? [
     creationData: {nativeFiber: Natx; func: @func; funcData: funcData;};
-    CreationDataType: creationData Ref virtual;
+    CreationData: creationData Ref virtual;
     fiberFunc:    {data: Natx;} {} {convention: cdecl;} codeRef; [
-      creationData: CreationDataType addressToReference;
+      creationData: CreationData addressToReference;
       data:         FiberData;
 
       creationData.nativeFiber new @data.!nativeFiber

@@ -102,9 +102,9 @@ TcpAcceptor: [{
           fiber:    @currentFiber;
         };
 
-        AcceptContextType: @acceptContext Ref virtual;
+        AcceptContext: @acceptContext Ref virtual;
         acceptContext storageAddress [
-          acceptContext: @AcceptContextType addressToReference;
+          acceptContext: @AcceptContext addressToReference;
 
           epoll_event acceptContext.acceptor EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("FATAL: epoll_ctl failed, result=" errno LF) printList "" failProc] when
 
