@@ -128,9 +128,10 @@ TcpConnection: [{
             connection: connection new;
             fiberPair:  @fiberPair;
           };
+          Context: @context Ref virtual;
 
           context storageAddress [
-            context:   @context addressToReference;
+            context:   @Context addressToReference;
             fiberPair: @context.@fiberPair;
 
             connectionEvent: epoll_event;
@@ -228,9 +229,10 @@ TcpConnection: [{
                 connection: connection new;
                 fiberPair:  @fiberPair;
               };
+              Context: @context Ref virtual;
 
               context storageAddress [
-                context:   @context addressToReference;
+                context:   @Context addressToReference;
                 fiberPair: @context.@fiberPair;
 
                 connectionEvent: epoll_event;
@@ -317,9 +319,10 @@ makeTcpConnection: [
         connection: connection.connection new;
         fiber:      @currentFiber;
       };
+      Context: @context Ref virtual;
 
       context storageAddress [
-        context: @context addressToReference;
+        context: @Context addressToReference;
 
         epoll_event context.connection EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("epoll_ctl failed, result=" errno LF) printList "" failProc] when
 

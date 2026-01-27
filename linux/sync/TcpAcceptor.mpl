@@ -11,6 +11,7 @@
 "control.Int32"    use
 "control.Nat16"    use
 "control.Nat32"    use
+"control.Ref"      use
 "control.assert"   use
 "control.failProc" use
 "control.sequence" use
@@ -100,9 +101,10 @@ TcpAcceptor: [{
           acceptor: acceptor new;
           fiber:    @currentFiber;
         };
+        AcceptContext: @acceptContext Ref virtual;
 
         acceptContext storageAddress [
-          acceptContext: @acceptContext addressToReference;
+          acceptContext: @AcceptContext addressToReference;
 
           epoll_event acceptContext.acceptor EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("FATAL: epoll_ctl failed, result=" errno LF) printList "" failProc] when
 
