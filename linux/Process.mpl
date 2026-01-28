@@ -17,7 +17,6 @@
 "algorithm.each"         use
 "algorithm.map"          use
 "algorithm.objectValues" use
-"algorithm.toIter"       use
 "control.Int32"          use
 "control.Intx"           use
 "control.Natx"           use
@@ -30,8 +29,8 @@
 "control.pfunc"          use
 "control.print"          use
 "control.swap"           use
-"control.touch"          use
 "control.when"           use
+"control.wrap"           use
 
 "errno.errno"       use
 "posix.FD_CLOEXEC"  use
@@ -54,8 +53,8 @@ Process: [{
 
   create: [
     commands:;
-    [isCreated ~                                              ] "Attempted to initialize a Process twice" assert
-    [[@commands toIter [makeStringView drop] each] compilable?] "Invalid item schema"                     assert
+    [isCreated ~                                       ] "Attempted to initialize a Process twice" assert
+    [[@commands [makeStringView drop] each] compilable?] "Invalid item schema"                     assert
 
     result: String;
 
@@ -73,23 +72,23 @@ Process: [{
         childPipe objectValues [closeDescriptor] each
       ] [
         r/w: [
-          op: descriptor: buffer:;; virtual;
-          [op "read" = op "write" = or] "Invalid operatin name" assert
+          operation: descriptor: buffer:;; virtual;
+          [operation "read" = operation "write" = or] "Invalid operation name" assert
 
           result: TRUE;
 
           size:      buffer storageSize;
-          byteCount: size buffer storageAddress descriptor op call;
+          byteCount: size buffer storageAddress descriptor operation call;
           byteCount (
-            [-1ix =] [op 1 errorExit]
+            [-1ix =] [operation 1 errorExit]
 
             [0ix =] [
-              [op "write" = ~ dynamic] "[write] transferred nothing" assert
+              [operation "write" = ~ dynamic] "[write] transferred nothing" assert
               FALSE !result
             ]
 
             [size Intx cast <] [
-              "insufficient [" op & "]\n" & print
+              "insufficient [" operation & "]\n" & print
               1 exit
             ]
 
@@ -102,7 +101,7 @@ Process: [{
         ];
 
         sources: @commands [makeStringView addTerminator] [String] map toArray;
-        [sources.size 0 = ~] "Command-line arguments have no command" assert
+        [sources.size 0 = ~] "Command line is empty" assert
         arguments: Natx Array;
         sources.size 1 + @arguments.setReserve
         sources [.data storageAddress] [Natx] map @arguments.append
@@ -140,7 +139,7 @@ Process: [{
   ];
 
   create: [makeStringView TRUE] [
-    (1 touch) create
+    1 wrap create
   ] pfunc;
 
   isCreated: [
