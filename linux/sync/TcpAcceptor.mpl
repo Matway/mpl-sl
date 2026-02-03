@@ -97,18 +97,18 @@ TcpAcceptor: [{
 
         @listenEvent acceptor EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("epoll_ctl failed, result=" errno) @result.catMany] when
       ] [
-        acceptContext: {
+        context: {
           acceptor: acceptor new;
           fiber:    @currentFiber;
         };
 
-        AcceptContext: @acceptContext Ref virtual;
-        acceptContext storageAddress [
-          acceptContext: @AcceptContext addressToReference;
+        Context: @context Ref virtual;
+        context storageAddress [
+          context: @Context addressToReference;
 
-          epoll_event acceptContext.acceptor EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("FATAL: epoll_ctl failed, result=" errno LF) printList "" failProc] when
+          epoll_event context.acceptor EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("FATAL: epoll_ctl failed, result=" errno LF) printList "" failProc] when
 
-          @acceptContext.@fiber @resumingFibers.append
+          @context.@fiber @resumingFibers.append
         ] @currentFiber.setFunc
 
         dispatch

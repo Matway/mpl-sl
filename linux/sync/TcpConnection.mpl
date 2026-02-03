@@ -319,8 +319,8 @@ makeTcpConnection: [
         connection: connection.connection new;
         fiber:      @currentFiber;
       };
-      Context: @context Ref virtual;
 
+      Context: @context Ref virtual;
       context storageAddress [
         context: @Context addressToReference;
 

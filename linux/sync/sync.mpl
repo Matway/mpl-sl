@@ -18,13 +18,14 @@
 
 "posix.itimerspec" use
 
-"errno.errno"           use
-"linux.EPOLLIN"         use
-"linux.EPOLLONESHOT"    use
-"linux.EPOLL_CTL_MOD"   use
-"linux.epoll_ctl"       use
-"linux.epoll_event"     use
-"linux.timerfd_settime" use
+"errno.errno"             use
+"linux.EPOLLIN"           use
+"linux.EPOLLONESHOT"      use
+"linux.EPOLL_CTL_MOD"     use
+"linux.epoll_ctl"         use
+"linux.epoll_event"       use
+"linux.timerfd_settime"   use
+"runningTime.runningTime" use
 
 "TcpAcceptor.makeTcpAcceptor"     use
 "TcpConnection.makeTcpConnection" use
@@ -38,7 +39,6 @@
 "syncPrivate.getTimerFd"          use
 "syncPrivate.resumingFibers"      use
 "syncPrivate.timers"              use
-"runningTime.runningTime"         use
 
 # Test if current context was canceled
 # in:
