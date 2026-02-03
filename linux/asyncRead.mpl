@@ -44,9 +44,9 @@ asyncRead: [
         error: @error;
         fd: fd new;
       };
-      ContextType: @context Ref virtual;
+      Context: @context Ref virtual;
       context storageAddress [
-        context: @ContextType addressToReference;
+        context: @Context addressToReference;
         epoll_event context.fd EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [
           -1ix @context.@error set
         ] when
