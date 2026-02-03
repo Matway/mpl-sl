@@ -11,6 +11,7 @@
 "control.Int32"    use
 "control.Nat16"    use
 "control.Nat32"    use
+"control.Ref"      use
 "control.assert"   use
 "control.failProc" use
 "control.sequence" use
@@ -96,17 +97,18 @@ TcpAcceptor: [{
 
         @listenEvent acceptor EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("epoll_ctl failed, result=" errno) @result.catMany] when
       ] [
-        acceptContext: {
+        context: {
           acceptor: acceptor new;
           fiber:    @currentFiber;
         };
 
-        acceptContext storageAddress [
-          acceptContext: @acceptContext addressToReference;
+        Context: @context Ref virtual;
+        context storageAddress [
+          context: @Context addressToReference;
 
-          epoll_event acceptContext.acceptor EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("FATAL: epoll_ctl failed, result=" errno LF) printList "" failProc] when
+          epoll_event context.acceptor EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("FATAL: epoll_ctl failed, result=" errno LF) printList "" failProc] when
 
-          @acceptContext.@fiber @resumingFibers.append
+          @context.@fiber @resumingFibers.append
         ] @currentFiber.setFunc
 
         dispatch
