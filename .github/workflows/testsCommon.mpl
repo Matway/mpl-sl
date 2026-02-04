@@ -51,6 +51,7 @@
 "tests/universal/SignalTest"       use
 "tests/universal/SpanStaticTest"   use
 "tests/universal/SpanTest"         use
+"tests/universal/UnionTest"        use
 "tests/universal/algorithmTest"    use
 "tests/universal/controlTest"      use
 "tests/universal/objectToolsTest"  use
