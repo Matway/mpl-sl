@@ -5,21 +5,21 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
-"control.&&"             use
-"control.Cref"           use
-"control.Int32"          use
-"control.Nat8"           use
-"control.Natx"           use
-"control.Real64"         use
-"control.Ref"            use
-"control.drop"           use
-"control.dup"            use
-"control.ensure"         use
-"control.isBuiltinTuple" use
-"control.pfunc"          use
-"control.times"          use
-"control.when"           use
-"control.||"             use
+"control.&&"     use
+"control.Cref"   use
+"control.Int32"  use
+"control.Nat8"   use
+"control.Natx"   use
+"control.Real64" use
+"control.Ref"    use
+"control.drop"   use
+"control.dup"    use
+"control.ensure" use
+"control.pfunc"  use
+"control.times"  use
+"control.tuple?" use
+"control.when"   use
+"control.||"     use
 
 "algorithm" use
 
@@ -850,7 +850,7 @@ testView: [
 
 # wrapIter
 [
-  =: [tuple0: tuple1:;; tuple0 isBuiltinTuple [tuple1 isBuiltinTuple] &&] [
+  =: [tuple0: tuple1:;; tuple0 tuple? [tuple1 tuple?] &&] [
     tuple0: tuple1:;;
     tuple0 fieldCount tuple1 fieldCount = [
       result: FALSE;
