@@ -613,6 +613,63 @@ beginsWith: [
   result
 ];
 
+compare: [
+  iter0: iter1: comparator:; toIter; toIter;
+
+  @comparator () same [
+    comparator: [
+      left: right:;;
+      @left @right < [-1] [
+        @left @right = [0] [1] if
+      ] if
+    ];
+  ] [] uif
+
+  result: Int32;
+  @iter0 "size" has [@iter1 "size" has] && [
+    iter0: iter1: @iter0 @iter1 iter1.size iter0.size < [
+      swap     1 !result
+    ] [
+      2 touch -1 !result
+    ] if;;
+
+    [
+      @iter0.next [
+        item0:;
+        item1: @iter1.next drop;
+        comparisonResult: @item0 @item1 comparator;
+        [comparisonResult int?] "Not an Int" assert
+        0 comparisonResult cast comparisonResult < [
+          result neg !result
+          FALSE
+        ] [
+          0 comparisonResult cast comparisonResult =
+        ] if
+      ] [
+        drop
+        @iter1.next ~ [0 !result] when drop
+        FALSE
+      ] if
+    ] loop
+  ] [
+    [
+      item0: @iter0.next swap; ~ [
+        @iter1.next swap drop [-1] [0] if !result FALSE
+      ] [
+        item1: @iter1.next swap; ~ [1 !result FALSE] [
+          comparisonResult: @item0 @item1 comparator;
+          [comparisonResult int?] "Not an Int" assert
+          0 comparisonResult cast comparisonResult = [TRUE] [
+            comparisonResult comparisonResult storageSize Int32 storageSize > [sign] [Int32 cast] if !result FALSE
+          ] if
+        ] if
+      ] if
+    ] loop
+  ] if
+
+  result
+];
+
 contains: [
   iter0: iter1:; toIter;
   size0: @iter0        "size" has [@iter0       .size] [@iter0 new    count] if;
