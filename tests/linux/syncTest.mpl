@@ -9,21 +9,27 @@
 "String.printList" use
 "String.toString"  use
 "algorithm.="      use
+"algorithm.each"   use
 "control.&&"       use
+"control.Int32"    use
+"control.Nat8"     use
 "control.Natx"     use
-"control.ensure"   use
 "control.failProc" use
+"control.min"      use
 "control.times"    use
 "control.when"     use
 "control.while"    use
 
 "posix.EAGAIN"      use
 "posix.EWOULDBLOCK" use
+"posix.pipe"        use
+"posix.write"       use
 "socket.send"       use
 
 "errno.errno" use
 
 "sync/TcpConnection"     use
+"sync/sync.asyncRead"    use
 "sync/sync.canceled?"    use
 "sync/sync.connectTcp"   use
 "sync/sync.ipv4ToString" use
@@ -78,6 +84,14 @@ fillUpSocketSendBuffer: [
 
   lastErrorNumber: errno;
   lastErrorNumber EAGAIN = ~ [lastErrorNumber EWOULDBLOCK = ~] && [("send failed, result=" lastErrorNumber) printList "" failProc] when
+];
+
+writeText: [
+  fd: text:;;
+  size: text textSize;
+  result: size text storageAddress fd write;  # Natx cast
+  result -1ix = [("writeText failed, result=" errno LF) printList "" failProc] when
+  result Natx cast size = ~ [("unexpected write count " result LF) printList "" failProc] when
 ];
 
 # Test that write does not block when read is canceled on the same fd
@@ -159,3 +173,40 @@ fillUpSocketSendBuffer: [
   result "" = ~ [("TcpConnection.readString failed, " result LF) printList "" failProc] when
   message "Hello, World!" = ~ [("client received unexpected response, \"" message "\"\n") printList "" failProc] when
 ] call
+
+# Test asyncRead waits input non-blocking
+(
+  "Hello"          # smaller than bufferSize
+  "Hello, World!"  # larger than buggerSize
+) [
+  message:;
+  messageSize: message textSize Int32 cast;
+  bufferSize: 10;
+  expectedMessage: 0 bufferSize messageSize min message toString.slice;
+  pipefd: {in: Int32; out: Int32;};
+  @pipefd pipe 0 = ~ [("failed to create pipe, result=" errno LF) printList "" failProc] when
+  readyToRead: FALSE;
+
+  context: {
+    readfd:          pipefd.in;
+    bufferSize:      bufferSize;
+    expectedMessage: expectedMessage;
+    readyToRead:     @readyToRead;
+    CALL: [
+      buffer: String;
+      bufferSize @buffer.resize
+      TRUE @readyToRead set
+      readCount: buffer.size Natx cast buffer.data storageAddress readfd asyncRead;
+      FALSE @readyToRead set
+      message: 0 readCount Int32 cast buffer.slice;
+      message expectedMessage = ~ [("received unexpected message, \"" message "\"" LF) printList "" failProc] when
+    ];
+  } () spawn;
+  readyToRead FALSE = ~ [("client was not expected to be started" LF) printList "" failProc] when
+  yield
+  readyToRead TRUE = ~ [("client is expected to be ready" LF) printList "" failProc] when
+  pipefd.out message writeText
+  @context.wait
+  readyToRead FALSE = ~ [("expected fiber to already read message" LF) printList "" failProc] when
+] each
+
