@@ -29,7 +29,7 @@
 "errno.errno" use
 
 "sync/TcpConnection"     use
-"sync/sync.asyncRead"    use
+"sync/read.asyncRead"    use
 "sync/sync.canceled?"    use
 "sync/sync.connectTcp"   use
 "sync/sync.ipv4ToString" use
