@@ -18,13 +18,14 @@
 
 "posix.itimerspec" use
 
-"errno.errno"           use
-"linux.EPOLLIN"         use
-"linux.EPOLLONESHOT"    use
-"linux.EPOLL_CTL_MOD"   use
-"linux.epoll_ctl"       use
-"linux.epoll_event"     use
-"linux.timerfd_settime" use
+"errno.errno"             use
+"linux.EPOLLIN"           use
+"linux.EPOLLONESHOT"      use
+"linux.EPOLL_CTL_MOD"     use
+"linux.epoll_ctl"         use
+"linux.epoll_event"       use
+"linux.timerfd_settime"   use
+"runningTime.runningTime" use
 
 "TcpAcceptor.makeTcpAcceptor"     use
 "TcpConnection.makeTcpConnection" use
@@ -63,8 +64,6 @@ connectTcp: [makeTcpConnection];
 # out:
 #   time (Real64) - time elapsed
 getTime: [
-  "runningTime.runningTime" use
-
   runningTime.get
 ];
 
@@ -127,8 +126,9 @@ sleepFor: [
         timer_fd: timer_fd new;
       };
 
+      Context: @context Ref virtual;
       context storageAddress [
-        context: @context addressToReference;
+        context: @Context addressToReference;
 
         epoll_event context.timer_fd EPOLL_CTL_MOD epoll_fd epoll_ctl -1 = [("FATAL: epoll_ctl failed, result=" errno LF) printList "" failProc] when
 

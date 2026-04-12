@@ -8,17 +8,15 @@
 "Array.Array"            use
 "Array.toArray"          use
 "String.String"          use
+"String.addTerminator"   use
 "String.assembleString"  use
 "String.makeStringView"  use
 "String.print"           use
-"algorithm.any"          use
 "algorithm.case"         use
 "algorithm.cond"         use
 "algorithm.each"         use
 "algorithm.map"          use
 "algorithm.objectValues" use
-"algorithm.toIndex"      use
-"algorithm.toIter"       use
 "control.Int32"          use
 "control.Intx"           use
 "control.Natx"           use
@@ -31,8 +29,8 @@
 "control.pfunc"          use
 "control.print"          use
 "control.swap"           use
-"control.touch"          use
 "control.when"           use
+"control.wrap"           use
 
 "errno.errno"       use
 "posix.FD_CLOEXEC"  use
@@ -55,9 +53,8 @@ Process: [{
 
   create: [
     commands:;
-    [@commands toIndex.size 0 >                                                                                       ] "Lack of commands"                        assert
-    [([0 @commands toIndex dynamic.at makeStringView] [@commands toIter [makeStringView drop] each]) [compilable?] any] "Invalid item schema"                     assert
-    [isCreated ~                                                                                                      ] "Attempted to initialize a Process twice" assert
+    [isCreated ~                                       ] "Attempted to initialize a Process twice" assert
+    [[@commands [makeStringView drop] each] compilable?] "Invalid item schema"                     assert
 
     result: String;
 
@@ -75,24 +72,23 @@ Process: [{
         childPipe objectValues [closeDescriptor] each
       ] [
         r/w: [
-          op: descriptor: buffer:;;;
-          opName: @op 0 codeTokenRead virtual;
-          [opName "read" = opName "write" = or] "Invalid operatin name" assert
+          operation: descriptor: buffer:;; virtual;
+          [operation "read" = operation "write" = or] "Invalid operation name" assert
 
           result: TRUE;
 
           size:      buffer storageSize;
-          byteCount: size buffer storageAddress descriptor op;
+          byteCount: size buffer storageAddress descriptor operation call;
           byteCount (
-            [-1ix =] [opName 1 errorExit]
+            [-1ix =] [operation 1 errorExit]
 
             [0ix =] [
-              [opName "write" = ~ dynamic] "[write] transferred nothing" assert
+              [operation "write" = ~ dynamic] "[write] transferred nothing" assert
               FALSE !result
             ]
 
             [size Intx cast <] [
-              "insufficient [" opName & "]\n" & print
+              "insufficient [" operation & "]\n" & print
               1 exit
             ]
 
@@ -104,7 +100,8 @@ Process: [{
           result
         ];
 
-        sources:   @commands [(1 touch "\00") assembleString] [String] map toArray;
+        sources: @commands [makeStringView addTerminator] [String] map toArray;
+        [sources.size 0 = ~] "Command line is empty" assert
         arguments: Natx Array;
         sources.size 1 + @arguments.setReserve
         sources [.data storageAddress] [Natx] map @arguments.append
@@ -117,7 +114,7 @@ Process: [{
           0 [ # A child's body, not a parent's one
             childPipe.in closeDescriptor
             arguments.data storageAddress arguments.data execvp drop
-            [write] childPipe.out errno r/w drop
+            "write" childPipe.out errno r/w drop
             childPipe.out closeDescriptor
             1 exit
           ]
@@ -127,7 +124,7 @@ Process: [{
             childPipe.out closeDescriptor
 
             buffer: Int32;
-            [read] childPipe.in buffer r/w [
+            "read" childPipe.in buffer r/w [
               "execvp" buffer errorMessage2 !result
               FALSE wait
             ] when
@@ -142,7 +139,7 @@ Process: [{
   ];
 
   create: [makeStringView TRUE] [
-    (1 touch) create
+    1 wrap create
   ] pfunc;
 
   isCreated: [
