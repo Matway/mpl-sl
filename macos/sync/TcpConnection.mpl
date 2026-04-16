@@ -145,8 +145,9 @@ TcpConnection: [{
             fiberPair:  @fiberPair;
           };
 
+          Context: @context Ref virtual;
           context storageAddress [
-            context:   @context addressToReference;
+            context:   @Context addressToReference;
             fiberPair: @context.@fiberPair;
 
             connectionEvent: struct_kevent;
@@ -269,8 +270,9 @@ TcpConnection: [{
             fiberPair:  @fiberPair;
           };
 
+          Context: @context Ref virtual;
           context storageAddress [
-            context:   @context addressToReference;
+            context:   @Context addressToReference;
             fiberPair: @context.@fiberPair;
 
             connectionEvent: struct_kevent;
@@ -374,8 +376,9 @@ makeTcpConnection: [
 
       connection.connection Nat64 cast @context.@connEvent.!ident
 
+      Context: @context Ref virtual;
       context storageAddress [
-        context: @context addressToReference;
+        context: @Context addressToReference;
 
         timespec Ref 0n32 0 struct_kevent Ref 1 context.connEvent kqueue_fd kevent -1 = [("[makeTcpConnection] kevent failed, result=" errno) printList "" failProc] when
 

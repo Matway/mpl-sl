@@ -112,8 +112,9 @@ TcpAcceptor: [{
           fiber:    @currentFiber;
           le: @listenEvent new;
         };
+        AcceptContext: @acceptContext Ref virtual;
         acceptContext storageAddress [
-          acceptContext: @acceptContext addressToReference;
+          acceptContext: @AcceptContext addressToReference;
 
           acceptContext.acceptor Nat64 cast @acceptContext.@le.!ident
           # Ignore EINVAL - socket may be already closed during cleanup
@@ -170,8 +171,9 @@ TcpAcceptor: [{
 
         connection.connection Nat64 cast @context.@connEvent.!ident
 
+        Context: @context Ref virtual;
         context storageAddress [
-          context: @context addressToReference;
+          context: @Context addressToReference;
 
           timespec Ref 0n32 0 struct_kevent Ref 1 context.connEvent kqueue_fd kevent -1 = [("[accept] kevent failed, result=" errno) printList "" failProc] when
 

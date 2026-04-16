@@ -143,8 +143,9 @@ sleepFor: [
         duration: duration new;
       };
 
+      Context: @context Ref virtual;
       context storageAddress [
-        context: @context addressToReference;
+        context: @Context addressToReference;
         deleteEvent: struct_kevent;
         @deleteEvent context.timer_fd EVFILT_TIMER EV_DELETE 0n32 0 0n64 0n64 0n64 EV_SET
         timespec Ref 0n32 0 struct_kevent Ref 1 deleteEvent kqueue_fd kevent drop
