@@ -100,11 +100,13 @@ createFiber: [
   STACK_SIZE malloc     @ucontext.@uc_stack.!ss_sp
   STACK_SIZE Nat64 cast @ucontext.@uc_stack.!ss_size
 
-  # split creationDataPtr (Natx) into two Ints
-  arg1: creationDataPtr storageAddress                     Int32 addressToReference;
-  arg2: creationDataPtr storageAddress Int32 storageSize + Int32 addressToReference;
-
-  (arg1 new arg2 new) 2 @fiberFunc storageAddress @ucontext makecontext
+  # WORKAROUND: the new compiler's argument passing through `makecontext` is broken on
+  # macOS arm64 — values pushed via the variadic interface arrive as garbage in the
+  # spawned fiber. Stash the pointer in a module-level variable and let `fiberFunc`
+  # read it back. Safe because spawnFiber never yields between writing the slot and
+  # the receiving fiber consuming it.
+  creationDataPtr @pendingCreationDataPtr set
+  () 0 @fiberFunc storageAddress @ucontext makecontext
 
   ucontext storageAddress
 ];
@@ -169,13 +171,8 @@ spawnFiber: [
   reusableFibers.empty? [
     creationData: {nativeFiber: Natx; func: @func; funcData: funcData;};
     CreationData: creationData Ref virtual;
-    fiberFunc: {arg1: Int32; arg2: Int32;} {} {convention: cdecl;} codeRef; [
-      arg2: arg1:;;
-      creationDataPtr: 0nx;
-
-      arg1 @creationDataPtr storageAddress                     Int32 addressToReference set
-      arg2 @creationDataPtr storageAddress Int32 storageSize + Int32 addressToReference set
-
+    fiberFunc: {} {} {convention: cdecl;} codeRef; [
+      creationDataPtr: pendingCreationDataPtr new;
       creationData: creationDataPtr CreationData addressToReference;
       data: FiberData;
 
@@ -202,12 +199,13 @@ spawnFiber: [
   ] if
 ];
 
-currentFiber:   FiberData Ref;
-kqueue_fd:      Int32;
-rootFiber:      FiberData;
-resumingFibers: FiberData IntrusiveQueue;
-reusableFibers: FiberData IntrusiveQueue;
-timers:         Natx Array;
+currentFiber:            FiberData Ref;
+kqueue_fd:               Int32;
+pendingCreationDataPtr:  0nx;
+rootFiber:               FiberData;
+resumingFibers:          FiberData IntrusiveQueue;
+reusableFibers:          FiberData IntrusiveQueue;
+timers:                  Natx Array;
 
 [
   kqueue !kqueue_fd
