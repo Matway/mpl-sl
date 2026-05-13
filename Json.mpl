@@ -38,6 +38,18 @@ JSONString: [4 static];
 JSONArray:  [5 static];
 JSONObject: [6 static];
 
+HEX_BASE:         [16n32  static];
+HEX_DIGIT_COUNT:  [10n32  static];
+HEX_LETTER_COUNT: [6n32   static];
+HEX_NIBBLE_MASK:  [0xFn32 static];
+
+UNICODE_HIGH_SURROGATE_START: [0xD800n32  static];
+UNICODE_LOW_SURROGATE_START:  [0xDC00n32  static];
+UNICODE_SURROGATE_END:        [0xE000n32  static];
+UNICODE_SUPPLEMENTARY_BASE:   [0x10000n32 static];
+UNICODE_SURROGATE_MASK:       [0x3FFn32   static];
+UNICODE_SURROGATE_SHIFT:      [10n32      static];
+
 JSON: [{
   SCHEMA_NAME: "Json" virtual;
 
@@ -290,25 +302,54 @@ parseJSONNodeImpl: [
                             ascii.cr @result.catAsciiSymbolCode
                           ] [
                             pos.currentCode ascii.uCode = [
-                              unicode: 0n32 dynamic;
-                              4 dynamic [
-                                unicode 16n32 * @unicode set
-                                iterate
-                                pos.currentCode ascii.zero < ~ [pos.currentCode ascii.zero 10n32 + <] && [
-                                  pos.currentCode ascii.zero - unicode + @unicode set
-                                ] [
-                                  pos.currentCode ascii.aCode < ~ [pos.currentCode ascii.aCode 6n32 + <] && [
-                                    pos.currentCode ascii.aCode - 10n32 + unicode + @unicode set
+                              readHexU16: [
+                                hexValue: 0n32 dynamic;
+                                4 dynamic [
+                                  hexValue HEX_BASE * @hexValue set
+                                  iterate
+                                  pos.currentCode ascii.zero < ~ [pos.currentCode ascii.zero HEX_DIGIT_COUNT + <] && [
+                                    pos.currentCode ascii.zero - hexValue + @hexValue set
                                   ] [
-                                    pos.currentCode ascii.aCodeBig < ~ [pos.currentCode ascii.aCodeBig 6n32 + <] && [
-                                      pos.currentCode ascii.aCodeBig - 10n32 + unicode + @unicode set
+                                    pos.currentCode ascii.aCode < ~ [pos.currentCode ascii.aCode HEX_LETTER_COUNT + <] && [
+                                      pos.currentCode ascii.aCode - HEX_DIGIT_COUNT + hexValue + @hexValue set
                                     ] [
-                                      "error in unicode" lexicalError
+                                      pos.currentCode ascii.aCodeBig < ~ [pos.currentCode ascii.aCodeBig HEX_LETTER_COUNT + <] && [
+                                        pos.currentCode ascii.aCodeBig - HEX_DIGIT_COUNT + hexValue + @hexValue set
+                                      ] [
+                                        "error in unicode" lexicalError
+                                      ] if
                                     ] if
                                   ] if
+                                ] times
+                                hexValue
+                              ];
+                              high: readHexU16;
+                              high UNICODE_HIGH_SURROGATE_START < ~ high UNICODE_LOW_SURROGATE_START < and [
+                                iterate
+                                pos.currentCode ascii.backSlash = [
+                                  iterate
+                                  pos.currentCode ascii.uCode = [
+                                    low: readHexU16;
+                                    low UNICODE_LOW_SURROGATE_START < ~ low UNICODE_SURROGATE_END < and [
+                                      highOffset: high UNICODE_HIGH_SURROGATE_START -;
+                                      lowOffset: low UNICODE_LOW_SURROGATE_START -;
+                                      highOffset UNICODE_SURROGATE_SHIFT lshift lowOffset + UNICODE_SUPPLEMENTARY_BASE + @result.catSymbolCode
+                                    ] [
+                                      "low surrogate expected after high surrogate in \\u escape" lexicalError
+                                    ] if
+                                  ] [
+                                    "\\u expected after high surrogate in \\u escape" lexicalError
+                                  ] if
+                                ] [
+                                  "\\u expected after high surrogate in \\u escape" lexicalError
                                 ] if
-                              ] times
-                              unicode @result.catSymbolCode
+                              ] [
+                                high UNICODE_LOW_SURROGATE_START < ~ high UNICODE_SURROGATE_END < and [
+                                  "unexpected low surrogate in \\u escape" lexicalError
+                                ] [
+                                  high @result.catSymbolCode
+                                ] if
+                              ] if
                             ] [
                               "wrong code after \\" lexicalError
                             ] if
@@ -589,6 +630,18 @@ catJSONNodeWithPaddingImpl: [
     splitted: splitString;
     "\"" @result.cat
     [splitted.success new] "Wrong encoding in JSON string!" assert
+    escapeU16Hex: [
+      u: new;
+      "\\u" @result.cat
+      4 [
+        current: u 3 i - 4 * 0n32 cast rshift HEX_NIBBLE_MASK and;
+        current HEX_DIGIT_COUNT < [
+          ascii.zero current + @result.catAsciiSymbolCode
+        ] [
+          ascii.aCode current + HEX_DIGIT_COUNT - @result.catAsciiSymbolCode
+        ] if
+      ] times
+    ];
     splitted.chars [
       symbol: new;
       code: symbol.data Nat32 cast;
@@ -621,16 +674,15 @@ catJSONNodeWithPaddingImpl: [
                       ] [
                         codePoint: size: symbol.data symbol.size getCodePointAndSize;;
                         [size 0 >] "Wrong encoding in splitted array!" assert
-                        [codePoint 0x10000n32 <] "Rare codepoint JSON string!" assert
-                        "\\u" @result.cat
-                        4 [
-                          current: codePoint 3 i - 4 * 0n32 cast rshift 0xFn32 and;
-                          current 10n32 < [
-                            ascii.zero current + @result.catAsciiSymbolCode
-                          ] [
-                            ascii.aCode current + 10n32 - @result.catAsciiSymbolCode
-                          ] if
-                        ] times
+                        codePoint UNICODE_SUPPLEMENTARY_BASE < [
+                          codePoint escapeU16Hex
+                        ] [
+                          adjusted: codePoint UNICODE_SUPPLEMENTARY_BASE -;
+                          high: adjusted UNICODE_SURROGATE_SHIFT rshift UNICODE_HIGH_SURROGATE_START +;
+                          low: adjusted UNICODE_SURROGATE_MASK and UNICODE_LOW_SURROGATE_START +;
+                          high escapeU16Hex
+                          low escapeU16Hex
+                        ] if
                       ] if
                     ] if
                   ] if
