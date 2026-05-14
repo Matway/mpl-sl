@@ -51,6 +51,9 @@ UNDER_VALGRIND: [SL_SYNC_UNDER_VALGRIND TRUE] [
   SL_SYNC_UNDER_VALGRIND {} same [SL_SYNC_UNDER_VALGRIND] ||
 ] pfunc;
 
+FIBER_STACK_SIZE: [64 1024 *];
+FIBER_STACK_SIZE: [SL_FIBER_STACK_SIZE TRUE] [SL_FIBER_STACK_SIZE] pfunc;
+
 {
   default: Nat64;
   request: Nat64;
@@ -111,7 +114,7 @@ createFiber: [
   ucontext: makeUcontext;
   @ucontext getcontext -1 = [("FATAL: getcontext failed, result=" errno LF) printList "" failProc] when
 
-  STACK_SIZE: [64 1024 * Natx cast];
+  STACK_SIZE: [FIBER_STACK_SIZE Natx cast];
   STACK_SIZE malloc @ucontext.@uc_stack.!ss_sp
   STACK_SIZE        @ucontext.@uc_stack.!ss_size
 
