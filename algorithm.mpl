@@ -218,17 +218,10 @@ makeTupleIter: [
       offset1: offset0 size + dup isDynamic [] [virtual] uif new;
 
       next: [
-        offset0 isDynamic [
-          @tuple storageAddress
-          @tuple 0 fieldIsRef [
-            refSize: 0 @tuple @ Text same [(Text) storageSize] [REF_SIZE Natx cast] if;
-
-            refSize offset0 Natx cast * + 0 @tuple @ AsRef addressToReference .@data
-          ] [
-            0 dynamic @tuple @ storageSize offset0 Natx cast * + 0 @tuple @ addressToReference
-          ] if
-        ] [
+        offset0 isStatic [
           offset0 @tuple fieldCount < [offset0 @tuple @] [()] if
+        ] [
+          offset0 @tuple @
         ] if
 
         offset0 offset1 <
