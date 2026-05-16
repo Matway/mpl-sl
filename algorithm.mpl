@@ -221,6 +221,7 @@ makeTupleIter: [
         offset0 isDynamic [
           @tuple storageAddress
           @tuple 0 fieldIsRef [
+            [@tuple fieldCount 1 = [[@tuple 0 dynamic fieldRead] compilable?] ||] "[makeTupleIter.next], Underlying Struct is not uniform" assert
             refSize: 0 @tuple @ Text same [(Text) storageSize] [REF_SIZE Natx cast] if;
 
             refSize offset0 Natx cast * + 0 @tuple @ AsRef addressToReference .@data
