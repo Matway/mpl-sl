@@ -218,10 +218,11 @@ makeTupleIter: [
       offset1: offset0 size + dup isDynamic [] [virtual] uif new;
 
       next: [
+        offset0 @tuple fieldCount <
         offset0 isStatic [
-          offset0 @tuple fieldCount < [offset0 @tuple @] [()] if
+          [offset0 @tuple @] [()] if
         ] [
-          offset0 @tuple @
+          [offset0 @tuple @] [0 dynamic @tuple @] if
         ] if
 
         offset0 offset1 <
