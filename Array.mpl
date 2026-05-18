@@ -247,7 +247,8 @@ makeArrayObject: [
         i: arraySize new dynamic;
         [i newSize >] [
           i 1 - !i
-          i at manuallyDestroyVariable
+          v: i at;
+          v storageAddress 0nx = ~ [v manuallyDestroyVariable] when
         ] while
       ] when
 
