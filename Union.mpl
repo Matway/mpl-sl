@@ -5,6 +5,7 @@
 # It is forbidden to use the content or any part of it for any purpose without explicit permission from the owner.
 # By contributing to the repository, contributors acknowledge that ownership of their work transfers to the owner.
 
+"algorithm.case" use
 "algorithm.each" use
 "control.Int32"  use
 "control.Nat16"  use
@@ -12,40 +13,38 @@
 "control.Nat64"  use
 "control.Nat8"   use
 "control.Ref"    use
+"control.dup"    use
 "control.max"    use
+"control.swap"   use
+"control.when"   use
 
-Union: [{
-  SCHEMA_NAME: "Union" virtual;
-  Items: Ref virtual;
+Union: [
+  Schemas:;
+  {
+    SCHEMA_NAME: "Union" virtual;
 
-  get: [
-    key:;
-    data storageAddress key @Items @ addressToReference
-  ];
+    Schemas: @Schemas dup virtual? ~ [Ref] when virtual;
 
-  # Private
+    get: [
+      key:;
+      @Schemas key fieldRead dup virtual? ~ [data storageAddress swap addressToReference] when
+    ];
 
-  MAXIMUM_ALIGNMENT: [
-    1
-    Items [alignment Int32 cast max] each
-  ];
+    private MAX_ALIGNMENT: [0 @Schemas [alignment   Int32 cast max] each];
+    private MAX_SIZE:      [0 @Schemas [storageSize Int32 cast max] each];
 
-  MAXIMUM_SIZE: [
-    1
-    Items [storageSize Int32 cast max] each
-  ];
+    private data: (
+      MAX_ALIGNMENT (
+        0 [()   ]
+        1 [Nat8 ]
+        2 [Nat16]
+        4 [Nat32]
+        8 [Nat64]
 
-  data:
-    MAXIMUM_ALIGNMENT 1 = [Nat8] [
-      MAXIMUM_ALIGNMENT 2 = [Nat16] [
-        MAXIMUM_ALIGNMENT 4 = [Nat32] [
-          MAXIMUM_ALIGNMENT 8 = [Nat64] [
-            "Invalid alignment value" raiseStaticError
-          ] if
-        ] if
-      ] if
-    ] if
-  ;
+        ["Invalid alignment" raiseStaticError]
+      ) case
 
-  pad: Nat8 MAXIMUM_SIZE MAXIMUM_ALIGNMENT - array;
-}];
+      Nat8 MAX_SIZE MAX_ALIGNMENT - array
+    );
+  }
+];
