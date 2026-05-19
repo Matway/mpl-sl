@@ -17,6 +17,7 @@
 "control.ensure"         use
 "control.isBuiltinTuple" use
 "control.pfunc"          use
+"control.sign"           use
 "control.times"          use
 "control.when"           use
 "control.||"             use
@@ -542,6 +543,132 @@ testView: [
   "101" "10" beginsWith isRef TRUE  FALSE TRUE  check
   "011" "10" beginsWith isRef FALSE FALSE TRUE  check
   "111" "10" beginsWith isRef FALSE FALSE TRUE  check
+] call
+
+# compare
+[
+  (   ) (   ) () compare isRef  0 FALSE FALSE check
+  (0  ) (0  ) () compare isRef  0 FALSE FALSE check
+  (0  ) (1  ) () compare isRef -1 FALSE FALSE check
+  (0  ) (1  ) () compare isRef -1 FALSE FALSE check
+  (1  ) (0  ) () compare isRef  1 FALSE FALSE check
+  (0  ) (1 0) () compare isRef -1 FALSE FALSE check
+  (1 0) (0  ) () compare isRef  1 FALSE FALSE check
+
+  Comparator: [{
+    comparator: upperBound: new virtual; virtual;
+    count: 0;
+
+    CALL: [
+      value0: value1:;;
+      [count 0 < ~] "arithmetic overflow" ensure
+      count 1 + !count
+      [count upperBound > ~] "extra attempt to apply comparator" ensure
+
+      @value0 @value1 comparator
+    ];
+  }];
+
+  compareNormalized: [
+    iter0: iter1: comparator:;;;
+    comparisonResult: ref?: @iter0 @iter1 @comparator compare isRef;;
+    [comparisonResult Int32 same] "not an Int32" ensure
+
+    comparisonResult sign ref?
+  ];
+
+  test: [
+    transform0: transform1:;;
+
+    transform2: [
+      tuple0: tuple1:;;
+      @tuple0 transform0 @tuple1 transform1
+    ];
+
+    testCompareKnown:   [tuple0: tuple1: comparator: upperBound: normalizedResult:;;;;; @tuple0        @tuple1        transform2 @comparator upperBound Comparator compareNormalized normalizedResult FALSE FALSE check]; # THE TRANSITION: Remove redundant NameRead prefixes. Test cases are unable to pass assertions
+    testCompareUnknown: [tuple0: tuple1: comparator: upperBound: normalizedResult:;;;;; tuple0 dynamic tuple1 dynamic transform2 @comparator upperBound Comparator compareNormalized normalizedResult FALSE TRUE  check];
+
+    testCompare: [
+      tuple0: tuple1: comparator: upperBound: normalizedResult:;;;;;
+      # THE TRANSITION: Uncomment the next line. Test cases are unable to pass assertions
+      #tuple0 tuple1 @comparator upperBound normalizedResult testCompareKnown
+      tuple0 tuple1 @comparator upperBound normalizedResult testCompareUnknown
+    ];
+
+    (     ) (     ) [] 0  0 testCompareKnown
+    (     ) (0    ) [] 0 -1 testCompareKnown
+    (     ) (0 0  ) [] 0 -1 testCompareKnown
+    (     ) (0 0 0) [] 0 -1 testCompareKnown
+    (0    ) (     ) [] 0  1 testCompareKnown
+    (0 0  ) (     ) [] 0  1 testCompareKnown
+    (0 0 0) (     ) [] 0  1 testCompareKnown
+
+    (0       ) (0       ) [-] 1  0 testCompare
+    (0 0     ) (0 0     ) [-] 2  0 testCompare
+    (0 0 0   ) (0 0 0   ) [-] 3  0 testCompare
+    (0       ) (0      0) [-] 1 -1 testCompare
+    (0 0     ) (0 0    0) [-] 2 -1 testCompare
+    (0 0 0   ) (0 0 0  0) [-] 3 -1 testCompare
+    (0      0) (0       ) [-] 1  1 testCompare
+    (0 0    0) (0 0     ) [-] 2  1 testCompare
+    (0 0 0  0) (0 0 0   ) [-] 3  1 testCompare
+
+    (0         ) (0      0 0) [-] 1 -1 testCompare
+    (0 0       ) (0 0    0 0) [-] 2 -1 testCompare
+    (0 0 0     ) (0 0 0  0 0) [-] 3 -1 testCompare
+    (0      0 0) (0         ) [-] 1  1 testCompare
+    (0 0    0 0) (0 0       ) [-] 2  1 testCompare
+    (0 0 0  0 0) (0 0 0     ) [-] 3  1 testCompare
+
+    (0       ) (1      0) [-] 1 -1 testCompare
+    (0 0     ) (0 1    0) [-] 2 -1 testCompare
+    (0 0 0   ) (0 0 1  0) [-] 3 -1 testCompare
+    (1       ) (0      0) [-] 1  1 testCompare
+    (0 1     ) (0 0    0) [-] 2  1 testCompare
+    (0 0 1   ) (0 0 0  0) [-] 3  1 testCompare
+    (0      0) (1       ) [-] 1 -1 testCompare
+    (0 0    0) (0 1     ) [-] 2 -1 testCompare
+    (0 0 0  0) (0 0 1   ) [-] 3 -1 testCompare
+    (1      0) (0       ) [-] 1  1 testCompare
+    (0 1    0) (0 0     ) [-] 2  1 testCompare
+    (0 0 1  0) (0 0 0   ) [-] 3  1 testCompare
+
+    (0    ) (1    ) [-] 1 -1 testCompare
+    (1    ) (0    ) [-] 1  1 testCompare
+    (0 0  ) (1 0  ) [-] 1 -1 testCompare
+    (0 0  ) (0 1  ) [-] 2 -1 testCompare
+    (1 0  ) (0 0  ) [-] 1  1 testCompare
+    (0 1  ) (0 0  ) [-] 2  1 testCompare
+    (0 0 0) (1 0 0) [-] 1 -1 testCompare
+    (0 0 0) (0 1 0) [-] 2 -1 testCompare
+    (0 0 0) (0 0 1) [-] 3 -1 testCompare
+    (1 0 0) (0 0 0) [-] 1  1 testCompare
+    (0 1 0) (0 0 0) [-] 2  1 testCompare
+    (0 0 1) (0 0 0) [-] 3  1 testCompare
+
+    i32min: [
+      v0: v1:;;
+      INT32_MIN: [0x7FFFFFFF 1 +];
+      v0 v1 < [INT32_MIN] [
+        v0 v1 = [0] [42] if
+      ] if
+    ];
+
+    (0  ) (1  ) @i32min 1 -1 testCompare
+    (1  ) (0  ) @i32min 1  1 testCompare
+    (0  ) (1 0) @i32min 1 -1 testCompare
+    (1 0) (0  ) @i32min 1  1 testCompare
+  ];
+
+  noSizeIter: [
+    source:;
+    {iter: @source toIter; next: [@iter.next];}
+  ];
+
+  @noSizeIter @noSizeIter test
+  [         ] [         ] test
+  @noSizeIter [         ] test
+  [         ] @noSizeIter test
 ] call
 
 # contains
